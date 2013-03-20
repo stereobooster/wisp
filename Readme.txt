@@ -22,4 +22,4 @@ becomes
         . j
 
 
-
+Usage: ./wisp.py infile.wisp > outfile.lisp
