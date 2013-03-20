@@ -37,7 +37,7 @@ class Line:
 
 
 def nostringbreaks(code):
-    """remove linebreaks inside strings"""
+    """remove linebreaks inside strings (will be readded at the end)"""
     instring = False
     nostringbreaks = []
     for char in code:
@@ -50,10 +50,28 @@ def nostringbreaks(code):
     return "".join(nostringbreaks)
 
 
+def nobracketbreaks(code):
+    """remove linebreaks inside brackets (will be readded at the end)."""
+    inbracket = 0
+    nostringbreaks = []
+    for char in code:
+        if char == '(':
+            inbracket += 1
+        elif char == ')':
+            inbracket -= 1
+        if inbracket and char == "\n":
+            nostringbreaks.append("\\LINEBREAK")
+        else:
+            nostringbreaks.append(char)
+    return "".join(nostringbreaks)
+
+
 def wisp2lisp(code):
     """Turn wisp code to lisp code."""
     # first get rid of linebreaks in strings
     code = nostringbreaks(code)
+    # and of linebreaks inside brackets
+    code = nobracketbreaks(code)
     
     # now read the indentation
     lines = []
