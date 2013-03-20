@@ -1,14 +1,13 @@
-defun a
-  b c
+defun a (b c)
   let
     : 
       d "i am a string
 do not break me!"
       : 
         f
-        g
+        ` g
       : 
         h
         . i
-  j k
+  , ' j k
   . l

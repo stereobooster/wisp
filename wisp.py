@@ -25,7 +25,7 @@ class Line:
             while (self.content.startswith("' ") or 
                    self.content.startswith(", ") or
                    self.content.startswith("` ")):
-                self.prefix.append(self.content[0])
+                self.prefix += self.content[0]
                 self.content = self.content[2:]
         
         self.indent = len(line) - len(line.lstrip())

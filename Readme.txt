@@ -7,7 +7,7 @@ Wisp: Whitespace-Lisp
          ((f)
           (g)))
       (h i)
-      j)
+      j))
 
 becomes
 
@@ -19,8 +19,8 @@ becomes
           : 
             f
             g
-      h i
-      . j
+        h i
+        . j
 
 
 
