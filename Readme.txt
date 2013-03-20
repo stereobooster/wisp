@@ -5,20 +5,19 @@ Wisp: Whitespace-Lisp
       (let 
         ((d e)
          ((f)
-          (g)))
+          '(g)))
       (h i)
       j))
 
 becomes
 
-    defun a
-      b c
+    defun a (b c)
       let
         : 
           d e
           : 
             f
-            g
+            ' g
         h i
         . j
 
