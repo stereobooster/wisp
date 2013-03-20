@@ -44,7 +44,7 @@ def nostringbreaks(code):
         if char == '"':
             instring = not instring
         if instring and char == "\n":
-            nostringbreaks.append("\\n")
+            nostringbreaks.append("\\LINEBREAK")
         else:
             nostringbreaks.append(char)
     return "".join(nostringbreaks)
@@ -96,7 +96,7 @@ def wisp2lisp(code):
     
     lisplines.append(prev.indent * " " + prev.content + ")" * (len(levels)))
     
-    return "\n".join(lisplines).replace("\\n", "\n")
+    return "\n".join(lisplines).replace("\\LINEBREAK", "\n")
             
 
 
