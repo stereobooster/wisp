@@ -12,6 +12,7 @@ Wisp: Whitespace-Lisp
 becomes
 
     defun a
+      b c
       let
         : 
           d e
