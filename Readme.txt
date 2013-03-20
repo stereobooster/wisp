@@ -13,9 +13,11 @@ becomes
 
     defun a
       let
-        : d e
-          : f
-          : g
+        : 
+          d e
+          : 
+            f
+            g
       h i
       . j
 
