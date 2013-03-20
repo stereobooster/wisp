@@ -32,7 +32,13 @@ class Line:
         while self.content.startswith(": ") and self.content[2:].lstrip():
             self.indent += len(self.content) - len(self.content[2:].lstrip())
             self.content = self.content[2:].lstrip()
-        if self.content.strip() == ":" or self.content.strip() == "":
+
+        #: the indentation creates a new indentation level and must be kept TODO: not yet used
+        self.newlevel = False
+        if self.content.strip() == ":":
+            self.content = ""
+            self.newlevel = True
+        elif self.content.strip() == "":
             self.content = ""
 
 
@@ -88,7 +94,6 @@ def wisp2lisp(code):
         prev.content = prev.prefix + "(" + prev.content
     # process further lines
     for line in lines[1:]:
-        
         # care for leading brackets
         # continuing lines do not get a leading bracket.
         if not line.continues:
@@ -114,12 +119,16 @@ def wisp2lisp(code):
     
     lisplines.append(prev.indent * " " + prev.content + ")" * (len(levels)))
     
+    # get rid of brackets around empty lines
+    for n,i in enumerate(lisplines):
+        if i.lstrip() == "()":
+            lisplines[n] = ""
+    
     return "\n".join(lisplines).replace("\\LINEBREAK", "\n")
             
 
 
 if __name__ == "__main__":
-    print()
     import sys
     if sys.argv[1:]:
         sourcefile = sys.argv[1]
