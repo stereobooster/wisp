@@ -4,7 +4,9 @@ defun a (b c)
       d "i am a string
 do not break me!"
       : 
+  ; comment
         f
+; comment
         ` g
       : 
         h (I am in brackets

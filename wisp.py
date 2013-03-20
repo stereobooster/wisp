@@ -33,13 +33,14 @@ class Line:
             self.indent += len(self.content) - len(self.content[2:].lstrip())
             self.content = self.content[2:].lstrip()
 
-        #: the indentation creates a new indentation level and must be kept TODO: not yet used
-        self.newlevel = False
-        if self.content.strip() == ":":
+        if self.content.strip() == ":" or self.content.strip() == "":
             self.content = ""
-            self.newlevel = True
-        elif self.content.strip() == "":
-            self.content = ""
+
+        #: Is the line effectively empty?
+        self.empty = False
+        onlycomment = line.split(";")[1:] and not line.split(";")[0].count('"') % 2
+        if line.strip() == "" or onlycomment:
+            self.empty = True
 
 
 def nostringbreaks(code):
@@ -92,8 +93,14 @@ def wisp2lisp(code):
     # process the first line in the file
     if not prev.continues:
         prev.content = prev.prefix + "(" + prev.content
-    # process further lines
+    # process further lines: adjust the content of the current line, but only append 
     for line in lines[1:]:
+        # ignore empty lines and comment-only lines
+        if line.empty:
+            # simply keep empty lines and ignore their indentation
+            lisplines.append(line.indent * " " + line.content)
+            continue
+        
         # care for leading brackets
         # continuing lines do not get a leading bracket.
         if not line.continues:
