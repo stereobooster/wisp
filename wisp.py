@@ -96,7 +96,7 @@ def wisp2lisp(code):
     
     lisplines.append(prev.indent * " " + prev.content + ")" * (len(levels)))
     
-    return "\n".join(lisplines)
+    return "\n".join(lisplines).replace("\\n", "\n")
             
 
 

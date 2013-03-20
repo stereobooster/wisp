@@ -2,7 +2,8 @@ defun a
   b c
   let
     : 
-      d e
+      d "i am a string
+do not break me!"
       : 
         f
         g
