@@ -1,5 +1,14 @@
 #!/usr/bin/env python3
 
+"""whitespace to lisp converter.
+
+Essentially it just adds brackets for indentation to allow writing
+lisp with indentation senstitive syntax.
+
+Currently it is written in Python, because I like Python as language,
+but crave the power of lisp.
+"""
+
 
 class Line:
     def __init__(self, line):
