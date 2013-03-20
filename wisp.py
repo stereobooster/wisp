@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+
 class Line:
     def __init__(self, line):
         self.continues = line.lstrip().startswith(". ")
@@ -13,6 +14,7 @@ class Line:
             self.content = self.content[2:].lstrip()
         if self.content.strip() == ":":
             self.content = ""
+
 
 def wisp2lisp(code):
     """Turn wisp code to lisp code."""
@@ -72,4 +74,3 @@ if __name__ == "__main__":
     with open("example.w") as f:
         wisp = f.read()
     print(wisp2lisp(wisp))
-        
