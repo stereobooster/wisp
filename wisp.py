@@ -12,22 +12,32 @@ but crave the power of lisp.
 
 class Line:
     def __init__(self, line):
+        #: prefix to go around the outer bracket: '(, ,( or `(
+        self.prefix = ""
+        # check if this is a continuation of the parent line
         self.continues = line.lstrip().startswith(". ")
         if self.continues:
             self.content = line.lstrip()[2:].lstrip()
         else:
             self.content = line.lstrip()
+        # check if the line is prefixed with any combination of ' ` and ,
+        if not self.continues:
+            while (self.content.startswith("' ") or 
+                   self.content.startswith(", ") or
+                   self.content.startswith("` ")):
+                self.prefix.append(self.content[0])
+                self.content = self.content[2:]
+        
         self.indent = len(line) - len(line.lstrip())
         while self.content.startswith(": ") and self.content[2:].lstrip():
             self.indent += len(self.content) - len(self.content[2:].lstrip())
             self.content = self.content[2:].lstrip()
-        if self.content.strip() == ":":
+        if self.content.strip() == ":" or self.content.strip() == "":
             self.content = ""
 
 
-def wisp2lisp(code):
-    """Turn wisp code to lisp code."""
-    # first get rid of linebreaks in strings
+def nostringbreaks(code):
+    """remove linebreaks inside strings"""
     instring = False
     nostringbreaks = []
     for char in code:
@@ -37,7 +47,13 @@ def wisp2lisp(code):
             nostringbreaks.append("\\n")
         else:
             nostringbreaks.append(char)
-    code = "".join(nostringbreaks)
+    return "".join(nostringbreaks)
+
+
+def wisp2lisp(code):
+    """Turn wisp code to lisp code."""
+    # first get rid of linebreaks in strings
+    code = nostringbreaks(code)
     
     # now read the indentation
     lines = []
@@ -49,12 +65,18 @@ def wisp2lisp(code):
     lisplines = []
     levels = []
     prev = lines[0]
+    # process the first line in the file
     if not prev.continues:
-        prev.content = "(" + prev.content
+        prev.content = prev.prefix + "(" + prev.content
+    # process further lines
     for line in lines[1:]:
+        
+        # care for leading brackets
         # continuing lines do not get a leading bracket.
         if not line.continues:
-            line.content = "(" + line.content
+            line.content = line.prefix + "(" + line.content
+        
+        # care for closing brackets
         # rising indent: sibling function or variable
         if line.indent > prev.indent:
             levels.append(line.indent)
@@ -80,6 +102,11 @@ def wisp2lisp(code):
 
 if __name__ == "__main__":
     print()
-    with open("example.w") as f:
+    import sys
+    if sys.argv[1:]:
+        sourcefile = sys.argv[1]
+    else:
+        sourcefile = "example.w"
+    with open(sourcefile) as f:
         wisp = f.read()
     print(wisp2lisp(wisp))
