@@ -7,7 +7,7 @@ do not break me!"
   ; comment
         f
 ; comment
-        ` g
+        ` g ; comment
       : 
         h (I am in brackets
            do not change me)

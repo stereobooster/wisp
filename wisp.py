@@ -36,9 +36,21 @@ class Line:
         if self.content.strip() == ":" or self.content.strip() == "":
             self.content = ""
 
+        # split a possible comment
+        if (self.content and 
+            self.content.split(";")[1:] and
+            not self.content.split(";")[0].count('"') % 2):
+            split = self.content.split(";")
+            self.content = split[0]
+            self.comment = ";".join(split[1:])
+        else:
+            self.comment = ""            
+
         #: Is the line effectively empty?
         self.empty = False
-        onlycomment = line.split(";")[1:] and not line.split(";")[0].count('"') % 2
+        onlycomment = (line.split(";")[1:] and  # there is content after the comment sign
+                       not line.split(";")[0].count('"') % 2 and # but the first comment sign is not in a string
+                       not line.split(";")[0].strip()) # there is no content before the comment sign
         if line.strip() == "" or onlycomment:
             self.empty = True
 
@@ -99,6 +111,9 @@ def wisp2lisp(code):
         if line.empty:
             # simply keep empty lines and ignore their indentation
             lisplines.append(line.indent * " " + line.content)
+            # add a possible comment
+            if line.comment:
+                lisplines[-1] += ";" + line.comment
             continue
         
         # care for leading brackets
@@ -121,6 +136,10 @@ def wisp2lisp(code):
             if prev.continues:
                 bracketstoclose -= 1
             lisplines.append(prev.indent * " " + prev.content + ")" * bracketstoclose)
+
+        # add a possible comment
+        if prev.comment:
+            lisplines[-1] += ";" + prev.comment
         
         prev = line
     
