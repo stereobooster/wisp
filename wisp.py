@@ -111,10 +111,11 @@ def wisp2lisp(code):
         # ignore empty lines and comment-only lines
         if line.empty:
             # simply keep empty lines and ignore their indentation
-            lisplines.append(line.indent * " " + line.content)
-            # add a possible comment
+            # readd a possible comment
             if line.comment:
-                lisplines[-1] += ";" + line.comment
+                line.content += ";" + line.comment
+            # keep the line, do not track it in any way
+            lisplines.append(line.indent * " " + line.content)
             continue
         
         # care for leading brackets
