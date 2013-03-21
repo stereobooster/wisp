@@ -101,6 +101,8 @@ def wisp2lisp(code):
     # finally emit matching lisp code
     # write into the lisp lines with a delay of 1 line
     lisplines = []
+    # effectively empty lines to be appended
+    emptylines = []
     levels = []
     prev = lines[0]
     # process the first line in the file
@@ -115,7 +117,7 @@ def wisp2lisp(code):
             if line.comment:
                 line.content += ";" + line.comment
             # keep the line, do not track it in any way
-            lisplines.append(line.indent * " " + line.content)
+            emptylines.append(line.indent * " " + line.content)
             continue
         
         # care for leading brackets
@@ -144,6 +146,8 @@ def wisp2lisp(code):
             lisplines[-1] += ";" + prev.comment
         
         prev = line
+        lisplines.extend(emptylines)
+        emptylines = []
     
     lisplines.append(prev.indent * " " + prev.content + ")" * (len(levels)))
     
