@@ -37,14 +37,15 @@ class Line:
             self.content = ""
 
         # split a possible comment
-        if (self.content and 
-            self.content.split(";")[1:] and
-            not self.content.split(";")[0].count('"') % 2):
-            split = self.content.split(";")
-            self.content = split[0]
-            self.comment = ";".join(split[1:])
-        else:
-            self.comment = ""            
+        self.comment = ""
+        instring = False
+        for n, i in enumerate(self.content):
+            if i == '"': 
+                instring = not instring
+            if not instring and i == ";":
+                self.comment = self.content[n+1:]
+                self.content = self.content[:n]
+                break
 
         #: Is the line effectively empty?
         self.empty = False
