@@ -66,9 +66,20 @@ class Line:
                 break
         
         # treat inline " : " as opening a bracket which gets closed at the end of the line
-        toclose = self.content.count(" : ")
-        self.content = self.content.replace(" : ", " (")
-        self.content += ")" * toclose
+        bracketstoclose = 0
+        instring = False
+        inbrackets = 0
+        for n, i in enumerate(self.content):
+            if i == '"':
+                instring = not instring
+            if not instring and i == "(":
+                inbrackets += 1
+            elif not instring and i == ")":
+                inbrackets -= 1
+            if not instring and not inbrackets and i == ":" and self.content[n-1:n+2] == " : ":
+                bracketstoclose += 1
+                self.content = self.content[:n] + "(" + self.content[n+1:]
+        self.content += ")" * bracketstoclose
 
         #: Is the line effectively empty?
         self.empty = False

@@ -9,8 +9,8 @@ do not break me!"
 ; comment
         ` g ; comment
       : 
-        h (I am in brackets
-           do not change me)
+        h (I am in brackets:
+           do not : change "me")
         . i
   , ' j k
 
@@ -20,7 +20,7 @@ do not break me!"
 
   a c
 
-defun b : n o
-  . "second defun, with a docstring!"
+defun b : :n o
+  . "second defun : with a docstring!"
   message "I am here"
   . t
