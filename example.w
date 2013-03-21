@@ -20,3 +20,7 @@ do not break me!"
 
   a c
 
+defun b (n o)
+  . "second defun, with a docstring!"
+  message "I am here"
+  . t
