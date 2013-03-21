@@ -4,10 +4,10 @@ defun a (b c)
       d "i am a string
 do not break me!"
       : 
-  ; comment
+  ; comment: 0
         f
-; comment
-        ` g ; comment
+; comment : 1
+        ` g ; comment " : " 2
       : 
         h (I am in brackets:
            do not : change "me")
