@@ -103,7 +103,7 @@ def wisp2lisp(code):
     lisplines = []
     # effectively empty lines to be appended
     emptylines = []
-    levels = []
+    levels = [0]
     prev = lines[0]
     # process the first line in the file
     if not prev.continues:
@@ -132,7 +132,10 @@ def wisp2lisp(code):
             lisplines.append(prev.indent * " " + prev.content)
         # same indent: neighbour function of variable: close the previour lines bracket
         if line.indent == prev.indent:
-            lisplines.append(prev.indent * " " + prev.content + ")")
+            if not prev.continues:
+                lisplines.append(prev.indent * " " + prev.content + ")")
+            else:
+                lisplines.append(prev.indent * " " + prev.content)
         # lower indent: parent funtion or variable. Find the number of brackets to close
         if prev.indent > line.indent:
             bracketstoclose = len([level for level in levels if level >= line.indent])
@@ -149,7 +152,10 @@ def wisp2lisp(code):
         lisplines.extend(emptylines)
         emptylines = []
     
+    if prev.continues:
+        levels.pop()
     lisplines.append(prev.indent * " " + prev.content + ")" * (len(levels)))
+    lisplines.extend(emptylines)
     
     # get rid of brackets around empty lines
     for n,i in enumerate(lisplines):
