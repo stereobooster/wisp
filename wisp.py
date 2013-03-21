@@ -64,6 +64,11 @@ class Line:
                 self.comment = self.content[n+1:]
                 self.content = self.content[:n]
                 break
+        
+        # treat inline " : " as opening a bracket which gets closed at the end of the line
+        toclose = self.content.count(" : ")
+        self.content = self.content.replace(" : ", " (")
+        self.content += ")" * toclose
 
         #: Is the line effectively empty?
         self.empty = False
