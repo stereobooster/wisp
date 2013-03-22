@@ -27,5 +27,18 @@ user."
       setq file : concat find-file-root-prefix file
     find-file file
 
-;; or some other keybinding...
-;; (global-set-key (kbd "C-x F") 'djcb-find-file-as-root)
+defun find-current-as-root :
+  . "Reopen current file as root"
+  interactive
+  set-visited-file-name : concat find-file-root-prefix : buffer-file-name
+  setq buffer-read-only nil
+
+; the next function definition is equivalent, due to inline : 
+
+defun find-current-as-root :
+  . "Reopen current file as root"
+  interactive
+  set-visited-file-name 
+    concat find-file-root-prefix 
+      buffer-file-name
+  setq buffer-read-only nil
