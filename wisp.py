@@ -30,6 +30,18 @@ but crave the power of lisp.
 
 class Line:
     def __init__(self, line):
+        """Parse one line in which linebreaks within strings and
+        brackets already got replaced by a temporary placeholder."""
+        # Visible indentation: If the line starts with any number of
+        # _, followed by a space, treat those _ as spaces.
+        if line.startswith("_"):
+            for i,letter in enumerate(line):
+                if letter != "_":
+                    break
+            # here line[i-1] is _. Check if line[i+1] is a space.
+            if line[i:i+1] == " ":
+                line = (i)*" " + line[i:]
+                
         #: prefix to go around the outer bracket: '(, ,( or `(
         self.prefix = ""
         # check if this is a continuation of the parent line
