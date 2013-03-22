@@ -65,7 +65,10 @@ class Line:
                 self.content = self.content[:n]
                 break
         
-        # treat inline " : " as opening a bracket which gets closed at the end of the line
+        # treat inline " : " as opening a bracket which gets closed at
+        # the end of the line if the : is at the end of the line, add
+        # () to avoid being dependent on whitespace at the end of the
+        # line.
         bracketstoclose = 0
         instring = False
         inbrackets = 0
@@ -76,9 +79,10 @@ class Line:
                 inbrackets += 1
             elif not instring and i == ")":
                 inbrackets -= 1
-            if not instring and not inbrackets and i == ":" and self.content[n-1:n+2] == " : ":
-                bracketstoclose += 1
-                self.content = self.content[:n] + "(" + self.content[n+1:]
+            if not instring and not inbrackets and i == ":":
+                if self.content[n-1:n+2] == " : " or self.content[n-1:] == " :":
+                    bracketstoclose += 1
+                    self.content = self.content[:n] + "(" + self.content[n+1:]
         self.content += ")" * bracketstoclose
 
         #: Is the line effectively empty?
