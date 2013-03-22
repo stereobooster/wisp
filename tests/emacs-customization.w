@@ -42,3 +42,17 @@ defun find-current-as-root :
     concat find-file-root-prefix 
       buffer-file-name
   setq buffer-read-only nil
+
+custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ ' bbdb-complete-name-allow-cycling t
+ ' bbdb-ignore-some-messages-alist : quote : ("From" . "mailer-daemon")
+ ' bbdb-offer-save : quote savenoprompt
+
+
+setq a "x"
+   . b "y"
+   . c "z"
