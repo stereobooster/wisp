@@ -263,11 +263,19 @@ def processlines(lines, prev, codestartindex, levels, lisplines, emptylines):
         lisplines.extend(emptylines)
         emptylines = []
     
+    # postprocessing the loop.
+    if prev and prev.continues:
+        levels.pop()
+    if prev:
+        lisplines.append(prev.indent * " " + prev.content + ")" * (len(levels)))
+    lisplines.extend(emptylines)
     return prev, lisplines, emptylines, levels
 
 
 def wisp2lisp(code):
     """Turn wisp code to lisp code."""
+    # TODO: extract the shebang before preprocessing the code.
+    
     # first get rid of linebreaks in strings
     code = nostringbreaks(code)
     # and of linebreaks inside brackets
@@ -287,8 +295,10 @@ def wisp2lisp(code):
     prev = lines[0]
     #: The index of the first code line
     codestartindex = 0
-    # process the first line in the file.
-    # Shebang lines need to be used verbatim
+    
+    # process the first lines in the file.
+    
+    # Shebang lines must be used verbatim
     if not prev.indent and prev.content.startswith("#!"):
         codestartindex += 1
         if prev.comment:
@@ -313,16 +323,13 @@ def wisp2lisp(code):
     if prev and not prev.continues:
         prev.content = prev.prefix + "(" + prev.content
 
+    # run the linereader loop. This does the main work - aside from
+    # the preprocessing in the Line class.
     if prev:
         prev, lisplines, emptylines, levels = processlines(lines, prev, codestartindex, 
                                                            levels, lisplines, emptylines)
     
-    if prev and prev.continues:
-        levels.pop()
-    if prev:
-        lisplines.append(prev.indent * " " + prev.content + ")" * (len(levels)))
-    lisplines.extend(emptylines)
-    
+    # postprocessing the resulting lisplines: the loop is not perfect…
     # get rid of brackets around empty lines
     for n,i in enumerate(lisplines):
         if i.lstrip() == "()":
