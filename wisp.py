@@ -313,8 +313,9 @@ def wisp2lisp(code):
     if prev and not prev.continues:
         prev.content = prev.prefix + "(" + prev.content
 
-    prev, lisplines, emptylines, levels = processlines(lines, prev, codestartindex, 
-                                                       levels, lisplines, emptylines)
+    if prev:
+        prev, lisplines, emptylines, levels = processlines(lines, prev, codestartindex, 
+                                                           levels, lisplines, emptylines)
     
     if prev and prev.continues:
         levels.pop()
