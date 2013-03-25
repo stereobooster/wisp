@@ -158,6 +158,9 @@ class Line:
                 ):
                 if self.content[n-1:n+2] == " : " or self.content[n-1:] == " :":
                     bracketstoclose += 1
+                    # we have to keep the space after the colon (" : "
+                    # → " ( "), otherwise we cannot use two
+                    # consecutive colons (" : : ") which would be surprising.
                     self.content = self.content[:n] + "(" + self.content[n+1:]
         
         # after the full line processing, replace " \\: " "\n\\: " and
@@ -233,11 +236,36 @@ def wisp2lisp(code):
     emptylines = []
     levels = [0]
     prev = lines[0]
-    # process the first line in the file
-    if not prev.continues:
+    #: The index of the first code line
+    codestartindex = 0
+    # process the first line in the file.
+    # Shebang lines need to be used verbatim
+    if not prev.indent and prev.content.startswith("#!"):
+        codestartindex += 1
+        if prev.comment:
+            prev.content += ";" + prev.comment
+        lisplines.append(prev.content)
+        if codestartindex < len(lines):
+            prev = lines[codestartindex]
+        else:
+            prev = None
+    
+    # initial comment lines need special treatment to avoid starting
+    # them with () (implementation detail)
+    while prev and prev.empty:
+        codestartindex += 1
+        if prev.comment:
+            prev.content += ";" + prev.comment
+        lisplines.append(prev.indent * " " + prev.content)
+        if codestartindex < len(lines):
+            prev = lines[codestartindex]
+        else:
+            prev = None
+    if prev and not prev.continues:
         prev.content = prev.prefix + "(" + prev.content
+
     # process further lines: adjust the content of the current line, but only append 
-    for line in lines[1:]:
+    for line in lines[codestartindex+1:]:
         # ignore empty lines and comment-only lines
         if line.empty:
             # simply keep empty lines and ignore their indentation
@@ -280,9 +308,10 @@ def wisp2lisp(code):
         lisplines.extend(emptylines)
         emptylines = []
     
-    if prev.continues:
+    if prev and prev.continues:
         levels.pop()
-    lisplines.append(prev.indent * " " + prev.content + ")" * (len(levels)))
+    if prev:
+        lisplines.append(prev.indent * " " + prev.content + ")" * (len(levels)))
     lisplines.extend(emptylines)
     
     # get rid of brackets around empty lines
@@ -291,7 +320,6 @@ def wisp2lisp(code):
             lisplines[n] = ""
     
     return "\n".join(lisplines).replace("\\LINEBREAK", "\n")
-            
 
 
 if __name__ == "__main__":
