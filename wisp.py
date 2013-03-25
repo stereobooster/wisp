@@ -84,9 +84,16 @@ class Line:
         if line.startswith("_"):
             for i,letter in enumerate(line):
                 if letter != "_":
+                    # rewind the index to the last underscore
+                    i -= 1
                     break
-            # here line[i-1] is _. Check if line[i+1] is a space.
-            if line[i:i+1] == " ":
+            # increment the index to the first
+            # non-underscore. Required to treat end of string and end
+            # of underscores the same
+            i += 1
+            # here line[i-1] is _. Check if line[i+1] is a space or if
+            # the line ends after the last underscore
+            if line[i:i+1] == " " or not line[i:]:
                 line = (i)*" " + line[i:]
         # \_ escapes the underscore at the beginning of a line, so you
         # can use identifiers which only consist of underscores.
