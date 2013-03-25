@@ -24,3 +24,10 @@ defun b : :n o
   . "second defun : with a docstring!"
   message "I am here"
   . t
+
+defun _ : \:
+__
+__ . \:
+
+\_ b
+      

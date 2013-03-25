@@ -28,6 +28,53 @@ but crave the power of lisp.
 """
 
 
+def replaceinwisp(code, string, replacement):
+    """Replace the given string with the replacement, but only in
+    indentation sensitive parts of the code.
+    
+    Essentially replace everywhere except in brackets or strings.
+    
+    :param code: Arbitrary wisp code to process.
+    :param string: A string to replace.
+    :param replacement: The replacement string.
+    
+    :return: (code, count): The new code and a count of replacements.
+    """
+    count = 0
+    instring = False
+    incomment = False
+    inbrackets = 0
+    strlen = len(string)
+    for n in range(len(code) - strlen):
+        i = code[n]
+        # comments start with a ; - but only in regular wisp code.
+        if not incomment and not instring and not inbrackets and i == ";":
+            incomment = not incomment
+        # a linebreak ends the comment
+        if incomment:
+            if i == "\n":
+                incomment = not incomment
+            # all processing stops in comments
+            continue
+        if i == '"':
+            instring = not instring
+        # all processing stops in strings
+        if instring:
+            continue
+        if i == "(":
+            inbrackets += 1
+        elif i == ")":
+            inbrackets -= 1
+        # all processing stops in brackets
+        if inbrackets:
+            continue
+        # here we do the actual replacing
+        if code[n:n+strlen] == string:
+            count += 1
+            code = code[:n] + replacement + code[n+strlen:]
+    return code, count
+
+
 class Line:
     def __init__(self, line):
         """Parse one line in which linebreaks within strings and
@@ -41,7 +88,11 @@ class Line:
             # here line[i-1] is _. Check if line[i+1] is a space.
             if line[i:i+1] == " ":
                 line = (i)*" " + line[i:]
-                
+        # \_ escapes the underscore at the beginning of a line, so you
+        # can use identifiers which only consist of underscores.
+        elif line.startswith("\_"):
+            line = "_" + line[2:]
+            
         #: prefix to go around the outer bracket: '(, ,( or `(
         self.prefix = ""
         # check if this is a continuation of the parent line
@@ -95,8 +146,22 @@ class Line:
                 if self.content[n-1:n+2] == " : " or self.content[n-1:] == " :":
                     bracketstoclose += 1
                     self.content = self.content[:n] + "(" + self.content[n+1:]
+        
+        # after the full line processing, replace " \\: " "\n\\: " and
+        # " \\:\n" (inside line, start of a line, end of a line) by "
+        # : ", "\n: " and " :\n" respectively to allow escaping : as
+        # expression.
+        self.content, count = replaceinwisp(self.content, " \\: ", " : ")
+        if self.content.startswith("\\: "):
+            self.content = ": " + self.content[3:]
+        elif self.content.endswith(" \\:"):
+            self.content = self.content[:-3] + " :"
+        elif self.content == "\\:": # empty function or variable call
+            self.content = ":"
+        
+        # add closing brackets
         self.content += ")" * bracketstoclose
-
+        
         #: Is the line effectively empty?
         self.empty = False
         onlycomment = (line.split(";")[1:] and  # there is content after the comment sign
