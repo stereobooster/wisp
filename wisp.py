@@ -149,7 +149,13 @@ class Line:
                 inbrackets += 1
             elif not instring and i == ")":
                 inbrackets -= 1
-            if not instring and not inbrackets and i == ":":
+            if (not instring and 
+                not inbrackets and 
+                i == ":" and # optimization to be able to avoid string
+                             # slicing when there can be no hit.
+                n # avoid content[-1:2] (which is an unnecessary
+                  # slicing, since it is always ""
+                ):
                 if self.content[n-1:n+2] == " : " or self.content[n-1:] == " :":
                     bracketstoclose += 1
                     self.content = self.content[:n] + "(" + self.content[n+1:]
