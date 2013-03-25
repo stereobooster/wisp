@@ -217,6 +217,55 @@ def nobracketbreaks(code):
     return "".join(nostringbreaks)
 
 
+def processlines(lines, prev, codestartindex, levels, lisplines, emptylines):
+    """Process all lines after the first."""
+    # process further lines: adjust the content of the current line, but only append 
+    for line in lines[codestartindex+1:]:
+        # ignore empty lines and comment-only lines
+        if line.empty:
+            # simply keep empty lines and ignore their indentation
+            # readd a possible comment
+            if line.comment:
+                line.content += ";" + line.comment
+            # keep the line, do not track it in any way
+            emptylines.append(line.indent * " " + line.content)
+            continue
+        
+        # care for leading brackets
+        # continuing lines do not get a leading bracket.
+        if not line.continues:
+            line.content = line.prefix + "(" + line.content
+        
+        # care for closing brackets
+        # rising indent: sibling function or variable
+        if line.indent > prev.indent:
+            levels.append(line.indent)
+            lisplines.append(prev.indent * " " + prev.content)
+        # same indent: neighbour function of variable: close the previour lines bracket
+        if line.indent == prev.indent:
+            if not prev.continues:
+                lisplines.append(prev.indent * " " + prev.content + ")")
+            else:
+                lisplines.append(prev.indent * " " + prev.content)
+        # lower indent: parent funtion or variable. Find the number of brackets to close
+        if prev.indent > line.indent:
+            bracketstoclose = len([level for level in levels if level >= line.indent])
+            levels = levels[:-bracketstoclose + 1]
+            if prev.continues:
+                bracketstoclose -= 1
+            lisplines.append(prev.indent * " " + prev.content + ")" * bracketstoclose)
+
+        # add a possible comment
+        if prev.comment:
+            lisplines[-1] += ";" + prev.comment
+        
+        prev = line
+        lisplines.extend(emptylines)
+        emptylines = []
+    
+    return prev, lisplines, emptylines, levels
+
+
 def wisp2lisp(code):
     """Turn wisp code to lisp code."""
     # first get rid of linebreaks in strings
@@ -264,49 +313,8 @@ def wisp2lisp(code):
     if prev and not prev.continues:
         prev.content = prev.prefix + "(" + prev.content
 
-    # process further lines: adjust the content of the current line, but only append 
-    for line in lines[codestartindex+1:]:
-        # ignore empty lines and comment-only lines
-        if line.empty:
-            # simply keep empty lines and ignore their indentation
-            # readd a possible comment
-            if line.comment:
-                line.content += ";" + line.comment
-            # keep the line, do not track it in any way
-            emptylines.append(line.indent * " " + line.content)
-            continue
-        
-        # care for leading brackets
-        # continuing lines do not get a leading bracket.
-        if not line.continues:
-            line.content = line.prefix + "(" + line.content
-        
-        # care for closing brackets
-        # rising indent: sibling function or variable
-        if line.indent > prev.indent:
-            levels.append(line.indent)
-            lisplines.append(prev.indent * " " + prev.content)
-        # same indent: neighbour function of variable: close the previour lines bracket
-        if line.indent == prev.indent:
-            if not prev.continues:
-                lisplines.append(prev.indent * " " + prev.content + ")")
-            else:
-                lisplines.append(prev.indent * " " + prev.content)
-        # lower indent: parent funtion or variable. Find the number of brackets to close
-        if prev.indent > line.indent:
-            bracketstoclose = len([level for level in levels if level >= line.indent])
-            levels = levels[:-bracketstoclose + 1]
-            if prev.continues:
-                bracketstoclose -= 1
-            lisplines.append(prev.indent * " " + prev.content + ")" * bracketstoclose)
-
-        # add a possible comment
-        if prev.comment:
-            lisplines[-1] += ";" + prev.comment
-        
-        prev = line
-        lisplines.extend(emptylines)
-        emptylines = []
+    prev, lisplines, emptylines, levels = processlines(lines, prev, codestartindex, 
+                                                       levels, lisplines, emptylines)
     
     if prev and prev.continues:
         levels.pop()
