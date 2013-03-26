@@ -25,6 +25,17 @@ defun b : :n o
   message "I am here"
   . t
 
+defun c : e f
+  : g
+  :
+    h
+      i
+    j
+  ' :
+  k
+  . l
+  . : m
+
 defun _ : \:
 __
 __ . \:

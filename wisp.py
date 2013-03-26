@@ -116,10 +116,19 @@ class Line:
                 self.prefix += self.content[0]
                 self.content = self.content[2:]
         
+        # care for lines starting with ": " (a colon followed by a space and more chars)
         self.indent = len(line) - len(line.lstrip())
-        while self.content.startswith(": ") and self.content[2:].lstrip():
-            self.indent += len(self.content) - len(self.content[2:].lstrip())
-            self.content = self.content[2:].lstrip()
+        if self.content.startswith(": ") and self.content[2:].lstrip():
+            # just add a space in front of the " : ". Then it will be
+            # captured by as inline : later.  With this, the following are almost equal:
+            # ": a b" and 
+            # ":
+            #    a b"
+            
+            # The only difference between both is that ": a b" cannot
+            # have siblings in subsequent lines: The function call
+            # ends on this line.
+            self.content = " " + self.content
 
         if self.content.strip() == ":" or self.content.strip() == "":
             self.content = ""
