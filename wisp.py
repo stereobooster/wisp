@@ -151,12 +151,14 @@ class Line:
         bracketstoclose = 0
         instring = False
         inbrackets = 0
-        for n, i in enumerate(self.content):
+        # go backwards through the content to be able to leave out the
+        # space after a colon without breaking later colons.
+        for n, i in reversed(list(enumerate(self.content))):
             if i == '"':
                 instring = not instring
-            if not instring and i == "(":
+            if not instring and i == ")":
                 inbrackets += 1
-            elif not instring and i == ")":
+            elif not instring and i == "(":
                 inbrackets -= 1
             if (not instring and 
                 not inbrackets and 
@@ -170,7 +172,7 @@ class Line:
                     # we have to keep the space after the colon (" : "
                     # → " ( "), otherwise we cannot use two
                     # consecutive colons (" : : ") which would be surprising.
-                    self.content = self.content[:n] + "(" + self.content[n+1:]
+                    self.content = self.content[:n] + "(" + self.content[n+2:]
         
         # after the full line processing, replace " \\: " "\n\\: " and
         # " \\:\n" (inside line, start of a line, end of a line) by "

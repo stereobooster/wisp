@@ -46,3 +46,11 @@ defun d :
       let 
           : a b
             c d
+
+a : : : c
+
+let 
+    : a b
+      c
+
+let : : a b
