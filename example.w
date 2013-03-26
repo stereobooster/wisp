@@ -54,3 +54,5 @@ let
       c
 
 let : : a b
+
+. a
