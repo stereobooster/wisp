@@ -286,6 +286,10 @@ def processlines(lines, prev, codestartindex, levels, lisplines, emptylines):
 def wisp2lisp(code):
     """Turn wisp code to lisp code."""
     # TODO: extract the shebang before preprocessing the code.
+
+    # if the code is empty, just return an empty string
+    if not code:
+        return code
     
     # first get rid of linebreaks in strings
     code = nostringbreaks(code)
