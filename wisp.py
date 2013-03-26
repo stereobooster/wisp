@@ -300,7 +300,7 @@ def wisp2lisp(code):
     lines = []
     for line in code.splitlines():
         lines.append(Line(line))
-
+    
     # finally emit matching lisp code
     # write into the lisp lines with a delay of 1 line
     lisplines = []
@@ -355,10 +355,22 @@ def wisp2lisp(code):
 
 if __name__ == "__main__":
     import sys
-    if sys.argv[1:]:
-        sourcefile = sys.argv[1]
+    import optparse
+    parser = optparse.OptionParser("[-o outfile] [file | -]")
+    parser.add_option("-o", "--output", default="")
+    opts, args = parser.parse_args()
+    if args:
+        sourcefile = args[0]
     else:
         sourcefile = "example.w"
-    with open(sourcefile) as f:
-        wisp = f.read()
-    print(wisp2lisp(wisp))
+    # accept stdin as input
+    if sourcefile == "-":
+        wisp = sys.stdin.read()
+    else:
+        with open(sourcefile) as f:
+            wisp = f.read()
+    if opts.output:
+        with open(opts.output, "w") as f:
+            f.write(wisp2lisp(wisp) + "\n")
+    else:
+        print(wisp2lisp(wisp))
