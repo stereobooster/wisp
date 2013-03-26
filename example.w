@@ -41,4 +41,8 @@ __
 __ . \:
 
 \_ b
-      
+
+defun d : 
+      let 
+          : a b
+            c d
