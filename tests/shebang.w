@@ -1,2 +1,2 @@
-#!/usr/bin/wisp.py
+#!/usr/bin/wisp.py # !#
 ; This tests shebang lines
