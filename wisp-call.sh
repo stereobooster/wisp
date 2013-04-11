@@ -25,14 +25,14 @@ version="wisp call 0.1"
 getopt -T > /dev/null
 if [ $? -eq 4 ]; then
     # GNU enhanced getopt is available
-    set -- `getopt --long help,lisp:,verbose,version --options hl:v -- "$@"`
+    eval set -- `getopt --long help,lisp:,verbose,version,output: --options hl:vo: -- "$@"`
 else
     # Original getopt is available
-    set -- `getopt hl:v "$@"`
+    eval set -- `getopt hl:vo: "$@"`
 fi
 
 PROGNAME=`basename $0`
-ARGS=`getopt --name "$PN" --long help,lisp:,verbose,version --options hl:v -- "$@"`
+ARGS=`getopt --name "$PN" --long help,lisp:,verbose,version,output: --options hl:vo: -- "$@"`
 if [ $? -ne 0 ]; then
   exit 1
 fi
@@ -43,11 +43,13 @@ HELP=no
 LISP=guile
 verbose=no
 VERSION=no
+OUTPUT=no
 
 while [ $# -gt 0 ]; do
     case "$1" in
         -h | --help)     HELP=yes;;
         -l | --lisp)     LISP="$2"; shift;;
+        -o | --output)   OUTPUT="$2"; shift;;
         -v | --verbose)  VERBOSE=yes;;
         --version)       VERSION=yes;;
         --)              shift; break;;
@@ -68,6 +70,7 @@ if [[ $HELP == "yes" ]]; then
     echo "$0 [-h] [-l] [-v]
         -h | --help)     This help output.
         -l | --lisp)     Select the Lisp interpreter to call. Options: guile
+        -o | --output)   Save the executed wisp code to this file.
         -v | --verbose)  Provide verbose output.
         --version)       Print the version string of this script.
 "
@@ -91,7 +94,10 @@ fi
 echo ";; Welcome to wisp. Please enter your code. 
 ;; Finish with two linebreaks, then execute with CTRL-D."
 
-while IFS= read wisp ; do echo "$wisp" ; done | ./wisp.py - | guile -s /dev/stdin
+# if the user requests output, copy the pipe with tee
 
-
-
+if [[ x"$OUTPUT" != x"no" ]]; then
+    while IFS= read wisp ; do echo "$wisp" ; done | tee -a $OUTPUT | ./wisp.py - | guile -s /dev/stdin
+else
+    while IFS= read wisp ; do echo "$wisp" ; done |  ./wisp.py - | guile -s /dev/stdin
+fi
