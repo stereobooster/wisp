@@ -18,6 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-echo ";; Welcome to wisp. Please enter your code. Execute with CTRL-D."
+echo ";; Welcome to wisp. Please enter your code. 
+;; Finish with two linebreaks and execute with CTRL-D."
 
-while IFS= read in ; do echo "$in" ; done | ./wisp.py - | guile -s /dev/stdin
+while IFS= read wisp ; do echo "$wisp" ; done | ./wisp.py - | guile -s /dev/stdin
