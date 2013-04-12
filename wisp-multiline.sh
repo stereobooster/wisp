@@ -96,6 +96,10 @@ fi
 if [ $# -gt 0 ]; then
   # Remaining parameters can be processed
   for ARG in "$@"; do
+      # ignore !#, which just finishes a shebang line comment for scheme
+      if [[ "${ARG}" == "!#" ]]; then 
+          continue
+      fi
       l=$(./wisp.py "${ARG}")
       lispcode="${lispcode}
 ${l}"
