@@ -122,7 +122,7 @@ done
 # the output
 
 if [[ x"$OUTPUT" != x"no" ]]; then
-    echo "${wisp}" >> $OUTPUT
+    echo "${wisp}" >> "$OUTPUT"
 fi
 
 # convert the input to lisp
