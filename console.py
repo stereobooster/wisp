@@ -1,28 +1,34 @@
+#!/usr/bin/env python3
 ## console.py
 ## Author:   James Thiele
-## Date:     27 April 2004
+## Date:     27 April 2004, 21 April 2013
 ## Version:  1.0
 ## Location: http://www.eskimo.com/~jet/python/examples/cmd/
 ## Source:   http://code.activestate.com/recipes/280500-console-built-with-cmd-object/
 ## License:  PSF
-## Copyright (c) 2004, James Thiele
+## Copyright (c) 2004, James Thiele, 2013, Arne Babenhauserheide
 
 import os
 import cmd
 import readline
+import subprocess
+import wisp
+
+
 
 
 class Console(cmd.Cmd):
 
     def __init__(self):
         cmd.Cmd.__init__(self)
+        self.code = ""
         self.prompt = "=>> "
         self.intro  = "Welcome to console!"  # defaults to None
 
     ## Command definitions ##
     def do_hist(self, args):
         """Print a list of commands that have been entered"""
-        print self._hist
+        print(self._hist)
 
     def do_exit(self, args):
         """Exits from the console"""
@@ -60,7 +66,7 @@ class Console(cmd.Cmd):
            Despite the claims in the Cmd documentaion, Cmd.postloop() is not a stub.
         """
         cmd.Cmd.postloop(self)   # Clean up command completion
-        print "Exiting..."
+        print("Exiting...")
 
     def precmd(self, line):
         """ This method is called after the line has been input but before
@@ -78,17 +84,41 @@ class Console(cmd.Cmd):
 
     def emptyline(self):    
         """Do nothing on empty input line"""
-        pass
+        self.default("")
 
     def default(self, line):       
         """Called on an input line when the command prefix is not recognized.
            In that case we execute the line as Python code.
         """
-        try:
-            exec(line) in self._locals, self._globals
-        except Exception, e:
-            print e.__class__, ":", e
+        self.code += "\n" + line
+        if self.code.endswith("\n\n"):
+            lisp = wisp.wisp2lisp(self.code)
+            print (self.code)
+            print (lisp)
+            subprocess.call(["guile", "--", lisp])
+            self.code = ""
+
+    def parseline(self, line):
+        """Parse the line into a command name and a string containing
+        the arguments.  Returns a tuple containing (command, args, line).
+        'command' and 'args' may be None if the line couldn't be parsed.
+        """
+        #line = line.strip()
+        if not line:
+            return None, None, line
+        elif line[0] == '?':
+            line = 'help ' + line[1:]
+        elif line[0] == '!':
+            if hasattr(self, 'do_shell'):
+                line = 'shell ' + line[1:]
+            else:
+                return None, None, line
+        i, n = 0, len(line)
+        while i < n and line[i] in self.identchars: i = i+1
+        cmd, arg = line[:i], line[i:].strip()
+        return cmd, arg, line
+
 
 if __name__ == '__main__':
         console = Console()
-        console . cmdloop() 
+        console.cmdloop() 
