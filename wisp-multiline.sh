@@ -91,7 +91,7 @@ else
     INTERPRETER="guile -s /dev/stdin"
 fi
 
-# if a script is given, execute that.
+# if scripts are given, read those.
 
 if [ $# -gt 0 ]; then
   # Remaining parameters can be processed
@@ -100,13 +100,15 @@ if [ $# -gt 0 ]; then
       lispcode="${lispcode}
 ${l}"
   done
+  # if we do not need additional interactive commands, we only need to
+  # execute the lisp.
   if [[ x"$INTERACTIVE" == x"no" ]]; then
       echo "${lispcode}" | ${INTERPRETER}
       exit 0
   fi
 fi
 
-# Read the code
+# Read code from interactive input
 
 echo ";; Welcome to wisp. Please enter your code. 
 ;; Finish with two linebreaks, then execute with CTRL-D."
