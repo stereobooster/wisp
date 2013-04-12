@@ -25,14 +25,14 @@ version="wisp multiline 0.1"
 getopt -T > /dev/null
 if [ $? -eq 4 ]; then
     # GNU enhanced getopt is available
-    eval set -- `getopt --long help,lisp:,verbose,version,output: --options hl:vo: -- "$@"`
+    eval set -- `getopt --long help,lisp:,verbose,version,output:,interactive --options hl:vo:i -- "$@"`
 else
     # Original getopt is available
-    eval set -- `getopt hl:vo: "$@"`
+    eval set -- `getopt hl:vo:i "$@"`
 fi
 
 PROGNAME=`basename $0`
-ARGS=`getopt --name "$PN" --long help,lisp:,verbose,version,output: --options hl:vo: -- "$@"`
+ARGS=`getopt --name "$PN" --long help,lisp:,verbose,version,output:,interactive --options hl:vo:i -- "$@"`
 if [ $? -ne 0 ]; then
   exit 1
 fi
@@ -44,37 +44,35 @@ LISP=guile
 verbose=no
 VERSION=no
 OUTPUT=no
+INTERACTIVE=no
+wisp=""
+lispcode=""
 
 while [ $# -gt 0 ]; do
     case "$1" in
-        -h | --help)     HELP=yes;;
-        -l | --lisp)     LISP="$2"; shift;;
-        -o | --output)   OUTPUT="$2"; shift;;
-        -v | --verbose)  VERBOSE=yes;;
-        --version)       VERSION=yes;;
+        -h | --help)        HELP=yes;;
+        -l | --lisp)        LISP="$2"; shift;;
+        -o | --output)      OUTPUT="$2"; shift;;
+        -v | --verbose)     VERBOSE=yes;;
+        -i | --interactive) INTERACTIVE=yes;;
+        --version)          VERSION=yes;;
         --)              shift; break;;
     esac
     shift
 done
 
-if [ $# -gt 0 ]; then
-  # Remaining parameters can be processed
-  for ARG in "$@"; do
-    echo "$PROGNAME: argument: $ARG"
-  done
-fi
-
 # Provide help output
 
 if [[ $HELP == "yes" ]]; then
-    echo "$0 [-h] [-l] [-v]
-        Run multiline commands through wisp.
+    echo "$0 [-h] [-l] [-v] [-i] [SCRIPT ...]
+        Run multiline commands through wisp or execute the SCRIPT.
         
-        -h | --help)     This help output.
-        -l | --lisp)     Select the Lisp interpreter to call. Options: guile
-        -o | --output)   Save the executed wisp code to this file.
-        -v | --verbose)  Provide verbose output.
-        --version)       Print the version string of this script.
+        -h | --help)        This help output.
+        -l | --lisp)        Select the Lisp interpreter to call. Options: guile
+        -o | --output)      Save the executed wisp code to this file.
+        -v | --verbose)     Provide verbose output.
+        -i | --interactive) Run interactive commands after reading scripts.
+        --version)          Print the version string of this script.
 "
     exit 0
 fi
@@ -89,17 +87,49 @@ fi
 if [[ $LISP != "guile" ]]; then
     echo "Interpreter $LISP not known."
     exit 1
+else
+    INTERPRETER="guile -s /dev/stdin"
 fi
 
-# Run the code
+# if a script is given, execute that.
+
+if [ $# -gt 0 ]; then
+  # Remaining parameters can be processed
+  for ARG in "$@"; do
+      l=$(./wisp.py "${ARG}")
+      lispcode="${lispcode}
+${l}"
+  done
+  if [[ x"$INTERACTIVE" == x"no" ]]; then
+      echo "${lispcode}" | ${INTERPRETER}
+      exit 0
+  fi
+fi
+
+# Read the code
 
 echo ";; Welcome to wisp. Please enter your code. 
 ;; Finish with two linebreaks, then execute with CTRL-D."
 
-# if the user requests output, copy the pipe with tee
+while IFS= read wispi ; do 
+    wisp="${wisp}
+${wispi}" 
+done 
+
+# if the user requests output, copy the pipe with tee and append it to
+# the output
 
 if [[ x"$OUTPUT" != x"no" ]]; then
-    while IFS= read wisp ; do echo "$wisp" ; done | tee -a $OUTPUT | ./wisp.py - | guile -s /dev/stdin
-else
-    while IFS= read wisp ; do echo "$wisp" ; done |  ./wisp.py - | guile -s /dev/stdin
+    echo "${wisp}" >> $OUTPUT
 fi
+
+# convert the input to lisp
+
+l=$(echo "${wisp}" |  ./wisp.py - )
+lispcode="${lispcode}
+${l}"
+
+# now run the code
+
+echo "${lispcode}" | guile -s /dev/stdin
+
