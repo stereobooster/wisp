@@ -1,5 +1,5 @@
 #!/bin/bash
-# wisp-call.sh --- run multiline wisp code
+# wisp-multiline.sh --- run multiline wisp code
 
 # Copyright (C) 2013 Arne Babenhauserheide <arne_bab@web.de>
 
@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-version="wisp call 0.1"
+version="wisp multiline 0.1"
 
 # Parse commandline options
 
@@ -68,6 +68,8 @@ fi
 
 if [[ $HELP == "yes" ]]; then
     echo "$0 [-h] [-l] [-v]
+        Run multiline commands through wisp.
+        
         -h | --help)     This help output.
         -l | --lisp)     Select the Lisp interpreter to call. Options: guile
         -o | --output)   Save the executed wisp code to this file.
