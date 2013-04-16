@@ -18,21 +18,30 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-version="wisp multiline 0.1"
 
-# Parse commandline options
+## global variables
+
+# version of this script
+version="wisp multiline 0.1"
+# aggregated wisp code
+wisp=""
+# converted lisp code
+lispcode=""
+
+
+## Parse commandline options
 
 getopt -T > /dev/null
 if [ $? -eq 4 ]; then
     # GNU enhanced getopt is available
-    eval set -- `getopt --long help,lisp:,verbose,version,output:,interactive --options hl:vo:i -- "$@"`
+    eval set -- `getopt --long help,lisp:,verbose,version,output:,wisp:,interactive --options hl:vo:w:i -- "$@"`
 else
     # Original getopt is available
-    eval set -- `getopt hl:vo:i "$@"`
+    eval set -- `getopt hl:vo:w:i "$@"`
 fi
 
 PROGNAME=`basename $0`
-ARGS=`getopt --name "$PN" --long help,lisp:,verbose,version,output:,interactive --options hl:vo:i -- "$@"`
+ARGS=`getopt --name "$PN" --long help,lisp:,verbose,version,output:,wisp:interactive --options hl:vo:w:i -- "$@"`
 if [ $? -ne 0 ]; then
   exit 1
 fi
@@ -45,14 +54,14 @@ verbose=no
 VERSION=no
 OUTPUT=no
 INTERACTIVE=no
-wisp=""
-lispcode=""
+WISP="./wisp.py"
 
 while [ $# -gt 0 ]; do
     case "$1" in
         -h | --help)        HELP=yes;;
         -l | --lisp)        LISP="$2"; shift;;
         -o | --output)      OUTPUT="$2"; shift;;
+        -w | --wisp)        WISP="$2"; shift;;
         -v | --verbose)     VERBOSE=yes;;
         -i | --interactive) INTERACTIVE=yes;;
         --version)          VERSION=yes;;
@@ -70,6 +79,7 @@ if [[ $HELP == "yes" ]]; then
         -h | --help)        This help output.
         -l | --lisp)        Select the Lisp interpreter to call. Options: guile
         -o | --output)      Save the executed wisp code to this file.
+        -w | --wisp)        Select the wisp preprocessor to use.
         -v | --verbose)     Provide verbose output.
         -i | --interactive) Run interactive commands after reading scripts.
         --version)          Print the version string of this script.
@@ -91,7 +101,10 @@ else
     INTERPRETER="guile -s /dev/stdin"
 fi
 
-# if scripts are given, read those.
+# parameters
+
+
+## if scripts are given, read those.
 
 if [ $# -gt 0 ]; then
   # Remaining parameters can be processed
@@ -100,7 +113,7 @@ if [ $# -gt 0 ]; then
       if [[ "${ARG}" == "!#" ]]; then 
           continue
       fi
-      l=$(./wisp.py "${ARG}")
+      l=$(${WISP} "${ARG}")
       lispcode="${lispcode}
 ${l}"
   done
@@ -112,7 +125,7 @@ ${l}"
   fi
 fi
 
-# Read code from interactive input
+## Read code from interactive input
 
 echo ";; Welcome to wisp. Please enter your code. 
 ;; Finish with two linebreaks, then execute with CTRL-D."
@@ -131,7 +144,7 @@ fi
 
 # convert the input to lisp
 
-l=$(echo "${wisp}" |  ./wisp.py - )
+l=$(echo "${wisp}" |  ${WISP} - )
 lispcode="${lispcode}
 ${l}"
 
