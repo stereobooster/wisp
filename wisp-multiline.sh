@@ -56,6 +56,12 @@ OUTPUT=no
 INTERACTIVE=no
 WISP="./wisp.py"
 
+# check, if the default wisp exists and can be executed. If not, fall
+# back to wisp.py (which might be in PATH).
+if [ ! -x $WISP ]; then
+    WISP="wisp.py"
+fi
+
 while [ $# -gt 0 ]; do
     case "$1" in
         -h | --help)        HELP=yes;;
@@ -101,10 +107,9 @@ else
     INTERPRETER="guile -s /dev/stdin"
 fi
 
-# parameters
+## parameters
 
-
-## if scripts are given, read those.
+# if scripts are given, read those.
 
 if [ $# -gt 0 ]; then
   # Remaining parameters can be processed
