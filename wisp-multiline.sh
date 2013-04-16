@@ -83,7 +83,9 @@ if [[ $HELP == "yes" ]]; then
         Run multiline commands through wisp or execute the SCRIPT.
         
         -h | --help)        This help output.
-        -l | --lisp)        Select the Lisp interpreter to call. Options: guile
+        -l | --lisp)        Select the Lisp interpreter to call. 
+                            Options: guile or the full command to use. 
+                            Example: -l \"guile -s /dev/stdin/\"
         -o | --output)      Save the executed wisp code to this file.
         -w | --wisp)        Select the wisp preprocessor to use.
         -v | --verbose)     Provide verbose output.
@@ -101,8 +103,7 @@ fi
 # Select the lisp interpreter
 
 if [[ $LISP != "guile" ]]; then
-    echo "Interpreter ${LISP} not known."
-    exit 1
+    INTERPRETER="${LISP}"
 else
     INTERPRETER="guile -s /dev/stdin"
 fi
