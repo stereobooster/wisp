@@ -6,6 +6,5 @@ define : hello-world-handler request request-body
     ' :                            
         content-type . : text/plain
     . "Hello World!"
-run-server hello-world-handler 'http 
-  ' #:port 8081
+run-server hello-world-handler 'http ' : #:port 8081
 
