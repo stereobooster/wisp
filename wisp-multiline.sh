@@ -101,7 +101,7 @@ fi
 # Select the lisp interpreter
 
 if [[ $LISP != "guile" ]]; then
-    echo "Interpreter $LISP not known."
+    echo "Interpreter ${LISP} not known."
     exit 1
 else
     INTERPRETER="guile -s /dev/stdin"
