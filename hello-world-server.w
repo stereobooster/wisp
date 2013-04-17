@@ -3,12 +3,20 @@
 define : hello-world-handler request request-body
   values 
     ' : content-type . : text/plain
+
     let : : text "Hello World!"
-      display : getlogin
       if : string? : getlogin
          set! text : string-append text : getlogin
          set! text : string-append text " Sucker!"
+
+      set! text 
+         string-append text " "
+           number->string : tm:hour : gmtime : current-time
+           . ":"
+           number->string : tm:min : gmtime : current-time
+
       . text
+
 
 use-modules : web server
 
