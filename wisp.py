@@ -56,7 +56,7 @@ def replaceinwisp(code, string, replacement):
                 incomment = not incomment
             # all processing stops in comments
             continue
-        if i == '"':
+        if i == '"' and not code[n-1:n] == "\\":
             instring = not instring
         # all processing stops in strings
         if instring:
@@ -137,7 +137,7 @@ class Line:
         self.comment = ""
         instring = False
         for n, i in enumerate(self.content):
-            if i == '"': 
+            if i == '"' and not self.content[n-1:n] == "\\": 
                 instring = not instring
             if not instring and i == ";":
                 self.comment = self.content[n+1:]
@@ -154,7 +154,7 @@ class Line:
         # go backwards through the content to be able to leave out the
         # space after a colon without breaking later colons.
         for n, i in reversed(list(enumerate(self.content))):
-            if i == '"':
+            if i == '"' and not self.content[n-1:n] == "\\":
                 instring = not instring
             if not instring and i == ")":
                 inbrackets += 1
@@ -202,8 +202,8 @@ def nostringbreaks(code):
     """remove linebreaks inside strings (will be readded at the end)"""
     instring = False
     nostringbreaks = []
-    for char in code:
-        if char == '"':
+    for n, char in enumerate(code):
+        if char == '"' and not code[n-1:n] == "\\":
             instring = not instring
         if instring and char == "\n":
             nostringbreaks.append("\\LINEBREAK")
