@@ -23,6 +23,21 @@
 
 ;;; Code:
 
+(define-derived-mode wisp-mode2
+  emacs-lisp-mode "Wisp" 
+  "Major mode for whitespace-to-lisp files.
+
+  \\{wisp-mode-map}"
+  ; :group wisp
+  (set (make-local-variable 'indent-tabs-mode) nil)
+  (set (make-local-variable 'comment-start) "; ")
+  (set (make-local-variable 'font-lock-comment-start-skip) ";+ *")
+  (set (make-local-variable 'parse-sexp-ignore-comments) t)
+  (set (make-local-variable 'font-lock-defaults)
+              '((scheme-font-lock-keywords
+                 scheme-font-lock-keywords-1 scheme-font-lock-keywords-2)
+                nil nil nil nil))
+  (set (make-local-variable 'mode-require-final-newline) t))
 
 (provide 'wisp-mode)
 ;;; wisp-mode.el ends here
