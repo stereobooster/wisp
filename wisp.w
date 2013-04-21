@@ -10,7 +10,7 @@ display "Hello World!"
 newline
 
 let : : filename : list-ref ( command-line ) 1
-    let : : origfile ( open-file : filename ) "r" ; mode
+    let : : origfile : open-file filename "r" ; mode
         let : : nextchar : read-char origfile
 
             while : not : eof-object? nextchar
@@ -19,7 +19,7 @@ let : : filename : list-ref ( command-line ) 1
 
 let* 
     : filename : list-ref ( command-line ) 1
-      origfile ( open-file : filename ) "r" ; mode
+      origfile : open-file filename "r" ; mode
       nextchar : read-char origfile
 
     while : not : eof-object? nextchar
