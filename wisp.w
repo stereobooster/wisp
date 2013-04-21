@@ -14,6 +14,7 @@ let
                     command-line
                     . 1
                 . "r"
+    
     let : : nextchar : read-char origfile
         while : not : eof-object? nextchar
             display nextchar
