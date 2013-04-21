@@ -23,7 +23,7 @@
 
 ;;; Code:
 
-(define-derived-mode wisp-mode2
+(define-derived-mode wisp-mode
   emacs-lisp-mode "Wisp" 
   "Major mode for whitespace-to-lisp files.
 
