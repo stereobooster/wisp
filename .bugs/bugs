@@ -1,1 +1,2 @@
 fails when I add stuff at the end of end of example.w        | owner:, open:False, id:08c68e1ce0c9798184c01806d2661a3220bff3cd, time:1363789693.79
+inline ' : should be '(                                      | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:72d534a8b23b4cb168017f1bb7d8816f0ea170c4, time:1366497335.26
