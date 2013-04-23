@@ -1,7 +1,4 @@
-#!/usr/bin/env guilewisp 
+#!/home/arne/wisp/wisp-multiline.sh 
 ; !#
 
-; Test
-
-display "Hello World!"
-newline
+; first step to a wisp preprocessor in wisp: output a file on stdout.
