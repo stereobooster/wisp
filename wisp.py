@@ -48,7 +48,7 @@ def replaceinwisp(code, string, replacement):
     for n in range(len(code) - strlen):
         i = code[n]
         # comments start with a ; - but only in regular wisp code.
-        if not incomment and not instring and not inbrackets and i == ";":
+        if not incomment and not instring and not inbrackets and i == ";" and not code[n-2:n] == "#\\":
             incomment = not incomment
         # a linebreak ends the comment
         if incomment:
@@ -56,14 +56,14 @@ def replaceinwisp(code, string, replacement):
                 incomment = not incomment
             # all processing stops in comments
             continue
-        if i == '"':
+        if i == '"' and not code[n-1:n] == "\\":
             instring = not instring
         # all processing stops in strings
         if instring:
             continue
-        if i == "(":
+        if i == "("  and not code[n-2:n] == "#\\":
             inbrackets += 1
-        elif i == ")":
+        elif i == ")" and not code[n-2:n] == "#\\":
             inbrackets -= 1
         # all processing stops in brackets
         if inbrackets:
@@ -137,9 +137,9 @@ class Line:
         self.comment = ""
         instring = False
         for n, i in enumerate(self.content):
-            if i == '"': 
+            if i == '"' and not self.content[n-1:n] == "\\": 
                 instring = not instring
-            if not instring and i == ";":
+            if not instring and i == ";" and not self.content[n-2:n] == "#\\":
                 self.comment = self.content[n+1:]
                 self.content = self.content[:n]
                 break
@@ -154,11 +154,11 @@ class Line:
         # go backwards through the content to be able to leave out the
         # space after a colon without breaking later colons.
         for n, i in reversed(list(enumerate(self.content))):
-            if i == '"':
+            if i == '"' and not self.content[n-1:n] == "\\":
                 instring = not instring
-            if not instring and i == ")":
+            if not instring and i == ")" and not self.content[n-2:n] == "#\\":
                 inbrackets += 1
-            elif not instring and i == "(":
+            elif not instring and i == "(" and not self.content[n-2:n] == "#\\":
                 inbrackets -= 1
             if (not instring and 
                 not inbrackets and 
@@ -202,8 +202,8 @@ def nostringbreaks(code):
     """remove linebreaks inside strings (will be readded at the end)"""
     instring = False
     nostringbreaks = []
-    for char in code:
-        if char == '"':
+    for n, char in enumerate(code):
+        if char == '"' and not code[n-1:n] == "\\":
             instring = not instring
         if instring and char == "\n":
             nostringbreaks.append("\\LINEBREAK")
@@ -214,12 +214,15 @@ def nostringbreaks(code):
 
 def nobracketbreaks(code):
     """remove linebreaks inside brackets (will be readded at the end)."""
+    instring = False
     inbracket = 0
     nostringbreaks = []
-    for char in code:
-        if char == '(':
+    for n, char in enumerate(code):
+        if char == '"' and not code[n-1:n] == "\\":
+            instring = not instring
+        if char == '(' and not instring and not code[n-2:n] == "#\\":
             inbracket += 1
-        elif char == ')':
+        elif char == ')' and not instring and not code[n-2:n] == "#\\":
             inbracket -= 1
         if inbracket and char == "\n":
             nostringbreaks.append("\\LINEBREAK")
