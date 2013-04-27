@@ -23,6 +23,8 @@
 
 ;;; Code:
 
+(require 'scheme)
+
 (define-derived-mode wisp-mode
   emacs-lisp-mode "Wisp" 
   "Major mode for whitespace-to-lisp files.
@@ -36,8 +38,16 @@
   (set (make-local-variable 'font-lock-defaults)
               '((scheme-font-lock-keywords
                  scheme-font-lock-keywords-1 scheme-font-lock-keywords-2)
-                nil nil nil nil))
+                nil ; keywords only
+                nil ; case fold
+                '((?_ "-")) ; syntax alist
+                'backward-paragraph)) ; syntax begin
   (set (make-local-variable 'mode-require-final-newline) t))
+
+(font-lock-add-keywords 'wisp-mode 
+                        '(("^ *\\(\\w+\\)\\| : *\\(\\w+\\)" . 'font-lock-function-call-face)
+                          ("^ *\\(\\w+\\)\\| : *\\(\\w+\\)" . 'font-lock-function-call-face)))
+                        
 
 (provide 'wisp-mode)
 ;;; wisp-mode.el ends here
