@@ -1,4 +1,4 @@
-#!/usr/bin/env guile
+#!/home/arne/wisp/wisp-multiline.sh 
 ; !#
 
 ; first step: Be able to mirror a file to stdout
@@ -56,3 +56,4 @@ let*
         display text
 
 newline
+(modify-syntax-entry ?: "w")
