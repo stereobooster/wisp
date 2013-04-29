@@ -3,6 +3,12 @@
 
 ; we need to be able to replace end-of-line characters in brackets and strings
 
+;; nostringandbracketbreaks INPORT
+;; 
+;; Replace linebreaks within brackets and strings in the INPORT by the
+;; placeholders \\STRING_BREAK_N and \\STRING_BREAK_R.
+;; 
+;; -Author: Arne Babenhauserheide
 define : nostringandbracketbreaks inport
     ; Replace end of line characters in brackets and strings
     ; FIXME: Breaks if the string is shorter than 2 chars
