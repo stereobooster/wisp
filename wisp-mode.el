@@ -40,8 +40,8 @@
                  scheme-font-lock-keywords-1 scheme-font-lock-keywords-2)
                 nil ; keywords only
                 nil ; case fold
-                '((?_ "-")) ; syntax alist
-                'backward-paragraph)) ; syntax begin
+                (("_" . "-")) ; syntax alist
+                backward-paragraph)) ; syntax begin
   (set (make-local-variable 'mode-require-final-newline) t))
 
 (font-lock-add-keywords 'wisp-mode 
