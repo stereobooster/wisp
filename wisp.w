@@ -103,8 +103,23 @@ define : nostringandbracketbreaks inport
         . text
 
 
-; As next part we have to split a single line into indentation, content and comment.
-define : splitline inport
+; As next part we have split a text into a list of lines which we can process one by one.
+define : splitlines inport 
+    let 
+        : lines '()
+          nextchar : read-char inport
+          nextline ""
+        while : not : eof-object? nextchar
+            if : not : or (char=? nextchar #\newline ) (char=? nextchar #\linefeed )
+                set! nextline : string-append nextline : string nextchar
+                begin 
+                    set! lines : append lines (list nextline)
+                    set! nextline ""
+            set! nextchar : read-char inport
+        . lines
+
+; Now we have to split a single line into indentation, content and comment.
+define : splitindent inport
     let
         : nextchar : read-char inport
           inindentunderbar #t
@@ -134,7 +149,7 @@ define : splitline inport
                 set! comment : string-append comment : string nextchar
                 continue
             ; check whether we stay in the commentcheck
-            when : and commentstart : char=? nextchar : char : string-ref commentstartidentifier commentidentifierindex
+            when : and commentstart : char=? nextchar : string-ref commentstartidentifier commentidentifierindex
                  set! commentidentifierindex : + commentidentifierindex 1
                  set! comment : string-append comment : string nextchar
                  when : = commentidentifierindex : - commentstartidentifierlength 1
@@ -145,7 +160,7 @@ define : splitline inport
                      set! comment ""
                  continue
             ; if we cannot complete the commentcheck, we did not start a real comment. Append it to the content
-            when : and commentstart : not : char=? nextchar : char : string-ref commentstartidentifier commentidentifierindex
+            when : and commentstart : not : char=? nextchar : string-ref commentstartidentifier commentidentifierindex
                 set! commentstart #f
                 set! content : string-append content comment
                 set! comment ""
@@ -168,10 +183,13 @@ let*
       origfile : open-file filename "r" ; mode
       nextchar : read-char origfile
       text ""
+      lines '()
     while : not : eof-object? nextchar
         set! text : string-append text : string nextchar
         set! nextchar : read-char origfile
     set! text : call-with-input-string text nostringandbracketbreaks
-    display text
+    ; display text
+    set! lines : call-with-input-string text splitlines
+    ; display : list-ref lines 0
 
 newline
