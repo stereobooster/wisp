@@ -102,10 +102,12 @@ fi
 
 # Select the lisp interpreter
 
-if [[ $LISP != "guile" ]]; then
-    INTERPRETER="${LISP}"
-else
+if [[ $LISP == "guile" ]]; then
     INTERPRETER="guile -s /dev/stdin"
+elif [[ $LISP == "emacs" ]]; then
+    INTERPRETER="emacs -Q --batch --eval '(with-temp-buffer (progn (condition-case nil (let (line) (while (setq line (read-from-minibuffer \"\")) (insert line)(insert \"\n\"))) (error nil)) (eval-current-buffer)))))'"
+else
+    INTERPRETER="${LISP}"
 fi
 
 ## parameters
