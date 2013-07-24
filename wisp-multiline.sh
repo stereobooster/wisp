@@ -79,8 +79,9 @@ done
 # Provide help output
 
 if [[ $HELP == "yes" ]]; then
-    echo "$0 [-h] [-l] [-v] [-i] [SCRIPT ...]
+    echo "$0 [-h] [-l] [-v] [-i] [[- | SCRIPT] ...]
         Run multiline commands through wisp or execute the SCRIPT.
+        If you use - as script, it reads the script from standard input.
         
         -h | --help)        This help output.
         -l | --lisp)        Select the Lisp interpreter to call. 
@@ -90,7 +91,8 @@ if [[ $HELP == "yes" ]]; then
         -o | --output)      Save the executed wisp code to this file.
         -w | --wisp)        Select the wisp preprocessor to use.
         -v | --verbose)     Provide verbose output.
-        -i | --interactive) Run interactive commands after reading scripts.
+        -i | --interactive) Run interactive commands after reading scripts. 
+                            Does not work with reading from a pipe.
         --version)          Print the version string of this script.
 "
     exit 0
@@ -129,8 +131,8 @@ ${l}"
   done
   # if we do not need additional interactive commands, we only need to
   # execute the lisp.
-  if [[ x"$INTERACTIVE" == x"no" ]]; then
-      if [[ x"$LISP" == x"emacs" ]]; then
+  if [[ x"${INTERACTIVE}" == x"no" ]]; then
+      if [[ x"${LISP}" == x"emacs" ]]; then
           emacs -Q --batch --eval "${lispcode}"
       else
           echo "${lispcode}" | eval "${INTERPRETER}"
@@ -164,7 +166,7 @@ ${l}"
 
 # now run the code
 
-if [[ x"$LISP" == x"emacs" ]]; then
+if [[ x"${LISP}" == x"emacs" ]]; then
     emacs -Q --batch --eval "${lispcode}"
 else
     echo "${lispcode}" | eval "${INTERPRETER}"
