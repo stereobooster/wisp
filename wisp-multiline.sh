@@ -103,10 +103,11 @@ fi
 
 # Select the lisp interpreter
 
-if [[ $LISP == "guile" ]]; then
+if [[ "${LISP}" == "guile" ]]; then
     INTERPRETER="guile -s /dev/stdin"
-elif [[ $LISP == "emacs" ]]; then # thanks to http://superuser.com/a/487329
-    INTERPRETER="emacs -Q --batch --eval '(with-temp-buffer (progn (condition-case nil (let (line) (while (setq line (read-from-minibuffer \"\")) (insert line)(insert \"\n\"))) (error nil)) (eval-current-buffer)))))'"
+# the following commented code does not work, sadly. I do not understand, why.
+# elif [[ "${LISP}" == "emacs" ]]; then # thanks to http://superuser.com/a/487329
+#    INTERPRETER="emacs -Q --batch --eval '(with-temp-buffer (progn (condition-case nil (let (line) (while (setq line (read-string \"\")) (insert line)(newline)(forward-char 1))) (error nil)) (eval-current-buffer)))'"
 else
     INTERPRETER="${LISP}"
 fi
@@ -129,7 +130,11 @@ ${l}"
   # if we do not need additional interactive commands, we only need to
   # execute the lisp.
   if [[ x"$INTERACTIVE" == x"no" ]]; then
-      echo "${lispcode}" | ${INTERPRETER}
+      if [[ x"$LISP" == x"emacs" ]]; then
+          emacs -Q --batch --eval "${lispcode}"
+      else
+          echo "${lispcode}" | eval "${INTERPRETER}"
+      fi
       exit 0
   fi
 fi
@@ -159,5 +164,9 @@ ${l}"
 
 # now run the code
 
-echo "${lispcode}" | guile -s /dev/stdin
+if [[ x"$LISP" == x"emacs" ]]; then
+    emacs -Q --batch --eval "${lispcode}"
+else
+    echo "${lispcode}" | eval "${INTERPRETER}"
+fi
 
