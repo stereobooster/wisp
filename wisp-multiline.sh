@@ -84,7 +84,8 @@ if [[ $HELP == "yes" ]]; then
         
         -h | --help)        This help output.
         -l | --lisp)        Select the Lisp interpreter to call. 
-                            Options: guile or the full command to use. 
+                            Options: guile, emacs or the full command to use. 
+                            If you use emacs, note that (message) writes to stdout.
                             Example: -l \"guile -s /dev/stdin/\"
         -o | --output)      Save the executed wisp code to this file.
         -w | --wisp)        Select the wisp preprocessor to use.
@@ -104,7 +105,7 @@ fi
 
 if [[ $LISP == "guile" ]]; then
     INTERPRETER="guile -s /dev/stdin"
-elif [[ $LISP == "emacs" ]]; then
+elif [[ $LISP == "emacs" ]]; then # thanks to http://superuser.com/a/487329
     INTERPRETER="emacs -Q --batch --eval '(with-temp-buffer (progn (condition-case nil (let (line) (while (setq line (read-from-minibuffer \"\")) (insert line)(insert \"\n\"))) (error nil)) (eval-current-buffer)))))'"
 else
     INTERPRETER="${LISP}"
