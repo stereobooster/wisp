@@ -146,6 +146,7 @@ fi
 echo ";; Welcome to wisp. Please enter your code. 
 ;; Finish with two linebreaks, then execute with CTRL-D."
 
+# IFS= ensures that initial blanks are kept)
 while IFS= read wispi ; do 
     wisp="${wisp}
 ${wispi}" 
