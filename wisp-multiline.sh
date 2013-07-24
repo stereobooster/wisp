@@ -92,7 +92,7 @@ if [[ $HELP == "yes" ]]; then
         -w | --wisp)        Select the wisp preprocessor to use.
         -v | --verbose)     Provide verbose output.
         -i | --interactive) Run interactive commands after reading scripts. 
-                            Does not work with reading from a pipe.
+                            Does not work with reading from a pipe (standard input).
         --version)          Print the version string of this script.
 "
     exit 0
