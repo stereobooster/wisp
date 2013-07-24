@@ -22,7 +22,7 @@
 ## global variables
 
 # version of this script
-version="wisp multiline 0.2"
+version="wisp multiline 0.3"
 # aggregated wisp code
 wisp=""
 # converted lisp code
