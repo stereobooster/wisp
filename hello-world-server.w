@@ -24,7 +24,7 @@ define : hello-world-handler request request-body
           . text
           greeting
           timestring
-        . " " ; delimiter
+        . "\n" ; delimiter
 
 ; run the webserver
 use-modules : web server
