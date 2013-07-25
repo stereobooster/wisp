@@ -11,7 +11,7 @@ define : timestring
 define : greeting
   if : string? : getlogin
     getlogin
-    . "Sucker!"
+    . "Mellon?"
 
 define : hello-world-handler request request-body
   values 
