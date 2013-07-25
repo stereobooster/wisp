@@ -1,6 +1,11 @@
 #!./wisp-multiline.sh
 ; !#
 
+; first the plain text header
+define : header
+  ' : content-type . : text/plain
+
+; now content building functions
 define : timestring
   string-join 
     list
@@ -14,20 +19,22 @@ define : greeting
     getlogin
     . "Mellon?"
 
+define : content
+  let : : text "Hello World!"
+    string-join
+      list 
+        . text
+        greeting
+        timestring
+      . "\n" ; delimiter
+
+; and the request handler
 define : hello-world-handler request request-body
   values 
-    ; header
-    ' : content-type . : text/plain
-    ; content
-    let : : text "Hello World!"
-      string-join
-        list 
-          . text
-          greeting
-          timestring
-        . "\n" ; delimiter
+    header
+    content
 
-; run the webserver
+; finally run the webserver
 use-modules : web server
 
 display "Server starting. Test it at http://127.0.0.1:8081"
