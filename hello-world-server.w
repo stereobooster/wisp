@@ -1,28 +1,35 @@
 #!./wisp-multiline.sh
 ; !#
 
+define : timestring
+  string-join 
+    list
+        number->string : tm:hour : gmtime : current-time
+        number->string : tm:min : gmtime : current-time
+    . ":" ; delimiter
+
+define : greeting
+  if : string? : getlogin
+    getlogin
+    . "Sucker!"
+
 define : hello-world-handler request request-body
   values 
     ; header
     ' : content-type . : text/plain
     ; content
     let : : text "Hello World!"
-      if : string? : getlogin
-        set! text : string-append text : getlogin
-        set! text : string-append text " Sucker!"
+      string-join
+        list 
+          . text
+          greeting
+          timestring
+        . " " ; delimiter
 
-      set! text 
-        string-append text " "
-          number->string : tm:hour : gmtime : current-time
-          . ":"
-          number->string : tm:min : gmtime : current-time
-
-      . text
-
-
+; run the webserver
 use-modules : web server
 
-display : string-append "Server starting. Test it at http://127.0.0.1:8081"
+display "Server starting. Test it at http://127.0.0.1:8081"
 newline
 
 run-server hello-world-handler 'http ' : #:port 8081
