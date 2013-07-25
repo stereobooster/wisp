@@ -4,8 +4,8 @@
 define : timestring
   string-join 
     list
-        number->string : tm:hour : gmtime : current-time
-        number->string : tm:min : gmtime : current-time
+        number->string : tm:hour : localtime : current-time ; use gmtime to get UTC
+        number->string : tm:min : localtime : current-time
     . ":" ; delimiter
 
 define : greeting
