@@ -20,7 +20,7 @@ define : greeting
     . "Mellon?"
 
 define : content
-  let : : text "Hello World!" ; the let if wisp syntax showoff…
+  let : : text "Hello World!" ; the let is wisp syntax showoff…
     string-join
       list 
         . text
