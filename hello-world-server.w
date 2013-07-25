@@ -1,4 +1,4 @@
-#!/home/arne/Quell/Programme/wisp/wisp-multiline.sh   
+#!./wisp-multiline.sh
 ; !#
 
 define : hello-world-handler request request-body
