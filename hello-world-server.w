@@ -4,7 +4,8 @@
 define : timestring
   string-join 
     list
-        number->string : tm:hour : localtime : current-time ; use gmtime to get UTC
+        ; use gmtime instead of localtime if you want UTC
+        number->string : tm:hour : localtime : current-time
         number->string : tm:min : localtime : current-time
     . ":" ; delimiter
 
