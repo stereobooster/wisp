@@ -14,8 +14,8 @@ use-modules
   ice-9 threads
 
 define : magic-threaded mutex futures integer
-  ; this can cause unordered output. It’s fun anyway :)
-  set! futures : append futures : list : future : with-mutex mutex : format #t "~10r\n" integer
+  ; this can cause unordered output. It’s fun anyway : 
+  set! futures : append futures : list : future : with-mutex mutex : format #t "~30r\n" integer
   if : not : = integer 1
     if : even? integer
       magic-threaded mutex futures : / integer 2
