@@ -47,8 +47,8 @@ def replaceinwisp(code, string, replacement):
     strlen = len(string)
     for n in range(len(code) - strlen):
         i = code[n]
-        # comments start with a ; - but only in regular wisp code.
-        if not incomment and not instring and not inbrackets and i == ";" and not code[n-2:n] == "#\\":
+        # comments start with a ; - but only in regular wisp code or in brackets.
+        if not incomment and not instring and i == ";" and not code[n-2:n] == "#\\":
             incomment = not incomment
         # a linebreak ends the comment
         if incomment:
@@ -219,9 +219,20 @@ def nostringbreaks(code):
 def nobracketbreaks(code):
     """remove linebreaks inside brackets (will be readded at the end)."""
     instring = False
+    incomment = False
     inbracket = 0
     nostringbreaks = []
     for n, char in enumerate(code):
+        # comments start with a ; - but only in regular wisp code or in brackets.
+        if not incomment and not instring and char == ";" and not code[n-2:n] == "#\\":
+            incomment = not incomment
+        # a linebreak ends the comment
+        if incomment:
+            if char == "\n":
+                incomment = not incomment
+            # all processing stops in comments
+            nostringbreaks.append(char)
+            continue
         if char == '"' and not code[n-1:n] == "\\":
             instring = not instring
         if char == '(' and not instring and not code[n-2:n] == "#\\":
