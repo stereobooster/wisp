@@ -1,6 +1,10 @@
 Wisp: Whitespace to Lisp
 ========================
 
+    define : hello                   (define (hello)
+      display "Hello World" ⇒          (display "Hello World"))
+
+
     define : hello who               (define (hello who)
       display               ⇒          (display
         string-append                    (string-append
