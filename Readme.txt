@@ -1,23 +1,19 @@
 Wisp: Whitespace to Lisp
 ========================
 
-    defun a : b c
-      let
-        : d e
-          : f
-            ' g
-        h i
-        . j
+    define : hello who               (define (hello who)
+      display               ⇒          (display
+        string-append                    (string-append
+          . "Hello " who                   "Hello " who)))
 
-becomes
 
-    (defun a (b c)
-      (let 
-        ((d e)
-         ((f)
-          '(g)))
-      (h i)
-      j))
+    defun a : b c                    (defun a (b c) 
+      let                              (let         
+        : d e                            ((d e)     
+          : f               ⇒             ((f)      
+            ' g                            '(g)))   
+        h i                            (h i)        
+        . j                            j))          
 
 
 Wisp turns indentation based syntax into Lisp. The conversion is homoiconic[^h], generic[^g], and backwards-compatible[^b]. It is inspired by project readable, but tries to keep itself simple (and stupid: just a preprocessor). More information on the [wisp-website][].
