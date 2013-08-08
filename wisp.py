@@ -61,7 +61,7 @@ def replaceinwisp(code, string, replacement):
         # all processing stops in strings
         if instring:
             continue
-        if i == "("  and not code[n-2:n] == "#\\":
+        if i == "(" and not code[n-2:n] == "#\\":
             inbrackets += 1
         elif i == ")" and not code[n-2:n] == "#\\":
             inbrackets -= 1
