@@ -47,8 +47,8 @@ def replaceinwisp(code, string, replacement):
     strlen = len(string)
     for n in range(len(code) - strlen):
         i = code[n]
-        # comments start with a ; - but only in regular wisp code.
-        if not incomment and not instring and not inbrackets and i == ";" and not code[n-2:n] == "#\\":
+        # comments start with a ; - but only in regular wisp code or in brackets.
+        if not incomment and not instring and i == ";" and not code[n-2:n] == "#\\":
             incomment = not incomment
         # a linebreak ends the comment
         if incomment:
@@ -61,7 +61,7 @@ def replaceinwisp(code, string, replacement):
         # all processing stops in strings
         if instring:
             continue
-        if i == "("  and not code[n-2:n] == "#\\":
+        if i == "(" and not code[n-2:n] == "#\\":
             inbrackets += 1
         elif i == ")" and not code[n-2:n] == "#\\":
             inbrackets -= 1
@@ -169,10 +169,14 @@ class Line:
                 ):
                 if self.content[n-1:n+2] == " : " or self.content[n-1:] == " :":
                     bracketstoclose += 1
-                    # we have to keep the space after the colon (" : "
-                    # → " ( "), otherwise we cannot use two
-                    # consecutive colons (" : : ") which would be surprising.
-                    self.content = self.content[:n] + "(" + self.content[n+2:]
+                    # treat ' : as '(
+                    if self.content[n-3:n+1] == " ' :":
+                        self.content = self.content[:n-2] + "'(" + self.content[n+2:]
+                    else:
+                        # we have to keep the space after the colon (" : "
+                        # → " ( "), otherwise we cannot use two
+                        # consecutive colons (" : : ") which would be surprising.
+                        self.content = self.content[:n] + "(" + self.content[n+2:]
         
         # after the full line processing, replace " \\: " "\n\\: " and
         # " \\:\n" (inside line, start of a line, end of a line) by "
@@ -215,9 +219,20 @@ def nostringbreaks(code):
 def nobracketbreaks(code):
     """remove linebreaks inside brackets (will be readded at the end)."""
     instring = False
+    incomment = False
     inbracket = 0
     nostringbreaks = []
     for n, char in enumerate(code):
+        # comments start with a ; - but only in regular wisp code or in brackets.
+        if not incomment and not instring and char == ";" and not code[n-2:n] == "#\\":
+            incomment = not incomment
+        # a linebreak ends the comment
+        if incomment:
+            if char == "\n":
+                incomment = not incomment
+            # all processing stops in comments
+            nostringbreaks.append(char)
+            continue
         if char == '"' and not code[n-1:n] == "\\":
             instring = not instring
         if char == '(' and not instring and not code[n-2:n] == "#\\":
