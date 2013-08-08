@@ -169,10 +169,14 @@ class Line:
                 ):
                 if self.content[n-1:n+2] == " : " or self.content[n-1:] == " :":
                     bracketstoclose += 1
-                    # we have to keep the space after the colon (" : "
-                    # → " ( "), otherwise we cannot use two
-                    # consecutive colons (" : : ") which would be surprising.
-                    self.content = self.content[:n] + "(" + self.content[n+2:]
+                    # treat ' : as '(
+                    if self.content[n-3:n+1] == " ' :":
+                        self.content = self.content[:n-2] + "'(" + self.content[n+2:]
+                    else:
+                        # we have to keep the space after the colon (" : "
+                        # → " ( "), otherwise we cannot use two
+                        # consecutive colons (" : : ") which would be surprising.
+                        self.content = self.content[:n] + "(" + self.content[n+2:]
         
         # after the full line processing, replace " \\: " "\n\\: " and
         # " \\:\n" (inside line, start of a line, end of a line) by "
