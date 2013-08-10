@@ -69,7 +69,7 @@
      (";" . 'font-lock-comment-delimiter-face)
      ("\\_<[0-9]+\\_>\\|\\_<[0-9]*\\.[0-9]*\\(e[+-]?[0-9]+\\)?\\_>" . font-lock-constant-face) ; numbers
      ("'()" . font-lock-constant-face) ; empty list
-     ("\\_<'[^	 ]+\\_>" . font-lock-constant-face) ; 'name
+     ("[ 	]'[^	 ]+" . font-lock-constant-face) ; 'name
      (" : \\| \\. " . font-lock-keywords-face) ; leading .
      ))
   "Default highlighting expressions for wisp mode.")
