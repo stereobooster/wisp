@@ -240,5 +240,10 @@ let*
         display : list-ref line 1
         display ","
         display : list-ref line 2
+        ; looks good
+    ; TODO: add brackets to the content
+
+    ; TODO: undo linebreak-replacing. Needs in-string and in-comment
+    ; checking, but only for each line, not spanning multiple lines.
 
 newline
