@@ -132,10 +132,13 @@ define : skipindent inport
         when : not : eof-object? nextchar 
             ; skip underbars
             if inunderbars
-                skipper 
-                    char=? nextchar #\_ ; still in underbars?
-                    + indent 1
-                    read-char inport
+                if : char=? nextchar #\_ ; still in underbars?
+                    skipper 
+                        #t ; still in underbars?
+                        + indent 1
+                        read-char inport
+                    ; else, reevaluate without inunderbars
+                    skipper #f indent nextchar
                 ; else: skip remaining spaces
                 if : char=? nextchar #\space
                     skipper
@@ -171,7 +174,7 @@ define : splitindent inport
                 when : and commentstart : char=? nextchar : string-ref commentstartidentifier commentidentifierindex
                     set! commentidentifierindex : + commentidentifierindex 1
                     set! comment : string-append comment : string nextchar
-                    when : = commentidentifierindex : - commentstartidentifierlength 1
+                    when : = commentidentifierindex commentstartidentifierlength
                         set! commentstart #f
                         set! incomment #t
                         ; reset used variables
@@ -235,7 +238,7 @@ let*
     newline
     display : list-ref lines 1
     newline
-    display : list-ref lines 96
+    display : list-ref lines 158
 
 
 newline
