@@ -75,6 +75,10 @@ def replaceinwisp(code, string, replacement):
     return code, count
 
 
+class UndefinedIndentationLevel(IndentationError):
+    """Unindent does not match any outer indentation level."""
+
+
 class Line:
     def __init__(self, line):
         """Parse one line in which linebreaks within strings and
@@ -249,7 +253,8 @@ def nobracketbreaks(code):
 def processlines(lines, prev, codestartindex, levels, lisplines, emptylines):
     """Process all lines after the first."""
     # process further lines: adjust the content of the current line, but only append 
-    for line in lines[codestartindex+1:]:
+    for n, line in enumerate(lines[codestartindex+1:]):
+        n += codestartindex + 1
         # ignore empty lines and comment-only lines
         if line.empty:
             # simply keep empty lines and ignore their indentation
@@ -279,6 +284,8 @@ def processlines(lines, prev, codestartindex, levels, lisplines, emptylines):
         # lower indent: parent funtion or variable. Find the number of brackets to close
         if prev.indent > line.indent:
             bracketstoclose = len([level for level in levels if level >= line.indent])
+            if not line.indent in levels[-bracketstoclose:]:
+                raise UndefinedIndentationLevel("Unindent of line " + str(n) + " does not match any outer indentation level.\n" + line.indent*" " + "|\n" + line.indent*" " + "v\n" + line.indent*" " + line.content)
             levels = levels[:-bracketstoclose + 1]
             if prev.continues:
                 bracketstoclose -= 1

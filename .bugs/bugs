@@ -1,5 +1,5 @@
 fails when I add stuff at the end of end of example.w        | owner:, open:False, id:08c68e1ce0c9798184c01806d2661a3220bff3cd, time:1363789693.79
-throw an exception when reducing indentation to an unknown indentation level. | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:424186bd85f186b7279c5c59e2bd42f847284719, time:1376003568.91
+throw an exception when reducing indentation to an unknown indentation level. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:424186bd85f186b7279c5c59e2bd42f847284719, time:1376003568.91
 implement wisp in wisp                                       | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:6299306916706410702029289bf32edab1e7f17c, time:1367113341.49
 inline ' : should be '(                                      | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:72d534a8b23b4cb168017f1bb7d8816f0ea170c4, time:1366497335.26
 make this work: let : : origfile ( open-file : nth 1 : command-line ) r | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:d6de2074a5017f1f29f34d142ce797981ed270a0, time:1366529287.67

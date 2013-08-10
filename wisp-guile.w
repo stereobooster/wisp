@@ -212,7 +212,7 @@ let*
     ; display text
     set! lines : call-with-input-string text splitlines
     set! lines : linestoindented lines
-    display : list-ref lines 100
+    display : list-ref lines 0
 
 
 newline
