@@ -254,7 +254,7 @@ def processlines(lines, prev, codestartindex, levels, lisplines, emptylines):
     """Process all lines after the first."""
     # process further lines: adjust the content of the current line, but only append 
     for n, line in enumerate(lines[codestartindex+1:]):
-        n += codestartindex + 1
+        n += codestartindex + 2
         # ignore empty lines and comment-only lines
         if line.empty:
             # simply keep empty lines and ignore their indentation
