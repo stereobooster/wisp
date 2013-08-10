@@ -40,7 +40,7 @@
 ; font-lock-fic-face 	font-lock-function-name-face
 ; font-lock-keyword-face 	font-lock-negation-char-face
 ; font-lock-preprocessor-face 	font-lock-reference-face
-; font-lock-string-face 	
+; font-lock-string-face
 ; font-lock-type-face 	font-lock-variable-name-face
 ; font-lock-warning-face
 
@@ -52,7 +52,7 @@
 ; TODO: Add special treatment for defun foo : bar baz ⇒ foo = function, bar and baz not.
 ; TODO: Add highlighting for `, , and other macro-identifiers.
 ; TODO: take all identifiers from scheme.el
-(defvar wisp-font-lock-keywords 
+(defvar wisp-font-lock-keywords
   `((
      ;; stuff between "
      ("\\`#!.*" . font-lock-comment-face)
@@ -69,10 +69,10 @@
      ("\\_<[0-9]+\\_>\\|\\_<[0-9]*\\.[0-9]*\\(e[+-]?[0-9]+\\)?\\_>" . font-lock-constant-face)
      (" : \\| \\. " . font-lock-keywords-face)
      ))
-  "Default highlighting expressions for wisp mode")
+  "Default highlighting expressions for wisp mode.")
 
 (define-derived-mode wisp-mode
-  emacs-lisp-mode "Wisp" 
+  emacs-lisp-mode "Wisp"
   "Major mode for whitespace-to-lisp files.
 
   \\{wisp-mode-map}"
