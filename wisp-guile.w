@@ -91,7 +91,9 @@ define : nostringandbracketbreaks inport
                         set! text : string-append text "\\LINE_BREAK_R"
                         ; else
                         set! text : string-append text : string nextchar
-                ; mark the start of a comment, so we do not have to repeat the string matching in later code
+                ; mark the start of a comment, so we do not have to
+                ; repeat the string matching in later code. We include
+                ; the comment character!
                 if incommentfirstchar
                     set! text : string-append text ( string nextchar ) "\\REALCOMMENTHERE"
                     ; when not in brackets or string or starting a
@@ -187,16 +189,19 @@ define : splitindent inport
 
 ; Now use the function to split a list of lines
 define : linestoindented lines
-    let 
-        : split '()
-          lineindex 0
-          nextline : list-ref lines 0
-        while : < ( + lineindex 1 ) : length lines
-            set! split : append split : list : call-with-input-string nextline splitindent
-            set! lineindex : + lineindex 1
-            set! nextline : list-ref lines lineindex
-            
-        . split
+    let splitter
+        : unprocessed lines
+          processed '()
+        if : equal? unprocessed '()
+            . processed
+            ; else: let-recursion
+            splitter
+                list-tail unprocessed 1
+                append processed 
+                    list 
+                        call-with-input-string 
+                            list-ref unprocessed 0
+                            . splitindent
 
 
 ; first step: Be able to mirror a file to stdout
@@ -210,10 +215,11 @@ let*
         set! text : string-append text : string nextchar
         set! nextchar : read-char origfile
     set! text : call-with-input-string text nostringandbracketbreaks
-    display text
-    ; set! lines : call-with-input-string text splitlines
-    ; set! lines : linestoindented lines
-    ; display : list-ref lines 0
+    ; display text ; seems good
+    set! lines : call-with-input-string text splitlines 
+    ; display : list-ref lines 100 ; seems good
+    set! lines : linestoindented lines
+    display : list-ref lines 1
 
 
 newline
