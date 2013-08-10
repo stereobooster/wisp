@@ -57,20 +57,20 @@
 ; TODO: take all identifiers from scheme.el
 (defvar wisp-font-lock-keywords
   `((
-     ;; stuff between "
-     ("\\`#!.*" . font-lock-comment-face)
-     ("\"\\.\\*\\?" . font-lock-string-face)
-     ; ("\\_<let\\*\\_>" . font-lock-builtin-face)
-     ( ,(regexp-opt wisp-builtin 'symbols) . font-lock-builtin-face)
-     ("#[tf]"  . font-lock-constant-face)
-     ("#\\\\[^ 	]+"  . font-lock-constant-face)
-     ("^\\(?: *\\)[^ :][^ 	]*" . 'font-lock-function-name-face)
-     ; ("\\(?: : *\\)[^ ]+" . 'font-lock-function-name-face)
-     (" : " "\\=\\([^ 	]+\\)" nil nil (1 font-lock-function-name-face))
-     ("[^']( *" "\\=\\([^ 	)]+\\)" nil nil (1 font-lock-function-name-face))
+     ("\\`#!.*" . font-lock-comment-face) ; initial hashbang
+     ("\"\\.\\*\\?" . font-lock-string-face) ; strings (anything between "")
+     ( ,(regexp-opt wisp-builtin 'symbols) . font-lock-builtin-face) ; generic functions
+     ("#[tf]"  . font-lock-constant-face) ; #t and #f
+     ("#\\\\[^ 	]+"  . font-lock-constant-face) ; character literals
+     ;                    v there is a tab here.
+     ("^\\(?: *\\)[^ :][^ 	]*" . 'font-lock-function-name-face) ; function calls as start of the line
+     (" : " "\\=\\([^ 	]+\\)" nil nil (1 font-lock-function-name-face)) ; function calls with inline :
+     ("[^']( *" "\\=\\([^ 	)]+\\)" nil nil (1 font-lock-function-name-face)) ; function calls with (
      (";" . 'font-lock-comment-delimiter-face)
-     ("\\_<[0-9]+\\_>\\|\\_<[0-9]*\\.[0-9]*\\(e[+-]?[0-9]+\\)?\\_>" . font-lock-constant-face)
-     (" : \\| \\. " . font-lock-keywords-face)
+     ("\\_<[0-9]+\\_>\\|\\_<[0-9]*\\.[0-9]*\\(e[+-]?[0-9]+\\)?\\_>" . font-lock-constant-face) ; numbers
+     ("'()" . font-lock-constant-face) ; empty list
+     ("\\_<'[^	 ]+\\_>" . font-lock-constant-face) ; 'name
+     (" : \\| \\. " . font-lock-keywords-face) ; leading .
      ))
   "Default highlighting expressions for wisp mode.")
 
