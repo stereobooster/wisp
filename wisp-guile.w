@@ -234,11 +234,11 @@ let*
     set! lines : call-with-input-string text splitlines 
     ; display : list-ref lines 100 ; seems good
     set! lines : linestoindented lines
-    display : list-ref lines 0
-    newline
-    display : list-ref lines 1
-    newline
-    display : list-ref lines 158
-
+    let : : line : list-ref lines 158
+        display : list-ref line 0
+        display ","
+        display : list-ref line 1
+        display ","
+        display : list-ref line 2
 
 newline
