@@ -25,6 +25,52 @@
 
 (require 'scheme)
 
+; allow users to run hooks when they enter my mode
+(defvar wisp-mode-hook nil)
+
+; use this mode automatically
+;;;###autoload
+(add-to-list 'auto-mode-alist '("\\.w\\'" . wisp-mode))
+
+; see http://www.emacswiki.org/emacs/DerivedMode
+
+; font-lock-builtin-face 	font-lock-comment-delimiter-face
+; font-lock-comment-face 	font-lock-constant-face
+; font-lock-doc-face 	font-lock-fic-author-face
+; font-lock-fic-face 	font-lock-function-name-face
+; font-lock-keyword-face 	font-lock-negation-char-face
+; font-lock-preprocessor-face 	font-lock-reference-face
+; font-lock-string-face 	
+; font-lock-type-face 	font-lock-variable-name-face
+; font-lock-warning-face
+
+; note: for easy testing: emacs -Q wisp-mode.el -e eval-buffer wisp-guile.w -e delete-other-windows
+
+
+(defvar wisp-builtin '("define" "defun" "let*" "let" "setq" "set!" "set" "if" "when" "while" "set!" "and" "or" "not" "char=?"))
+
+; TODO: Add special treatment for defun foo : bar baz ⇒ foo = function, bar and baz not.
+; TODO: Add highlighting for `, , and other macro-identifiers.
+; TODO: take all identifiers from scheme.el
+(defvar wisp-font-lock-keywords 
+  `((
+     ;; stuff between "
+     ("\\`#!.*" . font-lock-comment-face)
+     ("\"\\.\\*\\?" . font-lock-string-face)
+     ; ("\\_<let\\*\\_>" . font-lock-builtin-face)
+     ( ,(regexp-opt wisp-builtin 'symbols) . font-lock-builtin-face)
+     ("#[tf]"  . font-lock-constant-face)
+     ("#\\\\[^ 	]+"  . font-lock-constant-face)
+     ("^\\(?: *\\)[^ :][^ 	]*" . 'font-lock-function-name-face)
+     ; ("\\(?: : *\\)[^ ]+" . 'font-lock-function-name-face)
+     (" : " "\\=\\([^ 	]+\\)" nil nil (1 font-lock-function-name-face))
+     ("\\(?:( *\\)[^ 	]+" . 'font-lock-function-name-face)
+     (";" . 'font-lock-comment-delimiter-face)
+     ("\\_<[0-9]+\\_>" . font-lock-constant-face)
+     (" : \\| \\. " . font-lock-keywords-face)
+     ))
+  "Default highlighting expressions for wisp mode")
+
 (define-derived-mode wisp-mode
   emacs-lisp-mode "Wisp" 
   "Major mode for whitespace-to-lisp files.
@@ -32,21 +78,13 @@
   \\{wisp-mode-map}"
   ; :group wisp
   (set (make-local-variable 'indent-tabs-mode) nil)
-  (set (make-local-variable 'comment-start) "; ")
+  (setq comment-start ";")
+  (setq comment-end "")
   (set (make-local-variable 'font-lock-comment-start-skip) ";+ *")
   (set (make-local-variable 'parse-sexp-ignore-comments) t)
-  (set (make-local-variable 'font-lock-defaults)
-              '((scheme-font-lock-keywords
-                 scheme-font-lock-keywords-1 scheme-font-lock-keywords-2)
-                nil ; keywords only
-                nil ; case fold
-                (("_" . "-")) ; syntax alist
-                backward-paragraph)) ; syntax begin
+  (set (make-local-variable 'font-lock-defaults) wisp-font-lock-keywords)
   (set (make-local-variable 'mode-require-final-newline) t))
 
-(font-lock-add-keywords 'wisp-mode 
-                        '(("^ *\\(\\w+\\)\\| : *\\(\\w+\\)" . 'font-lock-function-call-face)
-                          ("^ *\\(\\w+\\)\\| : *\\(\\w+\\)" . 'font-lock-function-call-face)))
                         
 
 (provide 'wisp-mode)
