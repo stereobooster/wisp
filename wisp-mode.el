@@ -66,7 +66,7 @@
      (" : " "\\=\\([^ 	]+\\)" nil nil (1 font-lock-function-name-face))
      ("\\(?:( *\\)[^ 	]+" . 'font-lock-function-name-face)
      (";" . 'font-lock-comment-delimiter-face)
-     ("\\_<[0-9]+\\_>" . font-lock-constant-face)
+     ("\\_<[0-9]+\\_>\\|\\_<[0-9]*\\.[0-9]*\\(e[+-]?[0-9]+\\)?\\_>" . font-lock-constant-face)
      (" : \\| \\. " . font-lock-keywords-face)
      ))
   "Default highlighting expressions for wisp mode")
