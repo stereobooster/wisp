@@ -128,7 +128,6 @@ define : skipindent inport
         : inunderbars #t
           indent 0
           nextchar : read-char inport
-        display : string nextchar
         ; when the file ends, do not do anything else
         when : not : eof-object? nextchar 
             ; skip underbars
@@ -138,13 +137,14 @@ define : skipindent inport
                     + indent 1
                     read-char inport
                 ; else: skip remaining spaces
-                when : char=? nextchar #\space
+                if : char=? nextchar #\space
                     skipper
                         . #f
                         + indent 1
                         read-char inport
-            unread-char nextchar
-        . indent
+                    begin
+                        unread-char nextchar inport
+                        . indent
 
 ; Now we have to split a single line into indentation, content and comment.
 define : splitindent inport
