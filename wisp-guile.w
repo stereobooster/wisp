@@ -122,69 +122,81 @@ define : splitlines inport
             set! nextchar : read-char inport
         . lines
 
+; skip the leading indentation
+define : skipindent inport
+    let skipper
+        : inunderbars #t
+          indent 0
+          nextchar : read-char inport
+        display : string nextchar
+        ; when the file ends, do not do anything else
+        when : not : eof-object? nextchar 
+            ; skip underbars
+            if inunderbars
+                skipper 
+                    char=? nextchar #\_ ; still in underbars?
+                    + indent 1
+                    read-char inport
+                ; else: skip remaining spaces
+                when : char=? nextchar #\space
+                    skipper
+                        . #f
+                        + indent 1
+                        read-char inport
+            unread-char nextchar
+        . indent
+
 ; Now we have to split a single line into indentation, content and comment.
 define : splitindent inport
-    let
-        : nextchar : read-char inport
-          inindentunderbar #t
-          inindent #t ; it always begins in indent
-          incomment #f ; but not in a comment
-          commentstart #f
-          commentstartidentifier "\\REALCOMMENTHERE"
-          commentstartidentifierlength 16
-          commentidentifierindex 0
-          indent 0
-          content ""
-          comment ""
-        while : not : eof-object? nextchar
-            ; check wether we leave the initial underbars
-            when : and inindentunderbar : not : char=? nextchar #\_
-                set! inindentunderbar #f
-                set! indent : + indent 1
-                set! nextchar : read-char inport
-                continue
-            ; check whether we leave the indentation
-            when : and inindent : not : char=? nextchar #\space
-                set! inindent #f
-                set! indent : + indent 1
-                set! nextchar : read-char inport
-                continue
-            ; check whether we leave the content
-            when : and ( not incomment ) : char=? nextchar #\;
-                set! commentstart #t
-                set! comment : string-append comment : string nextchar
-                set! nextchar : read-char inport
-                continue
-            ; check whether we stay in the commentcheck
-            when : and commentstart : char=? nextchar : string-ref commentstartidentifier commentidentifierindex
-                set! commentidentifierindex : + commentidentifierindex 1
-                set! comment : string-append comment : string nextchar
-                when : = commentidentifierindex : - commentstartidentifierlength 1
+    let 
+        : indent : skipindent inport
+        let
+            : nextchar : read-char inport
+              inindent #t ; it always begins in indent
+              incomment #f ; but not in a comment
+              commentstart #f
+              commentstartidentifier "\\REALCOMMENTHERE"
+              commentstartidentifierlength 16
+              commentidentifierindex 0
+              content ""
+              comment ""
+            while : not : eof-object? nextchar
+                ; check whether we leave the content
+                when : and ( not incomment ) : char=? nextchar #\;
+                    set! commentstart #t
+                    set! comment : string-append comment : string nextchar
+                    set! nextchar : read-char inport
+                    continue
+                ; check whether we stay in the commentcheck
+                when : and commentstart : char=? nextchar : string-ref commentstartidentifier commentidentifierindex
+                    set! commentidentifierindex : + commentidentifierindex 1
+                    set! comment : string-append comment : string nextchar
+                    when : = commentidentifierindex : - commentstartidentifierlength 1
+                        set! commentstart #f
+                        set! incomment #t
+                        ; reset used variables
+                        set! commentidentifierindex 0
+                        set! comment ""
+                    set! nextchar : read-char inport
+                    continue
+                ; if we cannot complete the commentcheck, we did not start a real comment. Append it to the content
+                when : and commentstart : not : char=? nextchar : string-ref commentstartidentifier commentidentifierindex
                     set! commentstart #f
-                    set! incomment #t
-                    ; reset used variables
-                    set! commentidentifierindex 0
+                    set! content : string-append content comment
                     set! comment ""
+                    set! commentidentifierindex 0
+                    set! nextchar : read-char inport
+                    continue
+                ; if we are in the comment, just append to the comment
+                when incomment
+                    set! comment : string-append comment : string nextchar
+                    set! nextchar : read-char inport
+                    continue
+                ; if nothing else is true, we are in the content
+                set! content : string-append content : string nextchar
                 set! nextchar : read-char inport
-                continue
-            ; if we cannot complete the commentcheck, we did not start a real comment. Append it to the content
-            when : and commentstart : not : char=? nextchar : string-ref commentstartidentifier commentidentifierindex
-                set! commentstart #f
-                set! content : string-append content comment
-                set! comment ""
-                set! commentidentifierindex 0
-                set! nextchar : read-char inport
-                continue
-            ; if we are in the comment, just append to the comment
-            when incomment
-                set! comment : string-append comment : string nextchar
-                set! nextchar : read-char inport
-                continue
-            ; if nothing else is true, we are in the content
-            set! content : string-append content : string nextchar
-            set! nextchar : read-char inport
-        ; return the indentation, the content and the comment
-        list indent content comment
+            ; return the indentation, the content and the comment
+            list indent content comment
 
 
 ; Now use the function to split a list of lines
@@ -219,7 +231,11 @@ let*
     set! lines : call-with-input-string text splitlines 
     ; display : list-ref lines 100 ; seems good
     set! lines : linestoindented lines
+    display : list-ref lines 0
+    newline
     display : list-ref lines 1
+    newline
+    display : list-ref lines 96
 
 
 newline
