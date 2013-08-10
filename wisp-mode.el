@@ -21,6 +21,9 @@
 
 ;;; Commentary:
 
+;; For details on wisp, see 
+;; http://draketo.de/light/english/wisp-lisp-indentation-preprocessor
+
 ;;; Code:
 
 (require 'scheme)
