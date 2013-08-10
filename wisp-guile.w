@@ -16,7 +16,7 @@ define : nostringandbracketbreaks inport
     let* 
         : lastchar : read-char inport
           nextchar : read-char inport
-          text ""
+          text : string lastchar
           incomment #f
           incommentfirstchar #f ; first char of a comment
           instring #f
@@ -34,7 +34,7 @@ define : nostringandbracketbreaks inport
                    set! incharform : + incharform 1
             ; check if we switch to a string: last char is space, linebreak or in a string, not in a charform, not in a comment
             when 
-                 and 
+                and 
                      char=? nextchar #\"
                      or 
                         . instring ; when I’m in a string, I can get out
@@ -46,7 +46,7 @@ define : nostringandbracketbreaks inport
                 set! instring : not instring
             ; check if we switch to a comment
             when 
-                 and 
+                and 
                      char=? nextchar #\;
                      not incomment
                      not instring
@@ -89,6 +89,7 @@ define : nostringandbracketbreaks inport
                     set! text : string-append text "\\LINE_BREAK_N"
                     if : char=? nextchar #\newline
                         set! text : string-append text "\\LINE_BREAK_R"
+                        ; else
                         set! text : string-append text : string nextchar
                 ; mark the start of a comment, so we do not have to repeat the string matching in later code
                 if incommentfirstchar
@@ -209,10 +210,10 @@ let*
         set! text : string-append text : string nextchar
         set! nextchar : read-char origfile
     set! text : call-with-input-string text nostringandbracketbreaks
-    ; display text
-    set! lines : call-with-input-string text splitlines
-    set! lines : linestoindented lines
-    display : list-ref lines 0
+    display text
+    ; set! lines : call-with-input-string text splitlines
+    ; set! lines : linestoindented lines
+    ; display : list-ref lines 0
 
 
 newline
