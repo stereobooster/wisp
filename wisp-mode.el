@@ -70,7 +70,7 @@
      ("\\_<[0-9]+\\_>\\|\\_<[0-9]*\\.[0-9]*\\(e[+-]?[0-9]+\\)?\\_>" . font-lock-constant-face) ; numbers
      ("'()" . font-lock-constant-face) ; empty list
      ("[ 	]'[^	 ]+" . font-lock-constant-face) ; 'name
-     (" : \\| \\. " . font-lock-keywords-face) ; leading .
+     (" : \\| \\. " . font-lock-keyword-face) ; leading .
      ))
   "Default highlighting expressions for wisp mode.")
 
