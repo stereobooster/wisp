@@ -3,7 +3,7 @@
 ;; Copyright (C) 2013  Arne Babenhauserheide <arne_bab@web.de>
 
 ;; Author: Arne Babenhauserheide <arne_bab@web.de>
-;; Version: 0.1
+;; Version: 0.1.1
 ;; Keywords: languages, lisp
 
 ;; This program is free software; you can redistribute it and/or
