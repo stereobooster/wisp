@@ -60,12 +60,12 @@
      ("\\`#!.*" . font-lock-comment-face) ; initial hashbang
      ("\"\\.\\*\\?" . font-lock-string-face) ; strings (anything between "")
      ( ,(regexp-opt wisp-builtin 'symbols) . font-lock-builtin-face) ; generic functions
-     ("#[tf]"  . font-lock-constant-face) ; #t and #f
-     ("#\\\\[^ 	]+"  . font-lock-constant-face) ; character literals
      ;                    v there is a tab here.
      ("^\\(?: *\\)[^ :][^ 	]*" . 'font-lock-function-name-face) ; function calls as start of the line
      (" : " "\\=\\([^ 	]+\\)" nil nil (1 font-lock-function-name-face)) ; function calls with inline :
      ("[^']( *" "\\=\\([^ 	)]+\\)" nil nil (1 font-lock-function-name-face)) ; function calls with (
+     ("#[tf]"  . font-lock-constant-face) ; #t and #f
+     ("#\\\\[^ 	]+"  . font-lock-constant-face) ; character literals
      (";" . 'font-lock-comment-delimiter-face)
      ("\\_<[0-9]+\\_>\\|\\_<[0-9]*\\.[0-9]*\\(e[+-]?[0-9]+\\)?\\_>" . font-lock-constant-face) ; numbers
      ("'()" . font-lock-constant-face) ; empty list
