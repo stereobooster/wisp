@@ -134,7 +134,7 @@ define : skipindent inport
             if inunderbars
                 if : char=? nextchar #\_ ; still in underbars?
                     skipper 
-                        #t ; still in underbars?
+                        . #t ; still in underbars?
                         + indent 1
                         read-char inport
                     ; else, reevaluate without inunderbars
