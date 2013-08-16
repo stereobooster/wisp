@@ -59,8 +59,8 @@
   `((
      ("\\`#!.*" . font-lock-comment-face) ; initial hashbang
      ("\"\\.\\*\\?" . font-lock-string-face) ; strings (anything between "")
-     ("^ +: *$" . font-lock-keyword-face) ; line with only a : + whitespace, not at the beginning
-     ("^ +: \\| +\\. " . font-lock-keyword-face) ; leading : or .
+     ("^\\(?:_* +\\| *\\): *$" . font-lock-keyword-face) ; line with only a : + whitespace, not at the beginning
+     ("^\\(?:_* +\\| *\\): \\| *\\. " . font-lock-keyword-face) ; leading : or .
      ( ,(regexp-opt wisp-builtin 'symbols) . font-lock-builtin-face) ; generic functions
      ;                                 v there is a tab here.
      ("^\\(?:_*\\)\\(?: +\\)\\([^:][^ 	]*\\)" . 'font-lock-function-name-face) ; function calls as start of the line
