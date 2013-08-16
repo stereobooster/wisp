@@ -14,9 +14,9 @@ define : nostringandbracketbreaks inport
     ; Replace end of line characters in brackets and strings
     ; FIXME: Breaks if the string is shorter than 2 chars
     let* 
-        : lastchar : read-char inport
-          nextchar : read-char inport
-          text : string lastchar
+__      : lastchar : read-char inport
+____      nextchar : read-char inport
+____      text : string lastchar
           incomment #f
           incommentfirstchar #f ; first char of a comment
           instring #f
