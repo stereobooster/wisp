@@ -4,7 +4,7 @@
 ;; Fibonacci Functions
 
 define : fib n
-    . "Get Fibonacci Elements in Linear Time"
+    . "Get Fibonacci Element N in Linear Time"
     let rek : (i 0) (u 1) (v 1)
         if : >= i : - n 2
             . v
