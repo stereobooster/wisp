@@ -50,7 +50,7 @@
 ; note: for easy testing: emacs -Q wisp-mode.el -e eval-buffer wisp-guile.w -e delete-other-windows
 
 
-(defvar wisp-builtin '("define" "defun" "let*" "let" "setq" "set!" "set" "if" "when" "while" "set!" "and" "or" "not" "char=?"))
+(defvar wisp-builtin '("define" "define-syntax" "syntax-rules" "defun" "let*" "let" "setq" "set!" "set" "if" "when" "while" "set!" "and" "or" "not" "char=?"))
 
 ; TODO: Add special treatment for defun foo : bar baz ⇒ foo = function, bar and baz not.
 ; TODO: Add highlighting for `, , and other macro-identifiers.
