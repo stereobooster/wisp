@@ -219,19 +219,27 @@ define : linestoindented lines
                             . splitindent
 
 
+define : read-whole-file filename
+    let : : origfile : open-file filename "r"
+        let reader 
+            : text ""
+              nextchar : read-char origfile
+            if : eof-object? nextchar
+                . text
+                reader 
+                    string-append text : string nextchar
+                    read-char origfile
+
 ; first step: Be able to mirror a file to stdout
 let* 
     : filename : list-ref ( command-line ) 1
-      origfile : open-file filename "r" ; mode
-      nextchar : read-char origfile
-      text ""
+      text : read-whole-file filename
       lines '()
-    while : not : eof-object? nextchar
-        set! text : string-append text : string nextchar
-        set! nextchar : read-char origfile
-    set! text : call-with-input-string text nostringandbracketbreaks
     ; display text ; seems good
-    set! lines : call-with-input-string text splitlines 
+    set! lines
+        call-with-input-string 
+            call-with-input-string text nostringandbracketbreaks
+            . splitlines 
     ; display : list-ref lines 100 ; seems good
     set! lines : linestoindented lines
     let : : line : list-ref lines 158
