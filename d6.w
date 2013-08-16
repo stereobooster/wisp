@@ -4,6 +4,7 @@
 ; basic d6 rules, implemented in guile
 
 define : roll
+    . "Roll one ± d6"
     let : : die '(-5 -3 -1 2 4 6)
         list-ref die : random 6 : random-state-from-platform
 
