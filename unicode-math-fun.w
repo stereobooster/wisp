@@ -19,7 +19,7 @@ define : ∩ list1 list2
             if : equal? tocheck '()
                 . inboth
                 let : : cur : list-ref tocheck 0
-                    if : member cur list2
+                    if : hash-ref h cur
                         loop 
                             append inboth : list cur
                             list-tail tocheck 1
