@@ -60,7 +60,9 @@
      ("\\`#!.*" . font-lock-comment-face) ; initial hashbang
      ("\"\\.\\*\\?" . font-lock-string-face) ; strings (anything between "")
      ( ,(regexp-opt wisp-builtin 'symbols) . font-lock-builtin-face) ; generic functions
-     ;                    v there is a tab here.
+     ;                                 v there is a tab here.
+     ("^\\(?:_*\\)\\(?: +\\)\\([^:][^ 	]*\\)" . 'font-lock-function-name-face) ; function calls as start of the line
+     ;                     v there is a tab here.
      ("^\\(?: *\\)[^ :][^ 	]*" . 'font-lock-function-name-face) ; function calls as start of the line
      (" : " "\\=\\([^ 	]+\\)" nil nil (1 font-lock-function-name-face)) ; function calls with inline :
      ("[^']( *" "\\=\\([^ 	)]+\\)" nil nil (1 font-lock-function-name-face)) ; function calls with (
@@ -70,7 +72,7 @@
      ("\\_<[0-9]+\\_>\\|\\_<[0-9]*\\.[0-9]*\\(e[+-]?[0-9]+\\)?\\_>" . font-lock-constant-face) ; numbers
      ("'()" . font-lock-constant-face) ; empty list
      ("[ 	]'[^	 ]+" . font-lock-constant-face) ; 'name
-     (" : \\| \\. " . font-lock-keyword-face) ; leading .
+     (" : \\| \\. " . font-lock-keyword-face) ; leading : or .
      ))
   "Default highlighting expressions for wisp mode.")
 
