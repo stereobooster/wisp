@@ -10,7 +10,7 @@ define : ∪ . lists
     apply append lists
 
 define : ∩ list1 list2
-    let : : h : make-hash-table
+    let : : h : make-hash-table : length list2
         let fill : : toadd list2
             when : not : equal? toadd '()
                 hash-set! h (list-ref toadd 0) #t
