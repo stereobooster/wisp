@@ -230,16 +230,17 @@ define : read-whole-file filename
                     string-append text : string nextchar
                     read-char origfile
 
+define : split-wisp-lines text
+    call-with-input-string 
+        call-with-input-string text nostringandbracketbreaks
+        . splitlines 
+
+
 ; first step: Be able to mirror a file to stdout
 let* 
     : filename : list-ref ( command-line ) 1
       text : read-whole-file filename
-      lines '()
-    ; display text ; seems good
-    set! lines
-        call-with-input-string 
-            call-with-input-string text nostringandbracketbreaks
-            . splitlines 
+      lines : split-wisp-lines text
     ; display : list-ref lines 100 ; seems good
     set! lines : linestoindented lines
     let : : line : list-ref lines 158
