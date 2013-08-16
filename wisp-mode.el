@@ -63,9 +63,9 @@
      ("^\\(?:_* +\\| *\\): \\| *\\. " . font-lock-keyword-face) ; leading : or .
      ( ,(regexp-opt wisp-builtin 'symbols) . font-lock-builtin-face) ; generic functions
      ;                                 v there is a tab here.
-     ("^\\(?:_*\\)\\(?: +\\)\\([^:][^ 	]*\\)" . 'font-lock-function-name-face) ; function calls as start of the line
+     ("^\\(?:_*\\)\\(?: +\\)\\([^:][^ 	]*\\)" . font-lock-function-name-face) ; function calls as start of the line
      ;                     v there is a tab here.
-     ("^\\(?: *\\)[^ :][^ 	]*" . 'font-lock-function-name-face) ; function calls as start of the line
+     ("^\\(?: *\\)[^ :][^ 	]*" . font-lock-function-name-face) ; function calls as start of the line
      (" : " "\\=\\([^ 	]+\\)" nil nil (1 font-lock-function-name-face)) ; function calls with inline :
      ("[^']( *" "\\=\\([^ 	)]+\\)" nil nil (1 font-lock-function-name-face)) ; function calls with (
      ("#[tf]"  . font-lock-constant-face) ; #t and #f
