@@ -4,7 +4,7 @@
 ;; Fibonacci Functions
 
 define : fib n
-;    "Get Fibonacci Elements in Linear Time"
+    . "Get Fibonacci Elements in Linear Time"
     let rek : (i 0) (u 1) (v 1)
         if : >= i : - n 2
             . v
@@ -22,7 +22,7 @@ define-syntax {
 
 ;; Now do the fibonacci again
 define : fibcurl n
-;    "Get Fibonacci Elements in Linear Time"
+    . "Get Fibonacci Elements in Linear Time"
     let rek : (i 0) (u 1) (v 1)
         if : { i >= ({ n - 2 }) }
             . v
@@ -46,7 +46,7 @@ define-syntax {
 
 ;; And a complete infix-fibonacci
 define : fibcurl2 n
-;    "Get Fibonacci Elements in Linear Time"
+    . "Get Fibonacci Elements in Linear Time"
     let rek : (i 0) (u 1) (v 1)
         if : { i >= { n - 2 } }
             . v
@@ -54,6 +54,8 @@ define : fibcurl2 n
                { i + 1 } 
                . v 
                { u + v }
+
+;; But to be frank: Prefix looks better.
 
 display : { { 1 + 2 } * { 2 * 3 } }
 ; display : fibcurl2 5
