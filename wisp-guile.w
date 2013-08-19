@@ -293,7 +293,7 @@ define : wisp2lisp lines
                     string-prefix? "#!" : line-content prev
                 parsehashbang : append lisp : list : line-merge-comment prev
                     . (list-ref unprocessed 1) (list-tail unprocessed 1)
-                append lisp unprocessed ; wisp2lisp-initial-comments lisp prev unprocessed
+                wisp2lisp-parse (append lisp (list prev)) (list-ref unprocessed 1) (list-tail unprocessed 1)
 
 ; first step: Be able to mirror a file to stdout
 let*
