@@ -269,9 +269,11 @@ define : split-wisp-lines text
 let* 
     : filename : list-ref ( command-line ) 1
       text : read-whole-file filename
-      lines : split-wisp-lines text
+      ; Lines consist of lines with indent, content and comment. See
+      ; line-indent, line-content, line-comment and the other
+      ; line-functions for details.
+      lines : linestoindented : split-wisp-lines text
     ; display : list-ref lines 100 ; seems good
-    set! lines : linestoindented lines
     let : : line : list-ref lines 158
         display : line-indent line
         display ","
