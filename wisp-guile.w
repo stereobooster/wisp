@@ -264,17 +264,56 @@ define : split-wisp-lines text
         call-with-input-string text nostringandbracketbreaks
         . splitlines 
 
+define : wisp2lisp-parse lisp prev lines
+    . "Parse the body of the wisp-code."
+    append lisp lines
+
+define : wisp2lisp-initial-comments lisp prev lines
+    . "Keep all starting comments: do not start them with a bracket."
+    let initial-comments : (lisp lisp) (prev prev) (lines lines)
+        if : equal? lines '() ; file only contained comments, maybe including the hashbang
+            . lisp
+            if : line-empty? prev
+                initial-comments : append lisp : list : line-merge-comment prev
+                    . (list-ref lines 0) (list-tail lines 1)
+                wisp2lisp-parse lisp prev lines
+
+define : wisp2lisp lines
+    . "Parse indentation in the lines to add the correct brackets."
+    if : equal? lines '()
+        . '()
+        let parsehashbang ; process the first line up to the content
+            : lisp '() ; the processed lines
+              prev : list-ref lines 0
+              unprocessed lines
+            if 
+                and
+                    equal? lisp '() ; really the first line
+                    equal? 0 : line-indent prev
+                    string-prefix? "#!" : line-content prev
+                parsehashbang : append lisp : list : line-merge-comment prev
+                    . (list-ref unprocessed 1) (list-tail unprocessed 1)
+                append lisp unprocessed ; wisp2lisp-initial-comments lisp prev unprocessed
 
 ; first step: Be able to mirror a file to stdout
-let* 
+let*
     : filename : list-ref ( command-line ) 1
       text : read-whole-file filename
       ; Lines consist of lines with indent, content and comment. See
       ; line-indent, line-content, line-comment and the other
       ; line-functions for details.
       lines : linestoindented : split-wisp-lines text
+      lisp : wisp2lisp lines
     ; display : list-ref lines 100 ; seems good
-    let : : line : list-ref lines 158
+    let show : (processed '()) (unprocessed lisp)
+        when : not : equal? unprocessed '()
+            display : line-content : list-ref unprocessed 0
+            display ";"
+            display : line-comment : list-ref unprocessed 0
+            newline
+            show  (append processed (list (list-ref unprocessed 0))) (list-tail unprocessed 1)
+    
+    let : : line : list-ref lisp 158
         display : line-indent line
         display ","
         display : line-content  line
