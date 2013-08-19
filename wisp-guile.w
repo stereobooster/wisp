@@ -149,8 +149,6 @@ define : line-merge-comment line
             list indent : string-append content ";" content
                 . ""
 
-
-
 ; skip the leading indentation
 define : skipindent inport
     let skipper
@@ -293,7 +291,7 @@ define : wisp2lisp lines
                     string-prefix? "#!" : line-content prev
                 parsehashbang : append lisp : list : line-merge-comment prev
                     . (list-ref unprocessed 1) (list-tail unprocessed 1)
-                wisp2lisp-parse (append lisp (list prev)) (list-ref unprocessed 1) (list-tail unprocessed 1)
+                wisp2lisp-initial-comments (append lisp (list prev)) (list-ref unprocessed 1) (list-tail unprocessed 1)
 
 ; first step: Be able to mirror a file to stdout
 let*
