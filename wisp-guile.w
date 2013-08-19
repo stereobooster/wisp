@@ -107,7 +107,6 @@ ____      text : string lastchar
 
 
 ; As next part we have split a text into a list of lines which we can process one by one.
-; FIXME: Cuts off the beginning of the content.
 define : splitlines inport 
     let 
         : lines '()
@@ -121,6 +120,36 @@ define : splitlines inport
                     set! nextline ""
             set! nextchar : read-char inport
         . lines
+
+define : line-indent line
+    list-ref line 0
+
+define : line-content line
+    list-ref line 1
+
+define : line-comment line
+    list-ref line 2
+
+define : line-continues? line
+    . "Check whether the line is a continuation of a previous line (should not start with a bracket)."
+    string-prefix? ". " : line-content line
+
+define : line-empty? line
+    . "Check whether the code-part of the line is empty: contains only whitespace and/or comment."
+    equal? "" : line-content line
+
+define : line-merge-comment line
+    . "Merge comment and content into the content. Return the new line."
+    let 
+        : indent : line-indent line
+          content : line-content line
+          comment : line-comment line
+        if : equal? comment ""
+            . line ; no change needed
+            list indent : string-append content ";" content
+                . ""
+
+
 
 ; skip the leading indentation
 define : skipindent inport
@@ -244,11 +273,11 @@ let*
     ; display : list-ref lines 100 ; seems good
     set! lines : linestoindented lines
     let : : line : list-ref lines 158
-        display : list-ref line 0
+        display : line-indent line
         display ","
-        display : list-ref line 1
+        display : line-content  line
         display ","
-        display : list-ref line 2
+        display : line-comment  line
         ; looks good
     ; TODO: add brackets to the content
 
