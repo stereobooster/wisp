@@ -146,8 +146,7 @@ define : line-merge-comment line
           comment : line-comment line
         if : equal? "" comment
             . line ; no change needed
-            list indent : string-append content ";" comment
-                . ""
+            list indent (string-append content ";" comment) ""
 
 ; skip the leading indentation
 define : skipindent inport
@@ -156,7 +155,7 @@ define : skipindent inport
           indent 0
           nextchar : read-char inport
         ; when the file ends, do not do anything else
-        when : not : eof-object? nextchar 
+        if : not : eof-object? nextchar 
             ; skip underbars
             if inunderbars
                 if : char=? nextchar #\_ ; still in underbars?
@@ -175,6 +174,7 @@ define : skipindent inport
                     begin
                         unread-char nextchar inport
                         . indent
+            . indent
 
 ; Now we have to split a single line into indentation, content and comment.
 define : splitindent inport
@@ -262,9 +262,61 @@ define : split-wisp-lines text
         call-with-input-string text nostringandbracketbreaks
         . splitlines 
 
+define : wisp2lisp-add-inline-colon-brackets line
+    . "Add inline colon brackets to a wisp-line (indent,content,comment)"
+    let : : content : line-content line
+        ; replace final " :" by a function call. There we are by definition of the line-splitting not in a string.
+        when : string-suffix? " :" content
+            set! content : string-append (string-drop-right content 1) "()"
+        ; process the content in reverse direction, so we can detect ' : and turn it into '(
+        let bracketizer : (instring #f) (inbrackets 0) (bracketstoadd 0) (unprocessed content) (processed "")
+              if : < (string-length unprocessed) 3
+                  ; if unprocessed is < 3 chars, it cannot contain " : ". We are done.
+                  list 
+                      line-indent line
+                      string-append unprocessed processed : xsubstring ")" 0 bracketstoadd
+                      line-comment line
+                  ; else
+                  let : : lastletter : string-take-right unprocessed 1
+                      ; check if we’re in a string
+                      when : and (equal? "\"" lastletter) : not : equal? "#\\\"" : string-take-right unprocessed 3
+                          set! instring : not instring
+                      when : and (equal? ")" lastletter) : not : equal? "#\\)" : string-take-right unprocessed 3
+                          set! inbrackets : + 1 inbrackets
+                      when : and (equal? "(" lastletter) : not : equal? "#\\(" : string-take-right unprocessed 3
+                          set! inbrackets : - 1 inbrackets
+                      ; error handling: inbrackets must never be smaller than 0 - due to the line splitting.
+                      when : < inbrackets 0
+                          throw 'more-inline-brackets-closed-than-opened inbrackets line
+                      ; when we’re in a string or in brackets , just skip to the next char
+                      if : or instring : > inbrackets 0
+                          bracketizer instring inbrackets bracketstoadd 
+                              . : string-drop-right unprocessed 1
+                              . : string-append lastletter processed
+                          ; check for " : ": That adds a new inline bracket
+                          if : equal? " : " : string-take-right unprocessed 3
+                              ; replace the last 2 chars with "(" and note
+                              ; that we need an additional closing bracket
+                              ; at the end.
+                              bracketizer instring inbrackets : + 1 bracketstoadd 
+                                  . : string-append (string-drop-right unprocessed 2) "("
+                                  . processed
+                              if : and (> (string-length unprocessed) 3) : equal? " ' (" : string-take-right unprocessed 4 
+                                  ; leave out the second space
+                                  bracketizer instring inbrackets bracketstoadd 
+                                      . (string-append (string-drop-right unprocessed 3) "'(")
+                                      . processed
+                                  ; else, just go on
+                                  bracketizer instring inbrackets bracketstoadd 
+                                      . (string-drop-right unprocessed 1)
+                                      . (string-append lastletter processed)
+                        
+
 define : wisp2lisp-parse lisp prev lines
     . "Parse the body of the wisp-code."
-    append lisp '() ; lines
+    ; let bracketizer : (levels '(0)) (
+    set! lines : map-in-order wisp2lisp-add-inline-colon-brackets lines
+    append lisp lines
 
 define : wisp2lisp-initial-comments lisp prev lines
     . "Keep all starting comments: do not start them with a bracket."
@@ -300,6 +352,8 @@ define : wisp2lisp lines
                 : hashbanged : wisp2lisp-hashbang lisp prev unprocessed
                   deinitialized : apply wisp2lisp-initial-comments hashbanged
                   parsed : apply wisp2lisp-parse deinitialized
+                display parsed
+                newline
                 . parsed
 
 ; first step: Be able to mirror a file to stdout
@@ -309,11 +363,13 @@ let*
       ; Lines consist of lines with indent, content and comment. See
       ; line-indent, line-content, line-comment and the other
       ; line-functions for details.
-      lines : linestoindented : split-wisp-lines text
+      textlines : split-wisp-lines text
+      lines : linestoindented textlines
       lisp : wisp2lisp lines
     ; display : list-ref lines 100 ; seems good
     let show : (processed '()) (unprocessed lisp)
         when : not : equal? unprocessed '()
+            display : length processed
             display : line-content : list-ref unprocessed 0
             display ";"
             display : line-comment : list-ref unprocessed 0
