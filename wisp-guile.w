@@ -134,7 +134,7 @@ define : line-continues? line
     . "Check whether the line is a continuation of a previous line (should not start with a bracket)."
     string-prefix? ". " : line-content line
 
-define : line-empty? line
+define : line-empty-code? line
     . "Check whether the code-part of the line is empty: contains only whitespace and/or comment."
     equal? "" : line-content line
 
@@ -144,9 +144,9 @@ define : line-merge-comment line
         : indent : line-indent line
           content : line-content line
           comment : line-comment line
-        if : equal? comment ""
+        if : equal? "" comment
             . line ; no change needed
-            list indent : string-append content ";" content
+            list indent : string-append content ";" comment
                 . ""
 
 ; skip the leading indentation
@@ -264,34 +264,43 @@ define : split-wisp-lines text
 
 define : wisp2lisp-parse lisp prev lines
     . "Parse the body of the wisp-code."
-    append lisp lines
+    append lisp '() ; lines
 
 define : wisp2lisp-initial-comments lisp prev lines
     . "Keep all starting comments: do not start them with a bracket."
+    ; TODO: currently this adds the first comment twice
     let initial-comments : (lisp lisp) (prev prev) (lines lines)
         if : equal? lines '() ; file only contained comments, maybe including the hashbang
             . lisp
-            if : line-empty? prev
-                initial-comments : append lisp : list : line-merge-comment prev
+            if : line-empty-code? prev
+                initial-comments : append lisp : list prev
                     . (list-ref lines 0) (list-tail lines 1)
-                wisp2lisp-parse lisp prev lines
+                list lisp prev lines
+
+define : wisp2lisp-hashbang lisp prev unprocessed
+    . "Parse a potential initial hashbang line."
+    if 
+        and
+            equal? lisp '() ; really the first line
+            equal? 0 : line-indent prev
+            string-prefix? "#!" : line-content prev
+        wisp2lisp-hashbang : append lisp : list : line-merge-comment prev
+            . (list-ref unprocessed 0) (list-tail unprocessed 1)
+        list lisp prev unprocessed
 
 define : wisp2lisp lines
     . "Parse indentation in the lines to add the correct brackets."
     if : equal? lines '()
         . '()
-        let parsehashbang ; process the first line up to the content
+        let 
             : lisp '() ; the processed lines
-              prev : list-ref lines 0
-              unprocessed lines
-            if 
-                and
-                    equal? lisp '() ; really the first line
-                    equal? 0 : line-indent prev
-                    string-prefix? "#!" : line-content prev
-                parsehashbang : append lisp : list : line-merge-comment prev
-                    . (list-ref unprocessed 1) (list-tail unprocessed 1)
-                wisp2lisp-initial-comments (append lisp (list prev)) (list-ref unprocessed 1) (list-tail unprocessed 1)
+              prev : list-ref lines 0 ; the last line
+              unprocessed : list-tail lines 1 ; obvious :)
+            let* 
+                : hashbanged : wisp2lisp-hashbang lisp prev unprocessed
+                  deinitialized : apply wisp2lisp-initial-comments hashbanged
+                  parsed : apply wisp2lisp-parse deinitialized
+                . parsed
 
 ; first step: Be able to mirror a file to stdout
 let*
