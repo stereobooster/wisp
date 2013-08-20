@@ -303,12 +303,13 @@ define : wisp2lisp-add-inline-colon-brackets line
                               ; that we need an additional closing bracket
                               ; at the end.
                               bracketizer instring inbrackets : + 1 bracketstoadd 
-                                  . : string-append (string-drop-right unprocessed 2) "("
-                                  . processed
-                              if : and (> (string-length unprocessed) 3) : equal? " ' (" : string-take-right unprocessed 4 
+                                  . : string-append (string-drop-right unprocessed 2) 
+                                  string-append "(" processed
+                              ; turn " ' (" into " '(", do not modify unprocessed, except to shorten it!
+                              if : and (string-prefix? "(" processed) (> (string-length unprocessed) 3) : equal? " ' " : string-take-right unprocessed 3
                                   ; leave out the second space
                                   bracketizer instring inbrackets bracketstoadd 
-                                      . (string-append (string-drop-right unprocessed 3) "'(")
+                                      . (string-append (string-drop-right unprocessed 2) "'")
                                       . processed
                                   ; else, just go on
                                   bracketizer instring inbrackets bracketstoadd 
@@ -373,12 +374,15 @@ let*
     ; display : list-ref lines 100 ; seems good
     let show : (processed '()) (unprocessed lisp)
         when : not : equal? unprocessed '()
-            display : length processed
-            display : line-content : list-ref unprocessed 0
-            display ";"
-            display : line-comment : list-ref unprocessed 0
-            newline
-            show  (append processed (list (list-ref unprocessed 0))) (list-tail unprocessed 1)
+            let : : next : list-ref unprocessed 0
+                display : length processed
+                display ": "
+                display : xsubstring " " 0 : line-indent next
+                display : line-content next
+                display ";"
+                display : line-comment next
+                newline
+                show  (append processed (list next)) (list-tail unprocessed 1)
     
     let : : line : list-ref lisp 158
         display : line-indent line
