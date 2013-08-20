@@ -284,10 +284,11 @@ define : wisp2lisp-add-inline-colon-brackets line
                       ; check if we’re in a string
                       when : and (equal? "\"" lastletter) : not : equal? "#\\\"" : string-take-right unprocessed 3
                           set! instring : not instring
-                      when : and (equal? ")" lastletter) : not : equal? "#\\)" : string-take-right unprocessed 3
-                          set! inbrackets : + 1 inbrackets
-                      when : and (equal? "(" lastletter) : not : equal? "#\\(" : string-take-right unprocessed 3
-                          set! inbrackets : - 1 inbrackets
+                      when : not instring
+                          when : and (equal? ")" lastletter) : not : equal? "#\\)" : string-take-right unprocessed 3
+                              set! inbrackets : + 1 inbrackets
+                          when : and (equal? "(" lastletter) : not : equal? "#\\(" : string-take-right unprocessed 3
+                              set! inbrackets : - 1 inbrackets
                       ; error handling: inbrackets must never be smaller than 0 - due to the line splitting.
                       when : < inbrackets 0
                           throw 'more-inline-brackets-closed-than-opened inbrackets line
