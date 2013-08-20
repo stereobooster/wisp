@@ -225,6 +225,9 @@ define : splitindent inport
                 ; if nothing else is true, we are in the content
                 set! content : string-append content : string nextchar
                 set! nextchar : read-char inport
+            when commentstart 
+                set! content : string-append content comment
+                set! comment ""
             ; return the indentation, the content and the comment
             list indent content comment
 
