@@ -357,8 +357,6 @@ define : wisp2lisp lines
                 : hashbanged : wisp2lisp-hashbang lisp prev unprocessed
                   deinitialized : apply wisp2lisp-initial-comments hashbanged
                   parsed : apply wisp2lisp-parse deinitialized
-                display parsed
-                newline
                 . parsed
 
 ; first step: Be able to mirror a file to stdout
