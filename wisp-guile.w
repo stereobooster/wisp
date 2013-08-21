@@ -321,7 +321,8 @@ define : wisp2lisp-parse lisp prev lines
     . "Parse the body of the wisp-code."
     ; let bracketizer : (levels '(0)) (
     set! lines : map-in-order wisp2lisp-add-inline-colon-brackets lines
-    append lisp lines
+    let bracketizer : (pre prev) (unprocessed lines) (processed lisp)
+        append lisp lines
 
 define : wisp2lisp-initial-comments lisp prev lines
     . "Keep all starting comments: do not start them with a bracket."
