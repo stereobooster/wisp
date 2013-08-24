@@ -271,7 +271,8 @@ define : wisp2lisp-add-inline-colon-brackets line
         when : string-suffix? " :" content
             set! content : string-append (string-drop-right content 1) "()"
         ; process the content in reverse direction, so we can detect ' : and turn it into '(
-        let linebracketizer : (instring #f) (inbrackets 0) (bracketstoadd 0) (unprocessed content) (processed "")
+        ; FIXME: It always seems to get to here. Then it seems to die. I assume it somehow returns #f for the content.
+        let linebracketizer ( ( instring #f ) ( inbrackets 0 ) ( bracketstoadd 0 ) ( unprocessed content ) ( processed "" ) )
               if : < (string-length unprocessed) 3
                   ; if unprocessed is < 3 chars, it cannot contain " : ". We are done.
                   list 
