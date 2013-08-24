@@ -84,7 +84,7 @@ ____      text : string lastchar
             when : and ( char=? nextchar #\) ) ( not instring ) ( not incomment ) ( = incharform 0 )
                 set! inbrackets : - inbrackets 1
 
-            if : or instring ( > inbrackets 0 )
+            if : or instring : > inbrackets 0
                 if : char=? nextchar #\linefeed
                     set! text : string-append text "\\LINE_BREAK_N"
                     if : char=? nextchar #\newline
