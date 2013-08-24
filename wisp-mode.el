@@ -90,7 +90,8 @@
   (set (make-local-variable 'font-lock-comment-start-skip) ";+ *")
   (set (make-local-variable 'parse-sexp-ignore-comments) t)
   (set (make-local-variable 'font-lock-defaults) wisp-font-lock-keywords)
-  (set (make-local-variable 'mode-require-final-newline) t))
+  (set (make-local-variable 'mode-require-final-newline) t)
+  (local-set-key (kbd "<tab>") 'indent-relative))
 
                         
 
