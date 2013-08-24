@@ -354,15 +354,15 @@ define : wisp2lisp-parse lisp prev lines
     let bracketizer : (levels '(0)) (pre prev) (unprocessed lines) (processed lisp)
         ; levels is the list of levels, with the lowest to the right. i.e: '(12 8 4 0)
         ; once we processed everything, we pass the bracketizer pre as f one last time
-        display "---" 
-        display levels
-        newline
-        display pre
-        newline
-        display : length unprocessed
-        newline 
-        display : length processed
-        newline
+;         display "---" 
+;         display levels
+;         newline
+;         display pre
+;         newline
+;         display : length unprocessed
+;         newline 
+;         display : length processed
+;         newline
         if : equal? #f : line-content pre
             . processed
             let* 
