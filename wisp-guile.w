@@ -285,7 +285,7 @@ define : wisp2lisp-add-inline-colon-brackets line
                           set! instring : not instring
                       when : not instring
                           when : and (equal? ")" lastletter) : not : equal? "#\\)" : string-take-right unprocessed 3
-                              set! inbrackets : + 1 inbrackets
+                              set! inbrackets : + 1 inbrackets ; remember that we're going backwards!
                           when : and (equal? "(" lastletter) : not : equal? "#\\(" : string-take-right unprocessed 3
                               set! inbrackets : - 1 inbrackets
                       ; error handling: inbrackets must never be smaller than 0 - due to the line splitting.
@@ -296,13 +296,13 @@ define : wisp2lisp-add-inline-colon-brackets line
                           linebracketizer instring inbrackets bracketstoadd 
                               . : string-drop-right unprocessed 1
                               . : string-append lastletter processed
-                          ; check for " : ": That adds a new inline bracket
+                          ; else check for " : ": That adds a new inline bracket
                           if : equal? " : " : string-take-right unprocessed 3
                               ; replace the last 2 chars with "(" and note
                               ; that we need an additional closing bracket
                               ; at the end.
                               linebracketizer instring inbrackets : + 1 bracketstoadd 
-                                  . : string-append (string-drop-right unprocessed 2) 
+                                  string-append (string-drop-right unprocessed 2) 
                                   string-append "(" processed
                               ; turn " ' (" into " '(", do not modify unprocessed, except to shorten it!
                               if : and (string-prefix? "(" processed) (> (string-length unprocessed) 3) : equal? " ' " : string-take-right unprocessed 3
@@ -468,7 +468,7 @@ let*
      display : length lisp
      newline
      ; display : list-ref lines 100 ; seems good
-     let show : (processed '()) (unprocessed lisp)
+     let show : (processed '()) (unprocessed lines)
          when : not : equal? unprocessed '()
              let : : next : list-ref unprocessed 0
                  display : length processed
