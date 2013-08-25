@@ -365,13 +365,18 @@ define : line-add-closing-brackets line number
             xsubstring ")" 0 number
         line-comment line
 
-define : line-indent-bracketstoclose line-indent levels
+define : line-indent-brackets-to-close line-indent levels line-continues prev-continues
     . "Find the number of brackets to close to reduce the levels to the line-indent."
     let closer : (bracketstoclose 0) (rest levels)
         if : < line-indent : list-ref rest 0
             closer (+ bracketstoclose 1) (list-tail rest 1)
             ; TODO: if next-indent is not equal to list-ref levels 0, that’s a syntax error
             . bracketstoclose
+
+define : line-indent-brackets-to-open line-indent levels line-continues prev-continues
+    . "Find the number of brackets to close to reduce the levels to the line-indent."
+    ; TODO: implement
+    throw 'not-implemented-error 
 
 
 define : wisp2lisp-parse lisp prev lines
@@ -380,66 +385,79 @@ define : wisp2lisp-parse lisp prev lines
     let bracketizer : (levels '(0)) (pre prev) (unprocessed lines) (processed lisp)
         ; levels is the list of levels, with the lowest to the right. i.e: '(12 8 4 0)
         ; once we processed everything, we pass the bracketizer pre as f one last time
-;         display "---" 
-;         display levels
-;         newline
-;         display pre
-;         newline
-;         display : length unprocessed
-;         newline 
-;         display : length processed
-;         newline
         if : equal? #f : line-content pre
             . processed
             let* 
-                : pre-indent : line-indent pre
-                  next
+                : next
                       if : equal? unprocessed '()
                           list 0 #f #f ; this is the break condition for the next loop!
                           list-ref unprocessed 0
-                  next-indent : line-indent next
                 if : line-empty-code? next ; empty lines get silently added, but otherwise ignored
                     bracketizer levels pre 
                          list-tail unprocessed 1
                          append processed : list next
+                    ; firstoff add the next indent to the levels, so we only work on the levels, prev-continues, next-continues and next-indent
                     ; if pre was a continuation, the real levels are 1 lower than the counted levels
-                    let : : reallevels : if (not (line-continues? pre)) levels : list-tail levels 1
-                         cond 
-                             : > next-indent pre-indent ; I do not need to add brackets to pre, but next a starting bracket, except if it continues
-                               let : : newlevels : append (list next-indent) reallevels 
-                                   bracketizer newlevels 
-                                       if : line-continues? next
-                                           . next
-                                           line-add-starting-bracket next
-                                       list-tail unprocessed 1
-                                       append processed : list pre
-                             : = next-indent pre-indent ; pre needs a closing bracket, next needs an opening bracket, except if they continue
-                               bracketizer reallevels
-                                   if : line-continues? next
-                                       . next
-                                       line-add-starting-bracket next
-                                   list-tail unprocessed 1
-                                   append processed 
-                                       list 
-                                           if : line-continues? pre
-                                               . pre 
-                                               line-add-closing-brackets pre 1
-                             : < next-indent pre-indent ; we need to add the correct number of closing brackets to pre and possibly one to next
-                                 let : : bracketstoclose : line-indent-bracketstoclose next-indent reallevels
-                                     bracketizer 
-                                         list-tail levels bracketstoclose
-                                         if : or (equal? #f (line-content next)) : line-continues? next
-                                             . next
-                                             line-add-starting-bracket next
-                                         if : equal? unprocessed '()
-                                              . unprocessed
-                                              list-tail unprocessed 1
-                                         append processed
-                                             list
-                                                 if : line-continues? pre
-                                                     line-add-closing-brackets pre : - bracketstoclose 1
-                                                     line-add-closing-brackets pre bracketstoclose
-
+                    let*
+                        : next-indent : line-indent next
+                          pre-indent : line-indent pre
+                          pre-continues : line-continues? pre
+                          next-continues : line-continues? next
+                          bracketstocloseprev : line-indent-brackets-to-close next-indent levels line-continues prev-continues
+                          bracketstoopennext : line-indent-brackets-to-open next-indent levels line-continues prev-continues
+                          newnext : if bracketstoopennext (line-add-starting-bracket next) next
+                          newpre : line-add-closing-brackets pre bracketstocloseprev                          
+                          reducedlevels : list-tail levels 1
+                          newlevels : if next-continues reducedlevels levels
+                        bracketizer newlevels newnext 
+                            list-tail unprocessed 1
+                            append processed : list newpre
+                            
+;                     let : : reallevels : if (not (line-continues? pre)) levels : list-tail levels 1
+;                          cond 
+;                              : > next-indent pre-indent ; I do not need to add brackets to pre, but next a starting bracket, except if it continues
+;                                let : : newlevels : append (list next-indent) reallevels 
+;                                    bracketizer newlevels 
+;                                        if : line-continues? next
+;                                            . next
+;                                            line-add-starting-bracket next
+;                                        list-tail unprocessed 1
+;                                        append processed : list pre
+;                              : = next-indent pre-indent ; pre needs a closing bracket, next needs an opening bracket, except if they continue
+;                                bracketizer 
+;                                    if : and (line-continues? next) (line-continues? pre) 
+;                                        append (list next-indent) reallevels
+;                                        . reallevels
+;                                    if : line-continues? next
+;                                        . next
+;                                        line-add-starting-bracket next
+;                                    list-tail unprocessed 1
+;                                    append processed 
+;                                        list 
+;                                            if : line-continues? pre
+;                                                . pre 
+;                                                line-add-closing-brackets pre 1
+;                              : < next-indent pre-indent ; we need to add the correct number of closing brackets to pre and possibly one to next
+;                                  let : : bracketstoclose : line-indent-bracketstoclose next-indent reallevels
+;                                      newline
+;                                      format #t "to close: ~a , prev-indent: ~a, next-indent: ~a , reallevels: ~a , pre: ~a, next: ~a" 
+;                                          . bracketstoclose pre-indent next-indent  reallevels pre next
+;                                      newline
+;                                      newline
+;                                      bracketizer 
+;                                          list-tail levels bracketstoclose
+;                                          if : or (equal? #f (line-content next)) : line-continues? next
+;                                              . next
+;                                              line-add-starting-bracket next
+;                                          if : equal? unprocessed '()
+;                                               . unprocessed
+;                                               list-tail unprocessed 1
+;                                          append processed
+;                                              list
+;                                                  if : line-continues? pre
+;                                                      line-add-closing-brackets pre : - bracketstoclose 1
+;                                                      line-add-closing-brackets pre bracketstoclose
+; 
 
 define : wisp2lisp-initial-comments lisp prev lines
      . "Keep all starting comments: do not start them with a bracket."
