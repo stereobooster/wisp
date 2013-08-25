@@ -282,8 +282,7 @@ define : wisp2lisp-add-inline-colon-brackets line
         ; process the content in reverse direction, so we can detect ' : and turn it into '(
         ; FIXME: It gets here. Then it start treating all lines as one (removing linebreaks).
         ; let linebracketizer ( ( instring #f ) ( inbrackets 0 ) ( bracketstoadd 0 ) ( unprocessed content ) ( processed "" ) ) 
-        let linebracketizer 
-              ( instring #f ) ( inbrackets 0 ) ( bracketstoadd 0 ) ( unprocessed content ) ( processed "" ) 
+        let linebracketizer : ( instring #f ) ( inbrackets 0 ) ( bracketstoadd 0 ) ( unprocessed content ) ( processed "" ) 
               if : < (string-length unprocessed) 2
                   ; if unprocessed is < 2 chars, it cannot contain ": ". We are done.
                   list 
@@ -293,15 +292,25 @@ define : wisp2lisp-add-inline-colon-brackets line
                   ; else
                   let 
                       : lastletter : string-take-right unprocessed 1
-                        lastupto3 : string-take-right unprocessed : max 3 : length unprocessed
+                        lastupto3 : string-take-right unprocessed : min 3 : string-length unprocessed
                       ; check if we’re in a string
-                      when : and (equal? "\"" lastletter) : not : equal? "#\\\"" lastupto3
+                      when
+                          or
+                              and
+                                  not instring
+                                  equal? "\"" lastletter
+                                  not : equal? "#\\\"" lastupto3
+                              and
+                                  . instring
+                                  equal? "\"" lastletter
+                                  string-suffix? "\\\"" lastupto3
+                                  not : equal? "\\\\\"" lastupto3
                           set! instring : not instring
                       when : not instring
                           when : and (equal? ")" lastletter) : not : equal? "#\\)" lastupto3
                               set! inbrackets : + 1 inbrackets ; remember that we're going backwards!
                           when : and (equal? "(" lastletter) : not : equal? "#\\(" lastupto3
-                              set! inbrackets : - 1 inbrackets
+                              set! inbrackets : - inbrackets 1
                       ; error handling: inbrackets must never be smaller than 0 - due to the line splitting.
                       when : < inbrackets 0
                           throw 'more-inline-brackets-closed-than-opened inbrackets line
@@ -320,7 +329,7 @@ define : wisp2lisp-add-inline-colon-brackets line
                                   string-append (string-drop-right unprocessed 2) 
                                   string-append "(" processed
                               ; turn " ' (" into " '(", do not modify unprocessed, except to shorten it!
-                              if : and (string-prefix? "(" processed) (> (string-length unprocessed) 3) : equal? " ' " : string-take-right unprocessed 3
+                              if : and (string-prefix? "(" processed) : equal? " ' " lastupto3
                                   ; leave out the second space
                                   linebracketizer instring inbrackets bracketstoadd 
                                       . (string-append (string-drop-right unprocessed 2) "'")
@@ -346,6 +355,9 @@ define : line-add-starting-bracket line
 
 define : line-add-closing-brackets line number
     . "Add a closing bracket to the line."
+    display number 
+    display line
+    newline
     list 
         line-indent line
         string-append 
@@ -364,7 +376,6 @@ define : line-indent-bracketstoclose line-indent levels
 
 define : wisp2lisp-parse lisp prev lines
     . "Parse the body of the wisp-code."
-    ; let bracketizer : (levels '(0)) (
     set! lines : map-in-order wisp2lisp-add-inline-colon-brackets lines
     let bracketizer : (levels '(0)) (pre prev) (unprocessed lines) (processed lisp)
         ; levels is the list of levels, with the lowest to the right. i.e: '(12 8 4 0)
@@ -475,7 +486,7 @@ let*
        ; line-functions for details.
        textlines : split-wisp-lines text
        lines : linestoindented textlines
-       ; lisp : wisp2lisp lines
+       lisp : wisp2lisp lines
      display : length textlines
      newline
      display : length lines
@@ -483,7 +494,7 @@ let*
      ; display : length lisp
      newline
      ; display : list-ref lines 100 ; seems good
-     let show : (processed '()) (unprocessed lines)
+     let show : (processed '()) (unprocessed lisp)
          when : not : equal? unprocessed '()
              let : : next : list-ref unprocessed 0
                  display : length processed
