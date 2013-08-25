@@ -271,23 +271,27 @@ define : wisp2lisp-add-inline-colon-brackets line
         when : string-suffix? " :" content
             set! content : string-append (string-drop-right content 1) "()"
         ; process the content in reverse direction, so we can detect ' : and turn it into '(
-        ; FIXME: It always seems to get to here. Then it seems to die. I assume it somehow returns #f for the content.
-        let linebracketizer ( ( instring #f ) ( inbrackets 0 ) ( bracketstoadd 0 ) ( unprocessed content ) ( processed "" ) )
-              if : < (string-length unprocessed) 3
-                  ; if unprocessed is < 3 chars, it cannot contain " : ". We are done.
+        ; FIXME: It gets here. Then it start treating all lines as one (removing linebreaks).
+        ; let linebracketizer ( ( instring #f ) ( inbrackets 0 ) ( bracketstoadd 0 ) ( unprocessed content ) ( processed "" ) ) 
+        let linebracketizer 
+              ( instring #f ) ( inbrackets 0 ) ( bracketstoadd 0 ) ( unprocessed content ) ( processed "" ) 
+              if : < (string-length unprocessed) 2
+                  ; if unprocessed is < 2 chars, it cannot contain ": ". We are done.
                   list 
                       line-indent line
                       string-append unprocessed processed : xsubstring ")" 0 bracketstoadd
                       line-comment line
                   ; else
-                  let : : lastletter : string-take-right unprocessed 1
+                  let 
+                      : lastletter : string-take-right unprocessed 1
+                        lastupto3 : string-take-right unprocessed : max 3 : length unprocessed
                       ; check if we’re in a string
-                      when : and (equal? "\"" lastletter) : not : equal? "#\\\"" : string-take-right unprocessed 3
+                      when : and (equal? "\"" lastletter) : not : equal? "#\\\"" lastupto3
                           set! instring : not instring
                       when : not instring
-                          when : and (equal? ")" lastletter) : not : equal? "#\\)" : string-take-right unprocessed 3
+                          when : and (equal? ")" lastletter) : not : equal? "#\\)" lastupto3
                               set! inbrackets : + 1 inbrackets ; remember that we're going backwards!
-                          when : and (equal? "(" lastletter) : not : equal? "#\\(" : string-take-right unprocessed 3
+                          when : and (equal? "(" lastletter) : not : equal? "#\\(" lastupto3
                               set! inbrackets : - 1 inbrackets
                       ; error handling: inbrackets must never be smaller than 0 - due to the line splitting.
                       when : < inbrackets 0
@@ -298,7 +302,8 @@ define : wisp2lisp-add-inline-colon-brackets line
                               . : string-drop-right unprocessed 1
                               . : string-append lastletter processed
                           ; else check for " : ": That adds a new inline bracket
-                          if : equal? " : " : string-take-right unprocessed 3
+                          ; support : at the beginning of a line, too.
+                          if : or (equal? " : "  lastupto3) (equal? ": " lastupto3)
                               ; replace the last 2 chars with "(" and note
                               ; that we need an additional closing bracket
                               ; at the end.
