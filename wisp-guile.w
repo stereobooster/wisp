@@ -119,7 +119,7 @@ define : splitlines inport
                     set! lines : append lines (list nextline)
                     set! nextline ""
             set! nextchar : read-char inport
-        . lines
+        append lines : list nextline
 
 define : line-indent line
     list-ref line 0
