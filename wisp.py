@@ -27,7 +27,6 @@ Currently it is written in Python, because I like Python as language,
 but crave the power of lisp.
 """
 
-
 def replaceinwisp(code, string, replacement):
     """Replace the given string with the replacement, but only in
     indentation sensitive parts of the code.
@@ -56,7 +55,8 @@ def replaceinwisp(code, string, replacement):
                 incomment = not incomment
             # all processing stops in comments
             continue
-        if i == '"' and not code[n-1:n] == "\\":
+        # FIXME: This still breaks at "\\"
+        if i == '"' and (not code[n-1:n] == "\\" or (code[n-2:n] == "\\\\" and not code[n-3:n] == "\\\\\\")):
             instring = not instring
         # all processing stops in strings
         if instring:

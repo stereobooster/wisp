@@ -24,11 +24,16 @@ ____      text : string lastchar
           incharform 0 ; #\<something>
         while : not : eof-object? nextchar
             ; incommentfirstchar is only valid for exactly one char
-            when incommentfirstchar : set! incommentfirstchar #f
+            when incommentfirstchar : set! incommentfirstchar #f 
             ; already started char forms win over everything, so process them first.
             ; already started means: after the #\
+            ; FIXME: Fails to capture #t and #f which can kill line splitting if it happens inside brackets
+            when : = incharform 1
+                when : not : char=? #\" nextchar 
+                    set! incharform 0
+                    
             when : >= incharform 2
-                if : char=? nextchar #\space
+                if : or (char=? nextchar #\space) (char=? nextchar #\linefeed ) (char=? nextchar #\newline ) 
                    set! incharform 0
                    ; else
                    set! incharform : + incharform 1
@@ -40,7 +45,11 @@ ____      text : string lastchar
                         . instring ; when I’m in a string, I can get out
                         char=? lastchar #\space ; when the last char was a space, I can get into a string
                         char=? lastchar #\linefeed ; same for newline chars
-                        char=? lastchar #\newline
+                        char=? lastchar #\newline 
+                        and : not instring ; outside of strings, brackets are pseudo-whitespace, too
+                            or
+                                char=? lastchar #\( 
+                                char=? lastchar #\)
                      not incomment
                      < incharform 1
                 set! instring : not instring
@@ -77,7 +86,7 @@ ____      text : string lastchar
                      char=? lastchar #\#
                      char=? nextchar #\\
                 set! incharform 2
-                        
+            
             ; check for brackets
             when : and ( char=? nextchar #\( ) ( not instring ) ( not incomment ) ( = incharform 0 )
                 set! inbrackets : + inbrackets 1
@@ -466,12 +475,12 @@ let*
        ; line-functions for details.
        textlines : split-wisp-lines text
        lines : linestoindented textlines
-       lisp : wisp2lisp lines
+       ; lisp : wisp2lisp lines
      display : length textlines
      newline
      display : length lines
      newline
-     display : length lisp
+     ; display : length lisp
      newline
      ; display : list-ref lines 100 ; seems good
      let show : (processed '()) (unprocessed lines)
