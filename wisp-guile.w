@@ -403,7 +403,7 @@ define : wisp2lisp-parse lisp prev lines
     if : not : line-continues? prev
         set! prev : line-add-starting-bracket prev
     set! lines : map-in-order wisp2lisp-add-inline-colon-brackets lines
-    let bracketizer : (levels '(0)) (pre prev) (unprocessed lines) (processed lisp)
+    let bracketizer : (levels '(0)) (pre prev) (unprocessed lines) (processed lisp) (whitespace '())
         ; levels is the list of levels, with the lowest to the right. i.e: '(12 8 4 0)
         ; once we processed everything, we pass the bracketizer pre as f one last time
         if : equal? #f : line-content pre
@@ -412,7 +412,8 @@ define : wisp2lisp-parse lisp prev lines
                 if : line-empty-code? next ; empty lines get silently added, but otherwise ignored
                     bracketizer levels pre 
                          list-tail unprocessed 1
-                         append processed : list next
+                         . processed 
+                         append whitespace : list next
                     ; firstoff add the next indent to the levels, so we only work on the levels, prev-continues, next-continues and next-indent
                     ; if pre was a continuation, the real levels are 1 lower than the counted levels
                     let*
@@ -428,7 +429,8 @@ define : wisp2lisp-parse lisp prev lines
                           newlevels : line-indent-levels-adjust levels next-indent
                         bracketizer newlevels newnext 
                             if final-line unprocessed : list-tail unprocessed 1
-                            append processed : list newpre
+                            append processed (list newpre) whitespace
+                            list
 
 
 define : wisp2lisp-initial-comments lisp prev lines
