@@ -397,6 +397,15 @@ define : line-indent-levels-adjust levels next-indent
                        append (list next-indent) lev
                        adjuster : list-tail lev 1
 
+define : line-drop-continuation-dot line
+       let : : content : line-content line
+           list
+               line-indent line
+               if : line-continues? line
+                   string-drop content 2
+                   . content
+               line-comment line 
+
 define : wisp2lisp-parse lisp prev lines
     . "Parse the body of the wisp-code."
     set! prev : wisp2lisp-add-inline-colon-brackets prev ; prev already is a code-line.
@@ -425,7 +434,7 @@ define : wisp2lisp-parse lisp prev lines
                           bracketstocloseprev : line-indent-brackets-to-close next-indent levels next-continues pre-continues
                           bracketstoopennext : line-indent-brackets-to-open next-indent levels next-continues pre-continues
                           newnext : if final-line next : if (> bracketstoopennext 0) (line-add-starting-bracket next) next
-                          newpre : line-add-closing-brackets pre bracketstocloseprev                          
+                          newpre : line-drop-continuation-dot : line-add-closing-brackets pre bracketstocloseprev
                           newlevels : line-indent-levels-adjust levels next-indent
                         bracketizer newlevels newnext 
                             if final-line unprocessed : list-tail unprocessed 1
