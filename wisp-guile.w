@@ -29,12 +29,17 @@ ____      text : string lastchar
             ; already started means: after the #\
             ; FIXME: Fails to capture #t and #f which can kill line splitting if it happens inside brackets
             when : = incharform 1
-                when : not : char=? #\" nextchar 
+                when : not : and (char=? lastchar #\# ) : or (char=? #\f nextchar) (char=? #\t nextchar)
+                    format #t "1: set incharform 0: lastchar ~a nextchar ~a instring ~a incomment ~a incharform ~a" lastchar nextchar instring incomment incharform
+                    newline
                     set! incharform 0
                     
             when : >= incharform 2
                 if : or (char=? nextchar #\space) (char=? nextchar #\linefeed ) (char=? nextchar #\newline ) 
-                   set! incharform 0
+                   begin
+                       format #t "2: set incharform 0: lastchar ~a nextchar ~a instring ~a incomment ~a incharform ~a" lastchar nextchar instring incomment incharform
+                       newline
+                       set! incharform 0
                    ; else
                    set! incharform : + incharform 1
             ; check if we switch to a string: last char is space, linebreak or in a string, not in a charform, not in a comment
@@ -90,6 +95,8 @@ ____      text : string lastchar
             ; check for brackets 
             ; FIXME: this fails to parse. 
             when : and ( char=? nextchar #\( ) ( not instring ) ( not incomment ) ( = incharform 0 )
+                format #t "add bracketlevel: lastchar ~a nextchar ~a instring ~a incomment ~a incharform ~a" lastchar nextchar instring incomment incharform
+                newline
                 set! inbrackets : + inbrackets 1
             when : and ( char=? nextchar #\) ) ( not instring ) ( not incomment ) ( = incharform 0 )
                 set! inbrackets : - inbrackets 1
