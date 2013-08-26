@@ -87,7 +87,8 @@ ____      text : string lastchar
                      char=? nextchar #\\
                 set! incharform 2
             
-            ; check for brackets
+            ; check for brackets 
+            ; FIXME: this fails to parse. 
             when : and ( char=? nextchar #\( ) ( not instring ) ( not incomment ) ( = incharform 0 )
                 set! inbrackets : + inbrackets 1
             when : and ( char=? nextchar #\) ) ( not instring ) ( not incomment ) ( = incharform 0 )
@@ -157,6 +158,7 @@ define : line-merge-comment line
           comment : line-comment line
         if : equal? "" comment
             . line ; no change needed
+            ; FIXME: ";" fails to parse.
             list indent (string-append content ";" comment) ""
 
 ; skip the leading indentation
@@ -498,6 +500,7 @@ let*
                  display : xsubstring " " 0 : line-indent next
                  display : line-content next
                  unless : equal? "" : line-comment next
+                     ; FIXME: ";" fails to parse
                      display ";"
                      display : line-comment next
                  newline
