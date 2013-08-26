@@ -482,10 +482,10 @@ let*
      let show : (processed '()) (unprocessed lisp)
          when : not : equal? unprocessed '()
              let : : next : list-ref unprocessed 0
-                 display : length processed
-                 display "/"
-                 display : length unprocessed
-                 display ": "
+                 ;display : length processed
+                 ;display "/"
+                 ;display : length unprocessed
+                 ;display ": "
                  display : xsubstring " " 0 : line-indent next
                  display : line-content next
                  unless : equal? "" : line-comment next
