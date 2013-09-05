@@ -10,6 +10,36 @@
 ;; real comments as ;\REALCOMMENTHERE
 ;; 
 ;; -Author: Arne Babenhauserheide
+
+define : endsinunevenbackslashes text
+       if : = 0 : string-length text
+           . #f
+           if : = 1 : string-length text
+               if : equal? "\\" : string-take-right text 1
+                   . #t ; only contains a single backslash, so it ends in uneven backslashes
+                   . #f ; only contains a non-backslash, so it does not end in uneven backslashes
+               let loop ; else: check the rest
+                   : last2 : string-take-right text 2
+                     rest : string-drop-right text 2
+                   ; repetition condition: last2 is \\ and at least 2 chars left in rest
+                   if : equal last2 "\\\\"
+                       if : < 1 : string-length rest
+                           loop (string-take-right rest 2) (string-drop-right rest 2)
+                           ; uneven number of final characters finish condition
+                           if ; TODO finish this.
+                               and
+                                   = 1 : string-length rest
+                                   equal? last2 "\\\\"
+                                   not : equal? rest "\\"
+                               . #t
+                               if ; even number of final characters finish condition
+                                   and
+                                       = 0 : string-length rest
+                                       equal? last2 "\\\\"
+                                   . #t
+                           
+               
+
 define : nostringandbracketbreaks inport
     ; Replace end of line characters in brackets and strings
     ; FIXME: Breaks if the string is shorter than 2 chars
@@ -45,16 +75,25 @@ ____      text : string lastchar
             ; check if we switch to a string: last char is space, linebreak or in a string, not in a charform, not in a comment
             when 
                 and 
+                ; FIXME: This fails to capture ";"
                      char=? nextchar #\"
                      or 
-                        . instring ; when I’m in a string, I can get out
+                        and 
+                            . instring  ; when I’m in a string, I can get out
+                            or 
+                                not char=? lastchar #\\ ; if the last char is not a backslash (escaped quote)
+                                ; or the last char is a backslash preceded by an uneven number of backslashes (so the backslash is actually an escaped backslash)
+                                and : char=? lastchar #\\
+                                      ; not : equal? #f : string-match "\\([^\\]\\)+\\(\\\\\\\\\\)*[\\]$" text ; matches [^\](\\)*\$ - non-backslash + arbitrary number of pairs of backslashes + final backslash which undoes the escaping from the lastchar (by actually escaping the lastchar)
+                                      endsinunevenbackslashes text
                         char=? lastchar #\space ; when the last char was a space, I can get into a string
                         char=? lastchar #\linefeed ; same for newline chars
                         char=? lastchar #\newline 
                         and : not instring ; outside of strings, brackets are pseudo-whitespace, too
-                            or
+                              or
                                 char=? lastchar #\( 
                                 char=? lastchar #\)
+                     ; FIXME: This fails when I get "\""
                      not incomment
                      < incharform 1
                 set! instring : not instring
@@ -93,7 +132,6 @@ ____      text : string lastchar
                 set! incharform 2
             
             ; check for brackets 
-            ; FIXME: this fails to parse. 
             when : and ( char=? nextchar #\( ) ( not instring ) ( not incomment ) ( = incharform 1 )
                 ; format #f "add bracketlevel: lastchar ~a nextchar ~a instring ~a incomment ~a incharform ~a" lastchar nextchar instring incomment incharform
                 ; newline
@@ -111,6 +149,7 @@ ____      text : string lastchar
                 ; mark the start of a comment, so we do not have to
                 ; repeat the string matching in later code. We include
                 ; the comment character!
+                ; not (instring or inbrackets) = neither instring nor inbrackets
                 if incommentfirstchar
                     set! text : string-append text ( string nextchar ) "\\REALCOMMENTHERE"
                     ; when not in brackets or string or starting a
