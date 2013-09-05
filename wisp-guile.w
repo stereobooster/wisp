@@ -81,7 +81,6 @@ ____      text : string lastchar
                               or
                                 char=? lastchar #\( 
                                 char=? lastchar #\)
-                     ; FIXME: This fails when I get "\""
                      not incomment
                      < incharform 1
                 set! instring : not instring
