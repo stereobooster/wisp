@@ -94,11 +94,11 @@ ____      text : string lastchar
             
             ; check for brackets 
             ; FIXME: this fails to parse. 
-            when : and ( char=? nextchar #\( ) ( not instring ) ( not incomment ) ( = incharform 0 )
-                format #t "add bracketlevel: lastchar ~a nextchar ~a instring ~a incomment ~a incharform ~a" lastchar nextchar instring incomment incharform
-                newline
+            when : and ( char=? nextchar #\( ) ( not instring ) ( not incomment ) ( = incharform 1 )
+                ; format #f "add bracketlevel: lastchar ~a nextchar ~a instring ~a incomment ~a incharform ~a" lastchar nextchar instring incomment incharform
+                ; newline
                 set! inbrackets : + inbrackets 1
-            when : and ( char=? nextchar #\) ) ( not instring ) ( not incomment ) ( = incharform 0 )
+            when : and ( char=? nextchar #\) ) ( not instring ) ( not incomment ) ( = incharform 1 )
                 set! inbrackets : - inbrackets 1
 
             if : or instring : > inbrackets 0
