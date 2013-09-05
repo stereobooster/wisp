@@ -317,7 +317,6 @@ define : wisp2lisp-add-inline-colon-brackets line
         when : string-suffix? " :" content
             set! content : string-append (string-drop-right content 1) "()"
         ; process the content in reverse direction, so we can detect ' : and turn it into '(
-        ; FIXME: It gets here. Then it start treating all lines as one (removing linebreaks).
         ; let linebracketizer ( ( instring #f ) ( inbrackets 0 ) ( bracketstoadd 0 ) ( unprocessed content ) ( processed "" ) ) 
         let linebracketizer : ( instring #f ) ( inbrackets 0 ) ( bracketstoadd 0 ) ( unprocessed content ) ( processed "" ) 
               if : < (string-length unprocessed) 2
