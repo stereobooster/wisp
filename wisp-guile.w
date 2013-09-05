@@ -14,31 +14,19 @@
 define : endsinunevenbackslashes text
        if : = 0 : string-length text
            . #f
-           if : = 1 : string-length text
-               if : equal? "\\" : string-take-right text 1
-                   . #t ; only contains a single backslash, so it ends in uneven backslashes
-                   . #f ; only contains a non-backslash, so it does not end in uneven backslashes
-               let loop ; else: check the rest
-                   : last2 : string-take-right text 2
-                     rest : string-drop-right text 2
-                   ; repetition condition: last2 is \\ and at least 2 chars left in rest
-                   if : equal last2 "\\\\"
-                       if : < 1 : string-length rest
-                           loop (string-take-right rest 2) (string-drop-right rest 2)
-                           ; uneven number of final characters finish condition
-                           if ; TODO finish this.
-                               and
-                                   = 1 : string-length rest
-                                   equal? last2 "\\\\"
-                                   not : equal? rest "\\"
-                               . #t
-                               if ; even number of final characters finish condition
-                                   and
-                                       = 0 : string-length rest
-                                       equal? last2 "\\\\"
-                                   . #t
-                           
-               
+           let counter
+               : last : string-take-right text 1
+                 rest : string-append " " : string-drop-right text 1
+                 count 0
+               cond
+                   : = 0 : string-length rest ; end clause: read all
+                     odd? count
+                   ; end clause: no \ 
+                   : not : equal? last : string #\\
+                     odd? count
+                   else 
+                     counter (string-take-right rest 1) (string-drop-right rest 1) (+ 1 count)
+
 
 define : nostringandbracketbreaks inport
     ; Replace end of line characters in brackets and strings
@@ -81,7 +69,7 @@ ____      text : string lastchar
                         and 
                             . instring  ; when I’m in a string, I can get out
                             or 
-                                not char=? lastchar #\\ ; if the last char is not a backslash (escaped quote)
+                                not : char=? lastchar #\\ ; if the last char is not a backslash (escaped quote)
                                 ; or the last char is a backslash preceded by an uneven number of backslashes (so the backslash is actually an escaped backslash)
                                 and : char=? lastchar #\\
                                       ; not : equal? #f : string-match "\\([^\\]\\)+\\(\\\\\\\\\\)*[\\]$" text ; matches [^\](\\)*\$ - non-backslash + arbitrary number of pairs of backslashes + final backslash which undoes the escaping from the lastchar (by actually escaping the lastchar)
