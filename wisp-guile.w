@@ -16,6 +16,7 @@ define : endsinunevenbackslashes text
            . #f
            let counter
                : last : string-take-right text 1
+                 ; FIXME: the : after rest stays. I do not yet know why.
                  rest : string-append " " : string-drop-right text 1
                  count 0
                cond
@@ -48,23 +49,24 @@ ____      text : string lastchar
             ; FIXME: Fails to capture #t and #f which can kill line splitting if it happens inside brackets
             when : = incharform 1
                 when : not : and (char=? lastchar #\# ) : or (char=? #\f nextchar) (char=? #\t nextchar)
-                    format #t "1: set incharform 0: lastchar ~a nextchar ~a instring ~a incomment ~a incharform ~a" lastchar nextchar instring incomment incharform
-                    newline
+                    ; format #t "1: set incharform 0: lastchar ~a nextchar ~a instring ~a incomment ~a incharform ~a" lastchar nextchar instring incomment incharform
+                    ; newline
                     set! incharform 0
                     
             when : >= incharform 2
                 if : or (char=? nextchar #\space) (char=? nextchar #\linefeed ) (char=? nextchar #\newline ) 
                    begin
-                       format #t "2: set incharform 0: lastchar ~a nextchar ~a instring ~a incomment ~a incharform ~a" lastchar nextchar instring incomment incharform
-                       newline
+                       ; format #t "2: set incharform 0: lastchar ~a nextchar ~a instring ~a incomment ~a incharform ~a" lastchar nextchar instring incomment incharform
+                       ; newline
                        set! incharform 0
                    ; else
                    set! incharform : + incharform 1
             ; check if we switch to a string: last char is space, linebreak or in a string, not in a charform, not in a comment
             when 
                 and 
-                ; FIXME: This fails to capture ";"
                      char=? nextchar #\"
+                     not incomment
+                     < incharform 1
                      or 
                         and 
                             . instring  ; when I’m in a string, I can get out
@@ -81,8 +83,6 @@ ____      text : string lastchar
                               or
                                 char=? lastchar #\( 
                                 char=? lastchar #\)
-                     not incomment
-                     < incharform 1
                 set! instring : not instring
             ; check if we switch to a comment
             when 
@@ -191,8 +191,8 @@ define : line-merge-comment line
           comment : line-comment line
         if : equal? "" comment
             . line ; no change needed
-            ; FIXME: ";" fails to parse.
-            list indent (string-append content ";" comment) ""
+            list indent : string-append content ";" comment
+                . ""
 
 ; skip the leading indentation
 define : skipindent inport
@@ -258,7 +258,7 @@ define : splitindent inport
                 ; if we cannot complete the commentcheck, we did not start a real comment. Append it to the content
                 when : and commentstart : not : char=? nextchar : string-ref commentstartidentifier commentidentifierindex
                     set! commentstart #f
-                    set! content : string-append content comment
+                    set! content : string-append content comment : string nextchar
                     set! comment ""
                     set! commentidentifierindex 0
                     set! nextchar : read-char inport
@@ -533,7 +533,6 @@ let*
                  display : xsubstring " " 0 : line-indent next
                  display : line-content next
                  unless : equal? "" : line-comment next
-                     ; FIXME: ";" fails to parse
                      display ";"
                      display : line-comment next
                  newline
