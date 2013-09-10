@@ -86,7 +86,9 @@ ____      text : string lastchar
             ; check if we switch to a comment
             when 
                 and 
-                     char=? nextchar #\;
+                     ; FIXME: this should be
+                     ; char=? nextchar #\;
+                     equal? ";" : string nextchar
                      not incomment
                      not instring
                      < incharform 2
@@ -237,13 +239,23 @@ define : splitindent inport
               comment ""
             while : not : eof-object? nextchar
                 ; check whether we leave the content
-                when : and ( not incomment ) : char=? nextchar #\;
+                ; FIXME: (wisp.py) the reader cuts the ; here, when I write it as this:
+                ; when : and ( not incomment ) : char=? nextchar #\; 
+                ; FIXME: THIS mistreats #\; as comment! (shown 4 lines after this comment…)
+                when 
+                    and 
+                        not incomment
+                        ; FIXME: this should be but would break
+                        ; char=? nextchar #\;
+                        equal?  ";" : string nextchar
+                        not : string-suffix? ( string #\# #\\ ) content
                     set! commentstart #t
                     set! comment : string-append comment : string nextchar
                     set! nextchar : read-char inport
                     continue
                 ; check whether we stay in the commentcheck
                 when : and commentstart : char=? nextchar : string-ref commentstartidentifier commentidentifierindex
+
                     set! commentidentifierindex : + commentidentifierindex 1
                     set! comment : string-append comment : string nextchar
                     when : = commentidentifierindex commentstartidentifierlength
