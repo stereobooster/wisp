@@ -16,7 +16,6 @@ define : endsinunevenbackslashes text
            . #f
            let counter
                : last : string-take-right text 1
-                 ; FIXME: the : after rest stays. I do not yet know why.
                  rest : string-append " " : string-drop-right text 1
                  count 0
                cond
@@ -306,9 +305,11 @@ define : read-whole-file filename
                     string-append text : string nextchar
                     read-char origfile
 
+
 define : split-wisp-lines text
     let : : nobreaks : call-with-input-string text nostringandbracketbreaks
         call-with-input-string nobreaks splitlines
+
 
 define : wisp2lisp-add-inline-colon-brackets line
     . "Add inline colon brackets to a wisp-line (indent,content,comment)"
@@ -339,8 +340,7 @@ define : wisp2lisp-add-inline-colon-brackets line
                               and
                                   . instring
                                   equal? "\"" lastletter
-                                  string-suffix? "\\\"" lastupto3
-                                  not : equal? "\\\\\"" lastupto3
+                                  not : endsinunevenbackslashes : string-drop-right unprocessed 1
                           set! instring : not instring
                       when : not instring
                           when : and (equal? ")" lastletter) : not : equal? "#\\)" lastupto3
