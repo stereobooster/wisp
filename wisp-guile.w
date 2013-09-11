@@ -9,7 +9,12 @@
 ;; placeholders \STRING_BREAK_N and \STRING_BREAK_R. Also identify
 ;; real comments as ;\REALCOMMENTHERE
 ;; 
+;; bootstrap via python3 wisp.py wisp-guile.w > 1 && guile 1 wisp-guile.w > 2 && guile 2 wisp-guile.w > 3 && diff 2 3
+;; 
 ;; -Author: Arne Babenhauserheide
+
+define-module : language wisp
+              . #:export : wisp2lisp
 
 define : endsinunevenbackslashes text
        if : = 0 : string-length text
@@ -509,7 +514,7 @@ define : wisp2lisp-hashbang lisp prev unprocessed
              . (list-ref unprocessed 0) (list-tail unprocessed 1)
          list lisp prev unprocessed
 
-define : wisp2lisp lines
+define : wisp2lisp-lines lines
      . "Parse indentation in the lines to add the correct brackets."
      if : equal? lines '()
          . '()
@@ -523,6 +528,12 @@ define : wisp2lisp lines
                    parsed : apply wisp2lisp-parse deinitialized
                  . parsed
 
+define : wisp2lisp text
+       let* 
+           : textlines : split-wisp-lines text
+             lines : linestoindented textlines
+           wisp2lisp-lines lines
+
  ; first step: Be able to mirror a file to stdout
 let*
      : filename : list-ref ( command-line ) 1
@@ -530,9 +541,9 @@ let*
        ; Lines consist of lines with indent, content and comment. See
        ; line-indent, line-content, line-comment and the other
        ; line-functions for details.
-       textlines : split-wisp-lines text
-       lines : linestoindented textlines
-       lisp : wisp2lisp lines
+       ; textlines : split-wisp-lines text
+       ; lines : linestoindented textlines
+       lisp : wisp2lisp text
      ; display : list-ref lines 100 ; seems good
      let show : (processed '()) (unprocessed lisp)
          when : not : equal? unprocessed '()
