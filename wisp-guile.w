@@ -150,7 +150,6 @@ ____      text : string lastchar
                 if : char=? nextchar #\linefeed
                     ; we have to actually construct the escape
                     ; sequence here to be able to parse ourselves.
-                    ; FUBBLE, I’m NEW!
                     set! text : string-append text : string-append "\\LINE_" "BREAK_N"
                     if : char=? nextchar #\newline
                         set! text : string-append text : string-append "\\LINE_" "BREAK_R"
