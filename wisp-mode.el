@@ -78,6 +78,8 @@
      ))
   "Default highlighting expressions for wisp mode.")
 
+; use this mode automatically
+;;;###autoload
 (define-derived-mode wisp-mode
   emacs-lisp-mode "Wisp"
   "Major mode for whitespace-to-lisp files.
