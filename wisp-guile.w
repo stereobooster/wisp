@@ -13,7 +13,7 @@
 ;; 
 ;; -Author: Arne Babenhauserheide
 
-define-module : language wisp
+define-module : language wisp parser
               . #:export : wisp2lisp
 
 define : endsinunevenbackslashes text
@@ -34,6 +34,14 @@ define : endsinunevenbackslashes text
 
 
 define : nostringandbracketbreaks inport
+    . "Replace all linebreaks inside strings and brackets with placeholders."
+    let : : expressions : list : nostringandbracketbreaksreader inport
+        while : not : eof-object? : peek-char inport
+            set! expressions : append expressions : list : nostringandbracketbreaksreader inport
+        string-join expressions "\n"
+
+define : nostringandbracketbreaksreader inport
+    . "Read one wisp-expression from the inport. Ends with three consecutive linebreaks or eof."
     ; Replace end of line characters in brackets and strings
     ; FIXME: Breaks if the string is shorter than 2 chars
     let* 
@@ -45,7 +53,12 @@ ____      text : string lastchar
           instring #f
           inbrackets 0
           incharform 0 ; #\<something>
-        while : not : eof-object? nextchar
+        while 
+            not 
+                or : eof-object? nextchar
+                     and 
+                         or (char=? nextchar #\linefeed ) (char=? nextchar #\newline ) 
+                         string-suffix? text "\n\n"
             ; incommentfirstchar is only valid for exactly one char
             when incommentfirstchar : set! incommentfirstchar #f 
             ; already started char forms win over everything, so process them first.
@@ -323,10 +336,6 @@ define : read-whole-file filename
                     read-char origfile
 
 
-define : split-wisp-lines text
-    let : : nobreaks : call-with-input-string text nostringandbracketbreaks
-        call-with-input-string nobreaks splitlines
-
 
 define : wisp2lisp-add-inline-colon-brackets line
     . "Add inline colon brackets to a wisp-line (indent,content,comment)"
@@ -530,7 +539,8 @@ define : wisp2lisp-lines lines
 
 define : wisp2lisp text
        let* 
-           : textlines : split-wisp-lines text
+           : nobreaks : call-with-input-string text nostringandbracketbreaks
+             textlines : call-with-input-string nobreaks splitlines
              lines : linestoindented textlines
            wisp2lisp-lines lines
 
