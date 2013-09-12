@@ -41,7 +41,8 @@ define : nostringandbracketbreaks inport
         string-join expressions "\n"
 
 define : nostringandbracketbreaksreader inport
-    . "Read one wisp-expression from the inport. Ends with three consecutive linebreaks or eof."
+    . "Read one wisp-expression from the inport. 
+Ends with three consecutive linebreaks or eof."
     ; Replace end of line characters in brackets and strings
     ; FIXME: Breaks if the string is shorter than 2 chars
     let* 
