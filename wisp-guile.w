@@ -6,7 +6,7 @@
 ;; nostringandbracketbreaks INPORT
 ;; 
 ;; Replace linebreaks within brackets and strings in the INPORT by the
-;; placeholders \STRING_BREAK_N and \STRING_BREAK_R. Also identify
+;; placeholders \LINE_BREAK_N and \LINE_BREAK_R. Also identify
 ;; real comments as ;\REALCOMMENTHERE
 ;; 
 ;; bootstrap via python3 wisp.py wisp-guile.w > 1 && guile 1 wisp-guile.w > 2 && guile 2 wisp-guile.w > 3 && diff 2 3
@@ -147,9 +147,12 @@ ____      text : string lastchar
 
             if : or instring : > inbrackets 0
                 if : char=? nextchar #\linefeed
-                    set! text : string-append text "\\LINE_BREAK_N"
+                    ; we have to actually construct the escape
+                    ; sequence here to be able to parse ourselves.
+                    ; FUBBLE, I’m NEW!
+                    set! text : string-append text : string-append "\\LINE_" "BREAK_N"
                     if : char=? nextchar #\newline
-                        set! text : string-append text "\\LINE_BREAK_R"
+                        set! text : string-append text : string-append "\\LINE_" "BREAK_R"
                         ; else
                         set! text : string-append text : string nextchar
                 ; mark the start of a comment, so we do not have to
@@ -537,12 +540,50 @@ define : wisp2lisp-lines lines
                    parsed : apply wisp2lisp-parse deinitialized
                  . parsed
 
+
+define : string-replace-substring s substring replacement
+       . "Replace every instance of substring in s by replacement."
+       let : : sublen : string-length substring
+           let replacer
+               : newstring s
+                 index : string-contains s substring
+               if : not : equal? index #f
+                  let : : replaced : string-replace s replacement index : + index sublen
+                    replacer replaced : string-contains replaced substring   
+                  . newstring                      
+               
+
+define : unescape-linebreaks text
+       . "unescape linebreaks"
+       string-replace-substring
+           ; we have to construct the placeholders here to avoid unescaping them when we parse ourselves…
+           string-replace-substring text (string-append "\\LINE_" "BREAK_N") : string #\linefeed
+           . (string-append "\\LINE_" "BREAK_R") : string #\newline
+
+define : join-lisp-lines lisp-lines
+    let join : (joined "") (unprocessed lisp-lines)
+         if : not : equal? unprocessed '()
+             let* 
+                 : next : list-ref unprocessed 0
+                   nextstring 
+                       string-append
+                           xsubstring " " 0 : line-indent next
+                           ; here we re-add all necessary linebreakswe get rid 
+                           unescape-linebreaks : line-content next
+                           if : equal? "" : line-comment next 
+                               . ""
+                               string-append ";" : line-comment next
+                           . "\n"
+                 join  (string-append joined nextstring) (list-tail unprocessed 1)
+             . joined
+
 define : wisp2lisp text
        let* 
            : nobreaks : call-with-input-string text nostringandbracketbreaks
              textlines : call-with-input-string nobreaks splitlines
              lines : linestoindented textlines
-           wisp2lisp-lines lines
+             lisp-lines : wisp2lisp-lines lines
+           join-lisp-lines lisp-lines
 
  ; first step: Be able to mirror a file to stdout
 let*
@@ -554,22 +595,23 @@ let*
        ; textlines : split-wisp-lines text
        ; lines : linestoindented textlines
        lisp : wisp2lisp text
+     display lisp
      ; display : list-ref lines 100 ; seems good
-     let show : (processed '()) (unprocessed lisp)
-         when : not : equal? unprocessed '()
-             let : : next : list-ref unprocessed 0
-                 ;display : length processed
-                 ;display "/"
-                 ;display : length unprocessed
-                 ;display ": "
-                 display : xsubstring " " 0 : line-indent next
-                 display : line-content next
-                 unless : equal? "" : line-comment next
-                     display ";"
-                     display : line-comment next
-                 newline
-                 show  (append processed (list next)) (list-tail unprocessed 1)
-
+;      let show : (processed '()) (unprocessed lisp)
+;          when : not : equal? unprocessed '()
+;              let : : next : list-ref unprocessed 0
+;                  ;display : length processed
+;                  ;display "/"
+;                  ;display : length unprocessed
+;                  ;display ": "
+;                  display : xsubstring " " 0 : line-indent next
+;                  display : line-content next
+;                  unless : equal? "" : line-comment next
+;                      display ";"
+;                      display : line-comment next
+;                  newline
+;                  show  (append processed (list next)) (list-tail unprocessed 1)
+; 
 ;     let : : line : list-ref lisp 158
 ;         display : line-indent line
 ;         display ","
