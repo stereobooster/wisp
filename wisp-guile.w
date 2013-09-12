@@ -140,7 +140,7 @@ ____      text : string lastchar
                 set! incharform 2
             
             ; check for brackets 
-            ; FIXME: This only fixes a single linebreak inside parens, but if a second occurs on the same line it breaks. I do not know why.
+            ; FIXME: This only fixes a single linebreak inside parens, but if a second occurs on the same line it breaks. I do not know why. Maybe something with having lastchar as linebreak.
             when : not : or instring incomment
                 when
                     and 
