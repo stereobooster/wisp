@@ -139,13 +139,18 @@ ____      text : string lastchar
                 set! incharform 2
             
             ; check for brackets 
-            when : and ( char=? nextchar #\( ) ( not instring ) ( not incomment ) ( = incharform 1 )
-                ; format #f "add bracketlevel: lastchar ~a nextchar ~a instring ~a incomment ~a incharform ~a" lastchar nextchar instring incomment incharform
-                ; newline
-                set! inbrackets : + inbrackets 1
-            when : and ( char=? nextchar #\) ) ( not instring ) ( not incomment ) ( = incharform 1 )
-                set! inbrackets : - inbrackets 1
-
+            ; format #t "~a~a: ~a\n" instring inbrackets nextchar
+            ; this breaks on this: (char=? lastchar #\# )
+            when : not : or instring incomment
+                when
+                    and 
+                        not : string-suffix? text : string-append "#"
+                        not : char=? #\\ lastchar
+                        not : endsinunevenbackslashes : string-drop-right text : min 1 : string-length text
+                    when : equal? "(" : string nextchar
+                        set! inbrackets : + inbrackets 1
+                    when : equal? ")" : string nextchar
+                        set! inbrackets : - inbrackets 1
             if : or instring : > inbrackets 0
                 if : char=? nextchar #\linefeed
                     ; we have to actually construct the escape
