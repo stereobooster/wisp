@@ -72,7 +72,8 @@ ____      text : string lastchar
                     set! incharform 0
                     
             when : >= incharform 2
-                if : or (char=? nextchar #\space) (char=? nextchar #\linefeed ) (char=? nextchar #\newline ) 
+                if : or (char=? nextchar #\space) (char=? 
+                                nextchar #\linefeed ) (char=? nextchar #\newline ) 
                    begin
                        ; format #t "2: set incharform 0: lastchar ~a nextchar ~a instring ~a incomment ~a incharform ~a" lastchar nextchar instring incomment incharform
                        ; newline
@@ -139,12 +140,11 @@ ____      text : string lastchar
                 set! incharform 2
             
             ; check for brackets 
-            ; format #t "~a~a: ~a\n" instring inbrackets nextchar
-            ; this breaks on this: (char=? lastchar #\# )
+            ; FIXME: This only fixes a single linebreak inside parens, but if a second occurs on the same line it breaks. I do not know why.
             when : not : or instring incomment
                 when
                     and 
-                        not : string-suffix? text : string-append "#"
+                        not : string-suffix? text "#"
                         not : char=? #\\ lastchar
                         not : endsinunevenbackslashes : string-drop-right text : min 1 : string-length text
                     when : equal? "(" : string nextchar
