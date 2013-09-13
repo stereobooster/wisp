@@ -23,6 +23,24 @@
 
 (define (decompile-scheme x e opts) (values x e))
 
+(define internal-port-string "")
+
+(define internal-port (make-soft-port 
+                       (vector 
+                        (lambda (c) ; accept one char
+                          (set! internal-port-string (string-append internal-port-string (string c))))
+                        (lambda (s) ; accept a string
+                          (set! internal-port-string (string-append internal-port-string s)))
+                        (lambda () #f) ; flush output
+                        (lambda () ; get one char
+                          (let ((c (string-char (string-take-right internal-port-string 1))))
+                            (set! internal-port-string (string-drop-right internal-port-string 1))
+                            c))
+                        (lambda () (set! internal-port-string "")) ; close the port
+                        (lambda () (string-length internal-port-string)))
+                       "rw"))
+
+
 (define-language wisp
   #:title "Wisp Scheme Syntax"
   #:reader (lambda (port env)
