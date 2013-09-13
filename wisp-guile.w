@@ -561,10 +561,14 @@ define : string-replace-substring s substring replacement
        let : : sublen : string-length substring
            let replacer
                : newstring s
-                 index : string-contains s substring
-               if : not : equal? index #f
-                  let : : replaced : string-replace newstring replacement index : + index sublen
-                    replacer replaced : string-contains replaced substring
+                 startindex 0
+                 addindex : string-contains s substring
+               if : not : equal? addindex #f
+                  let*
+                      : index : + startindex addindex
+                        replaced : string-replace newstring replacement index : + index sublen
+                        newaddindex : string-contains (substring/read-only replaced index) substring
+                      replacer replaced index newaddindex
                   . newstring
                
 
