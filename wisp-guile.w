@@ -556,25 +556,23 @@ define : wisp2lisp-lines lines
                  . parsed
 
 
-; efficient short version from rev b9a5f4479696
-; ,time (string-replace-substring (xsubstring "abcdefghijkl" 0 99999) "def" "abc")
-; 0.868419s real time, 0.868131s run time.  0.685472s spent in GC
-; efficient but longer version from rev 12266d455bb0
-; ,time (string-replace-substring (xsubstring "abcdefghijkl" 0 99999) "def" "abc")
-; 0.668212s real time, 0.667948s run time.  0.482193s spent in GC.
-; even less efficient version from rev a887aeb0dfe2
-; ,time (string-replace-substring (xsubstring "abcdefghijkl" 0 99999) "def" "abc")
-; 5.242456s real time, 5.240834s run time.  0.358750s spent in GC.
-define : string-replace-substring s substring replacement
+define* : string-replace-substring s substr replacement #:optional (start 0) (end (string-length s))
        . "Replace every instance of substring in s by replacement."
-       let : : sublen : string-length substring
-           let replacer
-               : newstring s
-                 index : string-contains s substring
-               if : not : equal? index #f
-                  let : : replaced : string-replace newstring replacement index : + index sublen
-                    replacer replaced : string-contains replaced substring index ; only look at parts after index
-                  . newstring
+       let : : substr-length : string-length substr
+          if : zero? substr-length
+             error "string-replace-substring: empty substr"
+             let loop 
+                 : start start
+                   pieces : list : substring s 0 start
+                 let : : idx : string-contains s substr start end
+                   if idx
+                     loop : + idx substr-length
+                           cons* replacement
+                                  substring s start idx
+                                  . pieces
+                     string-concatenate-reverse 
+                                                cons : substring s start
+                                                    . pieces
 
 
 define : unescape-linebreaks text
