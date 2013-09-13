@@ -46,6 +46,7 @@ define : nostringandbracketbreaksreader inport
 Ends with three consecutive linebreaks or eof."
     ; Replace end of line characters in brackets and strings
     ; FIXME: Breaks if the string is shorter than 2 chars
+    ; FIXME: Breaks if the text begins with a comment.
     let* 
 __      : lastchar : read-char inport
 ____      nextchar : read-char inport
@@ -60,9 +61,15 @@ ____      text : string lastchar
                 or : eof-object? nextchar
                      and 
                          or (char=? nextchar #\linefeed ) (char=? nextchar #\newline ) 
-                         string-suffix? text "\n\n" ; text includes lastchar
+                         or (char=? lastchar #\linefeed ) (char=? lastchar #\newline ) 
+                         ; string-suffix? text "\n\n" ; text includes lastchar
             ; incommentfirstchar is only valid for exactly one char
             when incommentfirstchar : set! incommentfirstchar #f 
+            ; but add incommentfirstchar if we just started the text
+            when : equal? text ";" ; initial comment
+                 set! incommentfirstchar #f
+                 set! incomment #t
+                 set! text : string-append text "\\REALCOMMENTHERE"
             ; already started char forms win over everything, so process them first.
             ; already started means: after the #\
             ; FIXME: Fails to capture #t and #f which can kill line splitting if it happens inside brackets
