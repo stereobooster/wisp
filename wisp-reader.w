@@ -23,28 +23,29 @@
 
 (define (decompile-scheme x e opts) (values x e))
 
-(define internal-port-string "")
+(define wisp-pending-port (make-object-property))
 
-(define internal-port (make-soft-port 
-                       (vector 
-                        (lambda (c) ; accept one char
-                          (set! internal-port-string (string-append internal-port-string (string c))))
-                        (lambda (s) ; accept a string
-                          (set! internal-port-string (string-append internal-port-string s)))
-                        (lambda () #f) ; flush output
-                        (lambda () ; get one char
-                          (let ((c (string-char (string-take-right internal-port-string 1))))
-                            (set! internal-port-string (string-drop-right internal-port-string 1))
-                            c))
-                        (lambda () (set! internal-port-string "")) ; close the port
-                        (lambda () (string-length internal-port-string)))
-                       "rw"))
-
+; Code thanks to Mark Weaver
+(define (read-one-wisp-sexp port env)
+  (define (read-wisp-chunk)
+    (let ((s (wisp2lisp (wisp-chunkreader port))))
+      (display s)
+      (set! (wisp-pending-port port)
+            (open-input-string s))
+      (try-pending)))
+  (define (try-pending)
+    (let ((pending-port (wisp-pending-port port)))
+      (if pending-port
+          (let ((x (read pending-port)))
+            (if (eof-object? x)
+                (read-wisp-chunk)
+                x))
+          (read-wisp-chunk))))
+  (try-pending))
 
 (define-language wisp
   #:title "Wisp Scheme Syntax"
-  #:reader (lambda (port env)
-             (wisp2lisp (wisp-chunkreader port)))
+  #:reader read-one-wisp-sexp
   #:compilers `((scheme . ,compile-scheme))
   #:decompilers `((scheme . ,decompile-scheme))
   #:evaluator (lambda (x module) (primitive-eval x))
