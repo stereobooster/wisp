@@ -12,4 +12,4 @@ fi
 # Now setup the reader so we can use it with guile -L . and then > ,L wisp
 
 mkdir -p language/wisp
-cp wisp-reader.w language/wisp/spec.scm
+guile wisp.scm wisp-reader.w > language/wisp/spec.scm
