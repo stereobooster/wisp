@@ -14,9 +14,9 @@
 ;; -Author: Arne Babenhauserheide
 
 define-module : wisp
-   . #:export : wisp2lisp nostringandbracketbreaksreader
+   . #:export : wisp2lisp wisp-chunkreader
 
-define : endsinunevenbackslashes text
+define : endsinunevenbackslashes text ; comment
        if : = 0 : string-length text
            . #f
            let counter
@@ -62,7 +62,7 @@ ____      text : string lastchar
                      and 
                          or (char=? nextchar #\linefeed ) (char=? nextchar #\newline ) 
                          or (char=? lastchar #\linefeed ) (char=? lastchar #\newline ) 
-                         ; string-suffix? text "\n\n" ; text includes lastchar
+                         string-suffix? "\n\n" text ; text includes lastchar
             ; incommentfirstchar is only valid for exactly one char
             when incommentfirstchar : set! incommentfirstchar #f 
             ; but add incommentfirstchar if we just started the text
@@ -573,7 +573,25 @@ define : unescape-linebreaks text
        string-replace-substring
            ; we have to construct the placeholders here to avoid unescaping them when we parse ourselves…
            string-replace-substring text (string-append "\\LINE_" "BREAK_N") : string #\linefeed
-           . (string-append "\\LINE_" "BREAK_R") : string #\newline
+           string-append "\\LINE_" "BREAK_R"
+           string #\newline 
+
+
+define : unescape-comments text
+       . "unescape comments"
+       string-replace-substring text
+           ; we have to construct the placeholders here to avoid unescaping them when we parse ourselves…
+           string-append ";" "\\REALCOMMENTHERE"
+           . ";"
+
+
+define : wisp-chunkreader inport
+    . "Read one wisp-expression from inport, without escaping of fake newlines but with correct detection of real new lines.
+    Realized by reading with newline and comment escaping and unescaping both again after reading."
+    unescape-comments 
+        unescape-linebreaks
+            nostringandbracketbreaksreader inport
+
 
 define : join-lisp-lines lisp-lines
     let join : (joined "") (unprocessed lisp-lines)
@@ -592,7 +610,7 @@ define : join-lisp-lines lisp-lines
                  join  (string-append joined nextstring) (list-tail unprocessed 1)
              . joined
 
-define : wisp2lisp text
+define : wisp2lisp text 
        let* 
            : nobreaks : call-with-input-string text nostringandbracketbreaks
              textlines : call-with-input-string nobreaks splitlines
