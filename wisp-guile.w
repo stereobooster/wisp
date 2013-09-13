@@ -556,10 +556,12 @@ define : wisp2lisp-lines lines
                  . parsed
 
 
-; efficient version from rev 12266d455bb0
+; ,time (string-replace-substring (xsubstring "abcdefghijkl" 0 99999) "def" "abc")
+; 1.320449s real time, 1.319953s run time.  1.140535s spent in GC.
+; less efficient and longer version from rev 12266d455bb0
 ; ,time (string-replace-substring (xsubstring "abcdefghijkl" 0 99999) "def" "abc")
 ; 0.668212s real time, 0.667948s run time.  0.482193s spent in GC.
-; less efficient version from rev a887aeb0dfe2
+; even less efficient version from rev a887aeb0dfe2
 ; ,time (string-replace-substring (xsubstring "abcdefghijkl" 0 99999) "def" "abc")
 ; 5.242456s real time, 5.240834s run time.  0.358750s spent in GC.
 define : string-replace-substring s substring replacement
@@ -567,16 +569,12 @@ define : string-replace-substring s substring replacement
        let : : sublen : string-length substring
            let replacer
                : newstring s
-                 startindex 0
-                 addindex : string-contains s substring
-               if : not : equal? addindex #f
-                  let*
-                      : index : + startindex addindex
-                        replaced : string-replace newstring replacement index : + index sublen
-                        newaddindex : string-contains (substring/read-only replaced index) substring
-                      replacer replaced index newaddindex
+                 index : string-contains s substring
+               if : not : equal? index #f
+                  let : : replaced : string-replace newstring replacement index : + index sublen
+                    replacer replaced : string-contains replaced substring index ; only look at parts after index
                   . newstring
-               
+
 
 define : unescape-linebreaks text
        . "unescape linebreaks"
