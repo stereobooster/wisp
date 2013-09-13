@@ -3,7 +3,9 @@ define-module : examples string-replace-benchmark
 
 ; ,time (string-replace-substring (xsubstring "abcdefghijkl" 0 99999) "def" "abc")
 ; 0.010369s real time, 0.010348s run time.  0.000000s spent in GC.
-define* : string-replace-substring s substr replacement #:optional (start 0) (end (string-length s))
+define* 
+       string-replace-substring s substr replacement 
+           . #:optional (start 0) (end (string-length s))
        . "Replace every instance of substring in s by replacement."
        let : : substr-length : string-length substr
           if : zero? substr-length
