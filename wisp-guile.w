@@ -556,9 +556,10 @@ define : wisp2lisp-lines lines
                  . parsed
 
 
+; efficient short version from rev b9a5f4479696
 ; ,time (string-replace-substring (xsubstring "abcdefghijkl" 0 99999) "def" "abc")
-; 1.320449s real time, 1.319953s run time.  1.140535s spent in GC.
-; less efficient and longer version from rev 12266d455bb0
+; 0.868419s real time, 0.868131s run time.  0.685472s spent in GC
+; efficient but longer version from rev 12266d455bb0
 ; ,time (string-replace-substring (xsubstring "abcdefghijkl" 0 99999) "def" "abc")
 ; 0.668212s real time, 0.667948s run time.  0.482193s spent in GC.
 ; even less efficient version from rev a887aeb0dfe2
