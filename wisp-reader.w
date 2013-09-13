@@ -13,9 +13,7 @@
   #:use-module (wisp)  ; I’d like to specify 
   #:use-module (system base compile)
   #:use-module (system base language)
-  #:use-module (language scheme compile-tree-il)
-  #:use-module (language scheme decompile-tree-il)
-  #:export (scheme))
+  #:export (wisp))
 
 ;;;
 ;;; Language definition
