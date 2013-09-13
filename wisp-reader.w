@@ -49,9 +49,7 @@ define-language wisp
   . #:reader read-one-wisp-sexp
   . #:compilers `((scheme . ,compile-scheme)) ; I do not touch quasiquotes yet.
   . #:decompilers `((scheme . ,decompile-scheme))
-  . #:evaluator 
-  lambda : x module
-         primitive-eval x
+  . #:evaluator : lambda (x module) : primitive-eval x
   . #:printer write
   . #:make-default-environment
   lambda :
