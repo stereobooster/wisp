@@ -8,3 +8,8 @@ if [[ x"${diff}" == x ]]; then
 else
     echo "failed to bootstrap wisp.scm. diff: " ${diff}
 fi
+
+# Now setup the reader so we can use it with guile -L . and then > ,L wisp
+
+mkdir -p language/wisp
+cp wisp-reader.w language/wisp/spec.scm

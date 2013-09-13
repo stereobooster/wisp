@@ -29,7 +29,6 @@
 (define (read-one-wisp-sexp port env)
   (define (read-wisp-chunk)
     (let ((s (wisp2lisp (wisp-chunkreader port))))
-      (display s)
       (set! (wisp-pending-port port)
             (open-input-string s))
       (try-pending)))
