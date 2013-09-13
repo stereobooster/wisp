@@ -7,6 +7,7 @@ implement wisp in wisp                                       | owner:Arne Babenh
 linebreaks in parens still break                             | owner:, open:True, id:6797987c7834a53358fb4ebbd8b9b36c2c4a8f01, time:1379004764.14
 wisp-guile.w does not yet remove the leading . which signifies a continuation. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:7075096a323933493f42a3751da5f75a45d5d699, time:1377381700.17
 inline ' : should be '(                                      | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:72d534a8b23b4cb168017f1bb7d8816f0ea170c4, time:1366497335.26
+the repl does not require 3 returns when you use a single char as function, or rather only does so every second time | owner:, open:True, id:9cedd0bdbf4a3b17add4bfe86ad5a23e500cfc6c, time:1379064870.78
 wisp-guile.w breaks on ";" and complex brackets with bracket char literals. See wisp-guile.w::91 | owner:, open:False, id:9d8b6f87fa5365733fc8655614dbf2a9ba5bd054, time:1377533321.27
 wisp-mode: handle lines starting with underscores: currently sees the underscores as function call. | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:b2c3755e1deb8355655a334d569679e2e62d2836, time:1376612093.55
 make this work: let : : origfile ( open-file : nth 1 : command-line ) r | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:d6de2074a5017f1f29f34d142ce797981ed270a0, time:1366529287.67
