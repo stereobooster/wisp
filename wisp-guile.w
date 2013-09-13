@@ -556,6 +556,12 @@ define : wisp2lisp-lines lines
                  . parsed
 
 
+; efficient version from rev 12266d455bb0
+; ,time (string-replace-substring (xsubstring "abcdefghijkl" 0 99999) "def" "abc")
+; 0.668212s real time, 0.667948s run time.  0.482193s spent in GC.
+; less efficient version from rev a887aeb0dfe2
+; ,time (string-replace-substring (xsubstring "abcdefghijkl" 0 99999) "def" "abc")
+; 5.242456s real time, 5.240834s run time.  0.358750s spent in GC.
 define : string-replace-substring s substring replacement
        . "Replace every instance of substring in s by replacement."
        let : : sublen : string-length substring
