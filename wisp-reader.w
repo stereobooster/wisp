@@ -44,7 +44,7 @@
   (try-pending))
 
 (define-language wisp
-  #:title "Wisp Scheme Syntax"
+  #:title "Wisp Scheme Syntax THIS IS EXPERIMENTAL, USE AT YOUR OWN RISK"
   #:reader read-one-wisp-sexp
   #:compilers `((scheme . ,compile-scheme))
   #:decompilers `((scheme . ,decompile-scheme))
