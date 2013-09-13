@@ -563,9 +563,9 @@ define : string-replace-substring s substring replacement
                : newstring s
                  index : string-contains s substring
                if : not : equal? index #f
-                  let : : replaced : string-replace s replacement index : + index sublen
-                    replacer replaced : string-contains replaced substring   
-                  . newstring                      
+                  let : : replaced : string-replace newstring replacement index : + index sublen
+                    replacer replaced : string-contains replaced substring
+                  . newstring
                
 
 define : unescape-linebreaks text
