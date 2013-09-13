@@ -591,42 +591,16 @@ define : wisp2lisp text
            join-lisp-lines lisp-lines
 
  ; first step: Be able to mirror a file to stdout
-let*
-     : filename : list-ref ( command-line ) 1
-       text : read-whole-file filename
-       ; Lines consist of lines with indent, content and comment. See
-       ; line-indent, line-content, line-comment and the other
-       ; line-functions for details.
-       ; textlines : split-wisp-lines text
-       ; lines : linestoindented textlines
-       lisp : wisp2lisp text
-     display lisp
-     ; display : list-ref lines 100 ; seems good
-;      let show : (processed '()) (unprocessed lisp)
-;          when : not : equal? unprocessed '()
-;              let : : next : list-ref unprocessed 0
-;                  ;display : length processed
-;                  ;display "/"
-;                  ;display : length unprocessed
-;                  ;display ": "
-;                  display : xsubstring " " 0 : line-indent next
-;                  display : line-content next
-;                  unless : equal? "" : line-comment next
-;                      display ";"
-;                      display : line-comment next
-;                  newline
-;                  show  (append processed (list next)) (list-tail unprocessed 1)
-; 
-;     let : : line : list-ref lisp 158
-;         display : line-indent line
-;         display ","
-;         display : line-content  line
-;         display ","
-;         display : line-comment  line
-        ; looks good
-    ; TODO: add brackets to the content
-
-    ; TODO: undo linebreak-replacing. Needs in-string and in-comment
-    ; checking, but only for each line, not spanning multiple lines.
-
-newline
+if : < 1 : length : command-line
+    let*
+         : filename : list-ref ( command-line ) 1
+           text : read-whole-file filename
+           ; Lines consist of lines with indent, content and comment. See
+           ; line-indent, line-content, line-comment and the other
+           ; line-functions for details.
+           ; textlines : split-wisp-lines text
+           ; lines : linestoindented textlines
+           lisp : wisp2lisp text
+         display lisp
+         newline
+    . #f
