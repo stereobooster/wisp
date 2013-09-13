@@ -13,8 +13,8 @@
 ;; 
 ;; -Author: Arne Babenhauserheide
 
-define-module : language wisp parser
-              . #:export : wisp2lisp
+define-module : wisp
+   . #:export : wisp2lisp nostringandbracketbreaksreader
 
 define : endsinunevenbackslashes text
        if : = 0 : string-length text
@@ -40,6 +40,7 @@ define : nostringandbracketbreaks inport
             set! expressions : append expressions : list : nostringandbracketbreaksreader inport
         string-join expressions "\n"
 
+
 define : nostringandbracketbreaksreader inport
     . "Read one wisp-expression from the inport. 
 Ends with three consecutive linebreaks or eof."
@@ -59,7 +60,7 @@ ____      text : string lastchar
                 or : eof-object? nextchar
                      and 
                          or (char=? nextchar #\linefeed ) (char=? nextchar #\newline ) 
-                         string-suffix? text "\n\n"
+                         string-suffix? text "\n\n" ; text includes lastchar
             ; incommentfirstchar is only valid for exactly one char
             when incommentfirstchar : set! incommentfirstchar #f 
             ; already started char forms win over everything, so process them first.
@@ -221,6 +222,7 @@ define : line-merge-comment line
             list indent : string-append content ";" comment
                 . ""
 
+
 ; skip the leading indentation
 define : skipindent inport
     let skipper
@@ -248,6 +250,7 @@ define : skipindent inport
                         unread-char nextchar inport
                         . indent
             . indent
+
 
 ; Now we have to split a single line into indentation, content and comment.
 define : splitindent inport
