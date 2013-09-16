@@ -1,6 +1,9 @@
 #!/home/arne/wisp/wisp-multiline.sh 
 ; !#
 
+define-module : examples d6
+   . #:export : roll check 
+
 ; basic d6 rules, implemented in guile
 
 define : roll
