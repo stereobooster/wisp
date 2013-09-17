@@ -98,5 +98,5 @@ define : evolution initialstring steps
 define : run 
        ; firstoff, seed the random number generator!
        set! *random-state* : random-state-from-platform
-       display : evolution "+ 1 2" 1000
+       display : evolution "+ 1 (- 2 1)" 1000
        newline
