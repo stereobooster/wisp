@@ -5,6 +5,10 @@
 
 ; NOTE: This only works after preprocessing to scheme.
 
+; Get the eval string which allows for selecting the language.
+use-modules : ice-9 eval-string
+
+
 define evalsyntax "0123456789+-*/ ()"
 
 define : mutate-replace evalstring
@@ -46,6 +50,7 @@ define : mutate-remove evalstring
 
 define : mutate-eval evalstring
        eval-string : string-append "(" evalstring ")"
+                   . #:lang 'scheme
 
 
 define : better mutated original
