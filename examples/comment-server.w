@@ -34,7 +34,7 @@ define : body->comment request-body
   let : : request-string : utf8->string request-body
          substring request-string
             string-length "comment="
-            string-index request-string #\& ; FIXME: This will break for comments with &. Ignore that: This is just a mockup.
+            string-index request-string #\& ; This is just a mockup.
 
 define : add-comment request request-body comments-hash-table
   let : : uri-components : split-and-decode-uri-path : uri-path : request-uri request
