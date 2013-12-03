@@ -147,3 +147,5 @@ display : kittify : map inexact->exact testnumbers
 newline
 
 ; TODO: unkittify: first take out "Karlsruher Institut fuer Technologie" and all spaces, then split by . and base60decode the result.
+
+; TODO: Final step: Take files, read them as bytevectors, turn the bytevectors into ints and encode them. Same in reverse. Then we can encode any file in kitty-style - uh I mean KIT-style :)
