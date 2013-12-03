@@ -143,9 +143,54 @@ define : kittify numbers
 
 
                      
-display : kittify : map inexact->exact : take testnumbers 35
+
+; unkittify: first take out "Karlsruher Institut fuer Technologie" and all spaces and linebreaks, then split by . and base60decode the result.
+
+; we first need a quick way to replace substrings in strings
+; taken from string-replace-benchmark.w
+define* 
+       string-replace-substring s substr replacement 
+           . #:optional (start 0) (end (string-length s))
+       . "Replace every instance of substring in s by replacement."
+       let : : substr-length : string-length substr
+          if : zero? substr-length
+             error "string-replace-substring: empty substr"
+             let loop 
+                 : start start
+                   pieces : list : substring s 0 start
+                 let : : idx : string-contains s substr start end
+                   if idx
+                     loop : + idx substr-length
+                           cons* replacement
+                                  substring s start idx
+                                  . pieces
+                     string-concatenate-reverse 
+                                                cons : substring s start
+                                                    . pieces
+
+
+define : emptystring? string
+  if : equal? "" string 
+    . #t
+    . #f
+
+define : unkittify text
+  . "Turn a kittified string into a list of numbers."
+  ; first remove the name and spaces
+  let*
+    : text : string-replace-substring text "Karlsruher Institut fuer Technologie" ""
+      text : string-replace-substring text " " ""
+      text : string-replace-substring text "\n" ""
+      text : string-replace-substring text "\r" ""
+      base60numbers : string-split text #\.
+      base60numbers : remove emptystring? base60numbers
+    map base60decode base60numbers
+
+display : unkittify : kittify : map inexact->exact : take testnumbers 35
 newline
 
-; TODO: unkittify: first take out "Karlsruher Institut fuer Technologie" and all spaces, then split by . and base60decode the result.
 
 ; TODO: Final step: Take files, read them as bytevectors, turn the bytevectors into ints and encode them. Same in reverse. Then we can encode any file in kitty-style - uh I mean KIT-style :)
+
+
+
