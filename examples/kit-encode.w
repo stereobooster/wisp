@@ -143,7 +143,7 @@ define : kittify numbers
 
 
                      
-display : kittify : map inexact->exact : take testnumbers 30
+display : kittify : map inexact->exact : take testnumbers 35
 newline
 
 ; TODO: unkittify: first take out "Karlsruher Institut fuer Technologie" and all spaces, then split by . and base60decode the result.
