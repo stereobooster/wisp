@@ -186,9 +186,13 @@ define : unkittify text
       base60numbers : remove emptystring? base60numbers
     map base60decode base60numbers
 
+
+display : kittify : map inexact->exact : take testnumbers 35
+newline
 display : unkittify : kittify : map inexact->exact : take testnumbers 35
 newline
-
+display : map inexact->exact : take testnumbers 35
+newline
 
 ; TODO: Final step: Take files, read them as bytevectors, turn the bytevectors into ints and encode them. Same in reverse. Then we can encode any file in kitty-style - uh I mean KIT-style :)
 
