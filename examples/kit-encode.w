@@ -102,6 +102,7 @@ define : kittify numbers
       charsinlogo : string-count logo #\.
       requiredlogos : ceiling-quotient requiredletters charsinlogo
       text : xsubstring logo 0 : * requiredlogos : string-length logo
+    ; TODO: Investigate foof-loop to see if that can reduce redundancy in this loop.
     let logofyer
       : kittified "" ; the new logo with the numbers
         rawlogo text ; the template
