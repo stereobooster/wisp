@@ -117,7 +117,6 @@ define : kittify numbers
                           string-drop rawlogo 1
                           . nums
                           . justadded
-             ; else: we have a .
              : . justadded ; need one more . to separate numbers
                logofyer : string-append kittified s
                           string-drop rawlogo 1
