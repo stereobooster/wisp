@@ -258,3 +258,13 @@ define : unkittytextfile filepath
 
 ; Now for the ultimate Kittyfication
 displaywithnewline : kittify : map shiftbytedownfortext : bytevector->u8-list : string->utf8 "Karlsruhe Institut für Technologie (KIT)"
+
+displaywithnewline : utf8->string : u8-list->bytevector : map shiftbyteupfortext : unkittify "
+     A.Y  .p.i    .q.p .s.e .b.3i.8.
+      k.q  .r.  f.r.   s.r. 3i.c.2A.
+ 23.p   .3 i.K.b._     .e.k   .m.i
+    .m.d .f .b.3i.3    r.A.   8.K.
+3s..    .... .  ....   ....   ....
+..............    .... ....   ....
+Karlsruher Institut fuer Technologie
+"
