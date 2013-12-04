@@ -250,9 +250,6 @@ define : unkittytextfile filepath
 ; displaywithnewline : kittyfile ".hg/store/00changelog.i"
 ; displaywithnewline : unkittytextfile "1.kit"
 
-; TODO: Final step: Add commandline handling which allows to write into files and set the text flag and so on.
-; ./kit-encode [-e|--encode|-d|--decode] [--text] [--template file] [--killstring "stringtoremove" (mutliple times)] [-o|--output file] [file|-]
-
 ; Now for the ultimate Kittyfication
 
 displaywithnewline "
@@ -286,3 +283,6 @@ displaywithnewline : utf8->string : u8-list->bytevector : unkittify "
 .1D.1Q.g......    .... ....   ....
 Karlsruher Institut fuer Technologie
 "
+
+; TODO: Final step: Add commandline handling which allows to write into files and set the text flag and so on.
+; ./kit-encode [-e|--encode|-d|--decode] [--text] [--template file] [--killstring "stringtoremove" (mutliple times)] [-o|--output file] [file|-]
