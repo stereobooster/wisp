@@ -255,3 +255,6 @@ define : unkittytextfile filepath
 
 ; TODO: Final step: Add commandline handling which allows to write into files and set the text flag and so on.
 ; ./kit-encode [-e|--encode|-d|--decode] [--text] [--template file] [--killstring "stringtoremove"] [-o|--output file] [file|-]
+
+; Now for the ultimate Kittyfication
+displaywithnewline : kittify : map shiftbytedownfortext : bytevector->u8-list : string->utf8 "Karlsruhe Institut für Technologie (KIT)"
