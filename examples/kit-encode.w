@@ -3,6 +3,8 @@
 
 use-modules 
   srfi srfi-1
+  rnrs io ports
+  rnrs bytevectors
 
 define base60chars
   . "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ_abcdefghijkmnopqrstuvwxyz"
@@ -39,6 +41,7 @@ define testnumbers
 
 
 define : displaywithnewline foo
+  setlocale LC_ALL ""
   display foo
   newline
 ; map displaywithnewline
@@ -49,6 +52,8 @@ define : displaywithnewline foo
 ;     map base60encode
 ;         map inexact->exact testnumbers
 
+; This logo is a registered trademark by the Karlsruhe Institute of
+; Technology (KIT). Remove this comment at your own risk.
 define kitlogo "
 
                                                      ......                   .................   ...............   ...................................
@@ -75,6 +80,8 @@ define kitlogo "
      ......................................................                   .................   ...............             ...............
 
 "
+; This logo is a registered trademark by the Karlsruhe Institute of
+; Technology (KIT). Remove this comment at your own risk.
 define kitlogosmall "
      ...  ....    .... .... ........
       ...  ...  ....   .... ........
@@ -187,14 +194,64 @@ define : unkittify text
     map base60decode base60numbers
 
 
-display : kittify : map inexact->exact : take testnumbers 35
-newline
-display : unkittify : kittify : map inexact->exact : take testnumbers 35
-newline
-display : map inexact->exact : take testnumbers 35
-newline
+; displaywithnewline : kittify : map inexact->exact : take testnumbers 35
+; displaywithnewline : unkittify : kittify : map inexact->exact : take testnumbers 35
+; displaywithnewline : map inexact->exact : take testnumbers 35
 
-; TODO: Final step: Take files, read them as bytevectors, turn the bytevectors into ints and encode them. Same in reverse. Then we can encode any file in kitty-style - uh I mean KIT-style :)
+; Take files, read them as bytevectors, turn the bytevectors into ints and encode them. Same in reverse. Then we can encode any file in kitty-style - uh I mean KIT-style :)
 
+; first some prior work: Optimization for plain text files (to get most regular characters into the 0-60 range).
 
+define : shiftbytedownfortext number
+  . "Reduce a number by 65 (A becomes code number 0). If the result is negative, add 256."
+  let*
+    : reduced : - number 65
+    if : >= reduced 0
+      . reduced
+      + reduced 256
 
+define : shiftbyteupfortext number
+  . "Reduce a number by 65 (A becomes code number 0). If the result is negative, add 256."
+  let*
+    : reduced : + number 65
+    if : < reduced 256
+      . reduced
+      - reduced 256
+
+define* : kittyfile filepath #:optional (text #f)
+  . "Kittify the contents of the file at FILEPATH, as individual bytes.
+
+If TEXT is #t, transform the numbers to optimize for text."
+  let* 
+    : file : open-file-input-port filepath
+      bv : get-bytevector-all file
+      numbers : bytevector->u8-list bv
+      numbers : if text (map shiftbytedownfortext numbers) numbers
+    kittify numbers
+
+define : kittytextfile filepath
+  . "Kittify the contents of the file at FILEPATH, with a transformation to optimize for text files."
+  kittyfile filepath #t
+
+define* : unkittyfile filepath #:optional (text #f)
+  . "Un-Kittify the contents of the file at FILEPATH, returning it as bytevector.
+
+If TEXT is #t, transform the numbers to undo the optimization for text."
+  let* 
+    : file : open-file-input-port filepath
+      bv : get-bytevector-all file
+      text : utf8->string bv
+      numbers : unkittify text
+      numbers : if text (map shiftbyteupfortext numbers) numbers
+    u8-list->bytevector numbers
+
+define : unkittytextfile filepath
+  . "Un-Kittify the contents of the file at FILEPATH, undoing the transformation for text and rendering at utf8-text."
+  utf8->string : unkittyfile filepath #t
+
+; displaywithnewline : kittytextfile "examples/kit-encode.w"
+; displaywithnewline : kittyfile ".hg/store/00changelog.i"
+displaywithnewline : unkittytextfile "1.kit"
+
+; TODO: Final step: Add commandline handling which allows to write into files and set the text flag and so on.
+; ./kit-encode [-e|--encode|-d|--decode] [--text] [--template file] [--killstring "stringtoremove"] [-o|--output file] [file|-]
