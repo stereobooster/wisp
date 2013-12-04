@@ -110,42 +110,44 @@ define : kittify numbers
       if : equal? rawlogo ""
          . kittified
          let : : s : substring rawlogo 0 1
-           if : not : equal? s "."
-              logofyer 
-                string-append kittified s
-                string-drop rawlogo 1
-                . nums
-                . justadded
-              ; else: we have a .
-              if justadded ; need one more . to separate numbers
+           cond
+             : not : equal? s "."
+               logofyer 
+                 string-append kittified s
+                 string-drop rawlogo 1
+                 . nums
+                 . justadded
+             ; else: we have a .
+             : . justadded ; need one more . to separate numbers
+               logofyer
+                 string-append kittified s
+                 string-drop rawlogo 1
+                 . nums
+                 . #f
+             : = 0 : length nums ; no more numbers to add, just add a .
+               logofyer
+                 string-append kittified s
+                 string-drop rawlogo 1
+                 . nums
+                 . #f
+             ; check whether the last number was completely
+             ; added. In that case drop the number and note that
+             ; we just added a number
+             : = 0 : string-length : list-ref nums 0
+               logofyer
+                 . kittified
+                 . rawlogo
+                 drop nums 1
+                 . #t
+             ; otherwise add the first char of the number to
+             ; kittified and take it away from the number.
+             else 
+               let : : firstnum : list-ref nums 0
                  logofyer
-                   string-append kittified s
+                   string-append kittified : substring firstnum 0 1
                    string-drop rawlogo 1
-                   . nums
-                   . #f
-                 if : = 0 : length nums ; no more numbers to add, just add a .
-                   logofyer
-                     string-append kittified s
-                     string-drop rawlogo 1
-                     . nums
-                     . #f
-                   ; check whether the last number was completely
-                   ; added. In that case drop the number and note that
-                   ; we just added a number
-                   if : = 0 : string-length : list-ref nums 0
-                     logofyer
-                       . kittified
-                       . rawlogo
-                       drop nums 1
-                       . #t
-                     ; otherwise add the first char of the number to
-                     ; kittified and take it away from the number.
-                     let : : firstnum : list-ref nums 0
-                       logofyer
-                         string-append kittified : substring firstnum 0 1
-                         string-drop rawlogo 1
-                         append (list (string-drop firstnum 1)) : drop nums 1
-                         . #f ; not yet done
+                   append (list (string-drop firstnum 1)) : drop nums 1
+                   . #f ; not yet done
 
 
 
