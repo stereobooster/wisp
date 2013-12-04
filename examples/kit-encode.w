@@ -251,7 +251,7 @@ define : unkittytextfile filepath
 
 ; displaywithnewline : kittytextfile "examples/kit-encode.w"
 ; displaywithnewline : kittyfile ".hg/store/00changelog.i"
-displaywithnewline : unkittytextfile "1.kit"
+; displaywithnewline : unkittytextfile "1.kit"
 
 ; TODO: Final step: Add commandline handling which allows to write into files and set the text flag and so on.
 ; ./kit-encode [-e|--encode|-d|--decode] [--text] [--template file] [--killstring "stringtoremove"] [-o|--output file] [file|-]
