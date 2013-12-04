@@ -257,6 +257,10 @@ define : unkittytextfile filepath
 ; ./kit-encode [-e|--encode|-d|--decode] [--text] [--template file] [--killstring "stringtoremove"] [-o|--output file] [file|-]
 
 ; Now for the ultimate Kittyfication
+
+displaywithnewline "
+     === TEXT MODE ==="
+
 displaywithnewline : kittify : map shiftbytedownfortext : bytevector->u8-list : string->utf8 "Karlsruhe Institut für Technologie (KIT)"
 
 displaywithnewline : utf8->string : u8-list->bytevector : map shiftbyteupfortext : unkittify "
@@ -266,5 +270,22 @@ displaywithnewline : utf8->string : u8-list->bytevector : map shiftbyteupfortext
     .m.d .f .b.3i.3    r.A.   8.K.
 3s..    .... .  ....   ....   ....
 ..............    .... ....   ....
+Karlsruher Institut fuer Technologie
+"
+
+
+displaywithnewline "
+
+     === BINARY MODE ==="
+
+displaywithnewline : kittify : bytevector->u8-list : string->utf8 "Karlsruhe Institut für Technologie (KIT)"
+
+displaywithnewline : utf8->string : u8-list->bytevector : unkittify "
+     1F.  1c.1    u.1o .1v. 1u.1x.1j
+      .1g  .Y.  1D.1   q.1v .1w.1k.1
+ w.1x   .1 w.Y.1h.     3F.3   8.1u
+    .Y.1 Q. 1g.1e.1    j.1q   .1r.
+1o.1    r.1i .  1k.1   g.Y.   f.1F
+.1D.1Q.g......    .... ....   ....
 Karlsruher Institut fuer Technologie
 "
