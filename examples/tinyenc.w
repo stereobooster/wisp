@@ -1,4 +1,4 @@
-#!/home/arne/wisp/wisp-multiline.sh 
+#!/home/arne/wisp/wisp-multiline.sh -l guile
 ; !#
 
 define-module : examples tinyenc
@@ -34,15 +34,19 @@ define : encrypt v k
                    + k0 : ash v1 -4
                    + v1 sum
                    + k1 : ash v1 5
-         loop
-           + sum delta
-           + cycle 1
-           . v0tmp
-           + v1
-             logxor
-               + k2 : ash v0tmp -4
-               + v0tmp sum
-               + k3 : ash v0tmp 5
+           loop
+             + sum delta
+             + cycle 1
+             . v0tmp
+             + v1
+               logxor
+                 + k2 : ash v0tmp -4
+                 + v0tmp sum
+                 + k3 : ash v0tmp 5
 
 
-display : encrypt : + : integer-expt 2 33
+display 
+        encrypt 
+          + 1 : integer-expt 2 33
+          + 7 : integer-expt 2 96 
+newline
