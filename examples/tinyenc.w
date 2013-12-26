@@ -53,6 +53,7 @@ define : encrypt v k
         cycle 0
         v0 v0
         v1 v1
+      format #t "v0: ~A, v1: ~A\n" v0 v1
       if : = cycle 32
          + v1 : * v0 : integer-expt 2 32
          let : : v0tmp : uint32 : + v0 : v0change k0 v1 sum k1
@@ -86,13 +87,13 @@ define : decrypt v k
              . v1tmp
 
 
-display 
-    decrypt
-        encrypt 
-          . 5
-          . 9
-        . 9
-newline
+;display 
+;    decrypt
+;        encrypt 
+;          . 5
+;          . 9
+;        . 9
+;newline
 display
         encrypt 
           . 5
