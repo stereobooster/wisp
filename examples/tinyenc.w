@@ -13,16 +13,21 @@ define : uint32 number
   modulo number : integer-expt 2 32
 
 define : v0change k0 v1 sum k1
-         logxor
-           uint32 : + k0 : ash v1 -4
+         format #t "sum: ~A, + k0 : ash v1 4: ~A, + v1 sum: ~A, + k1 : ash v1 -5: ~A\n"
+           . sum
+           uint32 : + k0 : ash v1 4
            uint32 : + v1 sum
-           uint32 : + k1 : uint32 : ash v1 5
+           uint32 : + k1 : uint32 : ash v1 -5
+         logxor
+           uint32 : + k0 : ash v1 4
+           uint32 : + v1 sum
+           uint32 : + k1 : uint32 : ash v1 -5
 
 define : v1change k2 v0 sum k3
          logxor
-           uint32 : + k2 : ash v0 -4
+           uint32 : + k2 : ash v0 4
            uint32 : + v0 sum
-           uint32 : + k3 : uint32 : ash v0 5
+           uint32 : + k3 : uint32 : ash v0 -5
 
 ; TODO: Define a macro with-split-kv which executes its body with let bindings to k0 k1 k2 k3 v0 and v1
 define-syntax with-split-vk
