@@ -54,6 +54,7 @@ define : encrypt v k
         v0 v0
         v1 v1
       format #t "v0: ~A, v1: ~A\n" v0 v1
+      if (= cycle 32) : format #t "k0: ~A, k1: ~A, k2: ~A, k3: ~A\n" k0 k1 k2 k3
       if : = cycle 32
          + v1 : * v0 : integer-expt 2 32
          let : : v0tmp : uint32 : + v0 : v0change k0 v1 sum k1

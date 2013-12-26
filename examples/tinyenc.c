@@ -12,6 +12,7 @@ void encrypt (uint32_t* v, uint32_t* k) {
         v1 += ((v0<<4) + k2) ^ (v0 + sum) ^ ((v0>>5) + k3);  
     }                                              /* end cycle */
     printf("v0: %d, v1: %d\n", v0, v1);
+    printf("k0: %d, k1: %d, k2: %d, k3: %d\n", k0, k1, k2, k3);
     v[0]=v0; v[1]=v1;
 }
  
