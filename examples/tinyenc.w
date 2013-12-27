@@ -30,17 +30,26 @@ define : v1change k2 v0 sum k3
            uint32 : + k3 : uint32 : ash v0 -5
 
 ; TODO: Define a macro with-split-kv which executes its body with let bindings to k0 k1 k2 k3 v0 and v1
+; http://www.gnu.org/software/guile/manual/html_node/Syntax-Case.html#index-with_002dsyntax
 define-syntax with-split-vk
-  syntax-rules :
-    : with-split-vk v k ...
-      let
-        : k0 : uint32 : ash k -96
-          k1 : uint32 : ash k -64
-          k2 : uint32 : ash k -32
-          k3 : uint32 k
-          v0 : uint32 : ash v -32
-          v1 : uint32 v
-        . ...
+  lambda : x
+    syntax-case x :
+      : with-split-vk v k exp ...
+        with-syntax
+          : k0 : datum->syntax x 'k0
+            k1 : datum->syntax x 'k1
+            k2 : datum->syntax x 'k2
+            k3 : datum->syntax x 'k3
+            v0 : datum->syntax x 'v0
+            v1 : datum->syntax x 'v1
+          #' let
+            : k0 : uint32 : ash k -96
+              k1 : uint32 : ash k -64
+              k2 : uint32 : ash k -32
+              k3 : uint32 k
+              v0 : uint32 : ash v -32
+              v1 : uint32 v
+            . exp ...
     
 
 define : encrypt v k
