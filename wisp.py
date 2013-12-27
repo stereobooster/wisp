@@ -119,7 +119,8 @@ class Line:
                    self.content.startswith("` ") or 
                    self.content.startswith("#, ") or # scheme macros
                    self.content.startswith("#` ") or 
-                   self.content.startswith("#' ")):
+                   self.content.startswith("#' ") or 
+                   self.content.startswith("#,@, ")):
                 self.prefix += self.content.split(" ")[0]
                 self.content = self.content[2:]
         
