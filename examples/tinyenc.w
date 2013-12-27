@@ -87,7 +87,7 @@ define : decrypt v k
          + v1 : * v0 : integer-expt 2 32
          let : : v1tmp : uint32 : - v1 : v1change k2 v0 sum k3
            loop
-             uint32 : + sum delta
+             uint32 : - sum delta
              + cycle 1
              uint32 : - v0 : v0change k0 v1tmp sum k1
              . v1tmp
