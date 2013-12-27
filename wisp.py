@@ -116,8 +116,11 @@ class Line:
         if not self.continues:
             while (self.content.startswith("' ") or 
                    self.content.startswith(", ") or
-                   self.content.startswith("` ")):
-                self.prefix += self.content[0]
+                   self.content.startswith("` ") or 
+                   self.content.startswith("#, ") or # scheme macros
+                   self.content.startswith("#` ") or 
+                   self.content.startswith("#' ")):
+                self.prefix += self.content.split(" ")[0]
                 self.content = self.content[2:]
         
         # care for lines starting with ": " (a colon followed by a space and more chars)
