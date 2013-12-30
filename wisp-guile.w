@@ -443,7 +443,7 @@ define : wisp2lisp-add-inline-colon-brackets line
                                       linebracketizer instring inbrackets bracketstoadd 
                                           . (string-append (string-drop-right unprocessed 3) "#,")
                                           . processed
-                        : and (string-prefix? "(" processed) : equal? " #, @," lastupto6
+                        : and (string-prefix? "(" processed) : equal? " #,@, " lastupto6
                                       ; leave out the second space
                                       linebracketizer instring inbrackets bracketstoadd 
                                           . (string-append (string-drop-right unprocessed 5) "#,@,")
