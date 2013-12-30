@@ -34,7 +34,7 @@ define : v1change k2 v0 sum k3
 define-syntax with-split-vk
     syntax-rules :
       : with-split-vk v k exp exp* ...
-          let
+          let ; TODO: This defines syntmp-v0-# instead of v0. TODO: report bug: this breaks hygiene: (define-syntax with-car-a-cdr-b (syntax-rules () ((_ some-list exp exp* ...) (let ((a (car some-list))(b (cdr some-list))) exp exp* ...)))) (with-car-a-cdr-b (list "1" "2" "3") (display syntmp-a-235)) - adjust syntmp-a-# as needed. To avoid: walk the code to ensure that no used variables are bound.
             : v0 : uint32 : ash v -32
               v1 : uint32 v
               k0 : uint32 : ash k -96
