@@ -373,8 +373,9 @@ define : wisp2lisp-add-inline-colon-brackets line
                   ; else
                   let 
                       : lastletter : string-take-right unprocessed 1
-                        lastupto3 : string-take-right unprocessed : min 3 : string-length unprocessed
-                        lastupto4 : string-take-right unprocessed : min 4 : string-length unprocessed
+                        lastupto3  : string-take-right unprocessed : min 3 : string-length unprocessed
+                        lastupto4  : string-take-right unprocessed : min 4 : string-length unprocessed
+                        lastupto6  : string-take-right unprocessed : min 6 : string-length unprocessed
                       ; check if we’re in a string
                       when
                           or
@@ -411,16 +412,41 @@ define : wisp2lisp-add-inline-colon-brackets line
                                   string-append (string-drop-right unprocessed 2) 
                                   string-append "(" processed
                               ; turn " ' (" into " '(", do not modify unprocessed, except to shorten it!
+                              ; same for ` , #' #` #, #,@,
                         : and (string-prefix? "(" processed) : equal? " ' " lastupto3
                                   ; leave out the second space
                                   linebracketizer instring inbrackets bracketstoadd 
                                       . (string-append (string-drop-right unprocessed 2) "'")
                                       . processed
-                        ; TODO: same for , #' #` #, #,@,
+                        : and (string-prefix? "(" processed) : equal? " , " lastupto3
+                                  ; leave out the second space
+                                  linebracketizer instring inbrackets bracketstoadd 
+                                      . (string-append (string-drop-right unprocessed 2) ",")
+                                      . processed
                         : and (string-prefix? "(" processed) : equal? " ` " lastupto3
                                       ; leave out the second space
                                       linebracketizer instring inbrackets bracketstoadd 
                                           . (string-append (string-drop-right unprocessed 2) "`")
+                                          . processed
+                        : and (string-prefix? "(" processed) : equal? " #` " lastupto4
+                                      ; leave out the second space
+                                      linebracketizer instring inbrackets bracketstoadd 
+                                          . (string-append (string-drop-right unprocessed 3) "#`")
+                                          . processed
+                        : and (string-prefix? "(" processed) : equal? " #' " lastupto4
+                                      ; leave out the second space
+                                      linebracketizer instring inbrackets bracketstoadd 
+                                          . (string-append (string-drop-right unprocessed 3) "#'")
+                                          . processed
+                        : and (string-prefix? "(" processed) : equal? " #, " lastupto4
+                                      ; leave out the second space
+                                      linebracketizer instring inbrackets bracketstoadd 
+                                          . (string-append (string-drop-right unprocessed 3) "#,")
+                                          . processed
+                        : and (string-prefix? "(" processed) : equal? " #, @," lastupto6
+                                      ; leave out the second space
+                                      linebracketizer instring inbrackets bracketstoadd 
+                                          . (string-append (string-drop-right unprocessed 5) "#,@,")
                                           . processed
                         : . else ; just go on
                                       linebracketizer instring inbrackets bracketstoadd 
