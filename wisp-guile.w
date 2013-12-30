@@ -15,6 +15,7 @@
 
 define-module : wisp
    . #:export : wisp2lisp wisp-chunkreader
+   . #:use-modules : srfi srfi-1
 
 define : endsinunevenbackslashes text ; comment
        if : = 0 : string-length text
@@ -459,15 +460,31 @@ define : last-indent levels
     list-ref levels 0
 
 define : line-add-starting-bracket line
-    . "Add a starting bracket to the line, if it is no continuation line (it is more indented than the previous)."
-    ; TODO: If line starts with one of ' , ` #` #' #, #,@, then turn it into '(... instead of ('...
-    list 
-        line-indent line
-        string-append 
-            . "("
-            line-content line
-        line-comment line
+    . "Add a starting bracket to the line, if it is no continuation line (it is more indented than the previous).
 
+If line starts with one of ' , ` #` #' #, #,@, then turn it into '(... instead of ('..."
+    let loop : : paren-prefixes : list "'" "," "`" "#`" "#'" "#," "#,@,"
+        ; first check whether we are done checking
+        if : null-list? paren-prefixes
+            ; construct the line structure: '(indentation-depth content comment)
+            list 
+                line-indent line
+                string-append 
+                    . "("
+                    line-content line
+                line-comment line
+            ; otherwise check all possible prefixes
+            let : : prefix : car paren-prefix
+                if : string-prefix? prefix line
+                    list 
+                        line-indent line
+                        string-append 
+                            . prefix "("
+                            line-content line
+                        line-comment line
+                    ; else
+                    loop : cdr paren-prefixes
+    
 define : line-add-closing-brackets line number
     . "Add a closing bracket to the line."
     list 
