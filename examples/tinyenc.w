@@ -51,20 +51,20 @@ define-syntax with-split-vk
   lambda : x
     syntax-case x :
       : with-split-vk v k exp exp* ...
-        with-syntax
-          : k0 : datum->syntax x 'k0
-            k1 : datum->syntax x 'k1
-            k2 : datum->syntax x 'k2
-            k3 : datum->syntax x 'k3
-            v0 : datum->syntax x 'v0
-            v1 : datum->syntax x 'v1
-          let
-            : v0 : uint32 : ash v -32
-              v1 : uint32 v
-              k0 : uint32 : ash k -96
-              k1 : uint32 : ash k -64
-              k2 : uint32 : ash k -32
-              k3 : uint32 k
+        let
+          : v0 : uint32 : ash v -32
+            v1 : uint32 v
+            k0 : uint32 : ash k -96
+            k1 : uint32 : ash k -64
+            k2 : uint32 : ash k -32
+            k3 : uint32 k
+          with-syntax
+            : k0 : datum->syntax x 'k0
+              k1 : datum->syntax x 'k1
+              k2 : datum->syntax x 'k2
+              k3 : datum->syntax x 'k3
+              v0 : datum->syntax x 'v0
+              v1 : datum->syntax x 'v1
             . exp exp* ...
 
 
