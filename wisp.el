@@ -1,9 +1,9 @@
-;;; wisp.el --- Supporting tools for editing wisp: The Whitespace-to-Lisp preprocesor
+;;; wisp.el --- Tools for wisp: the Whitespace-to-Lisp preprocessor
 
 ;; Copyright (C) 2013  Arne Babenhauserheide <arne_bab@web.de>
 
 ;; Author: Arne Babenhauserheide <arne_bab@web.de>
-;; Version: 0.1.3
+;; Version: 0.1.4
 ;; Keywords: languages, lisp
 
 ;; This program is free software; you can redistribute it and/or
