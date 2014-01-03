@@ -1,4 +1,4 @@
-;;; wisp-mode.el --- Major mode for editing wisp: Whitespace-to-Lisp
+;;; wisp.el --- Supporting tools for editing wisp: Whitespace-to-Lisp preprocesor
 
 ;; Copyright (C) 2013  Arne Babenhauserheide <arne_bab@web.de>
 
@@ -98,4 +98,4 @@
                         
 
 (provide 'wisp-mode)
-;;; wisp-mode.el ends here
+;;; wisp.el ends here
