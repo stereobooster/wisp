@@ -3,7 +3,7 @@
 ;; Copyright (C) 2013  Arne Babenhauserheide <arne_bab@web.de>
 
 ;; Author: Arne Babenhauserheide <arne_bab@web.de>
-;; Version: 0.1.2
+;; Version: 0.1.3
 ;; Keywords: languages, lisp
 
 ;; This program is free software; you can redistribute it and/or
@@ -21,6 +21,11 @@
 
 ;;; Commentary:
 
+;; To use, add wisp.el to your emacs lisp path and add the following
+;; to your ~/.emacs or ~/.emacs.d/init.el
+;; 
+;; (require 'wisp)
+;; 
 ;; For details on wisp, see 
 ;; http://draketo.de/light/english/wisp-lisp-indentation-preprocessor
 
@@ -97,5 +102,5 @@
 
                         
 
-(provide 'wisp-mode)
+(provide 'wisp)
 ;;; wisp.el ends here
