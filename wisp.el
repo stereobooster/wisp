@@ -1,4 +1,4 @@
-;;; wisp.el --- Supporting tools for editing wisp: Whitespace-to-Lisp preprocesor
+;;; wisp.el --- Supporting tools for editing wisp: The Whitespace-to-Lisp preprocesor
 
 ;; Copyright (C) 2013  Arne Babenhauserheide <arne_bab@web.de>
 
