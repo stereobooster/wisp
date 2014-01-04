@@ -9,7 +9,9 @@ else
     echo "failed to bootstrap wisp.scm. diff: " ${diff}
 fi
 
-# Now setup the reader so we can use it with guile -L . and then > ,L wisp
+echo preparing the reader: wisp at the REPL
 
 mkdir -p language/wisp
-guile wisp.scm wisp-reader.w > language/wisp/spec.scm
+guile wisp.scm wisp-reader.w 2>/dev/null > language/wisp/spec.scm \
+  && echo ...succeeded \
+  && echo 'to use wisp at the REPL, run `guile -L` . and then in guile `,L wisp`'
