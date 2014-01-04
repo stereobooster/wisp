@@ -15,7 +15,8 @@
 
 define-module : wisp
    . #:export : wisp2lisp wisp-chunkreader
-   . #:use-modules : srfi srfi-1
+
+use-modules : : srfi srfi-1
 
 define : endsinunevenbackslashes text ; comment
        if : = 0 : string-length text
@@ -474,7 +475,7 @@ If line starts with one of ' , ` #` #' #, #,@, then turn it into '(... instead o
                     line-content line
                 line-comment line
             ; otherwise check all possible prefixes
-            let : : prefix : car paren-prefix
+            let : : prefix : car paren-prefixes
                 if : string-prefix? prefix line
                     list 
                         line-indent line
