@@ -3,7 +3,7 @@
 ;; Copyright (C) 2013  Arne Babenhauserheide <arne_bab@web.de>
 
 ;; Author: Arne Babenhauserheide <arne_bab@web.de>
-;; Version: 0.1.4
+;; Version: 0.1.5
 ;; Keywords: languages, lisp
 
 ;; This program is free software; you can redistribute it and/or
@@ -28,7 +28,13 @@
 ;; 
 ;; For details on wisp, see 
 ;; http://draketo.de/light/english/wisp-lisp-indentation-preprocessor
-
+;; 
+;; If you came here looking for wisp the lisp-to-javascript compiler[1], have a look at wispjs-mode[2].
+;; 
+;; [1]: http://jeditoolkit.com/try-wisp
+;; 
+;; [2]: http://github.com/krisajenkins/wispjs-mode
+;; 
 ;;; Code:
 
 (require 'scheme)
