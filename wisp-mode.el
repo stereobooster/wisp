@@ -1,4 +1,4 @@
-;;; wisp.el --- Tools for wisp: the Whitespace-to-Lisp preprocessor
+;;; wisp-mode.el --- Tools for wisp: the Whitespace-to-Lisp preprocessor
 
 ;; Copyright (C) 2013  Arne Babenhauserheide <arne_bab@web.de>
 
@@ -21,10 +21,10 @@
 
 ;;; Commentary:
 
-;; To use, add wisp.el to your emacs lisp path and add the following
+;; To use, add wisp-mode.el to your emacs lisp path and add the following
 ;; to your ~/.emacs or ~/.emacs.d/init.el
 ;; 
-;; (require 'wisp)
+;; (require 'wisp-mode)
 ;; 
 ;; For details on wisp, see 
 ;; http://draketo.de/light/english/wisp-lisp-indentation-preprocessor
@@ -102,5 +102,5 @@
 
                         
 
-(provide 'wisp)
-;;; wisp.el ends here
+(provide 'wisp-mode)
+;;; wisp-mode.el ends here
