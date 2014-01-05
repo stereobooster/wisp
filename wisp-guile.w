@@ -16,6 +16,8 @@
 define-module : wisp
    . #:export : wisp2lisp wisp-chunkreader
 
+use-modules : : srfi srfi-1
+
 define : endsinunevenbackslashes text ; comment
        if : = 0 : string-length text
            . #f
@@ -373,7 +375,9 @@ define : wisp2lisp-add-inline-colon-brackets line
                   ; else
                   let 
                       : lastletter : string-take-right unprocessed 1
-                        lastupto3 : string-take-right unprocessed : min 3 : string-length unprocessed
+                        lastupto3  : string-take-right unprocessed : min 3 : string-length unprocessed
+                        lastupto4  : string-take-right unprocessed : min 4 : string-length unprocessed
+                        lastupto6  : string-take-right unprocessed : min 6 : string-length unprocessed
                       ; check if we’re in a string
                       when
                           or
@@ -395,13 +399,14 @@ define : wisp2lisp-add-inline-colon-brackets line
                       when : < inbrackets 0
                           throw 'more-inline-brackets-closed-than-opened inbrackets line
                       ; when we’re in a string or in brackets , just skip to the next char
-                      if : or instring : > inbrackets 0
+                      cond
+                        : or instring : > inbrackets 0
                           linebracketizer instring inbrackets bracketstoadd 
                               . : string-drop-right unprocessed 1
                               . : string-append lastletter processed
                           ; else check for " : ": That adds a new inline bracket
                           ; support : at the beginning of a line, too.
-                          if : or (equal? " : "  lastupto3) (equal? ": " lastupto3)
+                        : or (equal? " : "  lastupto3) (equal? ": " lastupto3)
                               ; replace the last 2 chars with "(" and note
                               ; that we need an additional closing bracket
                               ; at the end.
@@ -409,15 +414,46 @@ define : wisp2lisp-add-inline-colon-brackets line
                                   string-append (string-drop-right unprocessed 2) 
                                   string-append "(" processed
                               ; turn " ' (" into " '(", do not modify unprocessed, except to shorten it!
-                              if : and (string-prefix? "(" processed) : equal? " ' " lastupto3
+                              ; same for ` , #' #` #, #,@,
+                        : and (string-prefix? "(" processed) : equal? " ' " lastupto3
                                   ; leave out the second space
                                   linebracketizer instring inbrackets bracketstoadd 
                                       . (string-append (string-drop-right unprocessed 2) "'")
                                       . processed
-                                  ; else, just go on
+                        : and (string-prefix? "(" processed) : equal? " , " lastupto3
+                                  ; leave out the second space
                                   linebracketizer instring inbrackets bracketstoadd 
-                                      . (string-drop-right unprocessed 1)
-                                      . (string-append lastletter processed)
+                                      . (string-append (string-drop-right unprocessed 2) ",")
+                                      . processed
+                        : and (string-prefix? "(" processed) : equal? " ` " lastupto3
+                                      ; leave out the second space
+                                      linebracketizer instring inbrackets bracketstoadd 
+                                          . (string-append (string-drop-right unprocessed 2) "`")
+                                          . processed
+                        : and (string-prefix? "(" processed) : equal? " #` " lastupto4
+                                      ; leave out the second space
+                                      linebracketizer instring inbrackets bracketstoadd 
+                                          . (string-append (string-drop-right unprocessed 3) "#`")
+                                          . processed
+                        : and (string-prefix? "(" processed) : equal? " #' " lastupto4
+                                      ; leave out the second space
+                                      linebracketizer instring inbrackets bracketstoadd 
+                                          . (string-append (string-drop-right unprocessed 3) "#'")
+                                          . processed
+                        : and (string-prefix? "(" processed) : equal? " #, " lastupto4
+                                      ; leave out the second space
+                                      linebracketizer instring inbrackets bracketstoadd 
+                                          . (string-append (string-drop-right unprocessed 3) "#,")
+                                          . processed
+                        : and (string-prefix? "(" processed) : equal? " #,@, " lastupto6
+                                      ; leave out the second space
+                                      linebracketizer instring inbrackets bracketstoadd 
+                                          . (string-append (string-drop-right unprocessed 5) "#,@,")
+                                          . processed
+                        : . else ; just go on
+                                      linebracketizer instring inbrackets bracketstoadd 
+                                          . (string-drop-right unprocessed 1)
+                                          . (string-append lastletter processed)
                         
 
 define : last-indent levels
@@ -425,14 +461,31 @@ define : last-indent levels
     list-ref levels 0
 
 define : line-add-starting-bracket line
-    . "Add a starting bracket to the line, if it is no continuation line (it is more indented than the previous)."
-    list 
-        line-indent line
-        string-append 
-            . "("
-            line-content line
-        line-comment line
+    . "Add a starting bracket to the line, if it is no continuation line (it is more indented than the previous).
 
+If line starts with one of ' , ` #` #' #, #,@, then turn it into '(... instead of ('..."
+    let loop : : paren-prefixes : list "'" "," "`" "#`" "#'" "#," "#,@,"
+        ; first check whether we are done checking
+        if : null-list? paren-prefixes
+            ; construct the line structure: '(indentation-depth content comment)
+            list 
+                line-indent line
+                string-append 
+                    . "("
+                    line-content line
+                line-comment line
+            ; otherwise check all possible prefixes
+            let : : prefix : car paren-prefixes
+                if : string-prefix? prefix : line-content line
+                    list 
+                        line-indent line
+                        string-append 
+                            . prefix "("
+                            line-content line
+                        line-comment line
+                    ; else
+                    loop : cdr paren-prefixes
+    
 define : line-add-closing-brackets line number
     . "Add a closing bracket to the line."
     list 
