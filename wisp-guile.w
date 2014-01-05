@@ -476,7 +476,7 @@ If line starts with one of ' , ` #` #' #, #,@, then turn it into '(... instead o
                 line-comment line
             ; otherwise check all possible prefixes
             let : : prefix : car paren-prefixes
-                if : string-prefix? prefix line
+                if : string-prefix? prefix : line-content line
                     list 
                         line-indent line
                         string-append 
