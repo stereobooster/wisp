@@ -463,8 +463,10 @@ define : last-indent levels
 define : line-add-starting-bracket line
     . "Add a starting bracket to the line, if it is no continuation line (it is more indented than the previous).
 
-If line starts with one of ' , ` #` #' #, #,@, then turn it into '(... instead of ('..."
-    let loop : : paren-prefixes : list "'" "," "`" "#`" "#'" "#," "#,@,"
+If line starts with one of ' , ` #` #' #, #,@, then turn it into '(... instead of ('...
+
+The line *must* have a whitespace after the prefix."
+    let loop : : paren-prefixes : list "' " ", " "` " "#` " "#' " "#, " "#,@, "
         ; first check whether we are done checking
         if : null-list? paren-prefixes
             ; construct the line structure: '(indentation-depth content comment)
@@ -480,8 +482,8 @@ If line starts with one of ' , ` #` #' #, #,@, then turn it into '(... instead o
                     list 
                         line-indent line
                         string-append 
-                            . prefix "("
-                            line-content line
+                            . (string-drop-right prefix 1) "("
+                            string-drop (line-content line) : string-length prefix
                         line-comment line
                     ; else
                     loop : cdr paren-prefixes
