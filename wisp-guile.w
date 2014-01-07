@@ -1,6 +1,11 @@
 #!/home/arne/wisp/wisp-multiline.sh 
 ; !#
 
+;; This file might need to be licensed permissively for inclusion in
+;; an SRFI. Only change it, if you agree to this possible relicensing
+;; of your contribution to this file. I will not accept changes here
+;; which do not allow that.
+
 ; we need to be able to replace end-of-line characters in brackets and strings
 
 ;; nostringandbracketbreaks INPORT
