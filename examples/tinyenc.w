@@ -28,22 +28,7 @@ define : v1change k2 v0 sum k3
            uint32 : + v0 sum
            uint32 : + k3 : uint32 : ash v0 -5
 
-; TODO: Define a macro with-split-kv which executes its body with let bindings to k0 k1 k2 k3 v0 and v1
-; http://www.gnu.org/software/guile/manual/html_node/Syntax-Case.html#index-with_002dsyntax
-define-syntax with-split-vk
-    syntax-rules :
-      : with-split-vk v k exp exp* ...
-          let ; TODO: This defines syntmp-v0-# instead of v0. TODO: report bug: this breaks hygiene: (define-syntax with-car-a-cdr-b (syntax-rules () ((_ some-list exp exp* ...) (let ((a (car some-list))(b (cdr some-list))) exp exp* ...)))) (with-car-a-cdr-b (list "1" "2" "3") (display syntmp-a-235)) - adjust syntmp-a-# as needed. To avoid: walk the code to ensure that no used variables are bound.
-            : v0 : uint32 : ash v -32
-              v1 : uint32 v
-              k0 : uint32 : ash k -96
-              k1 : uint32 : ash k -64
-              k2 : uint32 : ash k -32
-              k3 : uint32 k
-            . exp exp* ...
-
-
-; TODO: Define a macro with-split-kv which executes its body with let bindings to k0 k1 k2 k3 v0 and v1
+; Define a macro with-split-kv which executes its body with let bindings to k0 k1 k2 k3 v0 and v1
 ; Use syntax-case to be able to break hygiene.
 ; http://www.gnu.org/software/guile/manual/html_node/Syntax-Case.html#index-with_002dsyntax
 define-syntax with-split-vk
