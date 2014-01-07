@@ -5,6 +5,7 @@ wisp: handle general paren prefixes like quote, quasiquote, etc. | owner:, open:
 throw an exception when reducing indentation to an unknown indentation level. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:424186bd85f186b7279c5c59e2bd42f847284719, time:1376003568.91
 wisp-in-wisp: only parses the first 272 lines, for some reason. | owner:, open:False, id:4cb6c556d7136609e2da9ab3fc045a39847f1ef3, time:1377014682.98
 implement wisp in wisp                                       | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:6299306916706410702029289bf32edab1e7f17c, time:1367113341.49
+support other types of brackets, like square brackets.       | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:6749f3abcb9455eac9271efd8265797bce114239, time:1389134151.98
 linebreaks in parens still break                             | owner:, open:True, id:6797987c7834a53358fb4ebbd8b9b36c2c4a8f01, time:1379004764.14
 wisp-guile.w does not yet remove the leading . which signifies a continuation. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:7075096a323933493f42a3751da5f75a45d5d699, time:1377381700.17
 inline ' : should be '(                                      | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:72d534a8b23b4cb168017f1bb7d8816f0ea170c4, time:1366497335.26
