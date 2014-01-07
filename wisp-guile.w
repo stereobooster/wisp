@@ -542,7 +542,7 @@ define : line-drop-continuation-dot line
 define : wisp2lisp-parse lisp prev lines
     . "Parse the body of the wisp-code."
     set! prev : wisp2lisp-add-inline-colon-brackets prev ; prev already is a code-line.
-    if : not : line-continues? prev
+    if : not : or (line-continues? prev) (line-empty-code? prev)
         set! prev : line-add-starting-bracket prev
     set! lines : map-in-order wisp2lisp-add-inline-colon-brackets lines
     let bracketizer : (levels '(0)) (pre prev) (unprocessed lines) (processed lisp) (whitespace '())
@@ -564,7 +564,7 @@ define : wisp2lisp-parse lisp prev lines
                           pre-continues : line-continues? pre
                           next-continues : line-continues? next
                           final-line : equal? #f : line-content next
-                          bracketstocloseprev : line-indent-brackets-to-close next-indent levels next-continues pre-continues
+                          bracketstocloseprev : if (line-empty-code? pre) 0 : line-indent-brackets-to-close next-indent levels next-continues pre-continues
                           bracketstoopennext : line-indent-brackets-to-open next-indent levels next-continues pre-continues
                           newnext : if final-line next : if (> bracketstoopennext 0) (line-add-starting-bracket next) next
                           newpre : line-drop-continuation-dot : line-add-closing-brackets pre bracketstocloseprev
@@ -579,7 +579,7 @@ define : wisp2lisp-initial-comments lisp prev lines
      . "Keep all starting comments: do not start them with a bracket."
      let skip-initial-comments : (lisp lisp) (prev prev) (lines lines)
          if : = 0 : length lines ; file only contained comments, maybe including the hashbang
-             . lisp
+             list lisp prev lines
              if : line-empty-code? prev
                  skip-initial-comments : append lisp : list prev
                      . (list-ref lines 0) (list-tail lines 1)
