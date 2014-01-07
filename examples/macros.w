@@ -30,6 +30,6 @@ define-syntax add-with-argument
    : _ a b ...
      #' + a b ...
 
-format #t "this breaks\n"
-add-with-argument 
+; format #t "this breaks\n"
+; add-with-argument 
 format #t "returns 1: ~A\n" : add-with-argument 1
