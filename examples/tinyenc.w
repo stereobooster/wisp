@@ -3,7 +3,11 @@
 
 define-module : examples tinyenc
    . #:export : encrypt decrypt
-   . #:use-syntax : ice-9 syncase
+;   . #:use-syntax : ice-9 syncase
+; `use-syntax' is deprecated. For compatibility with old and new guile I therefore need this.
+; Syntax-case macros are now a part of Guile core; importing (ice-9 syncase) is no longer necessary.
+use-syntax : ice-9 syncase
+
 ; http://en.wikipedia.org/wiki/Tiny_Encryption_Algorithm#toctitle
 
 define delta #x9e3779b9
@@ -51,33 +55,26 @@ define-syntax with-split-vk
   lambda : x
     syntax-case x :
       : with-split-vk v k exp exp* ...
-        let
-          : v0 : uint32 : ash v -32
-            v1 : uint32 v
-            k0 : uint32 : ash k -96
-            k1 : uint32 : ash k -64
-            k2 : uint32 : ash k -32
-            k3 : uint32 k
-          with-syntax
-            : k0 : datum->syntax x 'k0
-              k1 : datum->syntax x 'k1
-              k2 : datum->syntax x 'k2
-              k3 : datum->syntax x 'k3
-              v0 : datum->syntax x 'v0
-              v1 : datum->syntax x 'v1
+        with-syntax
+          : k0 : datum->syntax x 'k0
+            k1 : datum->syntax x 'k1
+            k2 : datum->syntax x 'k2
+            k3 : datum->syntax x 'k3
+            v0 : datum->syntax x 'v0
+            v1 : datum->syntax x 'v1
+          #' let
+            : v0 : uint32 : ash v -32
+              v1 : uint32 v
+              k0 : uint32 : ash k -96
+              k1 : uint32 : ash k -64
+              k2 : uint32 : ash k -32
+              k3 : uint32 k
             . exp exp* ...
 
 
 define : encrypt v k
   . "Encrypt the 64bit (8 byte, big endian) value V with the 128bit key K (16 byte)."
-;   with-split-vk v k
-  let
-    : k0 : uint32 : ash k -96
-      k1 : uint32 : ash k -64
-      k2 : uint32 : ash k -32
-      k3 : uint32 k
-      v0 : uint32 : ash v -32
-      v1 : uint32 v
+  with-split-vk v k
     let loop 
       : sum delta
         cycle 0
@@ -96,13 +93,7 @@ define : encrypt v k
 
 define : decrypt v k
   . "Decrypt the 64bit (8 byte, big endian) value V with the 128bit key K (16 byte)."
-  let
-    : k0 : uint32 : ash k -96
-      k1 : uint32 : ash k -64
-      k2 : uint32 : ash k -32
-      k3 : uint32 k
-      v0 : uint32 : ash v -32
-      v1 : uint32 v
+  with-split-vk v k
     let loop
       : sum #xc6ef3720
         cycle 0
