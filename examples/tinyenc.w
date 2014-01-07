@@ -17,11 +17,6 @@ define : uint32 number
   modulo number : integer-expt 2 32
 
 define : v0change k0 v1 sum k1
-;         format #t "sum: ~A, + k0 : ash v1 4: ~A, + v1 sum: ~A, + k1 : ash v1 -5: ~A\n"
-;           . sum
-;           uint32 : + k0 : ash v1 4
-;           uint32 : + v1 sum
-;           uint32 : + k1 : uint32 : ash v1 -5
          logxor
            uint32 : + k0 : ash v1 4
            uint32 : + v1 sum
@@ -80,8 +75,6 @@ define : encrypt v k
         cycle 0
         v0 v0
         v1 v1
-;      format #t "v0: ~A, v1: ~A\n" v0 v1
- ;     if (= cycle 32) : format #t "k0: ~A, k1: ~A, k2: ~A, k3: ~A\n" k0 k1 k2 k3
       if : = cycle 32
          + v1 : * v0 : integer-expt 2 32
          let : : v0tmp : uint32 : + v0 : v0change k0 v1 sum k1
