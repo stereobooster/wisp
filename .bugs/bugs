@@ -1,7 +1,7 @@
 fails when I add stuff at the end of end of example.w        | owner:, open:False, id:08c68e1ce0c9798184c01806d2661a3220bff3cd, time:1363789693.79
 add a testsuite for wisp parsers.                            | owner:, open:True, id:1c05d27ac916e1a823b8985a094947907c3c19af, time:1379064922.74
 wisp-in-wisp: remove the leading . for continuation lines after inferring the brackets. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:2e42e5b64622f0cc383eb8acc3d510912e925bf0, time:1377476687.79
-wisp: handle general paren prefixes like quote, quasiquote, etc. | owner:, open:True, id:323ff94b5be635742619467e1cb44f4c0d96f63f, time:1379047798.47
+wisp: handle general paren prefixes like quote, quasiquote, etc. | owner:, open:False, id:323ff94b5be635742619467e1cb44f4c0d96f63f, time:1379047798.47
 throw an exception when reducing indentation to an unknown indentation level. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:424186bd85f186b7279c5c59e2bd42f847284719, time:1376003568.91
 wisp-in-wisp: only parses the first 272 lines, for some reason. | owner:, open:False, id:4cb6c556d7136609e2da9ab3fc045a39847f1ef3, time:1377014682.98
 implement wisp in wisp                                       | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:6299306916706410702029289bf32edab1e7f17c, time:1367113341.49
