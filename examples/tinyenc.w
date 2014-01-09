@@ -18,7 +18,7 @@ define uint32-max #xFFFFFFFF ; 2**32 - 1
 define-inlinable : uint32 number
   . "ensure that the number fits a uint32"
   ; instead of modulo, use bitwise and: simply throws out the higher bits
-  logand number #xFFFFFFFF ; uint32-max
+  logand number uint32-max
 
 define-inlinable : v0change k0 v1 sum k1
                    logxor
@@ -60,15 +60,15 @@ define : encrypt v k
   . "Encrypt the 64bit (8 byte, big endian) value V with the 128bit key K (16 byte)."
   with-split-vk v k
     let loop 
-      : sum #x9e3779b9 ; delta
+      : sum delta
         cycle 0
         v0 v0
         v1 v1
       if : = cycle 32
-         + v1 : * v0 #x100000000 ; uint32-limit
+         + v1 : * v0 uint32-limit
          let : : v0tmp : uint32 : + v0 : v0change k0 v1 sum k1
            loop
-             uint32 : + sum #x9e3779b9 ; delta
+             uint32 : + sum delta
              + cycle 1
              . v0tmp
              uint32 : + v1 : v1change k2 v0tmp sum k3
@@ -82,11 +82,11 @@ define : decrypt v k
         v0 v0
         v1 v1
       if : = cycle 32
-         + v1 : * v0 #x100000000 ; uint32-limit
+         + v1 : * v0 uint32-limit
          ; (x-y) mod N is the same as (x mod N) - (y mod N)
          let : : v1tmp : uint32 : - v1 : v1change k2 v0 sum k3
            loop
-             uint32 : - sum #x9e3779b9 ; delta
+             uint32 : - sum delta
              + cycle 1
              uint32 : - v0 : v0change k0 v1tmp sum k1
              . v1tmp
