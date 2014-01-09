@@ -35,7 +35,7 @@ int main ()
   uint32_t k[] = {0, 0, 0, 9};
   int i;
   // performance test
-  for (i=0; i<100000; i++)
+  for (i=0; i<1000000; i++) // 10^6!
     {
       encrypt(v, k);
       printf("v1: %u\n", v[1]);
