@@ -14,22 +14,23 @@ define delta #x9e3779b9
 define uint32-limit #x100000000 ; 2**32
 define uint32-max #xFFFFFFFF ; 2**32 - 1
 
-define : uint32 number
+; define-inlinable makes this much faster (30%!).
+define-inlinable : uint32 number
   . "ensure that the number fits a uint32"
   ; instead of modulo, use bitwise and: simply throws out the higher bits
   logand number uint32-max
 
-define : v0change k0 v1 sum k1
-         logxor
-           + k0 : ash v1 4
-           + v1 sum
-           + k1 : uint32 : ash v1 -5
+define-inlinable : v0change k0 v1 sum k1
+                   logxor
+                     + k0 : ash v1 4
+                     + v1 sum
+                     + k1 : uint32 : ash v1 -5
 
-define : v1change k2 v0 sum k3
-         logxor
-           + k2 : ash v0 4
-           + v0 sum
-           + k3 : uint32 : ash v0 -5
+define-inlinable : v1change k2 v0 sum k3
+                   logxor
+                     + k2 : ash v0 4
+                     + v0 sum
+                     + k3 : uint32 : ash v0 -5
 
 ; Define a macro with-split-kv which executes its body with let bindings to k0 k1 k2 k3 v0 and v1
 ; Use syntax-case to be able to break hygiene.
