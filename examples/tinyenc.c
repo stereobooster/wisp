@@ -39,7 +39,7 @@ int main ()
   for (i=0; i<1000000; i++) // 10^6!
     {
       encrypt(v, k);
-      res += v[1];
+      res += v[1]; // avoid optimizing this loop away.
       decrypt(v, k);
       res += v[1];
     }
