@@ -11,7 +11,7 @@ use-syntax : ice-9 syncase
 ; http://en.wikipedia.org/wiki/Tiny_Encryption_Algorithm#toctitle
 
 define delta #x9e3779b9
-define uint32-max : integer-expt 2 32
+define uint32-limit #x100000000 ; 2**32
 
 define : uint32 number
   . "ensure that the number fits a uint32"
