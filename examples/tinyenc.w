@@ -20,16 +20,16 @@ define : uint32 number
   logand number uint32-max
 
 define : v0change k0 v1 sum k1
-           logxor
-             + k0 : ash v1 4
-             + v1 sum
-             + k1 : uint32 : ash v1 -5
+         logxor
+           + k0 : ash v1 4
+           + v1 sum
+           + k1 : uint32 : ash v1 -5
 
 define : v1change k2 v0 sum k3
-           logxor
-             + k2 : ash v0 4
-             + v0 sum
-             + k3 : uint32 : ash v0 -5
+         logxor
+           + k2 : ash v0 4
+           + v0 sum
+           + k3 : uint32 : ash v0 -5
 
 ; Define a macro with-split-kv which executes its body with let bindings to k0 k1 k2 k3 v0 and v1
 ; Use syntax-case to be able to break hygiene.
