@@ -36,7 +36,7 @@ int main ()
   int i;
   uint32_t res = 0;
   // performance test
-  for (i=0; i<1000000; i++) // 10^6!
+  for (i=0; i<10000000; i++) // 10^7!
     {
       encrypt(v, k);
       res += v[1]; // avoid optimizing this loop away.

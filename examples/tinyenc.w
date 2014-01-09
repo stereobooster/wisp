@@ -112,6 +112,6 @@ define : testdecrypt
            . 9
 
 let loop : : step 0
-    when : < step 100000
+    when : < step 100000 ; 10^5
        testdecrypt
        loop : + 1 step
