@@ -33,6 +33,14 @@ int main ()
 {
   uint32_t v[] = {0, 5};
   uint32_t k[] = {0, 0, 0, 9};
-  encrypt(v, k);
+  int i;
+  // performance test
+  for (i=0; i<100000; i++)
+    {
+      encrypt(v, k);
+      printf("v1: %u\n", v[1]);
+      decrypt(v, k);
+      printf("v1: %u\n", v[1]);
+    }
   return 0;
 }
