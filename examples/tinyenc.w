@@ -64,7 +64,7 @@ define : encrypt v k
         v0 v0
         v1 v1
       if : = cycle 32
-         + v1 : * v0 : integer-expt 2 32
+         + v1 : * v0 uint32-limit
          let : : v0tmp : uint32 : + v0 : v0change k0 v1 sum k1
            loop
              uint32 : + sum delta
@@ -81,7 +81,7 @@ define : decrypt v k
         v0 v0
         v1 v1
       if : = cycle 32
-         + v1 : * v0 : integer-expt 2 32
+         + v1 : * v0 uint32-limit
          ; (x-y) mod N is the same as (x mod N) - (y mod N)
          let : : v1tmp : uint32 : - v1 : v1change k2 v0 sum k3
            loop
