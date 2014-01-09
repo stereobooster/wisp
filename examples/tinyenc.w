@@ -101,3 +101,16 @@ format #t "encrypted: ~A\n"
         encrypt 
           . 5
           . 9
+
+; Performance test
+define : testdecrypt 
+       decrypt
+           encrypt 
+             . 5
+             . 9
+           . 9
+
+let loop : : step 0
+    when : < step 100000
+       testdecrypt
+       loop : + 1 step
