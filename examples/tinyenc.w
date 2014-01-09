@@ -20,14 +20,12 @@ define : uint32 number
   logand number uint32-max
 
 define : v0change k0 v1 sum k1
-         uint32
            logxor
              + k0 : ash v1 4
              + v1 sum
              + k1 : uint32 : ash v1 -5
 
 define : v1change k2 v0 sum k3
-         uint32
            logxor
              + k2 : ash v0 4
              + v0 sum
@@ -84,6 +82,7 @@ define : decrypt v k
         v1 v1
       if : = cycle 32
          + v1 : * v0 : integer-expt 2 32
+         ; (x-y) mod N is the same as (x mod N) - (y mod N)
          let : : v1tmp : uint32 : - v1 : v1change k2 v0 sum k3
            loop
              uint32 : - sum delta
