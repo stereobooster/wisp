@@ -12,10 +12,12 @@ use-syntax : ice-9 syncase
 
 define delta #x9e3779b9
 define uint32-limit #x100000000 ; 2**32
+define uint32-max #xFFFFFFFF ; 2**32 - 1
 
 define : uint32 number
   . "ensure that the number fits a uint32"
-  modulo number uint32-limit
+  ; instead of modulo, use bitwise and: simply throws out the higher bits
+  logand number uint32-max
 
 define : v0change k0 v1 sum k1
          uint32
