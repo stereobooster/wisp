@@ -43,6 +43,6 @@ int main ()
       decrypt(v, k);
       res += v[1];
     }
-  printf("res: %u, v0: %u", res, v[0]);
+  printf("res: %u, v1: %u\n", res, v[1]);
   return 0;
 }
