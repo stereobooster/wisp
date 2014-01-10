@@ -1,0 +1,64 @@
+#+title: SRFI: wisp: whitespace-to-lisp preprocessing
+
+#+BEGIN_ABSTRACT
+This SRFI describes a simple syntax which allows making scheme easier to read for newcomers while keeping the simplicity and elegance of s-expressions. Similar to SRFI-110, SRFI-49 and Python it uses indentation to group expressions. As SRFI-110 wisp is general and homoiconic. Different from its precedessors, wisp only uses the absolute minimum of additional syntax-elements which are required for writing and exchanging arbitrary code-structures.
+
+The expressiveness of 
+
+Wisp expressions can include any s-expressions
+#+END_ABSTRACT
+
+* SRFI process                                                     :noexport:
+
+1. Authors submit a proposal by using the http://srfi.schemers.org/ web page, or sending email to srfi minus editors at srfi dot schemers dot org.
+2. Within 7 days, one of the editors will read and respond to the proposal. The response may be a request to clarify, justify, or withdraw the proposal. Such a request must not reflect the personal bias of an editor. Rather, it will be made strictly to maintain a high quality of submissions. The editors may not turn a proposal back more than twice. On the third submission, the editors will move the proposal to draft status if it conforms to the specification below. At the discretion of the editors, a proposal that does not completely conform may be moved to draft status (although it must conform before it will be moved to final status).
+3. When the proposal has been vetted by the editors, it receives its SRFI number and becomes draft. The editors will create a mailing list for the discussion of the proposal. A proposal normally stays draft for 60 days. A short notice of the new draft SRFI, including the title and abstract, SRFI number, URL, and instructions to access the temporary mailing list, will be sent to srfi minus announce at srfi dot schemers dot org. As part of the initial editing process, the editors will ensure that related standards (R*RS, SRFIs, RFCs and others) are appropriately identified and that the proposal meets the structural requirements described below. If other related standards are identified during the comment process or after acceptance, the editors will keep the references up-to-date.
+4. If the authors choose, they may submit revised versions of the proposal at any point during the comment period. Every such revision shall be announced to srfi minus announce at srfi dot schemers dot org, and all revisions will be retained in the permanent record of the SRFI. Re-submission may cause the comment period to be extended at the discretion of the editors. The total discussion period must not exceed 90 days. Active discussion or revision after 90 days normally suggests that a proposal has been revised at least 3 times and is not yet mature enough for standardization.
+5. At the end of the 60-90 day comment period, the authors can choose to withdraw the proposal. If the editors determine that insufficient time for discussion has followed a significant revision of the proposal, the proposal will be withdrawn. Otherwise, the proposal will be made final if it meets the requirements below. The outcome will be announced to srfi minus announce at srfi dot schemers dot org.
+6. If the SRFI is withdrawn at the end of the comment period, it will be moved to a withdrawn proposal archive. At the discretion of the editors, subsequent related proposals (by the same or different authors) may be encouraged to include/modify the withdrawn proposal and may be treated as a reactivation of the withdrawn proposal and move it back to draft. A withdrawn proposal may not normally be reactivated until 30 days after the withdrawal.
+7. When the SRFI is accepted, it will be placed on the list of final SRFIs. This will include a link to the history of the proposal, including all earlier versions and the archive of the discussion from the comment period. Any identified SRFIs that are superseded or incompatible with the newly final SRFI will be updated to reflect this fact. 
+
+* SRFI Structure                                                   :noexport:
+
+Every SRFI must meet the following requirements:
+
+1. It must have a succinct title.
+2. It must list the authors.
+3. It must list related standards and SRFIs, including dependencies, conflicts, and replacements.
+4. It must begin with an abstract. This will be fewer than 200 words long. It will outline the need for, and design of, the proposal.
+5. It must contain a detailed rationale. This will typically be 200-500 words long and will explain why the proposal should be incorporated as a standard feature in Scheme implementations. If there are other standards which this proposal will replace or with which it will compete, the rationale should explain why the present proposal is a substantial improvement.
+6. It must contain a detailed specification. This should be detailed enough that a conforming implementation could be completely created from this description.
+7. It must contain a reference implementation. This requirement may be met (in order from the most to the least preferred) by:
+   1. A portable Scheme implementation (possibly using earlier SRFIs). This is the most desirable option, because then implementors can provide a (possibly slow) implementation with no effort.
+   2. A mostly-portable solution that uses some kind of hooks provided in some Scheme interpreter/compiler. In this case, a detailed specification of the hooks must be included so that the SRFI is self-contained.
+   3. An implementation-specific solution. Ideally, tricky issues that had to be dealt with in the implementation will be identified.
+   4. A separately available implementation, where a reference implementation is large or requires extensive modifications (rather than just additions) to an existing implementation. This implementation will eventually be archived along with the SRFI and the discussion related to it.
+   5. An outline of how it might be implemented. This should be considered a last resort, and in this case the rationale for the feature must be stronger. 
+   The reference implementation should normally conform to the specification in point 5. If there is any variance (such as the implementation being overly restrictive), the specification will be considered correct, the variance should be explained, and a timetable provided for the reference implementation to meet the specification.
+8. A proposal must be submitted in HTML 3.2 format following the template located here. If the author(s) are not familiar with this, the editors will accept Plain ISO Latin 1 text and convert it to HTML, after which any revisions must remain in HTML. All proposals must be written in English, be properly formatted and be reasonably grammatical.
+9. It must contain a copyright statement as follows (where AUTHOR should be replaced by the name(s) of the author(s) and YEAR will be the year in which the SRFI number is allocated):
+
+      Copyright (C) AUTHOR (YEAR). All Rights Reserved.
+
+      Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+      The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+      THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+
+The editors may not reject a proposal because they disagree with the importance of the proposal, or because they think it is a wrong-headed approach to the problem. The editors may, however, reject a proposal because it does not meet the requirements listed here.
+
+In particular, lack of a reference implementation (as defined above) is grounds for rejection. This can only occur if the ``reference implementation'' requirement is being met by an outlined implementation (type 5), and there is consensus that the implementation outline is not adequate. Note that this is never a permanent rejection, because creation of an implementation of one of the other types is a complete refutation of this basis for rejection.
+
+The other likely basis for rejection is an inadequate design specification. In this case, the editors will attempt to help the author(s) conform to the requirements.
+
+Remember, even if a proposal becomes an final SRFI, the need for it must be compelling enough for implementors to decide to incorporate it into their systems, or it will have been a waste of time and effort for everyone involved. If the quality of any SRFI is not high, the likelihood of implementors adding this feature to their implementation is extremely low. 
+
+* Authors
+
+- Arne Babenhauserheide
+
+* Related SRFIs
+
+SRFI-49 (Indentation-sensitive syntax) (superceded by this SRFI), SRFI-110 (Sweet-expressions (t-expressions)) (superceded by this SRFI) and SRFI-30 (Nested Multi-line comments) (interacts with this SRFI).
+
