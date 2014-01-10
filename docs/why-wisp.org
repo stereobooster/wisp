@@ -1,0 +1,63 @@
+#+title: Why Wisp?
+#+options: num:nil toc:nil
+# Export as s5 presentation. See http://orgmode.org/worg/org-tutorials/non-beamer-presentations.html
+
+#+BEGIN_SRC elisp :exports none
+(require 'ox-s5)
+#+END_SRC
+
+* On Words                                           
+
+#+BEGIN_SRC elisp :exports results :results results raw
+  (defun shuffle-wordcontent (string)
+    (interactive)
+    (let ((strings (split-string string)))
+      (substring 
+       (apply 'concat 
+              (loop for s in strings 
+                    collect (if (< (length s) 4) 
+                                (concat s " ")
+                              (concat (substring s 0 1) 
+                                      (apply 'concat 
+                                             (mapcar 'string 
+                                                     (shuffle-vector 
+                                                      (string-to-vector 
+                                                       (substring s 1 -1)))))
+                                      (substring s -1)
+                                      " "))))
+       0 -1)))
+  
+  (concat "*" (setq why-wisp-text-scheme-has (shuffle-wordcontent "Scheme follows a minimalist design philosophy")) "*")
+#+END_SRC
+
+#+RESULTS:
+*Shcmee fowlols a malisimint dsegin plhpoihosy*
+
+- /Defocus a bit/
+- /Can you see the meaning?/
+
+* Scheme for Newcomers
+
+#+BEGIN_SRC elisp :exports results :results results raw
+  (concat "*€" (combine-and-quote-strings (split-string why-wisp-text-scheme-has) " €") (apply 'concat (loop for word in (split-string why-wisp-text-scheme-has) collect "¥") ) "*")
+#+END_SRC
+
+#+RESULTS:
+*€Shcmee €fowlols €a €malisimint €dsegin €plhpoihosy¥¥¥¥¥¥*
+
+- /Try it again/
+- /Do you see how much harder it got?/
+- /€ and ¥ escape your existing filters/
+
+* Elegance
+#+html: <br />
+** *.,-":*
+
+/The most common non-letter characters in prose/
+
+** *()*
+
+/The most common paired characters/
+
+(From letter distributions in newspapers)
+
