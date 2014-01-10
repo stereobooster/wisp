@@ -6,6 +6,18 @@
 (require 'ox-s5)
 #+END_SRC
 
+* Elegance
+#+html: <br />
+** *.,":'_#?!;*
+
+/The most common non-letter, non-math characters in prose/
+
+** *()*
+
+/The most common paired characters/
+
+(From letter distributions in newspapers)
+
 * On Words                                           
 
 #+BEGIN_SRC elisp :exports results :results results raw
@@ -49,15 +61,19 @@
 - /Do you see how much harder it got?/
 - /€ and ¥ escape your existing filters/
 
-* Elegance
-#+html: <br />
-** *.,-":*
 
-/The most common non-letter characters in prose/
+* Summary
 
-** *()*
+1. Lisp uses the most common non-letter characters.
+2. The first and last characters are important for text-recognition.
 
-/The most common paired characters/
+* On Wisp
 
-(From letter distributions in newspapers)
-
+#+BEGIN_SRC wisp
+  define : hello
+           let
+             : greeting "Hello ~A!\n"
+               whom "Scheme"
+             format #t greeting whom
+  
+#+END_SRC
