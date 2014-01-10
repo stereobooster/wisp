@@ -68,12 +68,8 @@
 2. The first and last characters are important for text-recognition.
 
 * On Wisp
-
+#+html: <br />
 #+BEGIN_SRC wisp
   define : hello
-           let
-             : greeting "Hello ~A!\n"
-               whom "Scheme"
-             format #t greeting whom
-  
+           display "Hello Schemers!\n"
 #+END_SRC
