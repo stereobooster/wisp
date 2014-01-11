@@ -107,7 +107,11 @@ becomes
     0
 #+END_SRC
 
+- Cannot continue the argument list
+
 * Continuing the argument list in wisp
+
+** Wisp
 
 #+BEGIN_SRC scheme
   + 5
@@ -169,7 +173,7 @@ becomes
 #+BEGIN_SRC scheme
 (+ 5
   (* 4 3)
-  2 1
+  2 1)
 #+END_SRC
 
 * Wisp syntax 3/4: Double Parens
@@ -225,3 +229,15 @@ http://draketo.de/light/english/wisp-lisp-indentation-preprocessor#sec-4
 - =.= Continue argument list
 - =:= Double parens
 - =_= Survive HTML
+
+* Wisp mission
+#+html: <br /><blockquote>
+“I love the syntax of Python, but crave the simplicity and power of Lisp.”
+#+html: </blockquote>
+
+See the site for info how to test wisp:
+
+#+html: <small>
+http://draketo.de/light/english/wisp-lisp-indentation-preprocessor
+#+html: </small>
+
