@@ -236,9 +236,9 @@ http://draketo.de/light/english/wisp-lisp-indentation-preprocessor#sec-4
 
 /Required for the goal of wisp: indentation-based lisp with a simple preprocessor/
 
-- =.= Continue argument list
-- =:= Double parens
-- =_= Survive HTML
+- =.= to continue argument list
+- =:= for double parens
+- =_= to survive HTML
 
 * Wisp mission
 #+html: <br /><blockquote>
