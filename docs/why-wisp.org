@@ -154,7 +154,9 @@ myfunction
 
 /Also the problems of SRFI-49 are preserved/
 
-* Wisp syntax 1/4: Indentation
+* Wisp syntax 1/4: function calls
+
+** Indentation
 
 #+BEGIN_SRC scheme
 display 
@@ -172,6 +174,8 @@ becomes
 
 * Wisp syntax 2/4: Continue Argument list
 
+** The dot
+
 #+BEGIN_SRC scheme
 + 5
   * 4 3
@@ -187,6 +191,8 @@ becomes
 #+END_SRC
 
 * Wisp syntax 3/4: Double Parens
+
+** The colon
 
 #+BEGIN_SRC scheme
 let 
@@ -208,6 +214,7 @@ becomes
 
 * Wisp syntax 4/4: Resilient Indentation
 
+** The underscore
 
 #+BEGIN_SRC scheme
 let 
