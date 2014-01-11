@@ -1,4 +1,5 @@
 #+title: Why Wisp?
+#+date: 2014
 #+OPTIONS: H:1 num:nil toc:nil \n:nil @:t ::t |:t ^:t f:t LaTeX:t
 #+BIND: org-export-html-style-include-default nil
 #+BIND: org-export-html-style-include-scripts t
