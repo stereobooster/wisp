@@ -64,12 +64,76 @@
 
 * Summary
 
-1. Lisp uses the most common non-letter characters.
-2. The first and last characters are important for text-recognition.
+1. Lisp uses the *most common* non-letter characters.
+2. The *first and last characters* are important for text-recognition.
+
+Let’s call these elegance 1 and elegance 2.
+
+Any fix for elegance 2 should preserve elegance 1.
+
+Elegance 0: generality and homoiconicity: *code is data*.
 
 * On Wisp
 #+html: <br />
-#+BEGIN_SRC wisp
+#+BEGIN_SRC scheme
   define : hello
            display "Hello Schemers!\n"
 #+END_SRC
+
+becomes
+
+#+BEGIN_SRC scheme
+  (define (hello)
+          (display "Hello Schemers!\n"))
+#+END_SRC
+
+* Why not SRFI-49 (Indentation-sensitive syntax)?
+
+** Scheme
+
+#+BEGIN_SRC scheme
+  (+ 5 
+     (* 4 3) 
+     2 1 0)
+#+END_SRC
+
+** SRRFI-49 (Indentation-sensitive syntax)
+
+#+BEGIN_SRC scheme
+  + 5
+    * 4 3
+    2
+    1
+    0
+#+END_SRC
+
+* Continuing the argument list in wisp
+
+#+BEGIN_SRC scheme
+  + 5
+    * 4 3
+    . 2 1 0
+#+END_SRC
+
+/Complete representation of arbitrary structures/
+
+* Why no SRFI-110 (Sweet-expressions (t-expressions))
+
+#+BEGIN_SRC scheme
+myfunction 
+  x: \\ original-x
+  y: \\ calculate-y original-y
+#+END_SRC
+
+#+BEGIN_SRC scheme
+  a b $ c d e $ f g
+#+END_SRC
+
+#+BEGIN_SRC scheme
+  let <* x getx() \\ y gety() *>
+  ! {{x * x} + {y * y}}
+#+END_SRC
+
+/This breaks elegance 1/
+
+/Also the problems of SRFI-49 are preserved/
