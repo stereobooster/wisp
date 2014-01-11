@@ -17,11 +17,11 @@
 
 * Elegance
 #+html: <br />
-** *.,":'_#?!;*
+** =.,":'_#?!;=
 
 /The most common non-letter, non-math characters in prose/
 
-** *()*
+** =()=
 
 /The most common paired characters/
 
