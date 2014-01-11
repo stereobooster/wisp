@@ -131,7 +131,8 @@ becomes
 - Generalize =(. x) ⇒ x= to =(. x ...) ⇒ x ...=
 - Use =. . x= to get a real =. x= after processing
 
-* Why no SRFI-110 (Sweet-expressions (t-expressions))
+* Why not SRFI-110 (Sweet-expressions (t-expressions))
+** SRFI-110
 
 #+BEGIN_SRC scheme
 myfunction 
@@ -232,7 +233,7 @@ becomes
 http://draketo.de/light/english/wisp-lisp-indentation-preprocessor#sec-4
 #+html: </small>
 
-/I do not like adding any unnecessary syntax element to lisp. So I want to show explicitely why the syntax elements are required to meet the goal of wisp: indentation-based lisp with a simple preprocessor./
+/Required for the goal of wisp: indentation-based lisp with a simple preprocessor/
 
 - =.= Continue argument list
 - =:= Double parens
