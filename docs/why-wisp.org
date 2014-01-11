@@ -97,7 +97,7 @@ becomes
      2 1 0)
 #+END_SRC
 
-** SRFI-49 (Indentation-sensitive syntax)
+** SRFI-49
 
 #+BEGIN_SRC scheme
   + 5
