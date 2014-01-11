@@ -64,7 +64,7 @@
 
 * Summary
 
-1. Lisp uses the *most common* non-letter characters.
+1. Lisp syntax uses the *most common* non-letter, non-math characters.
 2. The *first and last characters* are important for text-recognition.
 
 Let’s call these elegance 1 and elegance 2
