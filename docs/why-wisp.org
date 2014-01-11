@@ -67,11 +67,11 @@
 1. Lisp uses the *most common* non-letter characters.
 2. The *first and last characters* are important for text-recognition.
 
-Let’s call these elegance 1 and elegance 2.
+Let’s call these elegance 1 and elegance 2
 
-Any fix for elegance 2 should preserve elegance 1.
+Any fix for elegance 2 should preserve elegance 1
 
-Elegance 0: generality and homoiconicity: *code is data*.
+Elegance 0: generality and homoiconicity: *code is data*
 
 * On Wisp
 #+html: <br />
@@ -97,7 +97,7 @@ becomes
      2 1 0)
 #+END_SRC
 
-** SRRFI-49 (Indentation-sensitive syntax)
+** SRFI-49 (Indentation-sensitive syntax)
 
 #+BEGIN_SRC scheme
   + 5
@@ -115,7 +115,9 @@ becomes
     . 2 1 0
 #+END_SRC
 
-/Complete representation of arbitrary structures/
+- Complete representation of arbitrary structures
+- Generalize =(. x) ⇒ x= to =(. x ...) ⇒ x ...=
+- Use =. . x= to get a real =. x= after processing
 
 * Why no SRFI-110 (Sweet-expressions (t-expressions))
 
@@ -137,3 +139,89 @@ myfunction
 /This breaks elegance 1/
 
 /Also the problems of SRFI-49 are preserved/
+
+* Wisp syntax 1/4: Indentation
+
+#+BEGIN_SRC scheme
+display 
+  + 3 4 5
+newline
+#+END_SRC
+
+becomes
+
+#+BEGIN_SRC scheme
+(display 
+  (+ 3 4 5))
+(newline)
+#+END_SRC
+
+* Wisp syntax 2/4: Continue Argument list
+
+#+BEGIN_SRC scheme
++ 5
+  * 4 3
+  . 2 1
+#+END_SRC
+
+becomes
+
+#+BEGIN_SRC scheme
+(+ 5
+  (* 4 3)
+  2 1
+#+END_SRC
+
+* Wisp syntax 3/4: Double Parens
+
+#+BEGIN_SRC scheme
+let 
+  : x 1
+    y 2
+    z 3
+  body
+#+END_SRC
+
+becomes
+
+#+BEGIN_SRC scheme
+(let
+  ((x 1)
+   (y 2)
+   (z 3))
+  body)
+#+END_SRC
+
+* Wisp syntax 4/4: Resilient Indentation
+
+
+#+BEGIN_SRC scheme
+let 
+_ : x 1
+__  y 2
+__  z 3
+_ body
+#+END_SRC
+
+becomes
+
+#+BEGIN_SRC scheme
+(let
+  ((x 1)
+   (y 2)
+   (z 3))
+  body)
+#+END_SRC
+
+
+* Wisp syntax justification
+
+#+html: <small>
+http://draketo.de/light/english/wisp-lisp-indentation-preprocessor#sec-4
+#+html: </small>
+
+/I do not like adding any unnecessary syntax element to lisp. So I want to show explicitely why the syntax elements are required to meet the goal of wisp: indentation-based lisp with a simple preprocessor./
+
+- =.= Continue argument list
+- =:= Double parens
+- =_= Survive HTML
