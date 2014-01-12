@@ -60,5 +60,5 @@ Remember, even if a proposal becomes an final SRFI, the need for it must be comp
 
 * Related SRFIs
 
-SRFI-49 (Indentation-sensitive syntax) (superceded by this SRFI), SRFI-110 (Sweet-expressions (t-expressions)) (superceded by this SRFI) and SRFI-30 (Nested Multi-line comments) (interacts with this SRFI).
+SRFI-49 (Indentation-sensitive syntax) (superceded by this SRFI), SRFI-110 (Sweet-expressions (t-expressions)) (superceded by this SRFI), … (neoteric expressions) (compatible), … (curly infix) (supported) and SRFI-30 (Nested Multi-line comments) (interacts with this SRFI).
 
