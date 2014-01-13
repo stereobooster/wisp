@@ -1,0 +1,66 @@
+# Lines starting with '#' and sections without content
+# are not displayed by a call to 'details'
+#
+[paths]
+# Paths related to this bug.
+# suggested format: REPO_PATH:LINENUMBERS
+
+
+[details]
+# Additional details
+Needed: 
+
+- square brackets for RSR6 and 
+- curly braces for curly-infix.
+
+Both should simply disable wisp-parsing inside them.
+
+[expected]
+# The expected result
+
+
+[actual]
+# What happened instead
+
+
+[reproduce]
+# Reproduction steps
+
+
+[comments]
+# Comments and updates - leave your name
+Discussion: 
+
+<ArneBab_> does it need to support square brackets?
+<ArneBab_> (foo [bar 5])?
+<mark_weaver> well, R6RS mandates that [] are equivalent to ().
+<mark_weaver> but of course, you are inventing a new syntax, so it's up to you.
+<ArneBab_> then I’ll have to add support for that, I think.
+<mark_weaver> IMO, it would be good to support SRFI-105 curly-infix notation.
+<ArneBab_> wisp is just a preprocessor to regular scheme-code, so pasting any valid scheme in beween should work.
+<mark_weaver> well, specifically, I think you should pass anything between curly braces unchanged.
+<mark_weaver> just as you do with parens, I guess.
+<ArneBab_> yes
+<-- fangism (~davidfang@209.119.54.132) hat das Netzwerk verlassen (Remote host closed the connection)
+<mark_weaver> curly infix can be combined with datum labels too, so you can have #0={...}
+<ArneBab_> that should still work as soon as I have curly braces.
+<mark_weaver> and of course, expressions delimited by curly braces can span multiple lines.
+<ArneBab_> so actually it boils down to treating parens, square brackets and curly braces in the same way (but they can be nested).
+<ArneBab_> almos the same… 
+<ArneBab_> almost
+<ArneBab_> (foo [bar {5 + 6 ] }) ← nasty syntax error?
+<mark_weaver> yes
+<ArneBab_> can you see any cases where this would not be a syntax error?
+<mark_weaver> no
+<ArneBab_> then I could just treat parens, brackets and braces as abstract delimiters and not worry about the difference… 
+<ArneBab_> But I worry that such a simplification could break badly
+<mark_weaver> well, if curly-infix mode is not enabled in the reader (and it's off by default), then '{' and '}' are not delimiters and can be part of unescaped symbols.
+<ArneBab_> ouch… 
+<mark_weaver> but curly-infix mode is turned on automatically if "#!curly-infix" is present in the file.
+--> int3__ (~int3__@175.156.240.23) hat #guile betreten
+<mark_weaver> but I wouldn't worry too much about edge cases like this.  I think it's likely that your reader has a number of other problems with edge cases like this.
+<ArneBab_> I guess that’s true… 
+<mark_weaver> it's not practical to get it exactly right without somehow integrating it into guile's native reader.
+<ArneBab_> (though the version written in wisp is a good deal more versatile than the bootstrap version in python ☺)
+<mark_weaver> you'd have to exactly match the detailed syntax understood by guile's reader, which is a moving target and has some complex nooks and crannies.
+<mark_weaver> for that matter, guile's reader is also extensible.
