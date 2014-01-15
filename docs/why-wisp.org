@@ -214,7 +214,7 @@ becomes
 
 * Wisp syntax 4/4: Resilient Indentation
 
-** The underscore
+** The underscore (optional)
 
 #+BEGIN_SRC scheme
 let 
@@ -233,7 +233,7 @@ becomes
    (z 3))
   body)
 #+END_SRC
-
+ 
 
 * Wisp syntax justification
 
