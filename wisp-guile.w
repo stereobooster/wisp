@@ -59,7 +59,7 @@ Ends with three consecutive linebreaks or eof."
     let* 
 __      : lastchar : read-char inport
 ____      nextchar : read-char inport
-____      text : string lastchar
+____      text : if (eof-object? lastchar) "" : string lastchar
           incomment #f
           incommentfirstchar #f ; first char of a comment
           instring #f
