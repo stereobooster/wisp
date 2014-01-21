@@ -227,6 +227,10 @@ define : line-empty-code? line
     . "Check whether the code-part of the line is empty: contains only whitespace and/or comment."
     equal? "" : line-content line
 
+define : line-only-colon? line
+    . "Check whether the line content consists only of a colon and whitespace."
+    equal? ":" : string-trim-right : line-content line
+
 define : line-merge-comment line
     . "Merge comment and content into the content. Return the new line."
     let 
@@ -365,102 +369,107 @@ define : read-whole-file filename
 
 
 define : wisp2lisp-add-inline-colon-brackets line
-    . "Add inline colon brackets to a wisp-line (indent,content,comment)"
-    let : : content : line-content line
-        ; replace final " :" by a function call. There we are by definition of the line-splitting not in a string.
-        when : string-suffix? " :" content
-            set! content : string-append (string-drop-right content 1) "()"
-        ; process the content in reverse direction, so we can detect ' : and turn it into '(
-        ; let linebracketizer ( ( instring #f ) ( inbrackets 0 ) ( bracketstoadd 0 ) ( unprocessed content ) ( processed "" ) ) 
-        let linebracketizer : ( instring #f ) ( inbrackets 0 ) ( bracketstoadd 0 ) ( unprocessed content ) ( processed "" ) 
-              if : < (string-length unprocessed) 2
-                  ; if unprocessed is < 2 chars, it cannot contain ": ". We are done.
-                  list 
-                      line-indent line
-                      string-append unprocessed processed : xsubstring ")" 0 bracketstoadd
-                      line-comment line
-                  ; else
-                  let 
-                      : lastletter : string-take-right unprocessed 1
-                        lastupto3  : string-take-right unprocessed : min 3 : string-length unprocessed
-                        lastupto4  : string-take-right unprocessed : min 4 : string-length unprocessed
-                        lastupto6  : string-take-right unprocessed : min 6 : string-length unprocessed
-                      ; check if we’re in a string
-                      when
-                          or
-                              and
-                                  not instring
-                                  equal? "\"" lastletter
-                                  not : equal? "#\\\"" lastupto3
-                              and
-                                  . instring
-                                  equal? "\"" lastletter
-                                  not : endsinunevenbackslashes : string-drop-right unprocessed 1
-                          set! instring : not instring
-                      when : not instring
-                          when : and (equal? ")" lastletter) : not : equal? "#\\)" lastupto3
-                              set! inbrackets : + 1 inbrackets ; remember that we're going backwards!
-                          when : and (equal? "(" lastletter) : not : equal? "#\\(" lastupto3
-                              set! inbrackets : - inbrackets 1
-                      ; error handling: inbrackets must never be smaller than 0 - due to the line splitting.
-                      when : < inbrackets 0
-                          throw 'more-inline-brackets-closed-than-opened inbrackets line
-                      ; when we’re in a string or in brackets , just skip to the next char
-                      cond
-                        : or instring : > inbrackets 0
-                          linebracketizer instring inbrackets bracketstoadd 
-                              . : string-drop-right unprocessed 1
-                              . : string-append lastletter processed
-                          ; else check for " : ": That adds a new inline bracket
-                          ; support : at the beginning of a line, too.
-                        : or (equal? " : "  lastupto3) (equal? ": " lastupto3)
-                              ; replace the last 2 chars with "(" and note
-                              ; that we need an additional closing bracket
-                              ; at the end.
-                              linebracketizer instring inbrackets : + 1 bracketstoadd 
-                                  string-append (string-drop-right unprocessed 2) 
-                                  string-append "(" processed
-                              ; turn " ' (" into " '(", do not modify unprocessed, except to shorten it!
-                              ; same for ` , #' #` #, #,@,
-                        : and (string-prefix? "(" processed) : equal? " ' " lastupto3
-                                  ; leave out the second space
-                                  linebracketizer instring inbrackets bracketstoadd 
-                                      . (string-append (string-drop-right unprocessed 2) "'")
-                                      . processed
-                        : and (string-prefix? "(" processed) : equal? " , " lastupto3
-                                  ; leave out the second space
-                                  linebracketizer instring inbrackets bracketstoadd 
-                                      . (string-append (string-drop-right unprocessed 2) ",")
-                                      . processed
-                        : and (string-prefix? "(" processed) : equal? " ` " lastupto3
-                                      ; leave out the second space
-                                      linebracketizer instring inbrackets bracketstoadd 
-                                          . (string-append (string-drop-right unprocessed 2) "`")
-                                          . processed
-                        : and (string-prefix? "(" processed) : equal? " #` " lastupto4
-                                      ; leave out the second space
-                                      linebracketizer instring inbrackets bracketstoadd 
-                                          . (string-append (string-drop-right unprocessed 3) "#`")
-                                          . processed
-                        : and (string-prefix? "(" processed) : equal? " #' " lastupto4
-                                      ; leave out the second space
-                                      linebracketizer instring inbrackets bracketstoadd 
-                                          . (string-append (string-drop-right unprocessed 3) "#'")
-                                          . processed
-                        : and (string-prefix? "(" processed) : equal? " #, " lastupto4
-                                      ; leave out the second space
-                                      linebracketizer instring inbrackets bracketstoadd 
-                                          . (string-append (string-drop-right unprocessed 3) "#,")
-                                          . processed
-                        : and (string-prefix? "(" processed) : equal? " #,@, " lastupto6
-                                      ; leave out the second space
-                                      linebracketizer instring inbrackets bracketstoadd 
-                                          . (string-append (string-drop-right unprocessed 5) "#,@,")
-                                          . processed
-                        : . else ; just go on
-                                      linebracketizer instring inbrackets bracketstoadd 
-                                          . (string-drop-right unprocessed 1)
-                                          . (string-append lastletter processed)
+    . "Add inline colon brackets to a wisp-line (indent,content,comment).
+
+A line with only a colon and whitespace gets no additional parens!"
+    ; if the line only consists of a colon and whitespace, do not change it.
+    if : line-only-colon? line
+      . line
+      let : : content : line-content line
+          ; replace final " :" by a function call. There we are by definition of the line-splitting not in a string.
+          when : string-suffix? " :" content
+              set! content : string-append (string-drop-right content 1) "()"
+          ; process the content in reverse direction, so we can detect ' : and turn it into '(
+          ; let linebracketizer ( ( instring #f ) ( inbrackets 0 ) ( bracketstoadd 0 ) ( unprocessed content ) ( processed "" ) ) 
+          let linebracketizer : ( instring #f ) ( inbrackets 0 ) ( bracketstoadd 0 ) ( unprocessed content ) ( processed "" ) 
+                if : < (string-length unprocessed) 2
+                    ; if unprocessed is < 2 chars, it cannot contain ": ". We are done.
+                    list 
+                        line-indent line
+                        string-append unprocessed processed : xsubstring ")" 0 bracketstoadd
+                        line-comment line
+                    ; else
+                    let 
+                        : lastletter : string-take-right unprocessed 1
+                          lastupto3  : string-take-right unprocessed : min 3 : string-length unprocessed
+                          lastupto4  : string-take-right unprocessed : min 4 : string-length unprocessed
+                          lastupto6  : string-take-right unprocessed : min 6 : string-length unprocessed
+                        ; check if we’re in a string
+                        when
+                            or
+                                and
+                                    not instring
+                                    equal? "\"" lastletter
+                                    not : equal? "#\\\"" lastupto3
+                                and
+                                    . instring
+                                    equal? "\"" lastletter
+                                    not : endsinunevenbackslashes : string-drop-right unprocessed 1
+                            set! instring : not instring
+                        when : not instring
+                            when : and (equal? ")" lastletter) : not : equal? "#\\)" lastupto3
+                                set! inbrackets : + 1 inbrackets ; remember that we're going backwards!
+                            when : and (equal? "(" lastletter) : not : equal? "#\\(" lastupto3
+                                set! inbrackets : - inbrackets 1
+                        ; error handling: inbrackets must never be smaller than 0 - due to the line splitting.
+                        when : < inbrackets 0
+                            throw 'more-inline-brackets-closed-than-opened inbrackets line
+                        ; when we’re in a string or in brackets , just skip to the next char
+                        cond
+                          : or instring : > inbrackets 0
+                            linebracketizer instring inbrackets bracketstoadd 
+                                . : string-drop-right unprocessed 1
+                                . : string-append lastletter processed
+                            ; else check for " : ": That adds a new inline bracket
+                            ; support : at the beginning of a line, too.
+                          : or (equal? " : "  lastupto3) (equal? ": " lastupto3)
+                                ; replace the last 2 chars with "(" and note
+                                ; that we need an additional closing bracket
+                                ; at the end.
+                                linebracketizer instring inbrackets : + 1 bracketstoadd 
+                                    string-append (string-drop-right unprocessed 2) 
+                                    string-append "(" processed
+                                ; turn " ' (" into " '(", do not modify unprocessed, except to shorten it!
+                                ; same for ` , #' #` #, #,@,
+                          : and (string-prefix? "(" processed) : equal? " ' " lastupto3
+                                    ; leave out the second space
+                                    linebracketizer instring inbrackets bracketstoadd 
+                                        . (string-append (string-drop-right unprocessed 2) "'")
+                                        . processed
+                          : and (string-prefix? "(" processed) : equal? " , " lastupto3
+                                    ; leave out the second space
+                                    linebracketizer instring inbrackets bracketstoadd 
+                                        . (string-append (string-drop-right unprocessed 2) ",")
+                                        . processed
+                          : and (string-prefix? "(" processed) : equal? " ` " lastupto3
+                                        ; leave out the second space
+                                        linebracketizer instring inbrackets bracketstoadd 
+                                            . (string-append (string-drop-right unprocessed 2) "`")
+                                            . processed
+                          : and (string-prefix? "(" processed) : equal? " #` " lastupto4
+                                        ; leave out the second space
+                                        linebracketizer instring inbrackets bracketstoadd 
+                                            . (string-append (string-drop-right unprocessed 3) "#`")
+                                            . processed
+                          : and (string-prefix? "(" processed) : equal? " #' " lastupto4
+                                        ; leave out the second space
+                                        linebracketizer instring inbrackets bracketstoadd 
+                                            . (string-append (string-drop-right unprocessed 3) "#'")
+                                            . processed
+                          : and (string-prefix? "(" processed) : equal? " #, " lastupto4
+                                        ; leave out the second space
+                                        linebracketizer instring inbrackets bracketstoadd 
+                                            . (string-append (string-drop-right unprocessed 3) "#,")
+                                            . processed
+                          : and (string-prefix? "(" processed) : equal? " #,@, " lastupto6
+                                        ; leave out the second space
+                                        linebracketizer instring inbrackets bracketstoadd 
+                                            . (string-append (string-drop-right unprocessed 5) "#,@,")
+                                            . processed
+                          : . else ; just go on
+                                        linebracketizer instring inbrackets bracketstoadd 
+                                            . (string-drop-right unprocessed 1)
+                                            . (string-append lastletter processed)
                         
 
 define : last-indent levels
@@ -476,7 +485,7 @@ If line is indented and only contains : and optional whitespace, remove the :.
 
 The line *must* have a whitespace after the prefix, except if the prefix is the only non-whitespace on the line."
     ; if the line only contains a colon, we just replace its content with an opening paren.
-    if : equal? ":" : string-trim-right : line-content line ; FIXME: Check for this somewhere else.
+    if : line-only-colon? line ; FIXME: Check for this somewhere else.
          list 
              line-indent line
              string-append "(" : string-drop (line-content line) 1 ; keep whitespace
@@ -583,22 +592,10 @@ define : wisp2lisp-parse lisp prev lines
                           final-line : equal? #f : line-content next
                           bracketstocloseprev : if (line-empty-code? pre) 0 : line-indent-brackets-to-close next-indent levels next-continues pre-continues
                           bracketstoopennext : line-indent-brackets-to-open next-indent levels next-continues pre-continues
-                          newnext
-                              if : equal? ":" : string-trim-right : line-content next
-                                   list
-                                        line-indent next
-                                        string-drop (line-content next) 1
-                                        line-comment next
-                                   . next
-                          newnext2
-                              if final-line
-                                  . newnext 
-                                  if : > bracketstoopennext 0
-                                       line-add-starting-bracket newnext
-                                       . newnext
+                          newnext : if final-line next : if (> bracketstoopennext 0) (line-add-starting-bracket next) next
                           newpre : line-drop-continuation-dot : line-add-closing-brackets pre bracketstocloseprev
                           newlevels : line-indent-levels-adjust levels next-indent
-                        bracketizer newlevels newnext2
+                        bracketizer newlevels newnext 
                             if final-line unprocessed : list-tail unprocessed 1
                             append processed (list newpre) whitespace
                             list
