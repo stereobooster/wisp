@@ -231,6 +231,10 @@ define : line-only-colon? line
     . "Check whether the line content consists only of a colon and whitespace."
     equal? ":" : string-trim-right : line-content line
 
+define : line-only-prefix? line prefix
+    . "Check whether the line content consists only of a colon and whitespace."
+    equal? prefix : string-trim-right : line-content line
+
 define : line-merge-comment line
     . "Merge comment and content into the content. Return the new line."
     let 
@@ -501,18 +505,26 @@ The line *must* have a whitespace after the prefix, except if the prefix is the 
                          line-content line
                      line-comment line
                  ; otherwise check all possible prefixes
-                 let : : prefix : car paren-prefixes
-                     if 
-                         or : string-prefix? prefix : line-content line
-                              equal? prefix : line-content line
-                         list 
-                             line-indent line
-                             string-append 
-                                 . (string-drop-right prefix 1) "("
-                                 string-drop (line-content line) : string-length prefix
-                             line-comment line
-                         ; else
-                         loop : cdr paren-prefixes
+                 let* 
+                     : prefix : car paren-prefixes
+                       prefix-no-space : string-drop-right prefix 1
+                     cond
+                         : string-prefix? prefix : line-content line
+                           list 
+                               line-indent line
+                               string-append 
+                                   . prefix-no-space "("
+                                   string-drop (line-content line) : string-length prefix
+                               line-comment line
+                         : line-only-prefix? line prefix-no-space
+                           list 
+                               line-indent line
+                               string-append 
+                                   . (string-drop-right prefix 1) "("
+                                   string-drop (line-content line) : string-length prefix-no-space
+                               line-comment line
+                         else
+                           loop : cdr paren-prefixes
        
 define : line-add-closing-brackets line number
     . "Add a closing bracket to the line."
