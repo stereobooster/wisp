@@ -21,7 +21,9 @@
 define-module : wisp
    . #:export : wisp2lisp wisp-chunkreader
 
-use-modules : : srfi srfi-1
+use-modules 
+    : srfi srfi-1
+    : ice-9 regex
 
 define : endsinunevenbackslashes text ; comment
        if : = 0 : string-length text
@@ -470,29 +472,39 @@ define : line-add-starting-bracket line
 
 If line starts with one of ' , ` #` #' #, #,@, then turn it into '(... instead of ('...
 
-The line *must* have a whitespace after the prefix."
-    let loop : : paren-prefixes : list "' " ", " "` " "#` " "#' " "#, " "#,@, "
-        ; first check whether we are done checking
-        if : null-list? paren-prefixes
-            ; construct the line structure: '(indentation-depth content comment)
-            list 
-                line-indent line
-                string-append 
-                    . "("
-                    line-content line
-                line-comment line
-            ; otherwise check all possible prefixes
-            let : : prefix : car paren-prefixes
-                if : string-prefix? prefix : line-content line
-                    list 
-                        line-indent line
-                        string-append 
-                            . (string-drop-right prefix 1) "("
-                            string-drop (line-content line) : string-length prefix
-                        line-comment line
-                    ; else
-                    loop : cdr paren-prefixes
-    
+If line is indented and only contains : and optional whitespace, remove the :.
+
+The line *must* have a whitespace after the prefix, except if the prefix is the only non-whitespace on the line."
+    ; if the line only contains a colon, we just replace its content with an opening paren.
+    if : string-match "^: *$" : line-content line ; FIXME: Check for this somewhere else.
+         list 
+             line-indent line
+             string-append "(" : string-drop (line-content line) 1 ; keep whitespace
+             line-comment line
+         let loop : : paren-prefixes : list "' " ", " "` " "#` " "#' " "#, " "#,@, "
+             ; first check whether we are done checking
+             if : null-list? paren-prefixes
+                 ; construct the line structure: '(indentation-depth content comment)
+                 list 
+                     line-indent line
+                     string-append 
+                         . "("
+                         line-content line
+                     line-comment line
+                 ; otherwise check all possible prefixes
+                 let : : prefix : car paren-prefixes
+                     if 
+                         or : string-prefix? prefix : line-content line
+                              equal? prefix : line-content line
+                         list 
+                             line-indent line
+                             string-append 
+                                 . (string-drop-right prefix 1) "("
+                                 string-drop (line-content line) : string-length prefix
+                             line-comment line
+                         ; else
+                         loop : cdr paren-prefixes
+       
 define : line-add-closing-brackets line number
     . "Add a closing bracket to the line."
     list 

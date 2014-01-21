@@ -1,6 +1,7 @@
 fails when I add stuff at the end of end of example.w        | owner:, open:False, id:08c68e1ce0c9798184c01806d2661a3220bff3cd, time:1363789693.79
 add a testsuite for wisp parsers.                            | owner:, open:True, id:1c05d27ac916e1a823b8985a094947907c3c19af, time:1379064922.74
 wisp-mode: export wisp to html fails in org-mode: font-lock-fontify-keywords-region: Invalid regexp | owner:, open:True, id:1e46d8c05580c961c37a32d36c987a5dd1d34943, time:1389371020.39
+an empty line with : should start with double parens         | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:2e188ddf44d36e4605030d3c58607ebfa97d189e, time:1390328674.43
 wisp-in-wisp: remove the leading . for continuation lines after inferring the brackets. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:2e42e5b64622f0cc383eb8acc3d510912e925bf0, time:1377476687.79
 wisp: handle general paren prefixes like quote, quasiquote, etc. | owner:, open:False, id:323ff94b5be635742619467e1cb44f4c0d96f63f, time:1379047798.47
 throw an exception when reducing indentation to an unknown indentation level. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:424186bd85f186b7279c5c59e2bd42f847284719, time:1376003568.91
