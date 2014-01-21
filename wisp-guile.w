@@ -583,10 +583,22 @@ define : wisp2lisp-parse lisp prev lines
                           final-line : equal? #f : line-content next
                           bracketstocloseprev : if (line-empty-code? pre) 0 : line-indent-brackets-to-close next-indent levels next-continues pre-continues
                           bracketstoopennext : line-indent-brackets-to-open next-indent levels next-continues pre-continues
-                          newnext : if final-line next : if (> bracketstoopennext 0) (line-add-starting-bracket next) next
+                          newnext
+                              if : equal? ":" : string-trim-right : line-content next
+                                   list
+                                        line-indent next
+                                        string-drop (line-content next) 1
+                                        line-comment next
+                                   . next
+                          newnext2
+                              if final-line
+                                  . newnext 
+                                  if : > bracketstoopennext 0
+                                       line-add-starting-bracket newnext
+                                       . newnext
                           newpre : line-drop-continuation-dot : line-add-closing-brackets pre bracketstocloseprev
                           newlevels : line-indent-levels-adjust levels next-indent
-                        bracketizer newlevels newnext 
+                        bracketizer newlevels newnext2
                             if final-line unprocessed : list-tail unprocessed 1
                             append processed (list newpre) whitespace
                             list
