@@ -1,7 +1,7 @@
 (defun guess-TeX-master (filename)
       "Guess the master file for FILENAME from currently open .tex files."
       (let 
-          (()
+          (
             (candidate nil)
             (filename (file-name-nondirectory filename)))
           (save-excursion
@@ -9,7 +9,7 @@
               (with-current-buffer buffer
 
                 (let 
-                   (()
+                   (
                      (name (buffer-name))
                      (file buffer-file-name))
                    (if 

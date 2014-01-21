@@ -1,14 +1,14 @@
 (defun a (b c)
   (let
-    (()
+    (
       (d "i am a string
 do not break me!")
-      (()
+      (
   ; comment: 0
         (f)
 ; comment : 1
         `(g )); comment " : " 2
-      (()
+      (
         (h (I am in brackets:
            do not : change "me"))
         i)))
@@ -27,7 +27,7 @@ do not break me!")
 
 (defun c (e f)
   ((g))
-  (:
+  (
     (h
       (i))
     (j))

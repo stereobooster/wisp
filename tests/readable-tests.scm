@@ -27,7 +27,7 @@
        (call/cc 
          (lambda (exit)
                 (let loop 
-                  (()
+                  (
                     (lst lst )
                     (sum 0))
                   (if (null? lst)
