@@ -23,7 +23,7 @@ let
 let : : a ' :
 
 let 
-  :   
+  :    ; foo
     a
       '
 

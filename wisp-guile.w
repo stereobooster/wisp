@@ -476,7 +476,7 @@ If line is indented and only contains : and optional whitespace, remove the :.
 
 The line *must* have a whitespace after the prefix, except if the prefix is the only non-whitespace on the line."
     ; if the line only contains a colon, we just replace its content with an opening paren.
-    if : string-match "^: *$" : line-content line ; FIXME: Check for this somewhere else.
+    if : equal? ":" : string-trim-right : line-content line ; FIXME: Check for this somewhere else.
          list 
              line-indent line
              string-append "(" : string-drop (line-content line) 1 ; keep whitespace
