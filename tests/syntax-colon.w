@@ -20,3 +20,9 @@ let
   format #t "a: ~A, b: ~A"
             .    a      b
 
+let : : a ' :
+
+let 
+  : 
+    a
+      '
