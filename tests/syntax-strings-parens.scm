@@ -4,11 +4,13 @@
 
 flabbab"
 
-hrug (nadda
+(hrug (nadda
 madda gadda "shoktom
  mee"  " sep  
 ka"
   hadda)
-    gom
+    (gom))
 
-flu
+(flu)
+
+
