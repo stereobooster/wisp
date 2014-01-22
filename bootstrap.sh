@@ -20,4 +20,4 @@ guile wisp.scm ${srcdir}/wisp-reader.w 2>/dev/null > language/wisp/spec.scm \
     && echo ...precompiling the spec file... \
     && guile -L . -s language/wisp/spec.scm \
     && echo ...succeeded \
-    && echo 'to use wisp at the REPL, run `guile -L . --language=wisp'
+    && echo 'to use wisp at the REPL, run `guile -L . --language=wisp`'
