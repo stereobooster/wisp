@@ -12,7 +12,7 @@
 ((a))
 
 (define (hello)
-  (display "hello"))
+  (display "hello\n"))
 
 (let
   ((a 1)
@@ -23,10 +23,16 @@
 (let ((a '())))
 
 (let 
-  (   ; foo
+  (    ; foo
     (a
       '())))
 
-
 (
   (a))
+
+(define (:)
+  (hello))
+
+(:)
+
+

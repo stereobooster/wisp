@@ -375,7 +375,10 @@ define : read-whole-file filename
 define : wisp2lisp-add-inline-colon-brackets line
     . "Add inline colon brackets to a wisp-line (indent,content,comment).
 
-A line with only a colon and whitespace gets no additional parens!"
+A line with only a colon and whitespace gets no additional parens!
+
+Also unescape \\: to :.
+"
     ; if the line only consists of a colon and whitespace, do not change it.
     if : line-only-colon? line
       . line
@@ -648,6 +651,57 @@ define : wisp2lisp-lines lines
                    parsed : apply wisp2lisp-parse deinitialized
                  . parsed
 
+define : line-unescape-underscore-and-colon line
+     . "Unescape underscores at the beginning of the line and colon."
+     let loop
+       : processed ""
+         unprocessed : line-content line
+       if : equal? "" unprocessed
+            list
+              line-indent line
+              . processed
+              line-comment line
+            let
+              : next : string : string-ref unprocessed 0
+              if : equal? "" processed 
+                   cond 
+                     ; get rid of \_
+                     : string-prefix? "(\\_" unprocessed
+                       loop processed : string-append "(" : string-drop unprocessed 2
+                     ; get rid of \:
+                     : string-prefix? "(\\:" unprocessed
+                       loop processed : string-append "(" : string-drop unprocessed 2
+                     else
+                       loop
+                         string-append processed next
+                         string-drop unprocessed 1
+                   cond 
+                     : string-prefix? " \\:" unprocessed
+                       loop
+                         string-append processed " :" 
+                         string-drop unprocessed 3
+                     : string-prefix? "(\\:" unprocessed
+                       loop
+                         string-append processed "(:" 
+                         string-drop unprocessed 3
+                     else
+                       loop
+                         string-append processed next
+                         string-drop unprocessed 1
+
+define : unescape-underscore-and-colon lines
+     . "Unescape underscores at the beginning of each line and colon."
+     let loop 
+       : processed '()
+         unprocessed lines
+       if : equal? unprocessed '()
+          . processed
+          let : : current : car unprocessed
+            loop 
+              append processed : list : line-unescape-underscore-and-colon current
+              cdr unprocessed
+             
+
 
 define* : string-replace-substring s substr replacement #:optional (start 0) (end (string-length s))
        . "Replace every instance of substring in s by replacement."
@@ -716,7 +770,8 @@ define : wisp2lisp text
              textlines : call-with-input-string nobreaks splitlines
              lines : linestoindented textlines
              lisp-lines : wisp2lisp-lines lines
-           join-lisp-lines lisp-lines
+             clean-lines : unescape-underscore-and-colon lisp-lines
+           join-lisp-lines clean-lines
 
  ; first step: Be able to mirror a file to stdout
 if : < 1 : length : command-line

@@ -12,7 +12,7 @@ let
 : a
 
 define : hello
-  display "hello"
+  display "hello\n"
 
 let
   : a 1
@@ -29,3 +29,8 @@ let
 
 :
   a
+
+define : \:
+  hello
+
+\:
