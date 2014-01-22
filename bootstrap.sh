@@ -14,7 +14,10 @@ if [[ ! x"${diff}" == x"success" ]]; then
 fi
 echo "successfully bootstrapped wisp.scm"
 echo preparing the reader: wisp at the REPL
+echo parsing the spec file...
 mkdir -p language/wisp
 guile wisp.scm ${srcdir}/wisp-reader.w 2>/dev/null > language/wisp/spec.scm \
+    && echo ...precompiling the spec file... \
+    && guile -L . -s language/wisp/spec.scm \
     && echo ...succeeded \
-    && echo 'to use wisp at the REPL, run `guile -L` . and then in guile `,L wisp`'
+    && echo 'to use wisp at the REPL, run `guile -L . --language=wisp`'

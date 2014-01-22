@@ -1,10 +1,13 @@
 wisp = wisp.scm language/wisp/spec.scm
 wisp_SOURCES = wisp-guile.w wisp-reader.w
 EXTRA_DIST = $(wisp_SOURCES) $(wisp_DATA) bootstrap.sh wisp.py examples tests runtests.sh
-CLEANFILES = ${wisp} 
+CLEANFILES = ${wisp} ChangeLog
 DISTCLEANFILES = ${CLEANFILES} @abs_top_builddir@/1 @abs_top_builddir@/2 @abs_top_builddir@/test.sh
 
-all : ${wisp} $(changelog)
+all : ${wisp}
+
+ChangeLog :
+	hg log --style changelog > ChangeLog
 
 # emacs org-mode beamer build instructions
 ${wisp} : input.in.intermediate
