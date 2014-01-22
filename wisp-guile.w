@@ -671,6 +671,9 @@ define : line-unescape-underscore-and-colon line
                      ; get rid of \:
                      : string-prefix? "(\\:" unprocessed
                        loop processed : string-append "(" : string-drop unprocessed 2
+                     ; get rid of . \:
+                     : string-prefix? "\\:" unprocessed
+                       loop processed : string-drop unprocessed 1
                      else
                        loop
                          string-append processed next
