@@ -1,5 +1,5 @@
 fails when I add stuff at the end of end of example.w        | owner:, open:False, id:08c68e1ce0c9798184c01806d2661a3220bff3cd, time:1363789693.79
-add a testsuite for wisp parsers.                            | owner:, open:True, id:1c05d27ac916e1a823b8985a094947907c3c19af, time:1379064922.74
+add a testsuite for wisp parsers.                            | owner:, open:False, id:1c05d27ac916e1a823b8985a094947907c3c19af, time:1379064922.74
 wisp-mode: export wisp to html fails in org-mode: font-lock-fontify-keywords-region: Invalid regexp | owner:, open:True, id:1e46d8c05580c961c37a32d36c987a5dd1d34943, time:1389371020.39
 an empty line with : should start with double parens         | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:2e188ddf44d36e4605030d3c58607ebfa97d189e, time:1390328674.43
 wisp-in-wisp: remove the leading . for continuation lines after inferring the brackets. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:2e42e5b64622f0cc383eb8acc3d510912e925bf0, time:1377476687.79

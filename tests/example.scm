@@ -36,11 +36,11 @@ do not break me!")
   l
   (m))
 
-(defun _ (\:)
+(defun _ (:)
   
-   \:)
+   :)
 
-(\_ b)
+(_ b)
 
 (defun d ()
       (let 
