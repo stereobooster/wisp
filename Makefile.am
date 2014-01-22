@@ -14,7 +14,7 @@ ${wisp} : input.in.intermediate
 
 .INTERMEDIATE: input.in.intermediate
 input.in.intermediate: ${wisp_SOURCES}
-	@abs_top_srcdir@/bootstrap.sh @abs_top_srcdir@
+	@abs_top_srcdir@/bootstrap.sh @abs_top_srcdir@ @guile@ @python3@
 
 .PHONY: test.sh
 test.sh : wisp.scm runtests.sh
