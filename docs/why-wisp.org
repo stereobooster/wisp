@@ -158,9 +158,10 @@ myfunction
 
 /Wisp is the minimal, elegant indentation syntax for arbitrary trees./
 
-** SRFI-49 cannot continue an argument list.
-** SRFI-110 breaks elegance 1: use common characters.
-
+** Wisp vs. SRFI-49: continue the argument list.
+** Wisp vs. SRFI-110:
+*** Preserve elegance 1: use common characters.
+*** KISS.
 
 * Wisp syntax 1/4: function calls
 
