@@ -156,11 +156,11 @@ myfunction
 
 * Summary: Why wisp?
 
-/Wisp is the minimal, elegant indentation syntax for arbitrary trees./
-
+** Wisp
+/minimal indentation-based syntax/
 ** Wisp vs. SRFI-49: continue the argument list.
 ** Wisp vs. SRFI-110:
-*** Preserve elegance 1: use common characters.
+*** use common characters (elegance 1).
 *** KISS.
 
 * Wisp syntax 1/4: function calls
