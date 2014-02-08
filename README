@@ -25,22 +25,17 @@ Wisp turns indentation based syntax into Lisp. The conversion is homoiconic[^h],
 [wisp-website]: http://draketo.de/light/english/wisp-lisp-indentation-preprocessor
 [wisp-repository]: http://draketo.de/proj/wisp
 
-Usage: ./wisp.py infile.wisp > outfile.lisp
 
-More powerful usage (in case you use unix):
+Bootstrap: autoreconf -i && ./configure && make
 
-    cat infile.wisp | ./wisp.py - | guile -s /dev/stdin
+Usage: guile ./wisp.scm infile.wisp > outfile.lisp
 
-That converts the infile to scheme and executes it via guile.
+Usage on the REPL (guile shell):
 
-Or with bash, extend this to a multiline input:
-
-    while IFS= read in ; do echo "$in" ; done | ./wisp.py - | guile -s /dev/stdin
-
-(finish the input with CTRL-D)
-(Note: IFS= ensures that initial blanks are kept)
+    guile -L . --language=wisp # run this in the wisp-folder
 
 Also see `./wisp-multiline.sh --help`
+
 
 License: GPLv3 or later.
 
