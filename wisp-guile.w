@@ -119,6 +119,11 @@ ____      text : if (eof-object? lastchar) "" : string lastchar
                               or
                                 char=? lastchar #\( 
                                 char=? lastchar #\)
+                                char=? lastchar #\[ 
+                                char=? lastchar #\]
+                                ; TODO: Only match for braces {} if curly infix is enabled
+                                char=? lastchar #\{ 
+                                char=? lastchar #\}
                 set! instring : not instring
             ; check if we switch to a comment
             when 
@@ -164,9 +169,11 @@ ____      text : if (eof-object? lastchar) "" : string lastchar
                         not : string-suffix? text "#"
                         not : char=? #\\ lastchar
                         not : endsinunevenbackslashes : string-drop-right text : min 1 : string-length text
-                    when : equal? "(" : string nextchar
+                    ; TODO: Only match for braces {} if curly infix is enabled
+                    ; FIXME: Catch wrong ordering of parens/brackets/braces like ({)}
+                    when : or (equal? "[" (string nextchar)) (equal? "(" (string nextchar)) (equal? "{" (string nextchar))
                         set! inbrackets : + inbrackets 1
-                    when : equal? ")" : string nextchar
+                    when : or (equal? "}" (string nextchar)) (equal? ")" (string nextchar)) (equal? "]" (string nextchar))
                         set! inbrackets : - inbrackets 1
             if : or instring : > inbrackets 0
                 if : char=? nextchar #\linefeed
@@ -414,10 +421,20 @@ Also unescape \\: to :.
                                     not : endsinunevenbackslashes : string-drop-right unprocessed 1
                             set! instring : not instring
                         when : not instring
-                            when : and (equal? ")" lastletter) : not : equal? "#\\)" lastupto3
-                                set! inbrackets : + 1 inbrackets ; remember that we're going backwards!
-                            when : and (equal? "(" lastletter) : not : equal? "#\\(" lastupto3
+                            when
+                                or
+                                    ; TODO: Only match for braces {} if curly infix is enabled
+                                    ; FIXME: Catch wrong ordering of parens/brackets/braces like ({)}
+                                    and (equal? "{" lastletter) : not : equal? "#\\{" lastupto3
+                                    and (equal? "[" lastletter) : not : equal? "#\\[" lastupto3
+                                    and (equal? "(" lastletter) : not : equal? "#\\(" lastupto3
                                 set! inbrackets : - inbrackets 1
+                            when 
+                                or
+                                    and (equal? ")" lastletter) : not : equal? "#\\)" lastupto3
+                                    and (equal? "]" lastletter) : not : equal? "#\\]" lastupto3
+                                    and (equal? "}" lastletter) : not : equal? "#\\}" lastupto3
+                                set! inbrackets : + 1 inbrackets ; remember that we're going backwards!
                         ; error handling: inbrackets must never be smaller than 0 - due to the line splitting.
                         when : < inbrackets 0
                             throw 'more-inline-brackets-closed-than-opened inbrackets line
