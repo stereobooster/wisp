@@ -20,9 +20,10 @@ Wisp: Whitespace to Lisp
         . j                          j))          
 
 
-Wisp turns indentation based syntax into Lisp. The conversion is homoiconic[^h], generic[^g], and backwards-compatible[^b]. It is inspired by project readable, but tries to keep itself simple (and stupid: just a preprocessor). More information on the [wisp-website][].
+Wisp turns indentation based syntax into Lisp. The conversion is homoiconic[^h], generic[^g], and backwards-compatible[^b]. It is inspired by project readable, but tries to keep itself simple (and stupid: just a preprocessor). More information on the [wisp-website][] and code in the [wisp-repository][].
 
 [wisp-website]: http://draketo.de/light/english/wisp-lisp-indentation-preprocessor
+[wisp-repository]: http://draketo.de/proj/wisp
 
 Usage: ./wisp.py infile.wisp > outfile.lisp
 
