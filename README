@@ -5,16 +5,10 @@ Wisp: Whitespace to Lisp
       display "Hello World"     ⇒        (display "Hello World"))
 
 
-    define : hello who                 (define (hello who)
-      display                 ⇒          (display
-        string-append                      (string-append
-          . "Hello " who                     "Hello " who)))
-
-
     define : fibonacci n                 (define (fibonacci n)
         let rek : (i 0) (u 1) (v 1)          (let rek ((i 0) (u 1) (v 1))
             if : >= i : - n 2          ⇒          (if (>= i (- n 2))
-                . v                                   v
+                . v                                    v
                 rek (+ i 1) v (+ u v)                 (rek (+ i 1) v (+ u v)))))
 
 
