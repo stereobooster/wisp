@@ -20,7 +20,7 @@ Wisp turns indentation based syntax into Lisp. The conversion is homoiconic[^h],
 Requirements
 ------------
 
-* [Python 3.x][] for bootstrapping
+* [Python 3.x][] to bootstrap wisp
 * [GNU Guile 2.x][] for running it
 
 [Python 3.x]: http://python.org "Python Programming Language"
