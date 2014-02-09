@@ -17,17 +17,29 @@ Wisp turns indentation based syntax into Lisp. The conversion is homoiconic[^h],
 [wisp-website]: http://draketo.de/light/english/wisp-lisp-indentation-preprocessor
 [wisp-repository]: http://draketo.de/proj/wisp
 
+Requirements
+------------
 
-Bootstrap: `autoreconf -i && ./configure && make`
+* [Python][] for bootstrapping
+* [GNU Guile][] for running it
 
-Usage: `guile ./wisp.scm infile.wisp > outfile.scm`
+[Python]: http://python.org "Python Programming Language"
+[GNU Guile]: http://gnu.org/s/guile "GNU Guile: The official extension language for the GNU operating system."
 
-Usage on the REPL: `guile -L . --language=wisp # run this in the wisp-folder`
+Usage
+-----
 
-Also see `./wisp-multiline.sh --help`
+* Get wisp: `hg clone http://draketo.de/proj/wisp`
+* Bootstrap: `autoreconf -i && ./configure && make`
+* Preprocess files: `guile ./wisp.scm infile.wisp > outfile.scm`
+* Wisp at the REPL: `guile -L . --language=wisp # run this in the wisp-folder`
 
+Notes
+-----
 
-License: GPLv3 or later.
+Copyright: 2013--2014 Arne Babenhauserheide
+
+License: GPLv3 or later
 
 
 [^h]: Wisp is homoiconic because everything you write gets turned into lisp which is homoiconic.
