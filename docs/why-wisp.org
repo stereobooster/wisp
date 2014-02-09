@@ -71,7 +71,7 @@
 - /€ and ¥ escape your existing filters/
 
 
-* Summary
+* Summary: Current Lisp
 
 1. Lisp syntax uses the *most common* non-letter, non-math characters.
 2. The *first and last characters* are important for text-recognition.
@@ -154,6 +154,15 @@ myfunction
 
 /Also the problems of SRFI-49 are preserved/
 
+* Summary: Why wisp?
+
+** Wisp
+/minimal indentation-based syntax/
+** Wisp vs. SRFI-49: continue the argument list.
+** Wisp vs. SRFI-110:
+*** use common characters (elegance 1).
+*** KISS.
+
 * Wisp syntax 1/4: function calls
 
 ** Indentation
@@ -235,7 +244,7 @@ becomes
 #+END_SRC
  
 
-* Wisp syntax justification
+* Summary: Wisp syntax justification
 
 #+html: <small>
 http://draketo.de/light/english/wisp-lisp-indentation-preprocessor#sec-4
