@@ -18,13 +18,11 @@ Wisp turns indentation based syntax into Lisp. The conversion is homoiconic[^h],
 [wisp-repository]: http://draketo.de/proj/wisp
 
 
-Bootstrap: autoreconf -i && ./configure && make
+Bootstrap: `autoreconf -i && ./configure && make`
 
-Usage: guile ./wisp.scm infile.wisp > outfile.lisp
+Usage: `guile ./wisp.scm infile.wisp > outfile.scm`
 
-Usage on the REPL (guile shell):
-
-    guile -L . --language=wisp # run this in the wisp-folder
+Usage on the REPL: `guile -L . --language=wisp # run this in the wisp-folder`
 
 Also see `./wisp-multiline.sh --help`
 
