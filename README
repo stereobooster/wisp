@@ -48,6 +48,11 @@ The fibonacci-example above can then be transformed to the following:
                 . v
                 rek {i + 1} v {u + v}
 
+If you want to use a curly-infix expression starting a line, you have to prefix it with a dot:
+
+    . {1 + 1}
+    ; = 2
+
 Notes
 -----
 

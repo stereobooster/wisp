@@ -25,7 +25,9 @@ define : fibonacci n
             . v
             rek {i + 1} v {u + v}
 
-
+display 
+  . {1 + 1}
+newline
 
 ;; Due to the compatibility with curly-infix, the following is no longer possible.
 
