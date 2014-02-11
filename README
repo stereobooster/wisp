@@ -34,6 +34,20 @@ Usage
 * Preprocess files: `guile ./wisp.scm infile.wisp > outfile.scm`
 * Wisp at the REPL: `guile -L . --language=wisp # run this in the wisp-folder`
 
+Wisp and curly infix (SRFI-105)
+-------------------------------
+
+Wisp treats braces "{}" the same as parentheses "()" and square brackets "[]", so it is compatible with curly infix ([SRFI-105](http://srfi.schemers.org/srfi-105/srfi-105.html)) to get more customary math expressions. In Guile Scheme with Wisp you can activate curly infix using the following line `. #!curly-infix ` (mind the final space!)
+
+The fibonacci-example above can then be transformed to the following:
+
+    . #!curly-infix 
+    define : fibonacci n
+        let rek : (i 0) (u 1) (v 1)
+            if {i >= {n - 2}}
+                . v
+                rek {i + 1} v {u + v}
+
 Notes
 -----
 
