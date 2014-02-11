@@ -39,7 +39,7 @@ Wisp and curly infix (SRFI-105)
 
 Wisp treats braces "{}" the same as parentheses "()" and square brackets "[]", so you can use it with curly infix ([SRFI-105](http://srfi.schemers.org/srfi-105/srfi-105.html)) to get more customary math expressions. In Guile Scheme with Wisp you can activate curly infix using the following line `. #!curly-infix ` (with a final space!)
 
-<a name="fibonacci"></a>By combining curly-infix and wisp, Fibonacci numbers can be written as follows:
+<a name="fibonacci"></a>By combining curly-infix and wisp, the Fibonacci sequence can be written as follows:
 
     . #!curly-infix 
     define : fibonacci n
