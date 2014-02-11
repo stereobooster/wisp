@@ -51,7 +51,7 @@ Wisp treats braces "{}" the same as parentheses "()" and square brackets "[]", s
                 . v
                 rek {i + 1} v {u + v}
 
-Note that this is full-fledged scheme, with all its capabilities - like hygienic macros (programmable syntax!) and full tail recursion.
+Note that this is full-fledged scheme, with all its capabilities like hygienic macros (programmable syntax!) and full tail recursion.
 
 If you want to use a curly-infix expression starting a line, you have to prefix it with a dot:
 
