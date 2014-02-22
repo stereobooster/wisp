@@ -82,7 +82,8 @@
      ("#[tf]"  . font-lock-constant-face) ; #t and #f
      ("#\\\\[^ 	]+"  . font-lock-constant-face) ; character literals
      (";" . 'font-lock-comment-delimiter-face)
-     ("\\_<[+-]?[0-9]+\\_>\\|\\_[+-]<[0-9]*\\.[0-9]*\\(e[+-]?[0-9]+\\)?\\_>" . font-lock-constant-face) ; numbers
+; FIXME: The following regexp is broken
+;      ("\\_<[+-]?[0-9]+\\_>\\|\\_[+-]<[0-9]*\\.[0-9]*\\(e[+-]?[0-9]+\\)?\\_>" . font-lock-constant-face) ; numbers
      ("'()" . font-lock-constant-face) ; empty list
      ("[ 	]'[^	 ]+" . font-lock-constant-face) ; 'name
      (" : \\| \\. " . font-lock-keyword-face) ; leading : or .
