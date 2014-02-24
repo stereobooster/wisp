@@ -12,10 +12,11 @@ Wisp: Whitespace to Lisp
                 rek (+ i 1) v (+ u v)                 (rek (+ i 1) v (+ u v)))))
 
 
-Wisp turns indentation based syntax into Lisp. The conversion is homoiconic[^h], generic[^g], and backwards-compatible[^b]. It is inspired by project readable, but tries to keep itself simple (and stupid: just a preprocessor). More information on the [wisp-website][] and code in the [wisp-repository][].
+Wisp turns indentation based syntax into Lisp. The conversion is homoiconic[^h], generic[^g], and backwards-compatible[^b]. It is inspired by [project readable][], but tries to keep itself simple (and stupid: just a preprocessor). More information on the [wisp-website][] and code in the [wisp-repository][].
 
-[wisp-website]: http://draketo.de/light/english/wisp-lisp-indentation-preprocessor
-[wisp-repository]: http://draketo.de/proj/wisp
+[wisp-website]: http://draketo.de/light/english/wisp-lisp-indentation-preprocessor "wisp: Whitespace to Lisp: An indentation to parentheses preprocessor to get more readable Lisp"
+[wisp-repository]: http://draketo.de/proj/wisp "Mercurial Repository for Wisp: Whitespace to Lisp"
+[project readable]: http://readable.sourceforge.net/ "Readable Lisp S-expressions Project"
 
 Requirements
 ------------
