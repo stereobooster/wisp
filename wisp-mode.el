@@ -3,7 +3,7 @@
 ;; Copyright (C) 2013  Arne Babenhauserheide <arne_bab@web.de>
 
 ;; Author: Arne Babenhauserheide <arne_bab@web.de>
-;; Version: 0.1.5
+;; Version: 0.2
 ;; Keywords: languages, lisp
 
 ;; This program is free software; you can redistribute it and/or
@@ -34,6 +34,11 @@
 ;; [1]: http://jeditoolkit.com/try-wisp
 ;; 
 ;; [2]: http://github.com/krisajenkins/wispjs-mode
+;; 
+;; 
+;; ChangeLog:
+;; 
+;;  - 0.2: Fixed the regular expressions. Now org-mode HTML export works with wisp-code.
 ;; 
 ;;; Code:
 
