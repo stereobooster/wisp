@@ -35,7 +35,6 @@
 ;; 
 ;; [2]: http://github.com/krisajenkins/wispjs-mode
 ;; 
-;; 
 ;; ChangeLog:
 ;; 
 ;;  - 0.2: Fixed the regular expressions. Now org-mode HTML export works with wisp-code.
