@@ -1,6 +1,6 @@
 fails when I add stuff at the end of end of example.w        | owner:, open:False, id:08c68e1ce0c9798184c01806d2661a3220bff3cd, time:1363789693.79
 add a testsuite for wisp parsers.                            | owner:, open:False, id:1c05d27ac916e1a823b8985a094947907c3c19af, time:1379064922.74
-wisp-mode: export wisp to html fails in org-mode: font-lock-fontify-keywords-region: Invalid regexp | owner:, open:True, id:1e46d8c05580c961c37a32d36c987a5dd1d34943, time:1389371020.39
+wisp-mode: export wisp to html fails in org-mode: font-lock-fontify-keywords-region: Invalid regexp | owner:, open:False, id:1e46d8c05580c961c37a32d36c987a5dd1d34943, time:1389371020.39
 an empty line with : should start with double parens         | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:2e188ddf44d36e4605030d3c58607ebfa97d189e, time:1390328674.43
 wisp-in-wisp: remove the leading . for continuation lines after inferring the brackets. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:2e42e5b64622f0cc383eb8acc3d510912e925bf0, time:1377476687.79
 wisp: handle general paren prefixes like quote, quasiquote, etc. | owner:, open:False, id:323ff94b5be635742619467e1cb44f4c0d96f63f, time:1379047798.47
@@ -12,8 +12,8 @@ linebreaks in parens still break                             | owner:, open:Fals
 wisp-guile.w does not yet remove the leading . which signifies a continuation. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:7075096a323933493f42a3751da5f75a45d5d699, time:1377381700.17
 inline ' : should be '(                                      | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:72d534a8b23b4cb168017f1bb7d8816f0ea170c4, time:1366497335.26
 failing test tests/shebang.w                                 | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:74a851f83af8996465a7b24d8453161beb0f0fd5, time:1379106761.57
-multiline comments (srfi-30)                                 | owner:, open:True, id:7a57614fa920b2ddad002d044b144d0bb7c34f84, time:1389364108.01
-support nested multi-line comments with #| ... |#            | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:8cf6202873d4454f57813dd17cf60432059f7c62, time:1389569421.6
+non-nested multiline comments with #! !#.                    | owner:, open:True, id:7a57614fa920b2ddad002d044b144d0bb7c34f84, time:1389364108.01
+support nested multi-line comments with #| ... |#: multiline comments (srfi-30) | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:8cf6202873d4454f57813dd17cf60432059f7c62, time:1389569421.6
 the repl does not require 3 returns when you use a single char as function, or rather only does so every second time | owner:, open:True, id:9cedd0bdbf4a3b17add4bfe86ad5a23e500cfc6c, time:1379064870.78
 wisp-guile.w breaks on ";" and complex brackets with bracket char literals. See wisp-guile.w::91 | owner:, open:False, id:9d8b6f87fa5365733fc8655614dbf2a9ba5bd054, time:1377533321.27
 FIX regression: empty line with only : does not remove the :. It transforms to (:, it should transform to ( | owner:, open:False, id:a2323d347612425bc5af577c939916c8b60ec1c9, time:1389631450.78
