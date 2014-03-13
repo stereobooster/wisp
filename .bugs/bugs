@@ -19,7 +19,7 @@ wisp-guile.w breaks on ";" and complex brackets with bracket char literals. See 
 FIX regression: empty line with only : does not remove the :. It transforms to (:, it should transform to ( | owner:, open:False, id:a2323d347612425bc5af577c939916c8b60ec1c9, time:1389631450.78
 wisp-mode: handle lines starting with underscores: currently sees the underscores as function call. | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:b2c3755e1deb8355655a334d569679e2e62d2836, time:1376612093.55
 make this work: let : : origfile ( open-file : nth 1 : command-line ) r | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:d6de2074a5017f1f29f34d142ce797981ed270a0, time:1366529287.67
-wisp.py breaks on \ - quote, escaped backslash, quote        | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:d75a93ca58ade5b3e3e51f1e7ee9782e743ac131, time:1377424552.02
+wisp.py breaks on \ - quote, escaped backslash, quote. Ignored, because wisp.py is only needed for bootstrapping. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:d75a93ca58ade5b3e3e51f1e7ee9782e743ac131, time:1377424552.02
 comments containing a closing parenthesis can break the parser. | owner:, open:False, id:d9147504868960e5fbc2648474d48ce5c9bd1a02, time:1374838747.22
 breaks on empty files                                        | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:e40fa7a93eb2c497dca1af7eed22ad5ed5cfbe7f, time:1390325470.91
 quote as only char in a line gets parenthized instead of becoming a paren-prefix. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:eb7468387e90bb5d13f5a5d81c6f4a704f2ca0fb, time:1390326369.6
