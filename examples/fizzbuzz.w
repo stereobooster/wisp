@@ -6,7 +6,7 @@ use-modules : guildhall ext foof-loop
 ;; Pseudocode adapted from 
 ;; http://en.wikipedia.org/wiki/Pseudocode#Syntax
 define : divisible? number divisor
-         = 0 : modulo number divisor
+         = 0 : remainder number divisor
 
 define : fizzbuzz
   let : : print_number #f
