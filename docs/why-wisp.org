@@ -221,7 +221,7 @@ becomes
   ((x 1)
    (y 2)
    (z 3))
-  body)
+  (body))
 #+END_SRC
 
 * Wisp syntax 4/4: Resilient Indentation
