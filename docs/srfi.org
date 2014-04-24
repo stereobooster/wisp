@@ -105,7 +105,7 @@ As noted in SRFI-110, there are a number of implementation-problems in SRFI-49 a
     1
 #+END_SRC
 
-SRFI-110 improves a lot over the implementation of SRFI-49 and resolves the group-naming by introducing 3 different grouping-syntaxes (=$=, =\\= and =<* *>=). These additional syntax-elements however hurt readability by newcomers a lot. They make some code written in SRFI-110 look quite similar as perl-code:
+SRFI-110 improves a lot over the implementation of SRFI-49 and resolves the group-naming by introducing 3 different grouping-syntaxes (=$=, =\\= and =<* *>=). These additional syntax-elements however hurt readability for newcomers a lot. They make some code written in SRFI-110 look quite similar as perl-code:
 #+BEGIN_SRC scheme
 myfunction 
   x: \\ original-x
