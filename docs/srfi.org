@@ -1,9 +1,11 @@
 #+title: SRFI: wisp: whitespace-to-lisp preprocessing
 
 #+BEGIN_ABSTRACT
-This SRFI describes a simple syntax which allows making scheme easier to read for newcomers while keeping the simplicity, generality and elegance of s-expressions. Similar to SRFI-110, SRFI-49 and Python it uses indentation to group expressions. Like SRFI-110 wisp is general and homoiconic. Different from its precedessors, wisp only uses the absolute minimum of additional syntax-elements which are required for writing and exchanging arbitrary code-structures.
+This SRFI describes a simple syntax which allows making scheme easier to read for newcomers while keeping the simplicity, generality and elegance of s-expressions. Similar to SRFI-110, SRFI-49 and Python it uses indentation to group expressions. Like SRFI-110 wisp is general and homoiconic. 
 
-It resolves a limitation of SRFI-110 and SRFI-49 which are not able to continue the arguments to a function after a function call.
+Different from its precedessors, wisp only uses the absolute minimum of additional syntax-elements which are required for writing and exchanging arbitrary code-structures. As syntax elements it only uses a colon surrounded by whitespace, the period as first code-character on the line and underscores at the beginning of the line.
+
+It resolves a limitation of SRFI-110 and SRFI-49, both of which force the programmer to use a single argument per line if the arguments to a function need to be continued after a function-call.
 
 Wisp expressions can include any s-expressions and as such provide backwards compatibility.
 
