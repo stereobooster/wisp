@@ -1,11 +1,27 @@
 #+title: SRFI: wisp: whitespace-to-lisp preprocessing
 
 #+BEGIN_ABSTRACT
-This SRFI describes a simple syntax which allows making scheme easier to read for newcomers while keeping the simplicity and elegance of s-expressions. Similar to SRFI-110, SRFI-49 and Python it uses indentation to group expressions. As SRFI-110 wisp is general and homoiconic. Different from its precedessors, wisp only uses the absolute minimum of additional syntax-elements which are required for writing and exchanging arbitrary code-structures.
+This SRFI describes a simple syntax which allows making scheme easier to read for newcomers while keeping the simplicity, generality and elegance of s-expressions. Similar to SRFI-110, SRFI-49 and Python it uses indentation to group expressions. Like SRFI-110 wisp is general and homoiconic. Different from its precedessors, wisp only uses the absolute minimum of additional syntax-elements which are required for writing and exchanging arbitrary code-structures.
 
-The expressiveness of 
+It resolves a limitation of SRFI-110 and SRFI-49 which are not able to continue the arguments to a function after a function call.
 
-Wisp expressions can include any s-expressions
+Wisp expressions can include any s-expressions and as such provide backwards compatibility.
+
+#+html: <table><tr><th>wisp</th><th>s-exp</th></tr><tr><td>
+#+BEGIN_SRC wisp
+  + 5
+    ,* 4 3
+    . 2 1
+#+END_SRC
+#+html: </td><td>
+#+BEGIN_SRC scheme
+  (+ 5
+    (* 4 3)
+    2 1)
+  
+#+END_SRC
+#+html: </td></tr></table>
+
 #+END_ABSTRACT
 
 * SRFI process                                                     :noexport:
@@ -60,5 +76,17 @@ Remember, even if a proposal becomes an final SRFI, the need for it must be comp
 
 * Related SRFIs
 
-SRFI-49 (Indentation-sensitive syntax) (superceded by this SRFI), SRFI-110 (Sweet-expressions (t-expressions)) (superceded by this SRFI), … (neoteric expressions) (compatible), … (curly infix) (supported) and SRFI-30 (Nested Multi-line comments) (interacts with this SRFI).
+- SRFI-49 (Indentation-sensitive syntax): superceded by this SRFI, 
+- SRFI-110 (Sweet-expressions (t-expressions)): superceded by this SRFI,
+- SRFI-105 (neoteric expressions and curly infix): supported, and
+- SRFI-30 (Nested Multi-line comments): complex interaction. Should be avoided at the beginning of lines, because it can make the indentation hard to distinguish for humans.
+
+* Rationale
+
+
+* Specification
+
+** Clarifications
+
+- Code-blocks end after 2 empty lines followed by a newline. Indented non-empty lines after 2 empty lines should be treated as error. A line is empty if it only contains whitespace.
 
