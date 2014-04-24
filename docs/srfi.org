@@ -121,7 +121,7 @@ myfunction
   ! {{x * x} + {y * y}}
 #+END_SRC
 
-This is not only hard to read, but also makes it harder to work with the code, because the programmer needs to take these additional syntax elements into account before being able to understand the code.
+This is not only hard to read, but also makes it harder to work with the code, because the programmer has to learn these additional syntax elements and keep them in mind before being able to understand the code.
 
 SRFI-110 also keeps the limitation from SRFI-49 and is not able to continue the argument-list.
 
