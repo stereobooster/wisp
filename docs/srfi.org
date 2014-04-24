@@ -123,7 +123,7 @@ myfunction
 
 This is not only hard to read, but also makes it harder to work with the code, because the programmer has to learn these additional syntax elements and keep them in mind before being able to understand the code.
 
-SRFI-110 also keeps the limitation from SRFI-49 and is not able to continue the argument-list.
+Like SRFI-49 SRFI-110 also cannot continue the argument-list without resorting to single-element lines.
 
 Like SRFI-110 wisp is general and homoiconic and interacts nicely with SRFI-105 (neoteric expressions and curly infix). Like SRFI-110, the expressions are the same in the REPL and in code-files.
 
