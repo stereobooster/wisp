@@ -1,4 +1,5 @@
 fails when I add stuff at the end of end of example.w        | owner:, open:False, id:08c68e1ce0c9798184c01806d2661a3220bff3cd, time:1363789693.79
+wisp-mode in quoted lists only the first item is colorized as data, but all words up to the last paren should be colorized. | owner:, open:True, id:1675ca3f894ed8470fa292149a476a2fa0d17140, time:1397196957.45
 add a testsuite for wisp parsers.                            | owner:, open:False, id:1c05d27ac916e1a823b8985a094947907c3c19af, time:1379064922.74
 wisp-mode: export wisp to html fails in org-mode: font-lock-fontify-keywords-region: Invalid regexp | owner:, open:False, id:1e46d8c05580c961c37a32d36c987a5dd1d34943, time:1389371020.39
 an empty line with : should start with double parens         | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:2e188ddf44d36e4605030d3c58607ebfa97d189e, time:1390328674.43

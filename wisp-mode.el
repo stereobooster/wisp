@@ -94,6 +94,8 @@
      ("\\_<[+-]?[0-9]+\\_>\\|\\_<[+-][0-9]*\\.[0-9]*\\(e[+-]?[0-9]+\\)?\\_>" . font-lock-constant-face) ; numbers
      ("'()" . font-lock-constant-face) ; empty list
      ("[ 	]'[^	 ]+" . font-lock-constant-face) ; 'name
+     ; FIXME: This is too general (it will capture a . 'b, making it
+     ; impossible to have 'b highlighted)
      (" : \\| \\. " . font-lock-keyword-face) ; leading : or .
      ))
   "Default highlighting expressions for wisp mode.")
