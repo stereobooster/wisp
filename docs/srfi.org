@@ -81,10 +81,50 @@ Remember, even if a proposal becomes an final SRFI, the need for it must be comp
 - SRFI-49 (Indentation-sensitive syntax): superceded by this SRFI, 
 - SRFI-110 (Sweet-expressions (t-expressions)): superceded by this SRFI,
 - SRFI-105 (neoteric expressions and curly infix): supported, and
-- SRFI-30 (Nested Multi-line comments): complex interaction. Should be avoided at the beginning of lines, because it can make the indentation hard to distinguish for humans.
+- SRFI-30 (Nested Multi-line comments): complex interaction. Should be avoided at the beginning of lines, because it can make the indentation hard to distinguish for humans. SRFI-110 includes them, so there might be value in adding them. The wisp reference implementation does not treat them specially, though, which might create arbitrary complications.
 
 * Rationale
 
+A big strength of Scheme and other lisp-like languages is their minimalistic syntax. By using only the most common characters like the period, the comma, the quote and quasiquote, the hash and the parens for the syntax, they are very close to natural language. Along with the minimal list-structure of the code, this gives these languages a timeless elegance.
+
+But as SRFI-110 explains very thoroughly (which we need not repeat here), the parentheses at the beginning of lines hurt readability and scare away newcomers.
+
+Using indentation to mark the structure of the code follows the natural way how programmers understand code and avoids errors due to mismatches between indentation and actual structure.
+
+SRFI-49 and SRFI-110 provide a structure to write whitespace sensitive scheme, but both have their share of problems.
+
+As noted in SRFI-110, there are a number of implementation-problems in SRFI-49 as well as choosing the name “group” for the construct which is necessary to represent double parentheses. Additionally to the problems named in SRFI-110, it is not able to continue the arguments to a function on one line, if a prior argument was a function call. The example code in the abstract would have to be written in SRFI-49 as follows:
+
+#+BEGIN_SRC scheme
+  ,* 5
+    + 4 3
+    2
+    1
+#+END_SRC
+
+SRFI-110 improves a lot over the implementation of SRFI-49 and resolves the group-naming by introducing 3 different grouping-syntaxes (=$=, =\\= and =<* *>=). These additional syntax-elements however hurt readability by newcomers a lot. They make some code written in SRFI-110 look quite similar as perl-code:
+#+BEGIN_SRC scheme
+myfunction 
+  x: \\ original-x
+  y: \\ calculate-y original-y
+#+END_SRC
+
+#+BEGIN_SRC scheme
+  a b $ c d e $ f g
+#+END_SRC
+
+#+BEGIN_SRC scheme
+  let <* x getx() \\ y gety() *>
+  ! {{x * x} + {y * y}}
+#+END_SRC
+
+This is not only hard to read, but also makes it harder to work with the code, because the programmer needs to take these additional syntax elements into account before being able to understand the code.
+
+SRFI-110 also keeps the limitation from SRFI-49 and is not able to continue the argument-list.
+
+Like SRFI-110 wisp is general and homoiconic and interacts nicely with SRFI-105 (neoteric expressions and curly infix). Like SRFI-110, the expressions are the same in the REPL and in code-files.
+
+But unlike SRFI-110, wisp only uses the minimum of additional syntax-elements which are necessary to support arbitrary code-structures in indentation-sensitive code which is intended to be shared over the internet.
 
 * Specification
 
@@ -92,3 +132,15 @@ Remember, even if a proposal becomes an final SRFI, the need for it must be comp
 
 - Code-blocks end after 2 empty lines followed by a newline. Indented non-empty lines after 2 empty lines should be treated as error. A line is empty if it only contains whitespace.
 
+* Test Suite
+
+
+* Copyright
+
+      Copyright (C) Arne Babenhauserheide (2014). All Rights Reserved.
+
+      Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+      The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+      THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
