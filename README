@@ -33,7 +33,7 @@ Usage
 -----
 
 * Get wisp: `hg clone http://draketo.de/proj/wisp`
-* Bootstrap: `autoreconf -i && ./configure && make`
+* Bootstrap: `cd wisp && autoreconf -i && ./configure && make`
 * Preprocess files: `guile ./wisp.scm infile.wisp > outfile.scm`
 * Wisp at the REPL: `guile -L . --language=wisp # run this in the wisp-folder`
 
