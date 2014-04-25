@@ -61,6 +61,10 @@ If you want to use a curly-infix expression starting a line, you have to prefix 
 Notes
 -----
 
+Standardization: An [SRFI](srfi.html)[^srfi] is in the works.
+
+[^srfi]: SRFI is the abbreviation of Scheme Request for Implementation. It is the official schemisch way of suggesting new features. SRFIs are maintained at [srfi.schemers.org/](http://srfi.schemers.org/).
+
 Copyright: 2013--2014 Arne Babenhauserheide
 
 License: GPLv3 or later
