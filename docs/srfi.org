@@ -90,13 +90,11 @@ Remember, even if a proposal becomes an final SRFI, the need for it must be comp
 
 A big strength of Scheme and other lisp-like languages is their minimalistic syntax. By using only the most common characters like the period, the comma, the quote and quasiquote, the hash and the parens for the syntax, they are very close to natural language. Along with the minimal list-structure of the code, this gives these languages a timeless elegance.
 
-But as SRFI-110 explains very thoroughly (which we need not repeat here), the parentheses at the beginning of lines hurt readability and scare away newcomers.
+But as SRFI-110 explains very thoroughly (which we need not repeat here), the parentheses at the beginning of lines hurt readability and scare away newcomers. Also using indentation to mark the structure of the code follows the natural way how programmers understand code and avoids errors due to mismatches between indentation and actual structure.
 
-Using indentation to mark the structure of the code follows the natural way how programmers understand code and avoids errors due to mismatches between indentation and actual structure.
+SRFI-49 and SRFI-110 provide a way to write whitespace sensitive scheme, but both have their share of problems.
 
-SRFI-49 and SRFI-110 provide a structure to write whitespace sensitive scheme, but both have their share of problems.
-
-As noted in SRFI-110, there are a number of implementation-problems in SRFI-49 as well as choosing the name “group” for the construct which is necessary to represent double parentheses. Additionally to the problems named in SRFI-110, it is not able to continue the arguments to a function on one line, if a prior argument was a function call. The example code in the abstract would have to be written in SRFI-49 as follows:
+As noted in SRFI-110, there are a number of implementation-problems in SRFI-49 as well as choosing the name “group” for the construct which is necessary to represent double parentheses. Additionally to the problems named in SRFI-110, SRFI-49 is not able to continue the arguments to a function on one line, if a prior argument was a function call. The example code in the abstract would have to be written in SRFI-49 as follows:
 
 #+BEGIN_SRC scheme
   ,* 5
@@ -105,7 +103,7 @@ As noted in SRFI-110, there are a number of implementation-problems in SRFI-49 a
     1
 #+END_SRC
 
-SRFI-110 improves a lot over the implementation of SRFI-49 and resolves the group-naming by introducing 3 different grouping-syntaxes (=$=, =\\= and =<* *>=). These additional syntax-elements however hurt readability for newcomers a lot. They make some code written in SRFI-110 look quite similar to perl:
+SRFI-110 improves a lot over the implementation of SRFI-49 and resolves the group-naming by introducing 3 different grouping-syntaxes (=$=, =\\= and =<* *>=). These additional syntax-elements however hurt readability for newcomers a lot. They make some code written in SRFI-110 look quite similar to perl and bash:
 #+BEGIN_SRC scheme
 myfunction 
   x: \\ original-x
