@@ -125,7 +125,7 @@ This is not only hard to read, but also makes it harder to work with the code, b
 
 Like SRFI-49 SRFI-110 also cannot continue the argument-list without resorting to single-element lines.
 
-Like SRFI-110 wisp is general and homoiconic and interacts nicely with SRFI-105 (neoteric expressions and curly infix). Like SRFI-110, the expressions are the same in the REPL and in code-files.
+Like SRFI-110, wisp is general and homoiconic and interacts nicely with SRFI-105 (neoteric expressions and curly infix). Like SRFI-110, the expressions are the same in the REPL and in code-files.
 
 But unlike SRFI-110, wisp only uses the minimum of additional syntax-elements which are necessary to support arbitrary code-structures in indentation-sensitive code which is intended to be shared over the internet.
 
