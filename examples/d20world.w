@@ -9,10 +9,9 @@
 ; its inverse (element-id to lon+lat). For further subdivisions, just
 ; elevate the center of each edge and connect these centers.
 
-(define world (make-vector 20))
-(define neighbors (make-vector 20))
+. (define world (make-vector 20))
+. (define neighbors (make-vector 20))
 ; count from the top
-(define neighbors-helper
 ; Contains the numbers instead of the indexes, to make it easier for
 ; me to think about them.
 ; 
@@ -28,6 +27,7 @@
 ;   15   19   12
 ;     16    11
 ; 
+. (define neighbors-helper
   '((1 2 3 4)
     (2 1 5 10)
     (3 1 6 7)
@@ -49,7 +49,7 @@
     (12 17 11 9)
     (11 19 12 8)))
 
-(let loop ((relationships neighbors-helper))
+. (let loop ((relationships neighbors-helper))
   (cond 
    ((null? relationships)
     neighbors)
@@ -70,9 +70,9 @@
            (1- (list-ref vec (car idxtoset))))
           (setidx (cdr idxtoset)))))
       (loop (cdr relationships))))))
-(display world)
-(newline)
-(display neighbors)
-(newline)
-(display (vector-ref world 0))
-(newline)
+. (display world)
+. (newline)
+. (display neighbors)
+. (newline)
+. (display (vector-ref world 0))
+. (newline)
