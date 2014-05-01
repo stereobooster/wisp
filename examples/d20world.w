@@ -9,7 +9,7 @@
 ; its inverse (element-id to lon+lat). For further subdivisions, just
 ; elevate the center of each edge and connect these centers.
 
-define world : make-vector 20
+define world : make-vector 20 0
 define neighbors : make-vector 20
 ; count from the top
 
@@ -59,7 +59,6 @@ let loop : : relationships neighbors-helper
       : cur : car relationships
           idx : 1- : car cur
           vec : cdr cur
-      vector-set! world idx idx
       vector-set! neighbors idx : make-vector 3
       let setidx : : idxtoset '(0 1 2)
         cond 
