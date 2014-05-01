@@ -64,14 +64,14 @@ let loop : : relationships neighbors-helper
       let setidx : : idxtoset '(0 1 2)
         cond 
          : null? idxtoset
-           . #t
+           ; the outer loop continues here
+           loop : cdr relationships
          else
             vector-set!
                 vector-ref neighbors idx
                 car idxtoset
                 1- : list-ref vec : car idxtoset
             setidx : cdr idxtoset
-      loop : cdr relationships
 
 define : d20-as-text world-vector
          . "show the given d20 world as text"
@@ -92,11 +92,40 @@ define : d20-as-text world-vector
              indexes ' : 7 8 3 4 1 6 2 9 5 10 14 13 18 17 20 15 19 12 16 11
            apply format : append (list #f template) : map (lambda (x) (vector-ref world (1- x))) indexes
 
+define : d20-diffuse world neighbors D
+         . "Diffuse the values on the d20 using the diffusion constant D. Step 1: Simply iterative (=wrong)."
+         let loop : : neighbors-to-diffuse : iota : vector-length neighbors
+             cond 
+               : null? neighbors-to-diffuse
+                 . world
+               else
+                 let : : edges-to-diffuse-targets : vector-ref neighbors (car neighbors-to-diffuse)
+                         let*
+                           : edges-to-diffuse : append (list (car neighbors-to-diffuse)) : vector->list edges-to-diffuse-targets
+                             idx0 : list-ref edges-to-diffuse 0
+                             val0 : vector-ref world idx0
+                             idx1 : list-ref edges-to-diffuse 1
+                             val1 : vector-ref world idx1
+                             idx2 : list-ref edges-to-diffuse 2
+                             val2 : vector-ref world idx2
+                             idx3 : list-ref edges-to-diffuse 3
+                             val3 : vector-ref world idx3
+                           vector-set! world idx0 : + val0 : * D : - val1 val0
+                           vector-set! world idx1 : - val1 : * D : - val1 val0
+                           vector-set! world idx0 : + val0 : * D : - val2 val0
+                           vector-set! world idx2 : - val2 : * D : - val2 val0
+                           vector-set! world idx0 : + val0 : * D : - val3 val0
+                           vector-set! world idx3 : - val3 : * D : - val3 val0
+                 loop : cdr neighbors-to-diffuse
+                           
 display world
 newline
 display neighbors
 newline
 display : vector-ref world 0
 newline
+display : d20-as-text world
+newline
+d20-diffuse world neighbors 0.01
 display : d20-as-text world
 newline
