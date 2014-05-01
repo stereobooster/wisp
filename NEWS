@@ -1,0 +1,17 @@
+wisp 0.5.3 (2014-01-08): Started to use autotools to get make distcheck.
+
+wisp 0.5.2 (2014-01-07): Support general paren-prefixes for macros.
+
+wisp-mode 0.1.5 (2014-01-04): Resolved a name-clash for the emacs wisp-mode together with Steve Purcell und Kris Jenkins: the javascript wisp-mode was renamed to wispjs-mode and wisp.el is called wisp-mode 0.1.5. It provides syntax highlighting for Emacs and minimal indentation support via tab. You can install it with `M-x package-install wisp-mode`
+
+wisp 0.5 (2013-09-13): Wisp now has a REPL! Thanks go to GNU Guile and especially Mark Weaver, who guided me through the process (along with nalaginrut who answered my first clueless questions…).
+    To test the REPL, get the current code snapshot, unpack it, run ./bootstrap.sh, start guile with $ guile -L . (requires guile 2.x) and enter ,language wisp.
+    Example usage:
+
+        display "Hello World!\n"
+
+    then hit enter thrice.
+    Voilà, you have wisp at the REPL!
+    Caveeat: the wisp-parser is still experimental and contains known bugs. Use it for testing, but please do not rely on it for important stuff, yet.
+
+wisp 0.4 (2013-09-10): wisp-guile.w can now parse itself! Bootstrapping: The magical feeling of seeing a language (dialect) grow up to live by itself: python3 wisp.py wisp-guile.w > 1 && guile 1 wisp-guile.w > 2 && guile 2 wisp-guile.w > 3 && diff 2 3. Starting today, wisp is implemented in wisp.

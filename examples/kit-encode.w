@@ -93,12 +93,11 @@ Karlsruher Institut fuer Technologie
 
 "
 
-define : kittify numbers
-  . "Display a list of numbers as Text in a KIT Logo."
+define : kittifytologo numbers logo
+  . "Display a list of numbers as Text in the given text logo."
   let* 
     : base60numbers : map base60encode numbers
       requiredletters : + (length base60numbers) : apply + : map string-length base60numbers
-      logo kitlogosmall
       charsinlogo : string-count logo #\.
       requiredlogos : ceiling-quotient requiredletters charsinlogo
       text : xsubstring logo 0 : * requiredlogos : string-length logo
@@ -146,6 +145,14 @@ define : kittify numbers
 
 
 
+define : kittify numbers
+  . "Display a list of numbers as Text in a KIT Logo."
+  kittifytologo numbers kitlogosmall
+                     
+
+define : kittifylarge numbers
+  . "Display a list of numbers as Text in a KIT Logo."
+  kittifytologo numbers kitlogo
                      
 
 ; unkittify: first take out "Karlsruher Institut fuer Technologie" and all spaces and linebreaks, then split by . and base60decode the result.
@@ -224,7 +231,7 @@ If TEXT is #t, transform the numbers to optimize for text."
       bv : get-bytevector-all file
       numbers : bytevector->u8-list bv
       numbers : if text (map shiftbytedownfortext numbers) numbers
-    kittify numbers
+    kittifylarge numbers
 
 define : kittytextfile filepath
   . "Kittify the contents of the file at FILEPATH, with a transformation to optimize for text files."
@@ -283,6 +290,22 @@ displaywithnewline : utf8->string : u8-list->bytevector : unkittify "
 .1D.1Q.g......    .... ....   ....
 Karlsruher Institut fuer Technologie
 "
+
+
+displaywithnewline "
+
+     === KIT, IMK, RemoteC ==="
+
+displaywithnewline : kittify : map shiftbytedownfortext : bytevector->u8-list : string->utf8 "Karlsruhe Institut für Technologie (KIT), IMK-ASF, RemoteC"
+
+
+displaywithnewline "
+
+     === kittifyscript ==="
+
+displaywithnewline : kittytextfile "examples/kit-encode.w"
+
+
 
 ; TODO: Final step: Add commandline handling which allows to write into files and set the text flag and so on.
 ; ./kit-encode [-e|--encode|-d|--decode] [--text] [--template file] [--killstring "stringtoremove" (mutliple times)] [-o|--output file] [file|-]

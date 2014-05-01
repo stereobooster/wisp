@@ -33,6 +33,16 @@ int main ()
 {
   uint32_t v[] = {0, 5};
   uint32_t k[] = {0, 0, 0, 9};
-  encrypt(v, k);
+  int i;
+  uint32_t res = 0;
+  // performance test
+  for (i=0; i<10000000; i++) // 10^7!
+    {
+      encrypt(v, k);
+      res += v[1]; // avoid optimizing this loop away.
+      decrypt(v, k);
+      res += v[1];
+    }
+  printf("res: %u, v1: %u\n", res, v[1]);
   return 0;
 }

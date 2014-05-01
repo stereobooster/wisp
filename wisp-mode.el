@@ -3,7 +3,7 @@
 ;; Copyright (C) 2013  Arne Babenhauserheide <arne_bab@web.de>
 
 ;; Author: Arne Babenhauserheide <arne_bab@web.de>
-;; Version: 0.1.5
+;; Version: 0.2
 ;; Keywords: languages, lisp
 
 ;; This program is free software; you can redistribute it and/or
@@ -34,6 +34,10 @@
 ;; [1]: http://jeditoolkit.com/try-wisp
 ;; 
 ;; [2]: http://github.com/krisajenkins/wispjs-mode
+;; 
+;; ChangeLog:
+;; 
+;;  - 0.2: Fixed the regular expressions. Now org-mode HTML export works with wisp-code.
 ;; 
 ;;; Code:
 
@@ -70,6 +74,10 @@
   `((
      ("\\`#!.*" . font-lock-comment-face) ; initial hashbang
      ("\"\\.\\*\\?" . font-lock-string-face) ; strings (anything between "")
+     ("^_+ *$" . font-lock-default-face) ; line with only underscores
+                                         ; and whitespace shown as
+                                         ; default text. This is just
+                                         ; a bad workaround.
      ("^\\(?:_* +\\| *\\): *$" . font-lock-keyword-face) ; line with only a : + whitespace, not at the beginning
      ("^\\(?:_* +\\| *\\): \\| *\\. " . font-lock-keyword-face) ; leading : or .
      ( ,(regexp-opt wisp-builtin 'symbols) . font-lock-builtin-face) ; generic functions
@@ -82,9 +90,12 @@
      ("#[tf]"  . font-lock-constant-face) ; #t and #f
      ("#\\\\[^ 	]+"  . font-lock-constant-face) ; character literals
      (";" . 'font-lock-comment-delimiter-face)
-     ("\\_<[+-]?[0-9]+\\_>\\|\\_[+-]<[0-9]*\\.[0-9]*\\(e[+-]?[0-9]+\\)?\\_>" . font-lock-constant-face) ; numbers
+     ; TODO: Doublecheck this regexp. I do not understand it completely anymore.
+     ("\\_<[+-]?[0-9]+\\_>\\|\\_<[+-][0-9]*\\.[0-9]*\\(e[+-]?[0-9]+\\)?\\_>" . font-lock-constant-face) ; numbers
      ("'()" . font-lock-constant-face) ; empty list
      ("[ 	]'[^	 ]+" . font-lock-constant-face) ; 'name
+     ; FIXME: This is too general (it will capture a . 'b, making it
+     ; impossible to have 'b highlighted)
      (" : \\| \\. " . font-lock-keyword-face) ; leading : or .
      ))
   "Default highlighting expressions for wisp mode.")

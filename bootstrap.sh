@@ -1,15 +1,37 @@
 #!/bin/sh
 
 # Bootstrap wisp-guile with wisp.py
-
-diff=$(python3 wisp.py wisp-guile.w > 1 && guile 1 wisp-guile.w > 2 && guile 2 wisp-guile.w > wisp.scm && diff 2 wisp.scm && echo success)
-if [[ x"${diff}" == x"success" ]]; then
-    echo "successfully bootstrapped wisp.scm"
-    echo preparing the reader: wisp at the REPL
-    mkdir -p language/wisp
-    guile wisp.scm wisp-reader.w 2>/dev/null > language/wisp/spec.scm \
-        && echo ...succeeded \
-        && echo 'to use wisp at the REPL, run `guile -L` . and then in guile `,L wisp`'
+if [[ x"$1" == x"" ]]; then 
+    srcdir=.
 else
-    echo "failed to bootstrap wisp.scm. diff: " ${diff}
+    srcdir="$1"
 fi
+
+# Bootstrap wisp-guile with wisp.py
+if [[ x"$2" == x"" ]]; then 
+    guile="guile"
+else
+    guile="$2"
+fi
+
+# Bootstrap wisp-guile with wisp.py
+if [[ x"$3" == x"" ]]; then 
+    python3="python3"
+else
+    python3="$3"
+fi
+
+diff=$(${python3} ${srcdir}/wisp.py ${srcdir}/wisp-guile.w > 1 && ${guile} 1 ${srcdir}/wisp-guile.w > 2 && ${guile} 2 ${srcdir}/wisp-guile.w > wisp.scm && diff 2 wisp.scm && echo success)
+if [[ ! x"${diff}" == x"success" ]]; then
+    echo "failed to bootstrap wisp.scm. diff: " ${diff}
+    exit 1
+fi
+echo "successfully bootstrapped wisp.scm"
+echo preparing the reader: wisp at the REPL
+echo parsing the spec file...
+mkdir -p language/wisp
+${guile} wisp.scm ${srcdir}/wisp-reader.w 2>/dev/null > language/wisp/spec.scm \
+    && echo ...precompiling the spec file... \
+    && ${guile} -L . -s language/wisp/spec.scm \
+    && echo ...succeeded \
+    && echo to use wisp at the REPL, run '`'${guile} -L . --language=wisp'`'

@@ -1,2 +1,2 @@
 tinyenc : tinyenc.c
-	gcc -Wall tinyenc.c -o tinyenc
+	gcc -Wall -O3 tinyenc.c -o tinyenc

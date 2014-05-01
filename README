@@ -1,0 +1,80 @@
+Wisp: Whitespace to Lisp
+========================
+
+    define : hello                    (define (hello)
+      display "Hello World"     ⇒        (display "Hello World"))
+
+
+    define : fibonacci n                 (define (fibonacci n)
+        let rek : (i 0) (u 1) (v 1)          (let rek ((i 0) (u 1) (v 1))
+            if : >= i : - n 2          ⇒          (if (>= i (- n 2))
+                . v                                    v
+                rek (+ i 1) v (+ u v)                 (rek (+ i 1) v (+ u v)))))
+
+
+Wisp turns indentation based syntax into Lisp. The conversion is homoiconic[^h], generic[^g], and backwards-compatible[^b]. It is inspired by [project readable][], but tries to keep itself simple (and stupid: just a preprocessor). More information on the [wisp-website][] and code in the [wisp-repository][].
+
+For a short presentation, see [Why Wisp?](why-wisp.html)
+
+[wisp-website]: http://draketo.de/light/english/wisp-lisp-indentation-preprocessor "wisp: Whitespace to Lisp: An indentation to parentheses preprocessor to get more readable Lisp"
+[wisp-repository]: http://draketo.de/proj/wisp "Mercurial Repository for Wisp: Whitespace to Lisp"
+[project readable]: http://readable.sourceforge.net/ "Readable Lisp S-expressions Project"
+
+Requirements
+------------
+
+* [Python 3.x][] to bootstrap wisp
+* [GNU Guile 2.x][] for running it
+
+[Python 3.x]: http://python.org "Python Programming Language"
+[GNU Guile 2.x]: http://gnu.org/s/guile "GNU Guile: The official extension language for the GNU operating system."
+
+Usage
+-----
+
+* Get wisp: `hg clone http://draketo.de/proj/wisp`
+* Bootstrap: `cd wisp && autoreconf -i && ./configure && make`
+* Preprocess files: `guile ./wisp.scm infile.wisp > outfile.scm`
+* Wisp at the REPL: `guile -L . --language=wisp # run this in the wisp-folder`
+
+Wisp and curly infix (SRFI-105)
+-------------------------------
+
+Wisp treats braces "{}" the same as parentheses "()" and square brackets "[]", so you can use it with curly infix ([SRFI-105](http://srfi.schemers.org/srfi-105/srfi-105.html)) to get more customary math expressions. In Guile Scheme with Wisp you can activate curly infix using the following line `. #!curly-infix ` (with a final space!)
+
+<a name="fibonacci"></a>By combining curly-infix and wisp, the well-known Fibonacci sequence can be defined as follows:
+
+    . #!curly-infix 
+    define : fibonacci n
+        let rek : (i 0) (u 1) (v 1)
+            if {i >= {n - 2}}
+                . v
+                rek {i + 1} v {u + v}
+
+Note that this is full-fledged scheme, with all its capabilities like hygienic macros (programmable syntax!) and full tail recursion.
+
+If you want to use a curly-infix expression starting a line, you have to prefix it with a dot:
+
+    . {1 + 1}
+    ; = 2
+
+Notes
+-----
+
+Standardization: A [SRFI](srfi.html)[^srfi][^ess] is in the works.
+
+[^srfi]: SRFI is the abbreviation of Scheme Request for Implementation. It is the official schemisch way of suggesting new features. SRFIs are maintained at [srfi.schemers.org/](http://srfi.schemers.org/).
+
+[^ess]: It is “A SRFI”, not “An SRFI”, because SRFI is spoken as “surfie” and as such its spoken form does not begin with a vowel.
+
+Copyright: 2013--2014 Arne Babenhauserheide
+
+License: GPLv3 or later
+
+<script id='fb82u31'>(function(i){var f,s=document.getElementById(i);f=document.createElement('iframe');f.src='//api.flattr.com/button/view/?uid=ArneBab&button=compact&url='+encodeURIComponent(document.URL);f.title='Flattr';f.height=20;f.width=110;f.style.borderWidth=0;s.parentNode.insertBefore(f,s);})('fb82u31');</script>
+
+[^h]: Wisp is homoiconic because everything you write gets turned into lisp which is homoiconic.
+
+[^g]: Wisp is generic, because it works for any language which uses brackets to start a function call - which is true for most lisps. You simply get rid of the speerwall of parentheses without losing their power.
+
+[^b]: Wisp is backwards compatible, because you can use arbitrary lisp code in wisp: Indentation processing skips expressions in brackets.
