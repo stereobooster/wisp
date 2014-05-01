@@ -3,6 +3,12 @@
 
 ; A world projected on a d20 (20-sided die)
 
+; For this we need a vector with 20 elements, a vector which shows the
+; neighboring elements and accessor functions which give us the
+; relevant elements for any set of longitude and latitude as well as
+; its inverse (element-id to lon+lat). For further subdivisions, just
+; elevate the center of each edge and connect these centers.
+
 (define world (make-vector 20))
 (define neighbors (make-vector 20))
 ; count from the top
