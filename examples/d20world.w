@@ -59,6 +59,7 @@ let loop : : relationships neighbors-helper
       : cur : car relationships
           idx : 1- : car cur
           vec : cdr cur
+      vector-set! world idx : 1+ idx
       vector-set! neighbors idx : make-vector 3
       let setidx : : idxtoset '(0 1 2)
         cond 
@@ -72,9 +73,30 @@ let loop : : relationships neighbors-helper
             setidx : cdr idxtoset
       loop : cdr relationships
 
+define : d20-as-text world-vector
+         . "show the given d20 world as text"
+         let 
+           : template "
+ ~A         ~A
+   ~A    ~A  
+      ~A        
+ ~A    ~A    ~A
+    ~A   ~A
+
+ ~A       ~A
+  ~A    ~A
+     ~A        
+~A   ~A   ~A
+  ~A    ~A
+"
+             indexes ' : 7 8 3 4 1 6 2 9 5 10 14 13 18 17 20 15 19 12 16 11
+           apply format : append (list #f template) : map (lambda (x) (vector-ref world (1- x))) indexes
+
 display world
 newline
 display neighbors
 newline
 display : vector-ref world 0
+newline
+display : d20-as-text world
 newline
