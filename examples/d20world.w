@@ -12,6 +12,7 @@
 define world : make-vector 20
 define neighbors : make-vector 20
 ; count from the top
+
 ; Contains the numbers instead of the indexes, to make it easier for
 ; me to think about them.
 ; 
