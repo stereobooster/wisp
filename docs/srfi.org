@@ -340,11 +340,11 @@ You can still use underscores anywhere but at the beginning of the line, and eve
 
 * Implementation
 
-This reference implementation realizes a general wisp-preprocessor which can be used for any lisp-like language. It contains special syntax-constructs for scheme, though.
+This reference implementation realizes a general wisp-preprocessor which can be used for any lisp-like language. It contains special syntax-constructs for scheme, though. The reference-processor uses GNU Guile and can also be used at the REPL.
 
-A wisp-preprocessor which is specialiized for scheme should be easier to realize by using the parsing methods from an existing scheme implementation.
+A wisp-preprocessor which is specialiized for scheme should be much easier to realize by using the parsing methods from an existing scheme implementation.
 
-I realize that this reference implementation is very heavyweight, so I would be very happy if someone would step up and create a more lightweight scheme-specific alternative. To allow for this, the test-suite in the next chapter only contains scheme-specific code.
+Since reference implementation is very heavyweight, it would be great to have someone step up and create a more lightweight scheme-specific alternative. To allow for this, the test-suite in the next chapter only contains scheme-specific snippets.
 
 ** The general wisp preprocessor (code)
 
