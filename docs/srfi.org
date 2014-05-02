@@ -598,15 +598,15 @@ define : \:
 ;
 define : a b c
   let : : e . f
-  . g
+        . g
 #+end_src 
 ** tests/sublist.scm
 #+begin_src scheme
 ; sublists allow to start single line function calls with a colon ( : ).
 
 (define (a b c)
-  (let ((e . f)))
-  g)
+  (let ((e . f))
+        g))
 
 
 #+end_src 
