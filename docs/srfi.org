@@ -177,7 +177,7 @@ This also works with just one argument after the period. To start a line without
 
 *** Wisp syntax 3/4: Double Parens
 
-**** The colon
+**** The colon[fn:3]
 
 #+BEGIN_SRC wisp
 let 
@@ -234,11 +234,112 @@ The syntax shown here is the minimal synatx required for the goal of wisp: inden
 
 ** More detailed
 
+*** Wisp syntax rules
 
+1. *A line without indentation is a function call*, just as if it would start with a parenthesis.
+2. *A line which is more indented than the previous line is a sibling to that line*: It opens a new parenthesis.
+3. *A line which is not more indented than previous line(s) closes the parentheses of all previous lines which have higher or equal indentation*.
+4. *A line whose first non-whitespace characters are a dot followed by a space (". ") does not open a new parenthesis: it is treated as simple continuation of the first less indented previous line*. In the first line this means that this line does not start with a parenthesis and does not end with a parenthesis, just as if you had directly written it in regular scheme without the leading ". ".
+5. *A line which contains only whitespace and a colon (":") defines an indentation level at the indentation of the colon*. It opens a parenthesis which gets closed by the next less- or equally-indented line. If you need to use a colon by itself. you can escape it as "\:".
+6. *To add any of ' , ` #' #, #` or #@, to a parenthesis, just prefix the line with that symbol* followed by at least one space. Implementations are free to add more prefix symbols.
+7. *You can replace any number of consecutive initial spaces by underscores*, as long as at least one whitespace is left between the underscores and any following character. You can escape initial underscores by prefixing the first one with \ ("\___ a" → "(___ a)"). This allows you to use them as function names at the beginning of the line.
 
 ** Clarifications
 
 - Code-blocks end after 2 empty lines followed by a newline. Indented non-empty lines after 2 empty lines should be treated as error. A line is empty if it only contains whitespace.
+
+- square brackets and curly braces should be treated the same way as parenthesis: They stop the indentation processing until they are closed.
+
+** Syntax justification
+
+/I do not like adding any unnecessary syntax element to lisp. So I want to show explicitely why the syntax elements are required./
+
+*** . (the dot)
+
+The dot at the beginning of the line as marker of the continuation of a variable list is a generalization of using the dot as identity function - which is an implementation detail in many lisps.
+
+`(. a)` is just `a`.
+
+So for the single variable case, this would not even need additional parsing: wisp could just parse ". a" to "(. a)" and produce the correct result in most lisps. But forcing programmers to always use separate lines for each parameter would be very inconvenient, so the definition of the dot at the beginning of the line is extended to mean “take every element in this line as parameter to the parent function”.
+
+Essentially this dot-rule means that we mark variables in the code instead of function calls, since in Lisp variables at the beginning of a line are much rarer than in other programming languages. In lisp assigning a value to a variable is a function call while it is a syntax element in many other languages, so what would be a variable at the beginning of a line in other languages is a function call in lisp..
+
+*** : (the colon)
+
+For double brackets and for some other cases we must have a way to mark indentation levels without any code. I chose the colon, because it is the most common non-alpha-numeric character in normal prose which is not already reserved as syntax by lisp when it is surrounded by whitespace, and because it already gets used for marking keyword arguments to functions in Emacs Lisp, so it does not add completely alien characters.
+
+The inline function call via inline " : " is a limited generalization of using the colon to mark an indentation level: If we add a syntax-element, we should use it as widely as possible to justify adding syntax overhead.
+
+But if you need to use : as variable or function name, you can still do so by escaping it with a backslash, so this does not forbid using the character.
+
+For simple cases, the colon could be replaced by clever whitespace parsing, but there are complex cases which make this impossible. A simple example is a theoretical doublelet which does not require a body:[fn:4]
+
+#+BEGIN_SRC scheme
+(doublelet
+  ((foo bar))
+  ((bla foo)))
+#+END_SRC
+
+The wisp version of this is
+
+#+BEGIN_SRC wisp
+doublelet
+  :
+    foo bar
+  : ; <- this double backstep is the real issue
+    bla foo
+#+END_SRC
+
+or shorter with inline colon (which you can use only if you don’t need further indentation-syntax inside the assignment).
+
+#+BEGIN_SRC wisp
+doublelet
+  : foo bar
+  : bla foo
+#+END_SRC
+
+The need to be able to represent things like this is the real reason, why the colon exists. The inline and start-of-line use is only a generalization of that principle (we add a syntax-element, so we should see how far we can push it to reduce the effective cost of introducing the additional syntax).
+
+**** Clever whytespace-parsing
+
+There are two alternative ways to tackle this issue: deferred level-definition and fixed-width indentation.
+
+Defining intermediate indentation-levels by later elements (deferred definition) would be a problem, because it would create code which is really hard to understand. An example is the following:
+
+#+BEGIN_SRC wisp
+defun flubb
+   
+    nubb
+   gam
+#+END_SRC
+
+would become
+
+#+BEGIN_SRC scheme
+(defun flubb ()
+   ((nubb))
+  (gam))
+#+END_SRC
+
+Fixed indentation width (alternative option to inferring it from later lines) would make it really hard to write readable code. Stuff like this would not be possible:
+
+#+BEGIN_SRC wisp
+if
+    equals wrong
+           isright? stuff
+    fixstuff﻿
+#+END_SRC
+
+
+*** _ (the underscore)
+
+In Python the whitespace hostile html already presents problems with sharing code - for example in email list archives and forums. But in Python the indentation can mostly be inferred by looking at the previous line: If that ends with a colon, the next line must be more indented (there is nothing to clearly mark reduced indentation, though). In wisp we do not have that help, so we need a way to survive in that hostile environment.
+
+The underscore is commonly used to denote a space in URLs, where spaces are inconvenient, but it is rarely used in lisp (where the dash ("-") is mostly used instead), so it seems like a a natural choice.
+
+You can still use underscores anywhere but at the beginning of the line, and even at the beginning of the line you simply need to escape it by prefixing the first underscore with a backslash ("\____").
+
+
 
 * Implementation
 
@@ -261,4 +362,8 @@ The syntax shown here is the minimal synatx required for the goal of wisp: inden
 [fn:1] The most common non-letter, non-math characters in prose are =.,":'_#?!;=, in the given order as derived from newspapers and other sources (for the ngram assembling scripts, see the [[http://bitbucket.org/ArneBab/evolve-keyboard-layout][evolve keyboard layout project]]).
 
 [fn:2] Conceptually, continuing the argument list with a period uses syntax to mark the rare case of not calling a function as opposed to marking the common case of calling a function. To back the claim, that calling a function is actually the common case in scheme-code, grepping the the modules in the Guile source code shows over 27000 code-lines which start with a paren and only slightly above 10000 code-lines which start with a non-paren, non-comment character. Since wisp-syntax mostly follows the regular scheme indentation guidelines (as realized for example by emacs), the whitespace in front of lines does not need to change.
+
+[fn:3] This special syntax for double parens cannot be replaced by clever whitespace parsing, because it is required for representing two consecutive forms which start with double parentheses. The only pure-whitespace alternative would be fixed-width indentation levels.
+
+[fn:4] I used a double let without action as example for the colon-syntax, even though that does nothing, because that makes it impossible to use later indentation to mark an intermediate indentation-level. Another reason why I would not use later indentation to define whether something earlier is a single or double indent is that this would call for subtle and really hard to find errors:
  
