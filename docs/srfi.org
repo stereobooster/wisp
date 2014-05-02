@@ -131,6 +131,110 @@ But unlike SRFI-110, wisp only uses the minimum of additional syntax-elements wh
 
 * Specification
 
+The specification is separated into four parts: A general overview of the syntax, a more detailed description, justifications for each added syntax element and clarifications for technical details.
+
+** Overview
+
+The basic rules for wisp-code can be defined in 4 rules, each of which emerges directly from a requirement:
+
+*** Wisp syntax 1/4: function calls
+
+**** Indentation
+
+#+BEGIN_SRC wisp
+display 
+  + 3 4 5
+newline
+#+END_SRC
+
+becomes
+
+#+BEGIN_SRC scheme
+(display 
+  (+ 3 4 5))
+(newline)
+#+END_SRC
+
+*** Wisp syntax 2/4: Continue Argument list
+
+**** The period
+
+#+BEGIN_SRC wisp
++ 5
+  * 4 3
+  . 2 1
+#+END_SRC
+
+becomes
+
+#+BEGIN_SRC scheme
+(+ 5
+  (* 4 3)
+  2 1)
+#+END_SRC
+
+This also works with just one argument after the period. To start a line without a function call, you have to prefix it with a period followed by whitespace.[fn:2]
+
+*** Wisp syntax 3/4: Double Parens
+
+**** The colon
+
+#+BEGIN_SRC wisp
+let 
+  : x 1
+    y 2
+    z 3
+  body
+#+END_SRC
+
+becomes
+
+#+BEGIN_SRC scheme
+(let
+  ((x 1)
+   (y 2)
+   (z 3))
+  (body))
+#+END_SRC
+
+*** Wisp syntax 4/4: Resilient Indentation
+
+**** The underscore (optional)
+
+#+BEGIN_SRC wisp
+let 
+_ : x 1
+__  y 2
+__  z 3
+_ body
+#+END_SRC
+
+becomes
+
+#+BEGIN_SRC scheme
+(let
+  ((x 1)
+   (y 2)
+   (z 3))
+  (body))
+#+END_SRC
+ 
+
+*** Summary
+
+#+html: <small>
+http://draketo.de/light/english/wisp-lisp-indentation-preprocessor#sec-4
+#+html: </small>
+
+/Required for the goal of wisp: indentation-based lisp with a simple preprocessor/
+
+- =.= to continue the argument list
+- =:= for double parens
+- =_= to survive HTML
+
+
+** More detailed
+
 ** Clarifications
 
 - Code-blocks end after 2 empty lines followed by a newline. Indented non-empty lines after 2 empty lines should be treated as error. A line is empty if it only contains whitespace.
@@ -154,4 +258,6 @@ But unlike SRFI-110, wisp only uses the minimum of additional syntax-elements wh
 * Footnotes
 
 [fn:1] The most common non-letter, non-math characters in prose are =.,":'_#?!;=, in the given order as derived from newspapers and other sources (for the ngram assembling scripts, see the [[http://bitbucket.org/ArneBab/evolve-keyboard-layout][evolve keyboard layout project]]).
+
+[fn:2] Conceptually, continuing the argument list with a period uses syntax to mark the rare case of not calling a function as opposed to marking the common case of calling a function. To back the claim, that calling a function is actually the common case in scheme-code, grepping the the modules in the Guile source code shows over 27000 code-lines which start with a paren and only slightly above 10000 code-lines which start with a non-paren, non-comment character. Since wisp-syntax mostly follows the regular scheme indentation guidelines (as realized for example by emacs), the whitespace in front of lines does not need to change.
  
