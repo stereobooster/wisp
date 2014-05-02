@@ -282,9 +282,9 @@ The syntax shown here is the minimal synatx required for the goal of wisp: inden
 
 #+BEGIN_SRC wisp
     let                       ;    (let
-      :                       ;      ((msg "Hello World!"))
-        msg "Hello World!"    ;      (display msg))
-      display msg             ;      
+      :                       ;      (
+        msg "Hello World!"    ;        (msg "Hello World!"))
+      display msg             ;      (display msg))
 #+END_SRC
 
 
