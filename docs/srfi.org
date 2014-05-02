@@ -347,7 +347,917 @@ You can still use underscores anywhere but at the beginning of the line, and eve
 
 The wisp test-suite consists of a large number of wisp-snippets and the corresponding scheme-code. A wisp-implementation may call itself compliant to the wisp test-suite if it successfully converts each wisp-snippet into the corresponging scheme-snippet. Blank lines at the end of the file do not matter for this purpose.
 
+** tests/syntax-underscore.w
+#+begin_src wisp
+define : a b c
+_ d e
+___ f
+___ g h
+__  . i
 
+define : _
+_  display "hello\n"
+
+\_
+#+end_src 
+** tests/syntax-underscore.scm
+#+begin_src scheme
+(define (a b c)
+  (d e
+    (f)
+    (g h)
+    i))
+
+(define (_)
+   (display "hello\n"))
+
+(_)
+
+
+#+end_src 
+** tests/syntax-strings-parens.w
+#+begin_src wisp
+; Test linebreaks in strings and brackets
+
+. "flubbub
+
+flabbab"
+
+hrug (nadda
+madda gadda "shoktom
+ mee"  " sep  
+ka"
+  hadda)
+    gom
+
+flu
+
+sum [foo
+bar] barz {1 + [* 2 2]}
+
+mara {
+li
++
+lo (mabba)
+}
+#+end_src 
+** tests/syntax-strings-parens.scm
+#+begin_src scheme
+; Test linebreaks in strings and brackets
+
+"flubbub
+
+flabbab"
+
+(hrug (nadda
+madda gadda "shoktom
+ mee"  " sep  
+ka"
+  hadda)
+    (gom))
+
+(flu)
+
+(sum [foo
+bar] barz {1 + [* 2 2]})
+
+(mara {
+li
++
+lo (mabba)
+})
+#+end_src 
+** tests/syntax-indent.w
+#+begin_src wisp
+define 
+  hello who
+  format #t "Hello ~A\n" who
+
+define
+    let
+      :
+        a 1
+        b 2
+        c 3
+      format #t "a: ~A, b: ~A, c: ~A"
+                   + a 2
+                   .        b      c
+
+#+end_src 
+** tests/syntax-indent.scm
+#+begin_src scheme
+(define 
+  (hello who)
+  (format #t "Hello ~A\n" who))
+
+(define
+    (let
+      (
+        (a 1)
+        (b 2)
+        (c 3))
+      (format #t "a: ~A, b: ~A, c: ~A"
+                   (+ a 2)
+                          b      c)))
+
+
+
+#+end_src 
+** tests/syntax-empty.w
+#+begin_src wisp
+#+end_src 
+** tests/syntax-empty.scm
+#+begin_src scheme
+#+end_src 
+** tests/syntax-dot.w
+#+begin_src wisp
+define : foo
+  . "bar"
+
+define : bar
+  ' 1
+    . . 2 ; pair
+
+display : foo
+newline
+display : bar
+newline
+#+end_src 
+** tests/syntax-dot.scm
+#+begin_src scheme
+(define (foo)
+  "bar")
+
+(define (bar)
+  '(1
+    . 2 )); pair
+
+(display (foo))
+(newline)
+(display (bar))
+(newline)
+
+
+#+end_src 
+** tests/syntax-colon.w
+#+begin_src wisp
+let
+  :
+    a 1
+    b 2
+  let
+    :
+      :
+        . c 3
+    format #t "a: ~A, b: ~A, c: ~A"
+              .    a      b      c
+
+: a
+
+define : hello
+  display "hello\n"
+
+let
+  : a 1
+    b 2
+  format #t "a: ~A, b: ~A"
+            .    a      b
+
+let : : a ' :
+
+let 
+  :    ; foo
+    a
+      '
+
+:
+  a
+
+define : \:
+  hello
+
+\:
+#+end_src 
+** tests/syntax-colon.scm
+#+begin_src scheme
+(let
+  (
+    (a 1)
+    (b 2))
+  (let
+    (
+      (
+        c 3))
+    (format #t "a: ~A, b: ~A, c: ~A"
+                 a      b      c)))
+
+((a))
+
+(define (hello)
+  (display "hello\n"))
+
+(let
+  ((a 1)
+    (b 2))
+  (format #t "a: ~A, b: ~A"
+               a      b))
+
+(let ((a '())))
+
+(let 
+  (    ; foo
+    (a
+      '())))
+
+(
+  (a))
+
+(define (:)
+  (hello))
+
+(:)
+
+
+#+end_src 
+** tests/sublist.w
+#+begin_src wisp
+; sublists allow to start single line function calls with a colon ( : ).
+;
+defun a : b c
+  let : : e . f
+  . g
+#+end_src 
+** tests/sublist.scm
+#+begin_src scheme
+; sublists allow to start single line function calls with a colon ( : ).
+
+(defun a (b c)
+  (let ((e . f)))
+  g)
+
+
+#+end_src 
+** tests/shebang.w
+#+begin_src wisp
+#!/usr/bin/wisp.py # !#
+; This tests shebang lines
+#+end_src 
+** tests/shebang.scm
+#+begin_src scheme
+#!/usr/bin/wisp.py # !#
+; This tests shebang lines
+
+
+#+end_src 
+** tests/readable-tests.w
+#+begin_src wisp
+define : fibfast n
+      if : < n 2
+      . n           
+      fibup n 2 1 0 
+
+define : fibup maxnum count n-1 n-2
+       if : = maxnum count
+         + n-1  n-2
+         fibup maxnum 
+               + count 1 
+               + n-1 n-2 
+               . n-1
+
+define : factorial n
+       if : <= n 1
+         . 1
+         * n 
+           factorial : - n 1
+
+define (gcd x y)
+       if (= y 0)
+       . x
+       gcd y
+         rem x y
+
+define : add-if-all-numbers lst
+       call/cc 
+         lambda : exit
+                let loop 
+                  : 
+                    lst lst 
+                    sum 0
+                  if : null? lst
+                     . sum
+                     if : not : number? : car lst
+                        exit #f
+                        + : car lst
+                          loop : cdr lst
+#+end_src 
+** tests/readable-tests.scm
+#+begin_src scheme
+(define (fibfast n)
+      (if (< n 2))
+      n           
+      (fibup n 2 1 0 ))
+
+(define (fibup maxnum count n-1 n-2)
+       (if (= maxnum count)
+         (+ n-1  n-2)
+         (fibup maxnum 
+               (+ count 1 )
+               (+ n-1 n-2 )
+               n-1)))
+
+(define (factorial n)
+       (if (<= n 1)
+         1
+         (* n 
+           (factorial (- n 1)))))
+
+(define (gcd x y)
+       (if (= y 0))
+       x
+       (gcd y
+         (rem x y)))
+
+(define (add-if-all-numbers lst)
+       (call/cc 
+         (lambda (exit)
+                (let loop 
+                  (
+                    (lst lst )
+                    (sum 0))
+                  (if (null? lst)
+                     sum
+                     (if (not (number? (car lst)))
+                        (exit #f)
+                        (+ (car lst)
+                          (loop (cdr lst)))))))))
+
+#+end_src 
+** tests/range.w
+#+begin_src wisp
+import : rnrs
+
+define range
+ case-lambda
+   : n ; one-argument syntax
+     range 0 n 1
+   : n0 n ; two-argument syntax
+     range n0 n 1
+   : n0 n s ; three-argument syntax
+     assert 
+         and 
+             for-all number? : list n0 n s
+             not : zero? s
+     let : : cmp : if (positive? s) >= <= 
+       let loop 
+           : i n0 
+             acc '()
+           if 
+             cmp i n 
+             reverse acc
+             loop (+ i s) (cons i acc)
+             
+display : apply string-append "" : map number->string : range 5
+newline
+#+end_src 
+** tests/range.scm
+#+begin_src scheme
+(import (rnrs))
+
+(define range
+ (case-lambda
+   ((n ); one-argument syntax
+     (range 0 n 1))
+   ((n0 n ); two-argument syntax
+     (range n0 n 1))
+   ((n0 n s ); three-argument syntax
+     (assert 
+         (and 
+             (for-all number? (list n0 n s))
+             (not (zero? s))))
+     (let ((cmp (if (positive? s) >= <= )))
+       (let loop 
+           ((i n0 )
+             (acc '()))
+           (if 
+             (cmp i n )
+             (reverse acc)
+             (loop (+ i s) (cons i acc))))))))
+             
+(display (apply string-append "" (map number->string (range 5))))
+(newline)
+
+#+end_src 
+** tests/quotecolon.w
+#+begin_src wisp
+#!/home/arne/wisp/wisp-multiline.sh  
+; !#
+define a 1 ; test whether ' : correctly gets turned into '(
+; and whether brackets in commments are treated correctly.
+
+define a ' : 1 2 3
+
+define
+  a b
+  c
+#+end_src 
+** tests/quotecolon.scm
+#+begin_src scheme
+#!/home/arne/wisp/wisp-multiline.sh  
+; !#
+(define a 1 ); test whether ' : correctly gets turned into '(
+; and whether brackets in commments are treated correctly.
+
+(define a '(1 2 3))
+
+(define
+  (a b)
+  (c))
+
+
+#+end_src 
+** tests/namedlet.w
+#+begin_src wisp
+#!/home/arne/wisp/wisp-multiline.sh  
+; !#
+define : hello who
+  display who
+
+let hello
+  : who 0
+  if : = who 5
+    display who
+    hello : + 1 who
+#+end_src 
+** tests/namedlet.scm
+#+begin_src scheme
+#!/home/arne/wisp/wisp-multiline.sh  
+; !#
+(define (hello who)
+  (display who))
+
+(let hello
+  ((who 0))
+  (if (= who 5)
+    (display who)
+    (hello (+ 1 who))))
+
+
+#+end_src 
+** tests/mtest.w
+#+begin_src wisp
+#!/home/arne/wisp/wisp-multiline.sh  !#
+
+display 1
+#+end_src 
+** tests/mtest.scm
+#+begin_src scheme
+#!/home/arne/wisp/wisp-multiline.sh  !#
+
+(display 1)
+
+
+#+end_src 
+** tests/flexible-parameter-list.w
+#+begin_src wisp
+; Test using a . as first parameter on a line by prefixing it with a second .
+define
+  a i
+    . . b
+  unless : >= i : length b
+    display : number->string : length b 
+    display : list-ref b i
+    newline
+    apply a ( + i 1 ) b
+    
+
+a 0 "123" "345" "567"
+#+end_src 
+** tests/flexible-parameter-list.scm
+#+begin_src scheme
+; Test using a . as first parameter on a line by prefixing it with a second .
+(define
+  (a i
+    . b)
+  (unless (>= i (length b))
+    (display (number->string (length b )))
+    (display (list-ref b i))
+    (newline)
+    (apply a ( + i 1 ) b)))
+    
+
+(a 0 "123" "345" "567")
+
+
+#+end_src 
+** tests/factorial.w
+#+begin_src wisp
+;; short version
+; note: once you use one inline colon, all the following forms on that
+; line will get closed at the end of the line
+
+define : factorial n
+  if : zero? n
+    . 1
+    * n : factorial : - n 1
+
+display : factorial 5 
+
+
+;; more vertical space, less colons
+define : factorial n
+  if : zero? n
+    . 1
+    * n 
+      factorial 
+        - n 1
+
+display : factorial 5 
+
+#+end_src 
+** tests/factorial.scm
+#+begin_src scheme
+;; short version
+; note: once you use one inline colon, all the following forms on that
+; line will get closed at the end of the line
+
+(define (factorial n)
+  (if (zero? n)
+    1
+    (* n (factorial (- n 1)))))
+
+(display (factorial 5 ))
+
+
+;; more vertical space, less colons
+(define (factorial n)
+  (if (zero? n)
+    1
+    (* n 
+      (factorial 
+        (- n 1)))))
+
+(display (factorial 5 ))
+
+
+
+#+end_src 
+** tests/example.w
+#+begin_src wisp
+defun a (b c)
+  let
+    : 
+      d "i am a string
+do not break me!"
+      : 
+  ; comment: 0
+        f
+; comment : 1
+        ` g ; comment " : " 2
+      : 
+        h (I am in brackets:
+           do not : change "me")
+        . i
+  , ' j k
+
+  . l
+
+; comment
+
+  a c
+
+defun b : :n o
+  . "second defun : with a docstring!"
+  message "I am here"
+  . t
+
+defun c : e f
+  : g
+  :
+    h
+      i
+    j
+  ' :
+  k
+  . l
+  . : m
+
+defun _ : \:
+__
+__ . \:
+
+\_ b
+
+defun d : 
+      let 
+          : a b
+            c d
+
+a : : : c
+
+let 
+    : a b
+      c
+
+let : : a b
+
+. a
+
+#+end_src 
+** tests/example.scm
+#+begin_src scheme
+(defun a (b c)
+  (let
+    (
+      (d "i am a string
+do not break me!")
+      (
+  ; comment: 0
+        (f)
+; comment : 1
+        `(g )); comment " : " 2
+      (
+        (h (I am in brackets:
+           do not : change "me"))
+        i)))
+  ,(' j k)
+
+  l
+
+; comment
+
+  (a c))
+
+(defun b (:n o)
+  "second defun : with a docstring!"
+  (message "I am here")
+  t)
+
+(defun c (e f)
+  ((g))
+  (
+    (h
+      (i))
+    (j))
+  '(())
+  (k)
+  l
+  (m))
+
+(defun _ (:)
+  
+   :)
+
+(_ b)
+
+(defun d ()
+      (let 
+          ((a b)
+            (c d))))
+
+(a (((c))))
+
+(let 
+    ((a b)
+      (c)))
+
+(let ((a b)))
+
+a
+
+
+
+#+end_src 
+** tests/emacs-customization.w
+#+begin_src wisp
+if : file-directory-p "~/.emacs.d/private/journal/"
+     setq-default journal-dir "~/.emacs.d/private/journal/"
+
+global-set-key [(control meta .)] 'goto-last-change-reverse
+
+require 'org-latex
+add-to-list 'org-export-latex-packages-alist 
+  ' "" "minted"
+
+add-to-list 'org-export-latex-packages-alist 
+  ' "" "color"
+
+setq org-export-latex-listings 'minted
+
+add-hook 'outline-mode-hook 
+          lambda :
+             require 'outline-magic
+
+
+defun find-file-as-root :
+  . "Like `ido-find-file, but automatically edit the file with
+root-privileges (using tramp/sudo), if the file is not writable by
+user."
+  interactive
+  let : : file : ido-read-file-name "Edit as root: "
+    unless : file-writable-p file
+      setq file : concat find-file-root-prefix file
+    find-file file
+
+defun find-current-as-root :
+  . "Reopen current file as root"
+  interactive
+  set-visited-file-name : concat find-file-root-prefix : buffer-file-name
+  setq buffer-read-only nil
+
+; the next function definition is equivalent, due to inline : 
+
+defun find-current-as-root :
+  . "Reopen current file as root"
+  interactive
+  set-visited-file-name 
+    concat find-file-root-prefix 
+      buffer-file-name
+  setq buffer-read-only nil
+
+custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ ' bbdb-complete-name-allow-cycling t
+ ' bbdb-ignore-some-messages-alist : quote : ("From" . "mailer-daemon")
+ ' bbdb-offer-save : quote savenoprompt
+
+
+setq a "x"
+   . b "y"
+   . c "z"
+#+end_src 
+** tests/emacs-customization.scm
+#+begin_src scheme
+(if (file-directory-p "~/.emacs.d/private/journal/")
+     (setq-default journal-dir "~/.emacs.d/private/journal/"))
+
+(global-set-key [(control meta .)] 'goto-last-change-reverse)
+
+(require 'org-latex)
+(add-to-list 'org-export-latex-packages-alist 
+  '("" "minted"))
+
+(add-to-list 'org-export-latex-packages-alist 
+  '("" "color"))
+
+(setq org-export-latex-listings 'minted)
+
+(add-hook 'outline-mode-hook 
+          (lambda ()
+             (require 'outline-magic)))
+
+
+(defun find-file-as-root ()
+  "Like `ido-find-file, but automatically edit the file with
+root-privileges (using tramp/sudo), if the file is not writable by
+user."
+  (interactive)
+  (let ((file (ido-read-file-name "Edit as root: ")))
+    (unless (file-writable-p file)
+      (setq file (concat find-file-root-prefix file)))
+    (find-file file)))
+
+(defun find-current-as-root ()
+  "Reopen current file as root"
+  (interactive)
+  (set-visited-file-name (concat find-file-root-prefix (buffer-file-name)))
+  (setq buffer-read-only nil))
+
+; the next function definition is equivalent, due to inline : 
+
+(defun find-current-as-root ()
+  "Reopen current file as root"
+  (interactive)
+  (set-visited-file-name 
+    (concat find-file-root-prefix 
+      (buffer-file-name)))
+  (setq buffer-read-only nil))
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(bbdb-complete-name-allow-cycling t)
+ '(bbdb-ignore-some-messages-alist (quote (("From" . "mailer-daemon"))))
+ '(bbdb-offer-save (quote savenoprompt)))
+
+
+(setq a "x"
+   b "y"
+   c "z")
+
+#+end_src 
+** tests/emacs-customization-tex-master.w
+#+begin_src wisp
+defun guess-TeX-master : filename
+      . "Guess the master file for FILENAME from currently open .tex files."
+      let 
+          : 
+            candidate nil
+            filename : file-name-nondirectory filename
+          save-excursion
+            dolist : buffer : buffer-list
+              with-current-buffer buffer
+
+                let 
+                   : 
+                     name : buffer-name
+                     file buffer-file-name
+                   if 
+                     and file : string-match "\\.tex$" file
+
+                     progn
+                       goto-char : point-min
+                       if 
+                          re-search-forward 
+                            concat "\\\\input{" filename "}"
+                            . nil t
+                          setq candidate file
+                       if 
+                          re-search-forward 
+                            concat "\\\\include{" (file-name-sans-extension filename) "}"
+                            . nil t
+                          setq candidate file
+          
+          if candidate
+            message "TeX master document: %s" : file-name-nondirectory candidate
+          . candidate
+#+end_src 
+** tests/emacs-customization-tex-master.scm
+#+begin_src scheme
+(defun guess-TeX-master (filename)
+      "Guess the master file for FILENAME from currently open .tex files."
+      (let 
+          (
+            (candidate nil)
+            (filename (file-name-nondirectory filename)))
+          (save-excursion
+            (dolist (buffer (buffer-list))
+              (with-current-buffer buffer
+
+                (let 
+                   (
+                     (name (buffer-name))
+                     (file buffer-file-name))
+                   (if 
+                     (and file (string-match "\\.tex$" file))
+
+                     (progn
+                       (goto-char (point-min))
+                       (if 
+                          (re-search-forward 
+                            (concat "\\\\input{" filename "}")
+                            nil t)
+                          (setq candidate file))
+                       (if 
+                          (re-search-forward 
+                            (concat "\\\\include{" (file-name-sans-extension filename) "}")
+                            nil t)
+                          (setq candidate file))))))))
+          
+          (if candidate
+            (message "TeX master document: %s" (file-name-nondirectory candidate)))
+          candidate))
+
+
+#+end_src 
+** tests/continuation.w
+#+begin_src wisp
+a b c d e
+  . f g h
+  . i j k
+
+concat "I want " 
+    getwish from me
+    . " - " username
+
+#+end_src 
+** tests/continuation.scm
+#+begin_src scheme
+(a b c d e
+  f g h
+  i j k)
+
+(concat "I want " 
+    (getwish from me)
+    " - " username)
+
+
+
+#+end_src 
+** tests/btest.w
+#+begin_src wisp
+display "b"
+newline
+#+end_src 
+** tests/btest.scm
+#+begin_src scheme
+(display "b")
+(newline)
+#+end_src
 
 * Copyright
 
