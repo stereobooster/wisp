@@ -300,7 +300,7 @@ doublelet
 
 The need to be able to represent things like this is the real reason, why the colon exists. The inline and start-of-line use is only a generalization of that principle (we add a syntax-element, so we should see how far we can push it to reduce the effective cost of introducing the additional syntax).
 
-**** Clever whytespace-parsing
+**** Clever whytespace-parsing which would not work
 
 There are two alternative ways to tackle this issue: deferred level-definition and fixed-width indentation.
 
@@ -330,7 +330,6 @@ if
     fixstuff﻿
 #+END_SRC
 
-
 *** _ (the underscore)
 
 In Python the whitespace hostile html already presents problems with sharing code - for example in email list archives and forums. But in Python the indentation can mostly be inferred by looking at the previous line: If that ends with a colon, the next line must be more indented (there is nothing to clearly mark reduced indentation, though). In wisp we do not have that help, so we need a way to survive in that hostile environment.
@@ -339,15 +338,27 @@ The underscore is commonly used to denote a space in URLs, where spaces are inco
 
 You can still use underscores anywhere but at the beginning of the line, and even at the beginning of the line you simply need to escape it by prefixing the first underscore with a backslash ("\____").
 
-
 * Implementation
 
+This reference implementation realizes a general wisp-preprocessor which can be used for any lisp-like language. It contains special syntax-constructs for scheme, though.
+
+A wisp-preprocessor which is specialiized for scheme should be easier to realize by using the parsing methods from an existing scheme implementation.
+
+I realize that this reference implementation is very heavyweight, so I would be very happy if someone would step up and create a more lightweight scheme-specific alternative. To allow for this, the test-suite in the next chapter only contains scheme-specific code.
+
+** The general wisp preprocessor (code)
+
+TODO
 
 * Test Suite
 
-The wisp test-suite consists of a large number of wisp-snippets and the corresponding scheme-code. A wisp-implementation may call itself compliant to the wisp test-suite if it successfully converts each wisp-snippet into the corresponging scheme-snippet. Blank lines at the end of the file do not matter for this purpose.
+The wisp test-suite consists of a large number of wisp-snippets and the corresponding scheme-code. A wisp-implementation may call itself compliant to the wisp test-suite if it successfully converts each wisp-snippet into the corresponging scheme-snippet. Blank lines at the end of the file and non-functional white-space in the produced scheme-file do not matter for this purpose.
 
 This test-suite is also available in the [[http://draketo.de/proj/wisp][wisp repository]] along with a script-runner (runtests.sh) which tests the reference wisp-implementation with GNU Guile against this testsuite.
+
+The test-suite included here only contains scheme-compatible code to allow for scheme-specific wisp-implementations which use existing parsing functions to simplify the code.
+
+/TODO: Some of the snippets were transformed from emacs lisp to scheme by hand and this might have introduced bugs. They still need to be tested again./
 
 ** tests/syntax-underscore.w
 #+begin_src wisp
@@ -585,7 +596,7 @@ define : \:
 #+begin_src wisp
 ; sublists allow to start single line function calls with a colon ( : ).
 ;
-defun a : b c
+define : a b c
   let : : e . f
   . g
 #+end_src 
@@ -593,7 +604,7 @@ defun a : b c
 #+begin_src scheme
 ; sublists allow to start single line function calls with a colon ( : ).
 
-(defun a (b c)
+(define (a b c)
   (let ((e . f)))
   g)
 
@@ -905,7 +916,7 @@ display : factorial 5
 #+end_src 
 ** tests/example.w
 #+begin_src wisp
-defun a (b c)
+define (a b c)
   let
     : 
       d "i am a string
@@ -927,12 +938,12 @@ do not break me!"
 
   a c
 
-defun b : :n o
+define : b :n o
   . "second defun : with a docstring!"
   message "I am here"
   . t
 
-defun c : e f
+define : c e f
   : g
   :
     h
@@ -943,13 +954,13 @@ defun c : e f
   . l
   . : m
 
-defun _ : \:
+define : _ \:
 __
 __ . \:
 
 \_ b
 
-defun d : 
+define : d 
       let 
           : a b
             c d
@@ -967,7 +978,7 @@ let : : a b
 #+end_src 
 ** tests/example.scm
 #+begin_src scheme
-(defun a (b c)
+(define (a b c)
   (let
     (
       (d "i am a string
@@ -989,12 +1000,12 @@ do not break me!")
 
   (a c))
 
-(defun b (:n o)
+(define (b :n o)
   "second defun : with a docstring!"
   (message "I am here")
   t)
 
-(defun c (e f)
+(define (c e f)
   ((g))
   (
     (h
@@ -1005,13 +1016,13 @@ do not break me!")
   l
   (m))
 
-(defun _ (:)
+(define (_ :)
   
    :)
 
 (_ b)
 
-(defun d ()
+(define (d)
       (let 
           ((a b)
             (c d))))
@@ -1026,203 +1037,6 @@ do not break me!")
 
 a
 
-
-
-#+end_src 
-** tests/emacs-customization.w
-#+begin_src wisp
-if : file-directory-p "~/.emacs.d/private/journal/"
-     setq-default journal-dir "~/.emacs.d/private/journal/"
-
-global-set-key [(control meta .)] 'goto-last-change-reverse
-
-require 'org-latex
-add-to-list 'org-export-latex-packages-alist 
-  ' "" "minted"
-
-add-to-list 'org-export-latex-packages-alist 
-  ' "" "color"
-
-setq org-export-latex-listings 'minted
-
-add-hook 'outline-mode-hook 
-          lambda :
-             require 'outline-magic
-
-
-defun find-file-as-root :
-  . "Like `ido-find-file, but automatically edit the file with
-root-privileges (using tramp/sudo), if the file is not writable by
-user."
-  interactive
-  let : : file : ido-read-file-name "Edit as root: "
-    unless : file-writable-p file
-      setq file : concat find-file-root-prefix file
-    find-file file
-
-defun find-current-as-root :
-  . "Reopen current file as root"
-  interactive
-  set-visited-file-name : concat find-file-root-prefix : buffer-file-name
-  setq buffer-read-only nil
-
-; the next function definition is equivalent, due to inline : 
-
-defun find-current-as-root :
-  . "Reopen current file as root"
-  interactive
-  set-visited-file-name 
-    concat find-file-root-prefix 
-      buffer-file-name
-  setq buffer-read-only nil
-
-custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- ' bbdb-complete-name-allow-cycling t
- ' bbdb-ignore-some-messages-alist : quote : ("From" . "mailer-daemon")
- ' bbdb-offer-save : quote savenoprompt
-
-
-setq a "x"
-   . b "y"
-   . c "z"
-#+end_src 
-** tests/emacs-customization.scm
-#+begin_src scheme
-(if (file-directory-p "~/.emacs.d/private/journal/")
-     (setq-default journal-dir "~/.emacs.d/private/journal/"))
-
-(global-set-key [(control meta .)] 'goto-last-change-reverse)
-
-(require 'org-latex)
-(add-to-list 'org-export-latex-packages-alist 
-  '("" "minted"))
-
-(add-to-list 'org-export-latex-packages-alist 
-  '("" "color"))
-
-(setq org-export-latex-listings 'minted)
-
-(add-hook 'outline-mode-hook 
-          (lambda ()
-             (require 'outline-magic)))
-
-
-(defun find-file-as-root ()
-  "Like `ido-find-file, but automatically edit the file with
-root-privileges (using tramp/sudo), if the file is not writable by
-user."
-  (interactive)
-  (let ((file (ido-read-file-name "Edit as root: ")))
-    (unless (file-writable-p file)
-      (setq file (concat find-file-root-prefix file)))
-    (find-file file)))
-
-(defun find-current-as-root ()
-  "Reopen current file as root"
-  (interactive)
-  (set-visited-file-name (concat find-file-root-prefix (buffer-file-name)))
-  (setq buffer-read-only nil))
-
-; the next function definition is equivalent, due to inline : 
-
-(defun find-current-as-root ()
-  "Reopen current file as root"
-  (interactive)
-  (set-visited-file-name 
-    (concat find-file-root-prefix 
-      (buffer-file-name)))
-  (setq buffer-read-only nil))
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(bbdb-complete-name-allow-cycling t)
- '(bbdb-ignore-some-messages-alist (quote (("From" . "mailer-daemon"))))
- '(bbdb-offer-save (quote savenoprompt)))
-
-
-(setq a "x"
-   b "y"
-   c "z")
-
-#+end_src 
-** tests/emacs-customization-tex-master.w
-#+begin_src wisp
-defun guess-TeX-master : filename
-      . "Guess the master file for FILENAME from currently open .tex files."
-      let 
-          : 
-            candidate nil
-            filename : file-name-nondirectory filename
-          save-excursion
-            dolist : buffer : buffer-list
-              with-current-buffer buffer
-
-                let 
-                   : 
-                     name : buffer-name
-                     file buffer-file-name
-                   if 
-                     and file : string-match "\\.tex$" file
-
-                     progn
-                       goto-char : point-min
-                       if 
-                          re-search-forward 
-                            concat "\\\\input{" filename "}"
-                            . nil t
-                          setq candidate file
-                       if 
-                          re-search-forward 
-                            concat "\\\\include{" (file-name-sans-extension filename) "}"
-                            . nil t
-                          setq candidate file
-          
-          if candidate
-            message "TeX master document: %s" : file-name-nondirectory candidate
-          . candidate
-#+end_src 
-** tests/emacs-customization-tex-master.scm
-#+begin_src scheme
-(defun guess-TeX-master (filename)
-      "Guess the master file for FILENAME from currently open .tex files."
-      (let 
-          (
-            (candidate nil)
-            (filename (file-name-nondirectory filename)))
-          (save-excursion
-            (dolist (buffer (buffer-list))
-              (with-current-buffer buffer
-
-                (let 
-                   (
-                     (name (buffer-name))
-                     (file buffer-file-name))
-                   (if 
-                     (and file (string-match "\\.tex$" file))
-
-                     (progn
-                       (goto-char (point-min))
-                       (if 
-                          (re-search-forward 
-                            (concat "\\\\input{" filename "}")
-                            nil t)
-                          (setq candidate file))
-                       (if 
-                          (re-search-forward 
-                            (concat "\\\\include{" (file-name-sans-extension filename) "}")
-                            nil t)
-                          (setq candidate file))))))))
-          
-          (if candidate
-            (message "TeX master document: %s" (file-name-nondirectory candidate)))
-          candidate))
 
 
 #+end_src 
