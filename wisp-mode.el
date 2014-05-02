@@ -74,10 +74,10 @@
   `((
      ("\\`#!.*" . font-lock-comment-face) ; initial hashbang
      ("\"\\.\\*\\?" . font-lock-string-face) ; strings (anything between "")
-     ("^_+ *$" . font-lock-default-face) ; line with only underscores
+     ; ("^_+ *$" . font-lock-default-face) ; line with only underscores
                                          ; and whitespace shown as
                                          ; default text. This is just
-                                         ; a bad workaround.
+                                         ; a bad workaround. Which does not work.
      ("^\\(?:_* +\\| *\\): *$" . font-lock-keyword-face) ; line with only a : + whitespace, not at the beginning
      ("^\\(?:_* +\\| *\\): \\| *\\. " . font-lock-keyword-face) ; leading : or .
      ( ,(regexp-opt wisp-builtin 'symbols) . font-lock-builtin-face) ; generic functions
