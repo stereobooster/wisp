@@ -12,16 +12,15 @@ Wisp expressions can include any s-expressions and as such provide backwards com
 
 #+html: <table><tr><th>wisp</th><th>s-exp</th></tr><tr><td>
 #+BEGIN_SRC wisp
-  + 5
-    ,* 4 3
-    . 2 1
+  define : hello who
+    format #t "~A ~A!\n"
+            . "Hello" who
 #+END_SRC
 #+html: </td><td>
 #+BEGIN_SRC scheme
-  (+ 5
-    (* 4 3)
-    2 1)
-  
+  (define (hello who)
+    (format #t "~A ~A!\n"
+            "Hello" who))
 #+END_SRC
 #+html: </td></tr></table>
 
