@@ -9,6 +9,9 @@
 ; its inverse (element-id to lon+lat). For further subdivisions, just
 ; elevate the center of each edge and connect these centers.
 
+define-module : examples d20world
+              . #:export : world neighbors d20-as-text d20-diffuse
+
 define world : make-vector 20 0
 define neighbors : make-vector 20
 ; count from the top
@@ -129,3 +132,5 @@ newline
 d20-diffuse world neighbors 0.01
 display : d20-as-text world
 newline
+
+
