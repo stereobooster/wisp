@@ -340,11 +340,13 @@ The underscore is commonly used to denote a space in URLs, where spaces are inco
 You can still use underscores anywhere but at the beginning of the line, and even at the beginning of the line you simply need to escape it by prefixing the first underscore with a backslash ("\____").
 
 
-
 * Implementation
 
 
 * Test Suite
+
+The wisp test-suite consists of a large number of wisp-snippets and the corresponding scheme-code. A wisp-implementation may call itself compliant to the wisp test-suite if it successfully converts each wisp-snippet into the corresponging scheme-snippet. Blank lines at the end of the file do not matter for this purpose.
+
 
 
 * Copyright
