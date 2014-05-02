@@ -311,7 +311,7 @@ The syntax shown here is the minimal synatx required for the goal of wisp: inden
 
 - Code-blocks end after 2 empty lines followed by a newline. Indented non-empty lines after 2 empty lines should be treated as error. A line is empty if it only contains whitespace.
 
-- square brackets and curly braces should be treated the same way as parenthesis: They stop the indentation processing until they are closed.
+- square brackets and curly braces should be treated the same way as parentheses: They stop the indentation processing until they are closed.
 
 ** Syntax justification
 
