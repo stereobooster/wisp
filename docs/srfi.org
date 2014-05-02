@@ -348,7 +348,7 @@ I realize that this reference implementation is very heavyweight, so I would be 
 
 ** The general wisp preprocessor (code)
 
-TODO
+TODO: Include the code from http://draketo.de/proj/wisp
 
 * Test Suite
 
