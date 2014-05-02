@@ -346,7 +346,7 @@ A wisp-preprocessor which is specialiized for scheme should be much easier to re
 
 Since reference implementation is very heavyweight, it would be great to have someone step up and create a more lightweight scheme-specific alternative. To allow for this, the test-suite in the next chapter only contains scheme-specific snippets.
 
-** The general wisp preprocessor (code)
+** The generic wisp preprocessor (code)
 
 TODO: Include the code from http://draketo.de/proj/wisp
 
