@@ -347,6 +347,8 @@ You can still use underscores anywhere but at the beginning of the line, and eve
 
 The wisp test-suite consists of a large number of wisp-snippets and the corresponding scheme-code. A wisp-implementation may call itself compliant to the wisp test-suite if it successfully converts each wisp-snippet into the corresponging scheme-snippet. Blank lines at the end of the file do not matter for this purpose.
 
+This test-suite is also available in the [[http://draketo.de/proj/wisp][wisp repository]] along with a script-runner (runtests.sh) which tests the reference wisp-implementation with GNU Guile against this testsuite.
+
 ** tests/syntax-underscore.w
 #+begin_src wisp
 define : a b c
