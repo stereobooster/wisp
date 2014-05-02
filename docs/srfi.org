@@ -232,17 +232,81 @@ The syntax shown here is the minimal synatx required for the goal of wisp: inden
 - =:= for double parens
 - =_= to survive HTML
 
-** More detailed
+** More detailed: Wisp syntax rules
 
-*** Wisp syntax rules
+1.    *A line without indentation is a function call*, just as if it would start with a bracket.
 
-1. *A line without indentation is a function call*, just as if it would start with a parenthesis.
-2. *A line which is more indented than the previous line is a sibling to that line*: It opens a new parenthesis.
-3. *A line which is not more indented than previous line(s) closes the parentheses of all previous lines which have higher or equal indentation*.
-4. *A line whose first non-whitespace characters are a dot followed by a space (". ") does not open a new parenthesis: it is treated as simple continuation of the first less indented previous line*. In the first line this means that this line does not start with a parenthesis and does not end with a parenthesis, just as if you had directly written it in regular scheme without the leading ". ".
-5. *A line which contains only whitespace and a colon (":") defines an indentation level at the indentation of the colon*. It opens a parenthesis which gets closed by the next less- or equally-indented line. If you need to use a colon by itself. you can escape it as "\:".
-6. *To add any of ' , ` #' #, #` or #@, to a parenthesis, just prefix the line with that symbol* followed by at least one space. Implementations are free to add more prefix symbols.
-7. *You can replace any number of consecutive initial spaces by underscores*, as long as at least one whitespace is left between the underscores and any following character. You can escape initial underscores by prefixing the first one with \ ("\___ a" → "(___ a)"). This allows you to use them as function names at the beginning of the line.
+#+BEGIN_SRC wisp
+    display "Hello World!"      ;      (display "Hello World!")
+#+END_SRC
+
+
+     
+2.    *A line which is more indented than the previous line is a sibling to that line*: It opens a new bracket.
+
+#+BEGIN_SRC wisp
+    display                              ;    (display
+      string-append "Hello " "World!"    ;      (string-append "Hello " "World!"))
+#+END_SRC
+
+
+     
+3.    *A line which is not more indented than previous line(s) closes the brackets of all previous lines which have higher or equal indentation*. You should only reduce the indentation to indentation levels which were already used by parent lines, else the behaviour is undefined.
+
+#+BEGIN_SRC wisp
+    display                              ;    (display
+      string-append "Hello " "World!"    ;      (string-append "Hello " "World!"))
+    display "Hello Again!"               ;    (display "Hello Again!")
+#+END_SRC
+
+
+     
+4.    *To add any of ' , ` #' #, #` or #@, to the first bracket on a line, just prefix the line with that symbol* followed by at least one space. Implementations are free to add more prefix symbols.
+
+#+BEGIN_SRC wisp
+    ' "Hello World!"      ;      '("Hello World!")
+#+END_SRC
+
+
+     
+5.    *A line whose first non-whitespace characters are a dot followed by a space (". ") does not open a new bracket: it is treated as simple continuation of the first less indented previous line*. In the first line this means that this line does not start with a bracket and does not end with a bracket, just as if you had directly written it in lisp without the leading ". ".
+
+#+BEGIN_SRC wisp
+    string-append "Hello"        ;    (string-append "Hello"
+      string-append " " "World"  ;      (string-append " " "World")
+      . "!"                      ;      "!")
+#+END_SRC
+
+
+     
+6.    *A line which contains only whitespace and a colon (":") defines an indentation level at the indentation of the colon*. It opens a bracket which gets closed by the next less-indented line. If you need to use a colon by itself. you can escape it as "\:".
+
+#+BEGIN_SRC wisp
+    let                       ;    (let
+      :                       ;      ((msg "Hello World!"))
+        msg "Hello World!"    ;      (display msg))
+      display msg             ;      
+#+END_SRC
+
+
+     
+7.    *A colon sourrounded by whitespace (" : ") starts a bracket which gets closed at the end of the line*.
+
+#+BEGIN_SRC wisp
+    define : hello who                    ;    (define (hello who)
+      display                             ;      (display 
+        string-append "Hello " who "!"    ;        (string-append "Hello " who "!")))
+#+END_SRC
+
+     
+8.    *You can replace any number of consecutive initial spaces by underscores*, as long as at least one whitespace is left between the underscores and any following character. You can escape initial underscores by prefixing the first one with \ ("\___ a" → "(___ a)"), if you have to use them as function names.
+
+#+BEGIN_SRC wisp
+    define : hello who                    ;    (define (hello who)
+    _ display                             ;      (display 
+    ___ string-append "Hello " who "!"    ;        (string-append "Hello " who "!")))
+#+END_SRC
+
 
 ** Clarifications
 
