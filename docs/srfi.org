@@ -88,13 +88,13 @@ Remember, even if a proposal becomes an final SRFI, the need for it must be comp
 
 * Rationale
 
-A big strength of Scheme and other lisp-like languages is their minimalistic syntax. By using only the most common characters like the period, the comma, the quote and quasiquote, the hash and the parens for the syntax, they are very close to natural language. Along with the minimal list-structure of the code, this gives these languages a timeless elegance.
+A big strength of Scheme and other lisp-like languages is their minimalistic syntax. By using only the most common characters like the period, the comma, the quote and quasiquote, the hash, the semicolon and the parens for the syntax[fn:1], they are very close to natural language. Along with the minimal list-structure of the code, this gives these languages a timeless elegance.
 
-But as SRFI-110 explains very thoroughly (which we need not repeat here), the parentheses at the beginning of lines hurt readability and scare away newcomers. Also using indentation to mark the structure of the code follows the natural way how programmers understand code and avoids errors due to mismatches between indentation and actual structure.
+But as SRFI-110 explains very thoroughly (which we need not repeat here), the parentheses at the beginning of lines hurt readability and scare away newcomers. Additionally using indentation to mark the structure of the code follows naturally from the observation that most programmers use indentation, with many programmers actually letting their editor indent code automatically to fit the structure. Indentation is an important way how programmers understand code and using it directly to define the structure avoids errors due to mismatches between indentation and actual meaning.
 
-SRFI-49 and SRFI-110 provide a way to write whitespace sensitive scheme, but both have their share of problems.
+As a solution to this, SRFI-49 and SRFI-110 provide a way to write whitespace sensitive scheme, but both have their share of problems.
 
-As noted in SRFI-110, there are a number of implementation-problems in SRFI-49 as well as choosing the name “group” for the construct which is necessary to represent double parentheses. Additionally to the problems named in SRFI-110, SRFI-49 is not able to continue the arguments to a function on one line, if a prior argument was a function call. The example code in the abstract would have to be written in SRFI-49 as follows:
+As noted in SRFI-110, there are a number of implementation-problems in SRFI-49, as well as specification shortcomings like choosing the name “group” for the construct which is necessary to represent double parentheses. Additionally to the problems named in SRFI-110, SRFI-49 is not able to continue the arguments to a function on one line, if a prior argument was a function call. The example code in the abstract would have to be written in SRFI-49 as follows:
 
 #+BEGIN_SRC scheme
   ,* 5
@@ -121,11 +121,13 @@ myfunction
 
 This is not only hard to read, but also makes it harder to work with the code, because the programmer has to learn these additional syntax elements and keep them in mind before being able to understand the code.
 
-Like SRFI-49 SRFI-110 also cannot continue the argument-list without resorting to single-element lines.
+Like SRFI-49 SRFI-110 also cannot continue the argument-list without resorting to single-element lines, though it reduces this problem by advertising the use of neoteric expressions (SRFI-105).
+
+Wisp draws on the strength of SRFI-110 but avoids its complexities. It was actually conceived and improved in the discussions within the readable-project which preceded SRFI-110 and there is a comparison between readable in wisp in SRFI-110.
 
 Like SRFI-110, wisp is general and homoiconic and interacts nicely with SRFI-105 (neoteric expressions and curly infix). Like SRFI-110, the expressions are the same in the REPL and in code-files.
 
-But unlike SRFI-110, wisp only uses the minimum of additional syntax-elements which are necessary to support arbitrary code-structures in indentation-sensitive code which is intended to be shared over the internet.
+But unlike SRFI-110, wisp only uses the minimum of additional syntax-elements which are necessary to support arbitrary code-structures with indentation-sensitive code which is intended to be shared over the internet. To realize these syntax-elements, it generalizes existing syntax and draws on the most common non-letter non-math characters in prose. This allows keeping the actual representation of the code elegant and inviting to newcomers.
 
 * Specification
 
@@ -147,4 +149,9 @@ But unlike SRFI-110, wisp only uses the minimum of additional syntax-elements wh
 
       The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 
-      THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. 
+      THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+* Footnotes
+
+[fn:1] The most common non-letter, non-math characters in prose are =.,":'_#?!;=, in the given order as derived from newspapers and other sources (for the ngram assembling scripts, see the [[http://bitbucket.org/ArneBab/evolve-keyboard-layout][evolve keyboard layout project]]).
+ 
