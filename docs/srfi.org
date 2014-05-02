@@ -226,14 +226,15 @@ becomes
 http://draketo.de/light/english/wisp-lisp-indentation-preprocessor#sec-4
 #+html: </small>
 
-/Required for the goal of wisp: indentation-based lisp with a simple preprocessor/
+The syntax shown here is the minimal synatx required for the goal of wisp: indentation-based, general lisp with a simple preprocessor, and code which can be shared easily on the internet:
 
 - =.= to continue the argument list
 - =:= for double parens
 - =_= to survive HTML
 
-
 ** More detailed
+
+
 
 ** Clarifications
 
