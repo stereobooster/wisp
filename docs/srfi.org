@@ -1,5 +1,5 @@
 #+title: SRFI: wisp: whitespace-to-lisp preprocessing
-#+options: toc:nil
+#+options: toc:nil num:t
 
 #+BEGIN_ABSTRACT
 This SRFI describes a simple syntax which allows making scheme easier to read for newcomers while keeping the simplicity, generality and elegance of s-expressions. Similar to SRFI-110, SRFI-49 and Python it uses indentation to group expressions. Like SRFI-110 wisp is general and homoiconic. 
