@@ -9,6 +9,10 @@
 ; its inverse (element-id to lon+lat). For further subdivisions, just
 ; elevate the center of each edge and connect these centers.
 
+; Advection: Give each field a wind direction: target fields with an
+; advection fraction: The fraction of the value which will be
+; transported into the other field. Basic system: Follow the numbers.
+
 define-module : examples d20world
               . #:export : world neighbors d20-as-text d20-diffuse
 
