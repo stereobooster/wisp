@@ -1,7 +1,7 @@
 #!/home/arne/wisp/wisp-multiline.sh 
 ; !#
 
-; A world projected on a d20 (20-sided die)
+; A world projected on a d20 (20-sided die, ikosaeder)
 
 ; For this we need a vector with 20 elements, a vector which shows the
 ; neighboring elements and accessor functions which give us the
