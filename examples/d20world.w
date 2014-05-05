@@ -122,6 +122,9 @@ define : d20-diffuse world neighbors D
                  loop : cdr neighbors-to-diffuse
 
 
+define φ : * (/ 1 2) : 1+ : sqrt 5
+
+
 display world
 newline
 display neighbors
