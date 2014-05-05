@@ -12,6 +12,8 @@
 define-module : examples d20world
               . #:export : world neighbors d20-as-text d20-diffuse
 
+use-modules : ice-9 format
+
 define world : make-vector 20 0
 define neighbors : make-vector 20
 ; count from the top
@@ -76,6 +78,13 @@ let loop : : relationships neighbors-helper
                 1- : list-ref vec : car idxtoset
             setidx : cdr idxtoset
 
+define : d20-value-ascii-color-string letter value
+         . "Create an ascii color string for d20."
+         let 
+           : csi "["
+             color : inexact->exact : floor : * 12 value
+           format #f "~A38;5;~dm~A~Am" csi color letter csi
+
 define : d20-as-text world-vector
          . "show the given d20 world as text"
          let 
@@ -93,7 +102,7 @@ define : d20-as-text world-vector
   ~A    ~A
 "
              indexes ' : 7 8 3 4 1 6 2 9 5 10 14 13 18 17 20 15 19 12 16 11
-           apply format : append (list #f template) : map (lambda (x) (vector-ref world (1- x))) indexes
+           apply format : append (list #f template) : map d20-value-ascii-color-string indexes : map (lambda (x) (vector-ref world (1- x))) indexes
 
 define : d20-diffuse world neighbors D
          . "Diffuse the values on the d20 using the diffusion constant D. Step 1: Simply iterative (=wrong)."
@@ -136,5 +145,24 @@ newline
 d20-diffuse world neighbors 0.01
 display : d20-as-text world
 newline
-
-
+d20-diffuse world neighbors 0.1
+display : d20-as-text world
+newline
+d20-diffuse world neighbors 0.5
+display : d20-as-text world
+newline
+d20-diffuse world neighbors 0.5
+display : d20-as-text world
+newline
+d20-diffuse world neighbors 0.5
+display : d20-as-text world
+newline
+d20-diffuse world neighbors 0.5
+display : d20-as-text world
+newline
+d20-diffuse world neighbors 0.5
+display : d20-as-text world
+newline
+d20-diffuse world neighbors 0.5
+display : d20-as-text world
+newline
