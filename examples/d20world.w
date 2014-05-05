@@ -103,6 +103,13 @@ define : d20-value-ascii-color-string letter value
              color : inexact->exact : max 17 : min 230 : floor : * 12 value
            format #f "~A38;5;~dm~A~Am" csi color letter csi
 
+define : d20-value-ascii-color-string-show-values letter value
+         . "Create an ascii color string for d20."
+         let 
+           : csi "["
+             color : inexact->exact : max 17 : min 230 : floor : * 12 value
+           format #f "~A38;5;~dm~A~Am" csi color color csi
+
 define : d20-as-text-base world-vector function
          . "show the given d20 world as text"
          let 
@@ -124,7 +131,7 @@ define : d20-as-text-base world-vector function
 
 define : d20-as-text world-vector
          . "show the given d20 world as text"
-         d20-as-text-base world-vector d20-value-ascii-color-string
+         d20-as-text-base world-vector d20-value-ascii-color-string-show-values
 
 
 define : d20-diffuse world neighbors D
