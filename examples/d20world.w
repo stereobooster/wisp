@@ -120,7 +120,8 @@ define : d20-diffuse world neighbors D
                            vector-set! world idx0 : + val0 : * D : - val3 val0
                            vector-set! world idx3 : - val3 : * D : - val3 val0
                  loop : cdr neighbors-to-diffuse
-                           
+
+
 display world
 newline
 display neighbors
