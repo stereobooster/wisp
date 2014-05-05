@@ -82,10 +82,10 @@ define : d20-value-ascii-color-string letter value
          . "Create an ascii color string for d20."
          let 
            : csi "["
-             color : inexact->exact : floor : * 12 value
+             color : inexact->exact : max 0 : min 255 : floor : * 12 value
            format #f "~A38;5;~dm~A~Am" csi color letter csi
 
-define : d20-as-text world-vector
+define : d20-as-text-base world-vector function
          . "show the given d20 world as text"
          let 
            : template "
@@ -102,7 +102,12 @@ define : d20-as-text world-vector
   ~A    ~A
 "
              indexes ' : 7 8 3 4 1 6 2 9 5 10 14 13 18 17 20 15 19 12 16 11
-           apply format : append (list #f template) : map d20-value-ascii-color-string indexes : map (lambda (x) (vector-ref world (1- x))) indexes
+           apply format : append (list #f template) : map function indexes : map (lambda (x) (vector-ref world (1- x))) indexes
+
+define : d20-as-text world-vector
+         . "show the given d20 world as text"
+         d20-as-text-base world-vector d20-value-ascii-color-string
+
 
 define : d20-diffuse world neighbors D
          . "Diffuse the values on the d20 using the diffusion constant D. Step 1: Simply iterative (=wrong)."
@@ -145,24 +150,12 @@ newline
 d20-diffuse world neighbors 0.01
 display : d20-as-text world
 newline
-d20-diffuse world neighbors 0.1
-display : d20-as-text world
-newline
-d20-diffuse world neighbors 0.5
-display : d20-as-text world
-newline
-d20-diffuse world neighbors 0.5
-display : d20-as-text world
-newline
-d20-diffuse world neighbors 0.5
-display : d20-as-text world
-newline
-d20-diffuse world neighbors 0.5
-display : d20-as-text world
-newline
-d20-diffuse world neighbors 0.5
-display : d20-as-text world
-newline
-d20-diffuse world neighbors 0.5
+let loop : : steps 1000
+    cond
+      : = 0 steps
+        . world
+      else
+        d20-diffuse world neighbors 0.01
+        loop : 1- steps
 display : d20-as-text world
 newline
