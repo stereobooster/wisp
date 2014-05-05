@@ -82,11 +82,25 @@ let loop : : relationships neighbors-helper
                 1- : list-ref vec : car idxtoset
             setidx : cdr idxtoset
 
+define advection-directions
+       make-vector 20
+
+let loop : : index 20
+    cond 
+      : = 0 index
+        . advection-directions
+      : = 20 index
+        vector-set! advection-directions (1- index) (1- index)
+        loop : 1- index
+      else
+        vector-set! advection-directions (1- index) index
+        loop : 1- index
+
 define : d20-value-ascii-color-string letter value
          . "Create an ascii color string for d20."
          let 
            : csi "["
-             color : inexact->exact : max 0 : min 255 : floor : * 12 value
+             color : inexact->exact : max 17 : min 230 : floor : * 12 value
            format #f "~A38;5;~dm~A~Am" csi color letter csi
 
 define : d20-as-text-base world-vector function
@@ -114,7 +128,7 @@ define : d20-as-text world-vector
 
 
 define : d20-diffuse world neighbors D
-         . "Diffuse the values on the d20 using the diffusion constant D. Step 1: Simply iterative (=wrong)."
+         . "Diffuse the values on the d20 using the diffusion constant D. Step 1: Simply iterative."
          let loop : : neighbors-to-diffuse : iota : vector-length neighbors
              cond 
                : null? neighbors-to-diffuse
@@ -124,42 +138,79 @@ define : d20-diffuse world neighbors D
                          let*
                            : edges-to-diffuse : append (list (car neighbors-to-diffuse)) : vector->list edges-to-diffuse-targets
                              idx0 : list-ref edges-to-diffuse 0
-                             val0 : vector-ref world idx0
                              idx1 : list-ref edges-to-diffuse 1
-                             val1 : vector-ref world idx1
                              idx2 : list-ref edges-to-diffuse 2
-                             val2 : vector-ref world idx2
                              idx3 : list-ref edges-to-diffuse 3
+                             val0 : vector-ref world idx0
+                             val1 : vector-ref world idx1
+                             val2 : vector-ref world idx2
                              val3 : vector-ref world idx3
-                           vector-set! world idx0 : + val0 : * D : - val1 val0
-                           vector-set! world idx1 : - val1 : * D : - val1 val0
-                           vector-set! world idx0 : + val0 : * D : - val2 val0
-                           vector-set! world idx2 : - val2 : * D : - val2 val0
-                           vector-set! world idx0 : + val0 : * D : - val3 val0
-                           vector-set! world idx3 : - val3 : * D : - val3 val0
+                             diff0 : * (/ D 3) : - val1 val0
+                             diff1 : * (/ D 3) : - val2 val0
+                             diff2 : * (/ D 3) : - val3 val0
+                           vector-set! world idx0 : + val0 diff0 diff1 diff2
+                           vector-set! world idx1 : - val1 diff0
+                           vector-set! world idx2 : - val2 diff1
+                           vector-set! world idx3 : - val3 diff2
                  loop : cdr neighbors-to-diffuse
+
+
+define : d20-advect world advection-directions A
+         . "Advect the values on the d20 using the advection constant A."
+         let loop : : neighbors-to-advect : iota : vector-length advection-directions
+             cond 
+               : null? neighbors-to-advect
+                 . world
+               else
+                 let*
+                   : source : car neighbors-to-advect
+                     target : vector-ref advection-directions source
+                     source-value : vector-ref world source
+                     target-value : vector-ref world target
+                     change : * A source-value
+                     source-new : - source-value change
+                     target-new : + target-value change
+                   ; format #t "target: ~A, source: ~A, change: ~A\n" target source change
+                   when : not : = source target
+                       vector-set! world source source-new
+                       vector-set! world target target-new
+                 loop : cdr neighbors-to-advect
 
 
 define φ : * (/ 1 2) : 1+ : sqrt 5
 
 
-display world
-newline
-display neighbors
-newline
-display : vector-ref world 0
-newline
 display : d20-as-text world
 newline
+format #t "Diffuse ~A\n" 0.01
 d20-diffuse world neighbors 0.01
 display : d20-as-text world
 newline
-let loop : : steps 1000
+format #t "Advect ~A\n" 0.1
+d20-advect world advection-directions 0.1
+display : d20-as-text world
+newline
+format #t "Diffuse ~A\n" 0.1
+d20-diffuse world neighbors 0.1
+display : d20-as-text world
+newline
+format #t "Advect ~A\n" 0.1
+d20-advect world advection-directions 0.1
+display : d20-as-text world
+newline
+format #t "Advect ~A\n" 0.1
+d20-advect world advection-directions 0.1
+display : d20-as-text world
+newline
+format #t "Diffuse+Advect: ~A*~A\n" 10000 0.001
+let loop : : steps 10000
     cond
       : = 0 steps
         . world
       else
-        d20-diffuse world neighbors 0.01
+        d20-diffuse world neighbors 0.001
+        d20-advect world advection-directions 0.001
+        display : d20-as-text world
         loop : 1- steps
 display : d20-as-text world
 newline
