@@ -363,7 +363,7 @@ doublelet
 
 The need to be able to represent things like this is the real reason, why the colon exists. The inline and start-of-line use is only a generalization of that principle (we add a syntax-element, so we should see how far we can push it to reduce the effective cost of introducing the additional syntax).
 
-**** Clever whytespace-parsing which would not work
+**** Clever whitespace-parsing which would not work
 
 There are two alternative ways to tackle this issue: deferred level-definition and fixed-width indentation.
 
