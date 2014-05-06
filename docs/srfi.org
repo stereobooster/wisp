@@ -138,7 +138,7 @@ The basic rules for wisp-code can be defined in 4 rules, each of which emerges d
 
 *** Wisp syntax 1/4: function calls
 
-Indentation
+Indentation:
 
 #+BEGIN_SRC wisp
 display 
@@ -156,7 +156,7 @@ becomes
 
 *** Wisp syntax 2/4: Continue Argument list
 
-The period
+The period:
 
 #+BEGIN_SRC wisp
 + 5
@@ -176,7 +176,7 @@ This also works with just one argument after the period. To start a line without
 
 *** Wisp syntax 3/4: Double Parens
 
-The colon[fn:3]
+The colon:[fn:3]
 
 #+BEGIN_SRC wisp
 let 
@@ -198,7 +198,7 @@ becomes
 
 *** Wisp syntax 4/4: Resilient Indentation
 
-The underscore (optional)
+The underscore (optional):
 
 #+BEGIN_SRC wisp
 let 
