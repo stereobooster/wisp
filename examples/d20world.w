@@ -108,7 +108,8 @@ define : d20-value-ascii-color-string-show-values letter value
          let 
            : csi "["
              color : inexact->exact : max 17 : min 230 : floor : * 12 value
-           format #f "~A38;5;~dm~A~Am" csi color color csi
+             int : inexact->exact : floor : * 12 value
+           format #f "~A38;5;~dm~A~Am" csi color int csi
 
 define : d20-as-text-base world-vector function
          . "show the given d20 world as text"
