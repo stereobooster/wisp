@@ -208,10 +208,6 @@ format #t "Advect ~A\n" 0.1
 d20-advect world advection-directions 0.1
 display : d20-as-text world
 newline
-format #t "Advect ~A\n" 0.1
-d20-advect world advection-directions 0.1
-display : d20-as-text world
-newline
 format #t "Advect: ~A*(~A)\n" 1000 0.001
 let loop : : steps 1000
     cond
