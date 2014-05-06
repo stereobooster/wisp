@@ -209,13 +209,13 @@ format #t "Advect ~A\n" 0.1
 d20-advect world advection-directions 0.1
 display : d20-as-text world
 newline
-format #t "Diffuse+Advect: ~A*~A\n" 10000 0.001
+format #t "Diffuse+Advect: ~A*(~A+~A)\n" 10000 0.002 0.001
 let loop : : steps 10000
     cond
       : = 0 steps
         . world
       else
-        d20-diffuse world neighbors 0.001
+        d20-diffuse world neighbors 0.002
         d20-advect world advection-directions 0.001
         display : d20-as-text world
         loop : 1- steps
