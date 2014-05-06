@@ -115,17 +115,17 @@ define : d20-as-text-base world-vector function
          . "show the given d20 world as text"
          let 
            : template "
- ~A         ~A
-   ~A    ~A  
-      ~A        
- ~A    ~A    ~A
-    ~A   ~A
-
- ~A       ~A
-  ~A    ~A
-     ~A        
-~A   ~A   ~A
-  ~A    ~A
+ ~A         ~A     
+   ~A    ~A        
+      ~A           
+ ~A    ~A    ~A    
+    ~A   ~A        
+                   
+ ~A       ~A       
+  ~A    ~A         
+     ~A            
+~A   ~A   ~A       
+  ~A    ~A         
 "
              indexes ' : 7 8 3 4 1 6 2 9 5 10 14 13 18 17 20 15 19 12 16 11
            apply format : append (list #f template) : map function indexes : map (lambda (x) (vector-ref world (1- x))) indexes
