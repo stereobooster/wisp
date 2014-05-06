@@ -232,8 +232,8 @@ let loop : : steps 1000
         loop : 1- steps
 display : d20-as-text world
 newline
-format #t "Diffuse+Advect: ~A*(~A+~A)\n" 10000 0.002 0.001
-let loop : : steps 10000
+format #t "Diffuse+Advect: ~A*(~A+~A)\n" 1000 0.002 0.001
+let loop : : steps 1000
     cond
       : = 0 steps
         . world
