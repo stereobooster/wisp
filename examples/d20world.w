@@ -134,6 +134,12 @@ define : d20-as-text world-vector
          . "show the given d20 world as text"
          d20-as-text-base world-vector d20-value-ascii-color-string-show-values
 
+define : d20-cursor-up-text world-vector
+         . "Kill each line of the text of the world vector in a terminal."
+         let* 
+           : text : d20-as-text-base world-vector d20-value-ascii-color-string-show-values
+             lines : string-split text #\newline
+           format #t "[~AA" : 1- : length lines
 
 define : d20-diffuse world neighbors D
          . "Diffuse the values on the d20 using the diffusion constant D. Step 1: Simply iterative."
@@ -219,6 +225,7 @@ let loop : : steps 10000
         d20-diffuse world neighbors 0.002
         d20-advect world advection-directions 0.001
         display : d20-as-text world
+        d20-cursor-up-text world
         loop : 1- steps
 display : d20-as-text world
 newline
