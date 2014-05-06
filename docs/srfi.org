@@ -124,7 +124,7 @@ Like SRFI-49 SRFI-110 also cannot continue the argument-list without resorting t
 
 Wisp draws on the strength of SRFI-110 but avoids its complexities. It was actually conceived and improved in the discussions within the readable-project which preceded SRFI-110 and there is a comparison between readable in wisp in SRFI-110.
 
-Like SRFI-110, wisp is general and homoiconic and interacts nicely with SRFI-105 (neoteric expressions and curly infix). Like SRFI-110, the expressions are the same in the REPL and in code-files.
+Like SRFI-110, wisp is general and homoiconic and interacts nicely with SRFI-105 (neoteric expressions and curly infix). Like SRFI-110, the expressions are the same in the REPL and in code-files. Like SRFI-110, wisp has been used for implementing multiple smaller programs, though the biggest program in wisp is still its implementation.
 
 But unlike SRFI-110, wisp only uses the minimum of additional syntax-elements which are necessary to support arbitrary code-structures with indentation-sensitive code which is intended to be shared over the internet. To realize these syntax-elements, it generalizes existing syntax and draws on the most common non-letter non-math characters in prose. This allows keeping the actual representation of the code elegant and inviting to newcomers.
 
