@@ -413,7 +413,7 @@ Since reference implementation is very heavyweight, it would be great to have so
 
 TODO: Include the code from http://draketo.de/proj/wisp
 
-* Test Suite
+** Test Suite
 
 The wisp test-suite consists of a large number of wisp-snippets and the corresponding scheme-code. A wisp-implementation may call itself compliant to the wisp test-suite if it successfully converts each wisp-snippet into the corresponging scheme-snippet. Blank lines at the end of the file and non-functional white-space in the produced scheme-file do not matter for this purpose.
 
@@ -423,7 +423,7 @@ The test-suite included here only contains scheme-compatible code to allow for s
 
 /TODO: Some of the snippets were transformed from emacs lisp to scheme by hand and this might have introduced bugs. They still need to be tested again./
 
-** tests/syntax-underscore.w
+*** tests/syntax-underscore.w
 #+begin_src wisp
 define : a b c
 _ d e
@@ -436,7 +436,7 @@ _  display "hello\n"
 
 \_
 #+end_src 
-** tests/syntax-underscore.scm
+*** tests/syntax-underscore.scm
 #+begin_src scheme
 (define (a b c)
   (d e
@@ -451,7 +451,7 @@ _  display "hello\n"
 
 
 #+end_src 
-** tests/syntax-strings-parens.w
+*** tests/syntax-strings-parens.w
 #+begin_src wisp
 ; Test linebreaks in strings and brackets
 
@@ -477,7 +477,7 @@ li
 lo (mabba)
 }
 #+end_src 
-** tests/syntax-strings-parens.scm
+*** tests/syntax-strings-parens.scm
 #+begin_src scheme
 ; Test linebreaks in strings and brackets
 
@@ -503,7 +503,7 @@ li
 lo (mabba)
 })
 #+end_src 
-** tests/syntax-indent.w
+*** tests/syntax-indent.w
 #+begin_src wisp
 define 
   hello who
@@ -520,7 +520,7 @@ define
                    .        b      c
 
 #+end_src 
-** tests/syntax-indent.scm
+*** tests/syntax-indent.scm
 #+begin_src scheme
 (define 
   (hello who)
@@ -539,13 +539,13 @@ define
 
 
 #+end_src 
-** tests/syntax-empty.w
+*** tests/syntax-empty.w
 #+begin_src wisp
 #+end_src 
-** tests/syntax-empty.scm
+*** tests/syntax-empty.scm
 #+begin_src scheme
 #+end_src 
-** tests/syntax-dot.w
+*** tests/syntax-dot.w
 #+begin_src wisp
 define : foo
   . "bar"
@@ -559,7 +559,7 @@ newline
 display : bar
 newline
 #+end_src 
-** tests/syntax-dot.scm
+*** tests/syntax-dot.scm
 #+begin_src scheme
 (define (foo)
   "bar")
@@ -575,7 +575,7 @@ newline
 
 
 #+end_src 
-** tests/syntax-colon.w
+*** tests/syntax-colon.w
 #+begin_src wisp
 let
   :
@@ -614,7 +614,7 @@ define : \:
 
 \:
 #+end_src 
-** tests/syntax-colon.scm
+*** tests/syntax-colon.scm
 #+begin_src scheme
 (let
   (
@@ -655,7 +655,7 @@ define : \:
 
 
 #+end_src 
-** tests/sublist.w
+*** tests/sublist.w
 #+begin_src wisp
 ; sublists allow to start single line function calls with a colon ( : ).
 ;
@@ -663,7 +663,7 @@ define : a b c
   let : : e . f
         . g
 #+end_src 
-** tests/sublist.scm
+*** tests/sublist.scm
 #+begin_src scheme
 ; sublists allow to start single line function calls with a colon ( : ).
 
@@ -673,19 +673,19 @@ define : a b c
 
 
 #+end_src 
-** tests/shebang.w
+*** tests/shebang.w
 #+begin_src wisp
 #!/usr/bin/wisp.py # !#
 ; This tests shebang lines
 #+end_src 
-** tests/shebang.scm
+*** tests/shebang.scm
 #+begin_src scheme
 #!/usr/bin/wisp.py # !#
 ; This tests shebang lines
 
 
 #+end_src 
-** tests/readable-tests.w
+*** tests/readable-tests.w
 #+begin_src wisp
 define : fibfast n
       if : < n 2
@@ -726,7 +726,7 @@ define : add-if-all-numbers lst
                         + : car lst
                           loop : cdr lst
 #+end_src 
-** tests/readable-tests.scm
+*** tests/readable-tests.scm
 #+begin_src scheme
 (define (fibfast n)
       (if (< n 2))
@@ -768,7 +768,7 @@ define : add-if-all-numbers lst
                           (loop (cdr lst)))))))))
 
 #+end_src 
-** tests/range.w
+*** tests/range.w
 #+begin_src wisp
 import : rnrs
 
@@ -795,7 +795,7 @@ define range
 display : apply string-append "" : map number->string : range 5
 newline
 #+end_src 
-** tests/range.scm
+*** tests/range.scm
 #+begin_src scheme
 (import (rnrs))
 
@@ -823,7 +823,7 @@ newline
 (newline)
 
 #+end_src 
-** tests/quotecolon.w
+*** tests/quotecolon.w
 #+begin_src wisp
 #!/home/arne/wisp/wisp-multiline.sh  
 ; !#
@@ -836,7 +836,7 @@ define
   a b
   c
 #+end_src 
-** tests/quotecolon.scm
+*** tests/quotecolon.scm
 #+begin_src scheme
 #!/home/arne/wisp/wisp-multiline.sh  
 ; !#
@@ -851,7 +851,7 @@ define
 
 
 #+end_src 
-** tests/namedlet.w
+*** tests/namedlet.w
 #+begin_src wisp
 #!/home/arne/wisp/wisp-multiline.sh  
 ; !#
@@ -864,7 +864,7 @@ let hello
     display who
     hello : + 1 who
 #+end_src 
-** tests/namedlet.scm
+*** tests/namedlet.scm
 #+begin_src scheme
 #!/home/arne/wisp/wisp-multiline.sh  
 ; !#
@@ -879,13 +879,13 @@ let hello
 
 
 #+end_src 
-** tests/mtest.w
+*** tests/mtest.w
 #+begin_src wisp
 #!/home/arne/wisp/wisp-multiline.sh  !#
 
 display 1
 #+end_src 
-** tests/mtest.scm
+*** tests/mtest.scm
 #+begin_src scheme
 #!/home/arne/wisp/wisp-multiline.sh  !#
 
@@ -893,7 +893,7 @@ display 1
 
 
 #+end_src 
-** tests/flexible-parameter-list.w
+*** tests/flexible-parameter-list.w
 #+begin_src wisp
 ; Test using a . as first parameter on a line by prefixing it with a second .
 define
@@ -908,7 +908,7 @@ define
 
 a 0 "123" "345" "567"
 #+end_src 
-** tests/flexible-parameter-list.scm
+*** tests/flexible-parameter-list.scm
 #+begin_src scheme
 ; Test using a . as first parameter on a line by prefixing it with a second .
 (define
@@ -925,7 +925,7 @@ a 0 "123" "345" "567"
 
 
 #+end_src 
-** tests/factorial.w
+*** tests/factorial.w
 #+begin_src wisp
 ;; short version
 ; note: once you use one inline colon, all the following forms on that
@@ -950,7 +950,7 @@ define : factorial n
 display : factorial 5 
 
 #+end_src 
-** tests/factorial.scm
+*** tests/factorial.scm
 #+begin_src scheme
 ;; short version
 ; note: once you use one inline colon, all the following forms on that
@@ -977,7 +977,7 @@ display : factorial 5
 
 
 #+end_src 
-** tests/example.w
+*** tests/example.w
 #+begin_src wisp
 define (a b c)
   let
@@ -1039,7 +1039,7 @@ let : : a b
 . a
 
 #+end_src 
-** tests/example.scm
+*** tests/example.scm
 #+begin_src scheme
 (define (a b c)
   (let
@@ -1103,7 +1103,7 @@ a
 
 
 #+end_src 
-** tests/continuation.w
+*** tests/continuation.w
 #+begin_src wisp
 a b c d e
   . f g h
@@ -1114,7 +1114,7 @@ concat "I want "
     . " - " username
 
 #+end_src 
-** tests/continuation.scm
+*** tests/continuation.scm
 #+begin_src scheme
 (a b c d e
   f g h
@@ -1127,12 +1127,12 @@ concat "I want "
 
 
 #+end_src 
-** tests/btest.w
+*** tests/btest.w
 #+begin_src wisp
 display "b"
 newline
 #+end_src 
-** tests/btest.scm
+*** tests/btest.scm
 #+begin_src scheme
 (display "b")
 (newline)
