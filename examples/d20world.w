@@ -66,8 +66,8 @@ let loop : : relationships neighbors-helper
    else
     let* 
       : cur : car relationships
-          idx : 1- : car cur
-          vec : cdr cur
+        idx : 1- : car cur
+        vec : cdr cur
       vector-set! world idx : 1+ idx
       vector-set! neighbors idx : make-vector 3
       let setidx : : idxtoset '(0 1 2)
