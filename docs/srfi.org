@@ -297,6 +297,7 @@ The syntax shown here is the minimal synatx required for the goal of wisp: inden
         string-append "Hello " who "!"    ;        (string-append "Hello " who "!")))
 #+END_SRC
 
+If the colon starts a line, it starts a bracket which gets closed at the end of the line *and* defines an indentation level at the position of the colon.
      
 ***    *You can replace any number of consecutive initial spaces by underscores*, as long as at least one whitespace is left between the underscores and any following character. You can escape initial underscores by prefixing the first one with \ ("\___ a" → "(___ a)"), if you have to use them as function names.
 
@@ -312,6 +313,8 @@ The syntax shown here is the minimal synatx required for the goal of wisp: inden
 - Code-blocks end after 2 empty lines followed by a newline. Indented non-empty lines after 2 empty lines should be treated as error. A line is empty if it only contains whitespace.
 
 - square brackets and curly braces should be treated the same way as parentheses: They stop the indentation processing until they are closed.
+
+- : at the beginning of a line adds an extra open parentheses that gets closed at end-of-line (rule 4.2.7) *and* defines an indentation level.
 
 ** Syntax justification
 
