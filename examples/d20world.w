@@ -142,31 +142,25 @@ define : d20-cursor-up-text world-vector
            format #t "[~AA" : 1- : length lines
 
 define : d20-diffuse world neighbors D
-         . "Diffuse the values on the d20 using the diffusion constant D. Step 1: Simply iterative."
-         let loop : : neighbors-to-diffuse : iota : vector-length neighbors
-             cond 
-               : null? neighbors-to-diffuse
-                 . world
-               else
-                 let : : edges-to-diffuse-targets : vector-ref neighbors (car neighbors-to-diffuse)
-                         let*
-                           : edges-to-diffuse : append (list (car neighbors-to-diffuse)) : vector->list edges-to-diffuse-targets
-                             idx0 : list-ref edges-to-diffuse 0
-                             idx1 : list-ref edges-to-diffuse 1
-                             idx2 : list-ref edges-to-diffuse 2
-                             idx3 : list-ref edges-to-diffuse 3
-                             val0 : vector-ref world idx0
-                             val1 : vector-ref world idx1
-                             val2 : vector-ref world idx2
-                             val3 : vector-ref world idx3
-                             diff0 : * (/ D 3) : - val1 val0
-                             diff1 : * (/ D 3) : - val2 val0
-                             diff2 : * (/ D 3) : - val3 val0
-                           vector-set! world idx0 : + val0 diff0 diff1 diff2
-                           vector-set! world idx1 : - val1 diff0
-                           vector-set! world idx2 : - val2 diff1
-                           vector-set! world idx3 : - val3 diff2
-                 loop : cdr neighbors-to-diffuse
+       . "Diffuse the values on the d20 using the diffusion constant D. Step 1: Simply iterative."
+       let leapfrog : : targets '(0 1 2)
+           if : null?  targets
+             . world
+             let loop : : neighbors-to-diffuse : iota : vector-length neighbors
+                cond 
+                  : null? neighbors-to-diffuse
+                    leapfrog : cdr targets
+                  else
+                      let*
+                          : originidx : car neighbors-to-diffuse ; index in world and in neighbors
+                            targetleap : car targets
+                            targetidx : vector-ref (vector-ref neighbors originidx) targetleap
+                            originval : vector-ref world originidx
+                            targetval : vector-ref world targetidx
+                            diff : * (/ D 3) : - targetval originval
+                          vector-set! world originidx : + originval diff
+                          vector-set! world targetidx : - targetval diff
+                      loop : cdr neighbors-to-diffuse
 
 
 define : d20-advect world advection-directions A
