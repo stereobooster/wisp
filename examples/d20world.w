@@ -202,6 +202,28 @@ format #t "Diffuse ~A\n" 0.1
 d20-diffuse world neighbors 0.1
 display : d20-as-text world
 newline
+format #t "Diffuse: ~A*(~A)\n" 100 0.1
+let loop : : steps 100
+    cond
+      : = 0 steps
+        . world
+      else
+        d20-diffuse world neighbors 0.1
+        loop : 1- steps
+display : d20-as-text world
+newline
+let 
+  : number 20
+    val 1
+  format #t "disturb: ~A to ~A\n" number val
+  vector-set! world (1- number) val
+  display : d20-as-text world
+  newline
+format #t "Diffuse ~A\n" 0.1
+d20-diffuse world neighbors 0.1
+display : d20-as-text world
+newline
+
 format #t "Advect: ~A*(~A)\n" 1000 0.001
 let loop : : steps 1000
     cond
