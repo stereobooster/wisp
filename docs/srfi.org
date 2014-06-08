@@ -314,7 +314,7 @@ If the colon starts a line, it starts a bracket which gets closed at the end of 
 
 - square brackets and curly braces should be treated the same way as parentheses: They stop the indentation processing until they are closed.
 
-- : at the beginning of a line adds an extra open parentheses that gets closed at end-of-line (rule 4.2.7) *and* defines an indentation level.
+- a colon (:) at the beginning of a line adds an extra open parentheses that gets closed at end-of-line (rule 4.2.7) *and* defines an indentation level.
 
 ** Syntax justification
 
