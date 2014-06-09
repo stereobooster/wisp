@@ -81,7 +81,7 @@ Remember, even if a proposal becomes an final SRFI, the need for it must be comp
 * Related SRFIs
 
 - SRFI-49 (Indentation-sensitive syntax): superceded by this SRFI, 
-- SRFI-110 (Sweet-expressions (t-expressions)): superceded by this SRFI,
+- SRFI-110 (Sweet-expressions (t-expressions)): alternative to this SRFI,
 - SRFI-105 (neoteric expressions and curly infix): supported by treating curly braces like brackets and parens, and
 - SRFI-30 (Nested Multi-line comments): complex interaction. Should be avoided at the beginning of lines, because it can make the indentation hard to distinguish for humans. SRFI-110 includes them, so there might be value in adding them. The wisp reference implementation does not treat them specially, though, which might create arbitrary complications.
 
@@ -102,7 +102,7 @@ As noted in SRFI-110, there are a number of implementation-problems in SRFI-49, 
     1
 #+END_SRC
 
-SRFI-110 improves a lot over the implementation of SRFI-49 and resolves the group-naming by introducing 3 different grouping-syntaxes (=$=, =\\= and =<* *>=). These additional syntax-elements however hurt readability for newcomers a lot. They make some code written in SRFI-110 look quite similar to perl and bash:
+SRFI-110 improves a lot over the implementation of SRFI-49. It resolves the group-naming and tries to reduce the need to continue the argument-list by introducing 3 different grouping-syntaxes (=$=, =\\= and =<* *>=). These additional syntax-elements however hurt readability for newcomers a lot (obviously the authors of SRFI-110 disagree with this assertion. Their point is discussed in SRFI-110 in the section about wisp). The additional syntax elements lead to structures like the following:
 #+BEGIN_SRC scheme
 myfunction 
   x: \\ original-x
@@ -225,7 +225,7 @@ becomes
 http://draketo.de/light/english/wisp-lisp-indentation-preprocessor#sec-4
 #+html: </small>
 
-The syntax shown here is the minimal synatx required for the goal of wisp: indentation-based, general lisp with a simple preprocessor, and code which can be shared easily on the internet:
+The syntax shown here is the minimal syntax required for the goal of wisp: indentation-based, general lisp with a simple preprocessor, and code which can be shared easily on the internet:
 
 - =.= to continue the argument list
 - =:= for double parens
@@ -268,7 +268,7 @@ The syntax shown here is the minimal synatx required for the goal of wisp: inden
 
 
      
-***    *A line whose first non-whitespace characters are a dot followed by a space (". ") does not open a new bracket: it is treated as simple continuation of the first less indented previous line*. In the first line this means that this line does not start with a bracket and does not end with a bracket, just as if you had directly written it in lisp without the leading ". ".
+***    *A line whose first non-whitespace characters is a dot followed by a space (". ") does not open a new bracket: it is treated as simple continuation of the first less indented previous line*. In the first line this means that this line does not start with a bracket and does not end with a bracket, just as if you had directly written it in lisp without the leading ". ".
 
 #+BEGIN_SRC wisp
     string-append "Hello"        ;    (string-append "Hello"
