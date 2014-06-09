@@ -155,7 +155,7 @@ myfunction
 
 /This breaks elegance 1/
 
-/Also the problems of SRFI-49 are preserved/
+/The problems of SRFI-49 are preserved, but their impact reduced./
 
 * Summary: Why wisp?
 
