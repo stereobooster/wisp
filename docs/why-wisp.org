@@ -184,7 +184,7 @@ becomes
 (newline)
 #+END_SRC
 
-* Wisp syntax 2/4: Continue Argument list
+* Wisp syntax 2/4: Continue Arguments
 
 ** The dot
 
