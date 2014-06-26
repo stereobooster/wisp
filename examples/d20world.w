@@ -187,6 +187,10 @@ define : d20-advect world advection-directions A
 
 define φ : * (/ 1 2) : 1+ : sqrt 5
 
+define : latlon2cellidx lat lon 
+        . "Convert a position given as latitude and longitude into the correct cell index."
+        . #t
+
 
 display : d20-as-text world
 newline
