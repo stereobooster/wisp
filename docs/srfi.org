@@ -316,11 +316,11 @@ If the colon starts a line, it starts a bracket which gets closed at the end of 
 
 - a colon (:) at the beginning of a line adds an extra open parentheses that gets closed at end-of-line (rule 4.2.7) *and* defines an indentation level.
 
-** Syntax justification
+* Syntax justification
 
 /I do not like adding any unnecessary syntax element to lisp. So I want to show explicitely why the syntax elements are required./
 
-*** . (the dot)
+** . (the dot)
 
 The dot at the beginning of the line as marker of the continuation of a variable list is a generalization of using the dot as identity function - which is an implementation detail in many lisps.
 
@@ -330,7 +330,7 @@ So for the single variable case, this would not even need additional parsing: wi
 
 Essentially this dot-rule means that we mark variables in the code instead of function calls, since in Lisp variables at the beginning of a line are much rarer than in other programming languages. In lisp assigning a value to a variable is a function call while it is a syntax element in many other languages, so what would be a variable at the beginning of a line in other languages is a function call in lisp..
 
-*** : (the colon)
+** : (the colon)
 
 For double brackets and for some other cases we must have a way to mark indentation levels without any code. I chose the colon, because it is the most common non-alpha-numeric character in normal prose which is not already reserved as syntax by lisp when it is surrounded by whitespace, and because it already gets used for marking keyword arguments to functions in Emacs Lisp, so it does not add completely alien characters.
 
@@ -366,7 +366,7 @@ doublelet
 
 The need to be able to represent things like this is the real reason, why the colon exists. The inline and start-of-line use is only a generalization of that principle (we add a syntax-element, so we should see how far we can push it to reduce the effective cost of introducing the additional syntax).
 
-**** Clever whitespace-parsing which would not work
+*** Clever whitespace-parsing which would not work
 
 There are two alternative ways to tackle this issue: deferred level-definition and fixed-width indentation.
 
@@ -396,7 +396,7 @@ if
     fixstuff﻿
 #+END_SRC
 
-*** _ (the underscore)
+** _ (the underscore)
 
 In Python the whitespace hostile html already presents problems with sharing code - for example in email list archives and forums. But in Python the indentation can mostly be inferred by looking at the previous line: If that ends with a colon, the next line must be more indented (there is nothing to clearly mark reduced indentation, though). In wisp we do not have that help, so we need a way to survive in that hostile environment.
 
