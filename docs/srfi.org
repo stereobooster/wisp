@@ -233,24 +233,25 @@ The syntax shown here is the minimal syntax required for the goal of wisp: inden
 
 ** More detailed: Wisp syntax rules
 
-***    *A line without indentation is a function call*, just as if it would start with a bracket.
+*** Unindented line
+
+*A line without indentation is a function call*, just as if it would start with a bracket.
 
 #+BEGIN_SRC wisp
     display "Hello World!"      ;      (display "Hello World!")
 #+END_SRC
-
-
      
-***    *A line which is more indented than the previous line is a sibling to that line*: It opens a new bracket.
+*** Sibling line
+*A line which is more indented than the previous line is a sibling to that line*: It opens a new bracket.
 
 #+BEGIN_SRC wisp
     display                              ;    (display
       string-append "Hello " "World!"    ;      (string-append "Hello " "World!"))
 #+END_SRC
 
-
      
-***    *A line which is not more indented than previous line(s) closes the brackets of all previous lines which have higher or equal indentation*. You should only reduce the indentation to indentation levels which were already used by parent lines, else the behaviour is undefined.
+*** Closing line
+*A line which is not more indented than previous line(s) closes the brackets of all previous lines which have higher or equal indentation*. You should only reduce the indentation to indentation levels which were already used by parent lines, else the behaviour is undefined.
 
 #+BEGIN_SRC wisp
     display                              ;    (display
@@ -258,9 +259,10 @@ The syntax shown here is the minimal syntax required for the goal of wisp: inden
     display "Hello Again!"               ;    (display "Hello Again!")
 #+END_SRC
 
-
      
-***    *To add any of ' , ` #' #, #` or #@, to the first bracket on a line, just prefix the line with that symbol* followed by at least one space. Implementations are free to add more prefix symbols.
+*** Prefixed line
+
+*To add any of ' , ` #' #, #` or #@, to the first bracket on a line, just prefix the line with that symbol* followed by at least one space. Implementations are free to add more prefix symbols.
 
 #+BEGIN_SRC wisp
     ' "Hello World!"      ;      '("Hello World!")
@@ -268,7 +270,8 @@ The syntax shown here is the minimal syntax required for the goal of wisp: inden
 
 
      
-***    *A line whose first non-whitespace characters is a dot followed by a space (". ") does not open a new bracket: it is treated as simple continuation of the first less indented previous line*. In the first line this means that this line does not start with a bracket and does not end with a bracket, just as if you had directly written it in lisp without the leading ". ".
+*** Continuing line
+*A line whose first non-whitespace characters is a dot followed by a space (". ") does not open a new bracket: it is treated as simple continuation of the first less indented previous line*. In the first line this means that this line does not start with a bracket and does not end with a bracket, just as if you had directly written it in lisp without the leading ". ".
 
 #+BEGIN_SRC wisp
     string-append "Hello"        ;    (string-append "Hello"
@@ -278,7 +281,8 @@ The syntax shown here is the minimal syntax required for the goal of wisp: inden
 
 
      
-***    *A line which contains only whitespace and a colon (":") defines an indentation level at the indentation of the colon*. It opens a bracket which gets closed by the next less-indented line. If you need to use a colon by itself. you can escape it as "\:".
+*** Empty indentation level
+*A line which contains only whitespace and a colon (":") defines an indentation level at the indentation of the colon*. It opens a bracket which gets closed by the next less-indented line. If you need to use a colon by itself. you can escape it as "\:".
 
 #+BEGIN_SRC wisp
     let                       ;    (let
@@ -289,7 +293,8 @@ The syntax shown here is the minimal syntax required for the goal of wisp: inden
 
 
      
-***    *A colon sourrounded by whitespace (" : ") starts a bracket which gets closed at the end of the line*.
+*** Inline Colon
+*A colon sourrounded by whitespace (" : ") starts a bracket which gets closed at the end of the line*.
 
 #+BEGIN_SRC wisp
     define : hello who                    ;    (define (hello who)
@@ -299,7 +304,8 @@ The syntax shown here is the minimal syntax required for the goal of wisp: inden
 
 If the colon starts a line, it starts a bracket which gets closed at the end of the line *and* defines an indentation level at the position of the colon.
      
-***    *You can replace any number of consecutive initial spaces by underscores*, as long as at least one whitespace is left between the underscores and any following character. You can escape initial underscores by prefixing the first one with \ ("\___ a" → "(___ a)"), if you have to use them as function names.
+*** Initial Underscores
+*You can replace any number of consecutive initial spaces by underscores*, as long as at least one whitespace is left between the underscores and any following character. You can escape initial underscores by prefixing the first one with \ ("\___ a" → "(___ a)"), if you have to use them as function names.
 
 #+BEGIN_SRC wisp
     define : hello who                    ;    (define (hello who)
