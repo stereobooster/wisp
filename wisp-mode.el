@@ -74,6 +74,13 @@
   `((
      ("\\`#!.*" . font-lock-comment-face) ; initial hashbang
      ("\"\\.\\*\\?" . font-lock-string-face) ; strings (anything between "")
+     ; ("^_+ *$" . font-lock-default-face) ; line with only underscores
+                                           ; and whitespace shown as
+                                           ; default text. This is just
+                                           ; a bad workaround. 
+                                           ; Which does not work because 
+                                           ; *-default-face is not guaranteed 
+                                           ; to be defined.
      ("^\\(?:_* +\\| *\\): *$" . font-lock-keyword-face) ; line with only a : + whitespace, not at the beginning
      ("^\\(?:_* +\\| *\\): \\| *\\. " . font-lock-keyword-face) ; leading : or .
      ( ,(regexp-opt wisp-builtin 'symbols) . font-lock-builtin-face) ; generic functions
@@ -90,6 +97,8 @@
      ("\\_<[+-]?[0-9]+\\_>\\|\\_<[+-][0-9]*\\.[0-9]*\\(e[+-]?[0-9]+\\)?\\_>" . font-lock-constant-face) ; numbers
      ("'()" . font-lock-constant-face) ; empty list
      ("[ 	]'[^	 ]+" . font-lock-constant-face) ; 'name
+     ; FIXME: This is too general (it will capture a . 'b, making it
+     ; impossible to have 'b highlighted)
      (" : \\| \\. " . font-lock-keyword-face) ; leading : or .
      ))
   "Default highlighting expressions for wisp mode.")

@@ -26,7 +26,6 @@
 /The most common paired characters/
 
 (From letter distributions in newspapers)
-
 * On Words                                           
 
 #+BEGIN_SRC elisp :exports results :results results raw
@@ -70,9 +69,7 @@
 - /Do you see how much harder it got?/
 - /€ and ¥ escape your existing filters/
 
-
-* Summary: Current Lisp
-
+* On Lisp
 1. Lisp syntax uses the *most common* non-letter, non-math characters.
 2. The *first and last characters* are important for text-recognition.
 
@@ -81,6 +78,12 @@ Let’s call these elegance 1 and elegance 2
 Any fix for elegance 2 should preserve elegance 1
 
 Elegance 0: generality and homoiconicity: *code is data*
+
+* Summary: Current Lisp Syntax
+
+- √ *Code is data*.
+- √ Uses the *most common* characters.
+- *×* The *first and last characters* are always *the same*.
 
 * On Wisp
 #+html: <br />
@@ -152,7 +155,7 @@ myfunction
 
 /This breaks elegance 1/
 
-/Also the problems of SRFI-49 are preserved/
+/The problems of SRFI-49 are preserved, but their impact reduced./
 
 * Summary: Why wisp?
 
@@ -181,7 +184,7 @@ becomes
 (newline)
 #+END_SRC
 
-* Wisp syntax 2/4: Continue Argument list
+* Wisp syntax 2/4: Continue Arguments
 
 ** The dot
 
@@ -218,7 +221,7 @@ becomes
   ((x 1)
    (y 2)
    (z 3))
-  body)
+  (body))
 #+END_SRC
 
 * Wisp syntax 4/4: Resilient Indentation
@@ -240,7 +243,7 @@ becomes
   ((x 1)
    (y 2)
    (z 3))
-  body)
+  (body))
 #+END_SRC
  
 

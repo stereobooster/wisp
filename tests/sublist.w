@@ -2,4 +2,4 @@
 ;
 defun a : b c
   let : : e . f
-  . g
+        . g
