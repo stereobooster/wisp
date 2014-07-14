@@ -15,6 +15,9 @@ define-module : language wisp spec
   . #:use-module : system base language
   . #:export : wisp
 
+; Set locale to something which supports unicode. Required to avoid using fluids.
+setlocale LC_ALL ""
+
 ;;;
 ;;; Language definition
 ;;;
@@ -32,21 +35,10 @@ define : read-one-wisp-sexp port env
   define : read-wisp-chunk
     if : eof-object? : peek-char port
       read-char port ; return eof: we’re done
-      let
-         : dpe : fluid-ref %default-port-encoding
-           set-pending-port!
-             lambda ()
-                 let
-                   : s : wisp2lisp : wisp-chunkreader port
-                   set! : wisp-pending-port port
-                      open-input-string s
-         if dpe ; default port encoding is set
-           set-pending-port!
-           ; else: we need to redefine %default-port-encoding to
-           ; UTF-8. Use with-fluids to avoid affecting other code.
-           with-fluids : : %default-port-encoding "UTF-8"
-             set-pending-port!
-         try-pending
+      let : : s : wisp2lisp : wisp-chunkreader port
+        set! : wisp-pending-port port
+               open-input-string s
+        try-pending
   define : try-pending
     let : : pending-port : wisp-pending-port port
       if pending-port
