@@ -30,10 +30,16 @@ define wisp-pending-port : make-object-property
 ; Code thanks to Mark Weaver
 define : read-one-wisp-sexp port env
   define : read-wisp-chunk
-    let : : s : wisp2lisp : wisp-chunkreader port
-       set! : wisp-pending-port port
-              open-input-string s
-       try-pending
+    if : eof-object? : peek-char port
+      read-char port ; return eof: we’re done
+      let : : dpe : fluid-ref %default-port-encoding
+        when : not dpe
+               fluid-set! %default-port-encoding "UTF-8"
+        let
+           : s : wisp2lisp : wisp-chunkreader port
+           set! : wisp-pending-port port
+                  open-input-string s
+           try-pending
   define : try-pending
     let : : pending-port : wisp-pending-port port
       if pending-port
