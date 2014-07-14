@@ -1193,6 +1193,6 @@ newline
 
 [fn:5] To run the tests in the wisp testsuite with a separately built GNU Guile, you can use any given guile interpreter by adjusting the following command: =PATH=~/guile-2.0.11/meta:${PATH} ./runtests.sh=
 
-[fn:6] Typed Racket uses calls of the form =(: x Number)= to declare types. These forms can still be used in parenthesized form, but not in wisp-form (as the colon has to be replaced with =\:=). It should be easy to work around this with a macro which allows using =:== in place of =:=.
+[fn:6] Typed Racket uses calls of the form =(: x Number)= to declare types. These forms can still be used in parenthesized form, but not in wisp-form (as the colon has to be replaced with =\:=).
 
 [fn:7] In most cases type-declarations are not needed in typed racket, since the type can be inferred. See [[http://docs.racket-lang.org/ts-guide/more.html?q=typed#%28part._when-annotations~3f%29][When do you need type annotations?]]
