@@ -231,10 +231,6 @@ becomes
 
 *** Summary
 
-#+html: <small>
-http://draketo.de/light/english/wisp-lisp-indentation-preprocessor#sec-4
-#+html: </small>
-
 The syntax shown here is the minimal syntax required for the goal of wisp: indentation-based, general lisp with a simple preprocessor, and code which can be shared easily on the internet:
 
 - =.= to continue the argument list
@@ -349,6 +345,11 @@ define : stringy s
 * Syntax justification
 
 /I do not like adding any unnecessary syntax element to lisp. So I want to show explicitely why the syntax elements are required./
+
+#+html: <small>
+See also http://draketo.de/light/english/wisp-lisp-indentation-preprocessor#sec-4
+#+html: </small>
+
 
 ** . (the dot)
 
