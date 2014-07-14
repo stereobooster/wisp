@@ -441,7 +441,7 @@ This reference implementation realizes a general wisp-preprocessor which can be 
 
 A wisp-preprocessor which is specialiized for scheme should be much easier to realize, though, by using the parsing methods from an existing scheme implementation.
 
-Since reference implementation is heavyweight, it would be great to have someone step up and create a more lightweight scheme-specific alternative. To allow for this, the test-suite in the next chapter only contains scheme-specific snippets.
+Since generality of the reference implementation makes it quite heavyweight, it would be great to have someone step up and create a more lightweight scheme-specific alternative. To allow for this, the test-suite in the next chapter only contains scheme-specific snippets.
 
 ** The generic wisp preprocessor (code)
 
