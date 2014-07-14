@@ -1,3 +1,14 @@
+wisp 0.6.0 (2014-07-14): 
+- Better performance
+- Support for SRFI-105
+- Working syntax highlighting in export via wisp-mode.el
+- Wisp can now execute wisp-files directly via `guile -L . --language=wisp file.w`.
+- Icosahedric Advection-Diffusion example: examples/d20world.w
+- Draft for an SRFI
+- Presentatien: Why Wisp?
+- Working autoreconf -i; ./configure; make distcheck
+- Real Testsuite (./runtests.sh . .)
+
 wisp 0.5.3 (2014-01-08): Started to use autotools to get make distcheck.
 
 wisp 0.5.2 (2014-01-07): Support general paren-prefixes for macros.

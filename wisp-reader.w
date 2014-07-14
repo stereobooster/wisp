@@ -15,6 +15,9 @@ define-module : language wisp spec
   . #:use-module : system base language
   . #:export : wisp
 
+; Set locale to something which supports unicode. Required to avoid using fluids.
+setlocale LC_ALL ""
+
 ;;;
 ;;; Language definition
 ;;;
@@ -30,10 +33,12 @@ define wisp-pending-port : make-object-property
 ; Code thanks to Mark Weaver
 define : read-one-wisp-sexp port env
   define : read-wisp-chunk
-    let : : s : wisp2lisp : wisp-chunkreader port
-       set! : wisp-pending-port port
-              open-input-string s
-       try-pending
+    if : eof-object? : peek-char port
+      read-char port ; return eof: we’re done
+      let : : s : wisp2lisp : wisp-chunkreader port
+        set! : wisp-pending-port port
+               open-input-string s
+        try-pending
   define : try-pending
     let : : pending-port : wisp-pending-port port
       if pending-port
