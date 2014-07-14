@@ -80,7 +80,8 @@ Remember, even if a proposal becomes an final SRFI, the need for it must be comp
 
 ** Acknowledgments
 
-Thanks for lots of constructive discussions goes to Alan Manuel K. Gloria and David A. Wheeler.
+- Thanks for lots of constructive discussions goes to Alan Manuel K. Gloria and David A. Wheeler.
+- Also thanks to Mark Weaver for his help with the wisp parser and the guile integration - including a 20x speedup.
 
 * Related SRFIs
 
