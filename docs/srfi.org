@@ -126,11 +126,17 @@ This is not only hard to read, but also makes it harder to work with the code, b
 
 Like SRFI-49 SRFI-110 also cannot continue the argument-list without resorting to single-element lines, though it reduces this problem by advertising the use of neoteric expressions (SRFI-105).
 
+** Advantages of Wisp
+
 Wisp draws on the strength of SRFI-110 but avoids its complexities. It was actually conceived and improved in the discussions within the readable-project which preceded SRFI-110 and there is a comparison between readable in wisp in SRFI-110.
 
 Like SRFI-110, wisp is general and homoiconic and interacts nicely with SRFI-105 (neoteric expressions and curly infix). Like SRFI-110, the expressions are the same in the REPL and in code-files. Like SRFI-110, wisp has been used for implementing multiple smaller programs, though the biggest program in wisp is still its implementation.
 
 But unlike SRFI-110, wisp only uses the minimum of additional syntax-elements which are necessary to support arbitrary code-structures with indentation-sensitive code which is intended to be shared over the internet. To realize these syntax-elements, it generalizes existing syntax and draws on the most common non-letter non-math characters in prose. This allows keeping the actual representation of the code elegant and inviting to newcomers.
+
+** Disadvantages of Wisp
+
+Using the colon as syntax element keeps the code very close to written prose, but it can interfere with type definitions as for example used in Typed Racket[fn:6]. This can be mitigated in let- and lambda-forms by using the parenthesized form. When doing so, wisp avoid the double-paren for type-declarations and as such makes them easier to catch by eye. For function definitions (the only =define= call where type declarations are needed in typed-racket[fn:7]), a =declare= macro directly before the =define= should work well.
 
 * Specification
 
@@ -1186,4 +1192,7 @@ newline
 [fn:4] I used a double let without action as example for the colon-syntax, even though that does nothing, because that makes it impossible to use later indentation to mark an intermediate indentation-level. Another reason why I would not use later indentation to define whether something earlier is a single or double indent is that this would call for subtle and really hard to find errors:
 
 [fn:5] To run the tests in the wisp testsuite with a separately built GNU Guile, you can use any given guile interpreter by adjusting the following command: =PATH=~/guile-2.0.11/meta:${PATH} ./runtests.sh=
- 
+
+[fn:6] Typed Racket uses calls of the form =(: x Number)= to declare types. These forms can still be used in parenthesized form, but not in wisp-form (as the colon has to be replaced with =\:=). It should be easy to work around this with a macro which allows using =:== in place of =:=.
+
+[fn:7] In most cases type-declarations are not needed in typed racket, since the type can be inferred. See [[http://docs.racket-lang.org/ts-guide/more.html?q=typed#%28part._when-annotations~3f%29][When do you need type annotations?]]
