@@ -14,7 +14,7 @@ ${wisp} : input.in.intermediate
 
 .INTERMEDIATE: input.in.intermediate
 input.in.intermediate: ${wisp_SOURCES}
-	if $(AM_V_P); then @abs_top_srcdir@/bootstrap.sh @abs_top_srcdir@ @guile@ @python3@; else @abs_top_srcdir@/bootstrap.sh @abs_top_srcdir@ @guile@ @python3@ >/dev/null; fi
+	@abs_top_srcdir@/bootstrap.sh @abs_top_srcdir@ @guile@ @python3@
 
 .PHONY: syntaxtests.sh
 syntaxtests.sh : wisp.scm runtests.sh
