@@ -5,7 +5,7 @@ AC_INIT([wisp], [0.6.0],
         [arne_bab@web.de])
 # Check for programs I need for my build
 AC_CANONICAL_TARGET
-AC_ARG_VAR([guile], [How to call GNU Guile.])
+AC_ARG_VAR([guile], [How to call GNU Guile 2.0.x.])
 AC_CHECK_TARGET_TOOL([guile], [guile-2.0], [no])
 AS_IF([test "x$guile" = "xno"],
       [AC_MSG_ERROR([cannot find GNU Guile 2.0 or later.])])
