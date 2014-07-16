@@ -3,6 +3,9 @@ wisp_SOURCES = wisp-guile.w wisp-reader.w
 EXTRA_DIST = $(wisp_SOURCES) $(wisp_DATA) bootstrap.sh wisp.py examples tests runtests.sh wisp-repl-guile.sh
 CLEANFILES = ${wisp} ChangeLog
 DISTCLEANFILES = ${CLEANFILES} @abs_top_builddir@/1 @abs_top_builddir@/2 @abs_top_builddir@/syntaxtests.sh
+# don't spout out lots of stuff at each distcheck. Disable for debugging.
+AM_DISTCHECK_CONFIGURE_FLAGS="--quiet"
+
 
 all : ${wisp}
 
