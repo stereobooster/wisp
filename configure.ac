@@ -1,14 +1,14 @@
 dnl run `autoreconf -i` to generate a configure script. 
 dnl Then run ./configure to generate a Makefile.
 dnl Finally run make to generate the project.
-AC_INIT([wisp], [0.6.0],
+AC_INIT([wisp], [0.6.1],
         [arne_bab@web.de])
 # Check for programs I need for my build
 AC_CANONICAL_TARGET
-AC_ARG_VAR([guile], [How to call GNU Guile.])
-AC_CHECK_TARGET_TOOL([guile], [guile], [no])
+AC_ARG_VAR([guile], [How to call GNU Guile 2.0.x.])
+AC_CHECK_TARGET_TOOL([guile], [guile-2.0], [no])
 AS_IF([test "x$guile" = "xno"],
-      [AC_MSG_ERROR([cannot find GNU Guile.])])
+      [AC_MSG_ERROR([cannot find GNU Guile 2.0 or later.])])
 AC_ARG_VAR([python3], [How to call Python 3.])
 AC_CHECK_TARGET_TOOL([python3], [python3], [no])
 AS_IF([test "x$python3" = "xno"],

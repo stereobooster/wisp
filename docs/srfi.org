@@ -80,7 +80,8 @@ Remember, even if a proposal becomes an final SRFI, the need for it must be comp
 
 ** Acknowledgments
 
-Thanks for lots of constructive discussions goes to Alan Manuel K. Gloria and David A. Wheeler.
+- Thanks for lots of constructive discussions goes to Alan Manuel K. Gloria and David A. Wheeler.
+- Also thanks to Mark Weaver for his help with the wisp parser and the guile integration - including a 20x speedup.
 
 * Related SRFIs
 
@@ -429,7 +430,7 @@ if
 
 ** _ (the underscore)
 
-In Python the whitespace hostile html already presents problems with sharing code - for example in email list archives and forums. But in Python the indentation can mostly be inferred by looking at the previous line: If that ends with a colon, the next line must be more indented (there is nothing to clearly mark reduced indentation, though). In wisp we do not have that help, so we need a way to survive in that hostile environment.
+In Python the whitespace hostile html already presents problems with sharing code - for example in email list archives and forums. But in Python the indentation can mostly be inferred by looking at the previous line: If that ends with a colon, the next line must be more indented (there is nothing to clearly mark reduced indentation, though). In wisp we do not have this help, so we need a way to survive in that hostile environment.
 
 The underscore is commonly used to denote a space in URLs, where spaces are inconvenient, but it is rarely used in lisp (where the dash ("-") is mostly used instead), so it seems like a a natural choice.
 
