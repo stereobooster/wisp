@@ -73,5 +73,5 @@ define : wisp-scheme-reader port
                  append currentsymbols : list : read port
                
 
-display : call-with-input-string  "  (foo) ; bar\n  foo : moo \"\n\" \n" wisp-scheme-reader
+display : call-with-input-string  "  (foo) ; bar\n  foo : moo \"\n\" \n___ . [goo . hoo]" wisp-scheme-reader
 newline
