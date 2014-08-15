@@ -15,63 +15,90 @@
 ;; then simply reuse the appropriate function from the generic wisp
 ;; preprocessor.
 
+use-modules : (srfi srfi-1) last
+
 define : wisp-scheme-reader port
          let loop
            : indent-and-symbols : list ; '((5 "(foobar)" "\"yobble\"")(3 "#t"))
              inindent #t
+             inunderscoreindent : equal? #\_ : peek-char port
              incomment #f
              currentindent 0
              currentsymbols '()
-           cond
-             : eof-object? : peek-char port
-               append indent-and-symbols : list : append (list currentindent) currentsymbols
-             : and inindent : equal? #\space : peek-char port
-               read-char port ; remove char
-               loop 
-                 . indent-and-symbols
-                 . #t ; inindent
-                 . #f ; incomment
-                 1+ currentindent
-                 . currentsymbols
-             : equal? #\newline : peek-char port
-               read-char port ; remove the newline
-               loop
+           let : : next-char : peek-char port
+             cond
+               : eof-object? next-char
                  append indent-and-symbols : list : append (list currentindent) currentsymbols
-                 . #t ; inindent
-                 . #f ; incomment
-                 . 0
-                 . '()
-             : equal? #t incomment
-               read-char port ; remove one comment character
-               loop 
-                 . indent-and-symbols
-                 . #f ; inindent 
-                 . #t ; incomment
-                 . currentindent
-                 . currentsymbols
-             : equal? #\space : peek-char port ; remove whitespace when not in indent
-               read-char port ; remove char
-               loop 
-                 . indent-and-symbols
-                 . #f ; inindent
-                 . #f ; incomment
-                 . currentindent
-                 . currentsymbols
-             : equal? (string-ref ";" 0) : peek-char port
-               loop 
-                 . indent-and-symbols
-                 . #f ; inindent 
-                 . #t ; incomment
-                 . currentindent
-                 . currentsymbols
-             else ; use the reader
-               loop 
-                 . indent-and-symbols
-                 . #f ; inindent
-                 . #f ; incomment
-                 . currentindent
-                 append currentsymbols : list : read port
+               : and inindent : equal? #\space next-char
+                 read-char port ; remove char
+                 loop
+                   . indent-and-symbols
+                   . #t ; inindent
+                   . #f ; inunderscoreindent
+                   . #f ; incomment
+                   1+ currentindent
+                   . currentsymbols
+               : and inunderscoreindent : equal? #\_ next-char
+                 read-char port ; remove char
+                 loop 
+                   . indent-and-symbols
+                   . #t ; inindent
+                   . #t ; inunderscoreindent
+                   . #f ; incomment
+                   1+ currentindent
+                   . currentsymbols
+               ; any char but whitespace *after* underscoreindent is
+               ; an error. This is stricter than the current wisp
+               ; syntax definition. TODO: Fix the definition. Better
+               ; start too strict.
+               : and inunderscoreindent : not : equal? #\space next-char
+                 throw 'wisp-syntax-error "initial underscores without following whitespace at beginning of the line after" : last indent-and-symbols
+               : equal? #\newline next-char
+                 read-char port ; remove the newline
+                 loop
+                   append indent-and-symbols : list : append (list currentindent) currentsymbols
+                   . #t ; inindent
+                   equal? #\_ : peek-char port
+                   . #f ; incomment
+                   . 0
+                   . '()
+               : equal? #t incomment
+                 read-char port ; remove one comment character
+                 loop 
+                   . indent-and-symbols
+                   . #f ; inindent 
+                   . #f ; inunderscoreindent 
+                   . #t ; incomment
+                   . currentindent
+                   . currentsymbols
+               : equal? #\space next-char ; remove whitespace when not in indent
+                 read-char port ; remove char
+                 loop 
+                   . indent-and-symbols
+                   . #f ; inindent
+                   . #f ; inunderscoreindent
+                   . #f ; incomment
+                   . currentindent
+                   . currentsymbols
+               : equal? (string-ref ";" 0) next-char
+                 loop 
+                   . indent-and-symbols
+                   . #f ; inindent 
+                   . #f ; inunderscoreindent 
+                   . #t ; incomment
+                   . currentindent
+                   . currentsymbols
+               else ; use the reader
+                 loop 
+                   . indent-and-symbols
+                   . #f ; inindent
+                   . #f ; inunderscoreindent
+                   . #f ; incomment
+                   . currentindent
+                   append currentsymbols : list : read port
                
 
 display : call-with-input-string  "  (foo) ; bar\n  foo : moo \"\n\" \n___ . [goo . hoo]" wisp-scheme-reader
+newline
+display : call-with-input-string  "  (foo) \n___. [goo . hoo]" wisp-scheme-reader
 newline
