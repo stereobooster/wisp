@@ -80,6 +80,9 @@ define : wisp-scheme-reader port
                    . #f ; incomment
                    . currentindent
                    . currentsymbols
+                        ; | cludge to appease the former wisp parser
+                        ; | which had a prblem with the literal comment
+                        ; v char.
                : equal? (string-ref ";" 0) next-char
                  loop 
                    . indent-and-symbols
