@@ -153,6 +153,7 @@ define : wisp-scheme-read-chunk-lines port
                    . #f ; inunderscoreindent
                    . #f ; incomment
                    . currentindent
+                   ; this also takes care of the hashbang and leading comments.
                    append currentsymbols : list : read port
                    . emptylines
 
@@ -180,6 +181,8 @@ define : wisp-scheme-read-string str
 
 display  
   wisp-scheme-read-string  "  foo ; bar\n  ; nop \n\n; nup\n; nup \n  \n\n\n  foo : moo \"\n\" \n___ . goo . hoo"
+newline 
+display : wisp-scheme-read-file "wisp-scheme.w"
 newline 
 ; This correctly throws an error.
 ; display
