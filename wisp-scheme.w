@@ -55,13 +55,21 @@ define : wisp-scheme-reader port
                  throw 'wisp-syntax-error "initial underscores without following whitespace at beginning of the line after" : last indent-and-symbols
                : equal? #\newline next-char
                  read-char port ; remove the newline
-                 loop
-                   append indent-and-symbols : list : append (list currentindent) currentsymbols
-                   . #t ; inindent
-                   equal? #\_ : peek-char port
-                   . #f ; incomment
-                   . 0
-                   . '()
+                 let ; distinguish pure whitespace lines and lines
+                     ; with comment by giving the former zero indent
+                   :
+                     indent 
+                       if : or incomment : not : null? currentsymbols
+                         . currentindent 
+                         ; else
+                         . 0
+                   loop
+                     append indent-and-symbols : list : append (list indent) currentsymbols
+                     . #t ; inindent
+                     equal? #\_ : peek-char port
+                     . #f ; incomment
+                     . 0
+                     . '()
                : equal? #t incomment
                  read-char port ; remove one comment character
                  loop 
@@ -101,7 +109,10 @@ define : wisp-scheme-reader port
                    append currentsymbols : list : read port
                
 
-display : call-with-input-string  "  (foo) ; bar\n  foo : moo \"\n\" \n___ . [goo . hoo]" wisp-scheme-reader
+; expected:
+; ((2 (foo)) (2) (0) (0) (2 foo : moo 
+; ) (4 #{.}# [goo #{.}# hoo]))
+display : call-with-input-string  "  (foo) ; bar\n  ; nop \n  \n\n  foo : moo \"\n\" \n___ . [goo . hoo]" wisp-scheme-reader
 newline
 display : call-with-input-string  "  (foo) \n___. [goo . hoo]" wisp-scheme-reader
 newline
