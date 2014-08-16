@@ -15,7 +15,31 @@
 ;; then simply reuse the appropriate function from the generic wisp
 ;; preprocessor.
 
-use-modules : (srfi srfi-1) last
+use-modules : srfi srfi-1
+
+;; Helper functions for the indent-and-symbols data structure: '((indent token token ...) ...)
+define : line-indent line
+         car line
+
+define : line-code line
+         cdr line
+
+define : line-continues? line
+         equal? : "." : car : line-code line
+
+define : line-only-colon? line
+         and
+           equal? : ":" : car : line-code line
+           null? : cdr : line-code line
+
+define : line-empty-code? line
+         null? : line-code line
+
+define : line-empty? line
+         and
+           = 0 : line-indent line
+           line-empty-code? line
+
 
 define : wisp-scheme-read-chunk port
          let loop
@@ -30,6 +54,8 @@ define : wisp-scheme-read-chunk port
              cond
                : eof-object? next-char
                  append indent-and-symbols : list : append (list currentindent) currentsymbols
+               : <= 2 emptylines
+                 . indent-and-symbols
                : and inindent : equal? #\space next-char
                  read-char port ; remove char
                  loop
@@ -74,15 +100,17 @@ define : wisp-scheme-read-chunk port
                            . currentindent
                          else
                            . 0
-                     parsedline : list : append (list indent) currentsymbols
+                     parsedline : append (list indent) currentsymbols
                    loop
-                     append indent-and-symbols parsedline
+                     append indent-and-symbols : list parsedline
                      . #t ; inindent
                      equal? #\_ : peek-char port
                      . #f ; incomment
                      . 0
                      . '()
-                     . emptylines
+                     if : line-empty? parsedline
+                       1+ emptylines
+                       . emptylines
                : equal? #t incomment
                  read-char port ; remove one comment character
                  loop 
@@ -127,11 +155,13 @@ define : wisp-scheme-read-chunk port
                
 
 
-
 ; expected:
 ; ((2 (foo)) (2) (0) (0) (2 foo : moo 
 ; ) (4 #{.}# [goo #{.}# hoo]))
-display : call-with-input-string  "  (foo) ; bar\n  ; nop \n; nup \n  \n\n  foo : moo \"\n\" \n___ . [goo . hoo]" wisp-scheme-read-chunk
+display  
+  call-with-input-string  "  (foo) ; bar\n  ; nop \n; nup \n  \n\n\n  foo : moo \"\n\" \n___ . [goo . hoo]" wisp-scheme-read-chunk
 newline
 display : call-with-input-string  "  (foo) \n___. [goo . hoo]" wisp-scheme-read-chunk
 newline
+
+
