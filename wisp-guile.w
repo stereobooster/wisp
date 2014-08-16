@@ -69,8 +69,8 @@ ____      text : if (eof-object? lastchar) "" : string lastchar
             not 
                 or : eof-object? nextchar
                      and 
-                         or (char=? nextchar #\linefeed ) (char=? nextchar #\newline ) 
-                         or (char=? lastchar #\linefeed ) (char=? lastchar #\newline ) 
+                         or (char=? nextchar #\newline ) (char=? nextchar #\return ) 
+                         or (char=? lastchar #\newline ) (char=? lastchar #\return ) 
                          string-suffix? "\n\n" text ; text includes lastchar
             ; incommentfirstchar is only valid for exactly one char
             when incommentfirstchar : set! incommentfirstchar #f 
@@ -90,7 +90,7 @@ ____      text : if (eof-object? lastchar) "" : string lastchar
                     
             when : >= incharform 2
                 if : or (char=? nextchar #\space) (char=? 
-                                nextchar #\linefeed ) (char=? nextchar #\newline ) 
+                                nextchar #\newline ) (char=? nextchar #\return ) 
                    begin
                        ; format #t "2: set incharform 0: lastchar ~a nextchar ~a instring ~a incomment ~a incharform ~a" lastchar nextchar instring incomment incharform
                        ; newline
@@ -113,8 +113,8 @@ ____      text : if (eof-object? lastchar) "" : string lastchar
                                       ; not : equal? #f : string-match "\\([^\\]\\)+\\(\\\\\\\\\\)*[\\]$" text ; matches [^\](\\)*\$ - non-backslash + arbitrary number of pairs of backslashes + final backslash which undoes the escaping from the lastchar (by actually escaping the lastchar)
                                       endsinunevenbackslashes text
                         char=? lastchar #\space ; when the last char was a space, I can get into a string
-                        char=? lastchar #\linefeed ; same for newline chars
-                        char=? lastchar #\newline 
+                        char=? lastchar #\newline ; same for newline chars
+                        char=? lastchar #\return 
                         and : not instring ; outside of strings, brackets are pseudo-whitespace, too
                               or
                                 char=? lastchar #\( 
@@ -141,8 +141,8 @@ ____      text : if (eof-object? lastchar) "" : string lastchar
             when
                 and incomment
                     or 
+                        char=? nextchar #\return
                         char=? nextchar #\newline
-                        char=? nextchar #\linefeed
                 set! incomment #f
             
             ; check for the beginning of a charform
@@ -176,11 +176,11 @@ ____      text : if (eof-object? lastchar) "" : string lastchar
                     when : or (equal? "}" (string nextchar)) (equal? ")" (string nextchar)) (equal? "]" (string nextchar))
                         set! inbrackets : - inbrackets 1
             if : or instring : > inbrackets 0
-                if : char=? nextchar #\linefeed
+                if : char=? nextchar #\newline
                     ; we have to actually construct the escape
                     ; sequence here to be able to parse ourselves.
                     set! text : string-append text : string-append "\\LINE_" "BREAK_N"
-                    if : char=? nextchar #\newline
+                    if : char=? nextchar #\return
                         set! text : string-append text : string-append "\\LINE_" "BREAK_R"
                         ; else
                         set! text : string-append text : string nextchar
@@ -207,7 +207,7 @@ define : splitlines inport
           nextchar : read-char inport
           nextline ""
         while : not : eof-object? nextchar
-            if : not : or (char=? nextchar #\newline ) (char=? nextchar #\linefeed )
+            if : not : or (char=? nextchar #\return ) (char=? nextchar #\newline )
                 set! nextline : string-append nextline : string nextchar
                 begin 
                     set! lines : append lines (list nextline)
@@ -746,9 +746,9 @@ define : unescape-linebreaks text
        . "unescape linebreaks"
        string-replace-substring
            ; we have to construct the placeholders here to avoid unescaping them when we parse ourselves…
-           string-replace-substring text (string-append "\\LINE_" "BREAK_N") : string #\linefeed
+           string-replace-substring text (string-append "\\LINE_" "BREAK_N") : string #\newline
            string-append "\\LINE_" "BREAK_R"
-           string #\newline 
+           string #\return 
 
 
 define : unescape-comments text
