@@ -56,13 +56,21 @@ define : wisp-scheme-reader port
                : equal? #\newline next-char
                  read-char port ; remove the newline
                  let ; distinguish pure whitespace lines and lines
-                     ; with comment by giving the former zero indent
+                     ; with comment by giving the former zero
+                     ; indent. Lines with a comment at zero indent get
+                     ; indent -1 for the same reason - meaning not
+                     ; actually empty.
                    :
                      indent 
-                       if : or incomment : not : null? currentsymbols
-                         . currentindent 
-                         ; else
-                         . 0
+                       cond 
+                         incomment 
+                           if : = 0 currentindent ; specialcase
+                             . -1
+                             . currentindent 
+                         : not : null? currentsymbols ; pure whitespace
+                           . currentindent
+                         else
+                           . 0
                    loop
                      append indent-and-symbols : list : append (list indent) currentsymbols
                      . #t ; inindent
@@ -109,10 +117,12 @@ define : wisp-scheme-reader port
                    append currentsymbols : list : read port
                
 
+
+
 ; expected:
 ; ((2 (foo)) (2) (0) (0) (2 foo : moo 
 ; ) (4 #{.}# [goo #{.}# hoo]))
-display : call-with-input-string  "  (foo) ; bar\n  ; nop \n  \n\n  foo : moo \"\n\" \n___ . [goo . hoo]" wisp-scheme-reader
+display : call-with-input-string  "  (foo) ; bar\n  ; nop \n; nup \n  \n\n  foo : moo \"\n\" \n___ . [goo . hoo]" wisp-scheme-reader
 newline
 display : call-with-input-string  "  (foo) \n___. [goo . hoo]" wisp-scheme-reader
 newline
