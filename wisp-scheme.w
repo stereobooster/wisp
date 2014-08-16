@@ -17,7 +17,7 @@
 
 use-modules : (srfi srfi-1) last
 
-define : wisp-scheme-reader port
+define : wisp-scheme-read-chunk port
          let loop
            : indent-and-symbols : list ; '((5 "(foobar)" "\"yobble\"")(3 "#t"))
              inindent #t
@@ -25,6 +25,7 @@ define : wisp-scheme-reader port
              incomment #f
              currentindent 0
              currentsymbols '()
+             emptylines 0
            let : : next-char : peek-char port
              cond
                : eof-object? next-char
@@ -38,6 +39,7 @@ define : wisp-scheme-reader port
                    . #f ; incomment
                    1+ currentindent
                    . currentsymbols
+                   . emptylines
                : and inunderscoreindent : equal? #\_ next-char
                  read-char port ; remove char
                  loop 
@@ -47,6 +49,7 @@ define : wisp-scheme-reader port
                    . #f ; incomment
                    1+ currentindent
                    . currentsymbols
+                   . emptylines
                ; any char but whitespace *after* underscoreindent is
                ; an error. This is stricter than the current wisp
                ; syntax definition. TODO: Fix the definition. Better
@@ -55,11 +58,11 @@ define : wisp-scheme-reader port
                  throw 'wisp-syntax-error "initial underscores without following whitespace at beginning of the line after" : last indent-and-symbols
                : equal? #\newline next-char
                  read-char port ; remove the newline
-                 let ; distinguish pure whitespace lines and lines
-                     ; with comment by giving the former zero
-                     ; indent. Lines with a comment at zero indent get
-                     ; indent -1 for the same reason - meaning not
-                     ; actually empty.
+                 let* ; distinguish pure whitespace lines and lines
+                      ; with comment by giving the former zero
+                      ; indent. Lines with a comment at zero indent
+                      ; get indent -1 for the same reason - meaning
+                      ; not actually empty.
                    :
                      indent 
                        cond 
@@ -71,13 +74,15 @@ define : wisp-scheme-reader port
                            . currentindent
                          else
                            . 0
+                     parsedline : list : append (list indent) currentsymbols
                    loop
-                     append indent-and-symbols : list : append (list indent) currentsymbols
+                     append indent-and-symbols parsedline
                      . #t ; inindent
                      equal? #\_ : peek-char port
                      . #f ; incomment
                      . 0
                      . '()
+                     . emptylines
                : equal? #t incomment
                  read-char port ; remove one comment character
                  loop 
@@ -87,6 +92,7 @@ define : wisp-scheme-reader port
                    . #t ; incomment
                    . currentindent
                    . currentsymbols
+                   . emptylines
                : equal? #\space next-char ; remove whitespace when not in indent
                  read-char port ; remove char
                  loop 
@@ -96,6 +102,7 @@ define : wisp-scheme-reader port
                    . #f ; incomment
                    . currentindent
                    . currentsymbols
+                   . emptylines
                         ; | cludge to appease the former wisp parser
                         ; | which had a prblem with the literal comment
                         ; v char.
@@ -107,6 +114,7 @@ define : wisp-scheme-reader port
                    . #t ; incomment
                    . currentindent
                    . currentsymbols
+                   . emptylines
                else ; use the reader
                  loop 
                    . indent-and-symbols
@@ -115,6 +123,7 @@ define : wisp-scheme-reader port
                    . #f ; incomment
                    . currentindent
                    append currentsymbols : list : read port
+                   . emptylines
                
 
 
@@ -122,7 +131,7 @@ define : wisp-scheme-reader port
 ; expected:
 ; ((2 (foo)) (2) (0) (0) (2 foo : moo 
 ; ) (4 #{.}# [goo #{.}# hoo]))
-display : call-with-input-string  "  (foo) ; bar\n  ; nop \n; nup \n  \n\n  foo : moo \"\n\" \n___ . [goo . hoo]" wisp-scheme-reader
+display : call-with-input-string  "  (foo) ; bar\n  ; nop \n; nup \n  \n\n  foo : moo \"\n\" \n___ . [goo . hoo]" wisp-scheme-read-chunk
 newline
-display : call-with-input-string  "  (foo) \n___. [goo . hoo]" wisp-scheme-reader
+display : call-with-input-string  "  (foo) \n___. [goo . hoo]" wisp-scheme-read-chunk
 newline
