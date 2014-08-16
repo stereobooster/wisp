@@ -84,7 +84,7 @@ define : wisp-scheme-read-chunk port
                  throw 'wisp-syntax-error "initial underscores without following whitespace at beginning of the line after" : last indent-and-symbols
                : or (equal? #\newline next-char) (equal? #\return next-char)
                  read-char port ; remove the newline
-                 when : and (equal? #\newline next-char) : equal? #\return : peek-char port
+                 if : and (equal? #\newline next-char) : equal? #\return : peek-char port
                         read-char port ; remove a full \n\r. Damn special cases...
                  let* ; distinguish pure whitespace lines and lines
                       ; with comment by giving the former zero
@@ -167,6 +167,7 @@ define : wisp-scheme-read-all port
                append lines : wisp-scheme-read-chunk port
 
 define : wisp-scheme-read-file path
+         . #f
 
 display  
   call-with-input-string  "  (foo) ; bar\n  ; nop \n\n; nup\n; nup \n  \n\n\n  foo : moo \"\n\" \n___ . [goo . hoo]" wisp-scheme-read-chunk
