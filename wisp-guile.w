@@ -239,7 +239,7 @@ define : line-only-colon? line
     equal? ":" : string-trim-right : line-content line
 
 define : line-only-prefix? line prefix
-    . "Check whether the line content consists only of a colon and whitespace."
+    . "Check whether the line content consists only of a given prefix and whitespace."
     equal? prefix : string-trim-right : line-content line
 
 define : line-merge-comment line
