@@ -84,8 +84,9 @@ define : wisp-scheme-read-chunk port
                  throw 'wisp-syntax-error "initial underscores without following whitespace at beginning of the line after" : last indent-and-symbols
                : or (equal? #\newline next-char) (equal? #\return next-char)
                  read-char port ; remove the newline
+                 ; TODO: Check whether when or if should be preferred here. guile 1.8 only has if.
                  if : and (equal? #\newline next-char) : equal? #\return : peek-char port
-                        read-char port ; remove a full \n\r. Damn special cases...
+                      read-char port ; remove a full \n\r. Damn special cases...
                  let* ; distinguish pure whitespace lines and lines
                       ; with comment by giving the former zero
                       ; indent. Lines with a comment at zero indent
