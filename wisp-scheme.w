@@ -82,8 +82,10 @@ define : wisp-scheme-read-chunk port
                ; start too strict.
                : and inunderscoreindent : not : equal? #\space next-char
                  throw 'wisp-syntax-error "initial underscores without following whitespace at beginning of the line after" : last indent-and-symbols
-               : equal? #\newline next-char
+               : or (equal? #\newline next-char) (equal? #\return next-char)
                  read-char port ; remove the newline
+                 when : and (equal? #\newline next-char) : equal? #\return : peek-char port
+                        read-char port ; remove a full \n\r. Damn special cases...
                  let* ; distinguish pure whitespace lines and lines
                       ; with comment by giving the former zero
                       ; indent. Lines with a comment at zero indent
@@ -154,10 +156,18 @@ define : wisp-scheme-read-chunk port
                    . emptylines
                
 
+define : wisp-scheme-read-all port
+         . "Read all chunks from the given port"
+         let loop 
+           : lines '()
+           cond
+             : eof-object? : peek-char port
+               . lines
+             else
+               append lines : wisp-scheme-read-chunk port
 
-; expected:
-; ((2 (foo)) (2) (0) (0) (2 foo : moo 
-; ) (4 #{.}# [goo #{.}# hoo]))
+define : wisp-scheme-read-file path
+
 display  
   call-with-input-string  "  (foo) ; bar\n  ; nop \n\n; nup\n; nup \n  \n\n\n  foo : moo \"\n\" \n___ . [goo . hoo]" wisp-scheme-read-chunk
 newline
