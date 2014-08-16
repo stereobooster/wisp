@@ -41,7 +41,7 @@ define : line-empty? line
            line-empty-code? line
 
 
-define : wisp-scheme-read-chunk port
+define : wisp-scheme-read-chunk-lines port
          let loop
            : indent-and-symbols : list ; '((5 "(foobar)" "\"yobble\"")(3 "#t"))
              inindent #t
@@ -155,7 +155,11 @@ define : wisp-scheme-read-chunk port
                    . currentindent
                    append currentsymbols : list : read port
                    . emptylines
-               
+
+define : wisp-scheme-read-chunk port
+         . "Read and parse one chunk of wisp-code"
+         let : : lines : wisp-scheme-read-chunk-lines port
+             . lines
 
 define : wisp-scheme-read-all port
          . "Read all chunks from the given port"
@@ -168,12 +172,18 @@ define : wisp-scheme-read-all port
                append lines : wisp-scheme-read-chunk port
 
 define : wisp-scheme-read-file path
-         . #f
+         call-with-input-file path wisp-scheme-read-all
+
+define : wisp-scheme-read-string str
+         call-with-input-string str wisp-scheme-read-all
+
 
 display  
-  call-with-input-string  "  (foo) ; bar\n  ; nop \n\n; nup\n; nup \n  \n\n\n  foo : moo \"\n\" \n___ . [goo . hoo]" wisp-scheme-read-chunk
-newline
-display : call-with-input-string  "  (foo) \n___. [goo . hoo]" wisp-scheme-read-chunk
-newline
+  wisp-scheme-read-string  "  foo ; bar\n  ; nop \n\n; nup\n; nup \n  \n\n\n  foo : moo \"\n\" \n___ . goo . hoo"
+newline 
+; This correctly throws an error.
+; display
+;   wisp-scheme-read-string  "  foo \n___. goo . hoo"
+; newline
 
 
