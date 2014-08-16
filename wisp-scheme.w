@@ -160,17 +160,18 @@ define : wisp-scheme-read-chunk-lines port
 define : wisp-scheme-read-chunk port
          . "Read and parse one chunk of wisp-code"
          let : : lines : wisp-scheme-read-chunk-lines port
+             ; TODO: process indentation.
              . lines
 
 define : wisp-scheme-read-all port
          . "Read all chunks from the given port"
          let loop 
-           : lines '()
+           : s-exps '()
            cond
              : eof-object? : peek-char port
-               . lines
+               . s-exps
              else
-               append lines : wisp-scheme-read-chunk port
+               append s-exps : wisp-scheme-read-chunk port
 
 define : wisp-scheme-read-file path
          call-with-input-file path wisp-scheme-read-all
