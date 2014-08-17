@@ -222,7 +222,7 @@ define : line-prepend-n-parens n line
 
 ; TODO: process inline colons
 
-define : wisp-indentation-to-parens lines
+define : wisp-scheme-indentation-to-parens lines
          . "Add parentheses to lines and remove the indentation markers"
          let loop
            : processed '()
@@ -271,12 +271,14 @@ define : wisp-indentation-to-parens lines
                      ; We cannot process indentation without
                      ; code. Just switch to the next line. This should
                      ; only happen at the start of the recursion.
+                     ; TODO: Somehow preserve the line-numbers.
                      loop
                        . processed
                        . next-line
                        cdr unprocessed
                        . indentation-levels
                    : line-empty-code? next-line
+                     ; TODO: Somehow preserve the line-numbers.
                      loop
                        . processed
                        . current-line
@@ -336,10 +338,15 @@ define : wisp-indentation-to-parens lines
                              . current-line next-line processed
 
 
+define : wisp-scheme-replace-inline-colons lines
+         ' "Replace inline colons by opening parens which close at the end of the line"
+         . #t
+
+
 define : wisp-scheme-read-chunk port
          . "Read and parse one chunk of wisp-code"
          ; TODO: process inline colons.
-         wisp-indentation-to-parens : wisp-scheme-read-chunk-lines port
+         wisp-scheme-indentation-to-parens : wisp-scheme-read-chunk-lines port
 
 define : wisp-scheme-read-all port
          . "Read all chunks from the given port"
