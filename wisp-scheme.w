@@ -180,7 +180,7 @@ define : line-prepend-n-parens n line
                  1- rest
                  append 
                    list : car l
-                   '("(")
+                   . '("(")
                    cdr l
 
 ; TODO: process inline colons
@@ -219,9 +219,10 @@ define : wisp-indentation-to-parens lines
                    loop
                      append processed
                        list
-                         line-append-n-parens 
-                           length indentation-levels
-                           . current-line
+                         line-prepend-n-parens 1 
+                           line-append-n-parens
+                             length indentation-levels
+                             . current-line
                      . '() ; current-line empty: required end condition 1
                      . '() ; unprocessed empty: required end condition 2
                      . '() ; indentation-levels: There is nothing more to process
