@@ -18,7 +18,7 @@
 
 define-module : wisp-scheme
    . #:export (wisp-scheme-read-chunk wisp-scheme-read-all 
-               wisp-scheme-read-file wisp-scheme-read-file-chunk 
+               wisp-scheme-read-file-chunk wisp-scheme-read-file
                wisp-scheme-read-string)
 
 use-modules : srfi srfi-1
