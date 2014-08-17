@@ -14,6 +14,10 @@
 ;; directly create a list of codelines with indentation. For this we
 ;; then simply reuse the appropriate function from the generic wisp
 ;; preprocessor.
+;; 
+;; FIXME: Currently this is horribly slow.
+;; 
+;; TODO: Use cons instead of append.
 
 use-modules : srfi srfi-1
 
@@ -338,19 +342,59 @@ define : wisp-scheme-indentation-to-parens lines
                              . current-line next-line processed
 
 
+define : line-code-replace-inline-colons line
+         ' "Replace inline colons by opening parens which close at the end of the line"
+         let : : readcolon : call-with-input-string ":" read
+           let loop
+             : processed '()
+               unprocessed line
+             cond
+               : null? unprocessed
+                 . processed
+               : equal? readcolon : car unprocessed
+                 loop
+                   append processed : list "("
+                   append (cdr unprocessed) : list ")"
+               else
+                 loop 
+                   append processed : list : car unprocessed
+                   cdr unprocessed
+
+define : line-replace-inline-colons line
+         cons 
+           line-indent line
+           line-code-replace-inline-colons : line-code line
+
 define : wisp-scheme-replace-inline-colons lines
          ' "Replace inline colons by opening parens which close at the end of the line"
-         . #t
+         let loop
+           : processed '()
+             unprocessed lines
+           if : null? unprocessed
+                . processed
+                loop
+                  append processed : list : line-replace-inline-colons : car unprocessed
+                  cdr unprocessed
+                  
 
 define : wisp-scheme-strip-indentation-markers lines
          ' "Strip the indentation markers from the beginning of the lines"
-         . #t
+         let loop
+           : processed '()
+             unprocessed lines
+           if : null? unprocessed
+                . processed
+                loop
+                  append processed : cdr : car unprocessed
+                  cdr unprocessed
 
 
 define : wisp-scheme-read-chunk port
          . "Read and parse one chunk of wisp-code"
-         ; TODO: process inline colons.
-         wisp-scheme-indentation-to-parens : wisp-scheme-read-chunk-lines port
+         wisp-scheme-strip-indentation-markers
+           wisp-scheme-replace-inline-colons 
+             wisp-scheme-indentation-to-parens 
+               wisp-scheme-read-chunk-lines port
 
 define : wisp-scheme-read-all port
          . "Read all chunks from the given port"
