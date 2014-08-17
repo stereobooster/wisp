@@ -17,6 +17,7 @@
 
 use-modules : srfi srfi-1
 
+
 ;; Helper functions for the indent-and-symbols data structure: '((indent token token ...) ...)
 define : line-indent line
          car line
@@ -25,7 +26,8 @@ define : line-code line
          cdr line
 
 define : line-continues? line
-         equal? "." : car : line-code line
+         let : : readdot : call-with-input-string "." read
+           equal? readdot : car : line-code line
 
 define : line-only-colon? line
          and
@@ -331,12 +333,11 @@ define : wisp-indentation-to-parens lines
                      throw 'wisp-not-implemented 
                            format #f "Need to implement further line comparison: current: ~A, next: ~A, processed: ~A."
                              . current-line next-line processed
-             
-             
-             
+
 
 define : wisp-scheme-read-chunk port
          . "Read and parse one chunk of wisp-code"
+         ; TODO: process inline colons.
          wisp-indentation-to-parens : wisp-scheme-read-chunk-lines port
 
 define : wisp-scheme-read-all port
@@ -354,6 +355,9 @@ define : wisp-scheme-read-all port
 define : wisp-scheme-read-file path
          call-with-input-file path wisp-scheme-read-all
 
+define : wisp-scheme-read-file-chunk path
+         call-with-input-file path wisp-scheme-read-chunk
+
 define : wisp-scheme-read-string str
          call-with-input-string str wisp-scheme-read-all
 
@@ -361,8 +365,8 @@ define : wisp-scheme-read-string str
 display  
   wisp-scheme-read-string  "  foo ; bar\n  ; nop \n\n; nup\n; nup \n  \n\n\n  foo : moo \"\n\" \n___ . goo . hoo"
 newline 
-; display : wisp-scheme-read-file "wisp-scheme.w"
-; newline 
+display : wisp-scheme-read-file-chunk "wisp-scheme.w"
+newline 
 ; This correctly throws an error.
 ; display
 ;   wisp-scheme-read-string  "  foo \n___. goo . hoo"
