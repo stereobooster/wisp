@@ -363,7 +363,7 @@ define : wisp-scheme-read-string str
          call-with-input-string str wisp-scheme-read-all
 
 
-display  
+display
   wisp-scheme-read-string  "  foo ; bar\n  ; nop \n\n; nup\n; nup \n  \n\n\n  foo : moo \"\n\" \n___ . goo . hoo"
 newline 
 display : wisp-scheme-read-file-chunk "wisp-scheme.w"
