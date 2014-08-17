@@ -261,10 +261,24 @@ define : wisp-indentation-to-parens lines
                             . next-line
                             cdr unprocessed
                             . indentation-levels
+                   : < (line-indent current-line) (line-indent next-line)
+                     if : line-continues? current-line
+                          ; this is a syntax error.
+                          throw 'wisp-syntax-error "Line with deeper indentation follows after a continuation line: current: ~A, next: ~A."
+                             . current-line next-line
+                          loop
+                            append processed 
+                              list
+                                line-prepend-n-parens 1 
+                                  . current-line
+                            . next-line
+                            cdr unprocessed
+                            ; we need to add an indentation level for the next-line.
+                            cons (line-indent next-line) indentation-levels
                    else
                      throw 'wisp-not-implemented 
-                           format #f "Need to implement further line comparison: current: ~A, next: ~A."
-                             . current-line next-line
+                           format #f "Need to implement further line comparison: current: ~A, next: ~A, processed: ~A"
+                             . current-line next-line processed
              
              
              
