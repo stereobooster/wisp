@@ -25,11 +25,11 @@ define : line-code line
          cdr line
 
 define : line-continues? line
-         equal? : "." : car : line-code line
+         equal? "." : car : line-code line
 
 define : line-only-colon? line
          and
-           equal? : ":" : car : line-code line
+           equal? ":" : car : line-code line
            null? : cdr : line-code line
 
 define : line-empty-code? line
@@ -211,20 +211,20 @@ define : wisp-indentation-to-parens lines
                        list
                          line-append-n-parens 
                            1- : length indentation-levels
-                           current-line
-                     '() ; current-line empty: required end condition 1
-                     '() ; unprocessed empty: required end condition 2
-                     '() ; indentation-levels: There is nothing more to process
+                           . current-line
+                     . '() ; current-line empty: required end condition 1
+                     . '() ; unprocessed empty: required end condition 2
+                     . '() ; indentation-levels: There is nothing more to process
                  else
                    loop
                      append processed
                        list
                          line-append-n-parens 
                            length indentation-levels
-                           current-line
-                     '() ; current-line empty: required end condition 1
-                     '() ; unprocessed empty: required end condition 2
-                     '() ; indentation-levels: There is nothing more to process
+                           . current-line
+                     . '() ; current-line empty: required end condition 1
+                     . '() ; unprocessed empty: required end condition 2
+                     . '() ; indentation-levels: There is nothing more to process
              else ; now we come to the line-comparisons and indentation-counting.
                let*
                  : next-line : car unprocessed
@@ -239,7 +239,6 @@ define : wisp-indentation-to-parens lines
                        cdr unprocessed
                        . indentation-levels
                    : line-empty-code? next-line
-                   ; FIXME: this throws ERROR: Wrong type to apply: "."
                      loop
                        . processed
                        . current-line
