@@ -157,6 +157,81 @@ define : wisp-scheme-read-chunk-lines port
                    append currentsymbols : list : read port
                    . emptylines
 
+define : line-append-n-parens n line
+         . "Append N parens at the end of the line"
+         let loop : (rest n) (l line)
+           cond
+             : = 0 rest 
+               . l
+             else
+               loop (1- rest) (append l '(")"))
+
+define : line-prepend-n-parens n line
+         . "Prepend N parens at the beginning of the line, but after the indentation-marker"
+         let loop : (rest n) (l line)
+           cond
+             : = 0 rest 
+               . l
+             else
+               loop 
+                 1- rest
+                 append 
+                   list : car l
+                   '("(")
+                   cdr l
+
+; TODO: process inline colons
+
+define : wisp-indentation-to-parens lines
+         . "Add parentheses to lines and remove the indentation markers"
+         let loop
+           : processed '()
+             current-line : car lines
+             unprocessed : cdr lines
+             indentation-levels '(0)
+           cond
+             ; the recursion end-condition
+             : and (null? current-line) (null? unprocessed) (not (null? indentation-levels))
+               throw 'wisp-programming-error "The current-line is null but there are indentation-levels: Something returned a broken line as new current-line."
+             : and (not (null? current-line)) (null? indentation-levels)
+               throw 'wisp-programming-error "The indentation-levels are null but the current-line is null: Something killed the indentation-levels."
+             ; the recursion end-condition
+             : and (null? current-line) (null? unprocessed)
+               . processed
+             ; now care for the last step
+             : null? unprocessed 
+               ; current is the last line
+               cond
+                 : line-continues? current-line
+                   loop
+                     append processed 
+                       list
+                         line-append-n-parens 
+                           1- : length indentation-levels
+                           current-line
+                     '() ; current-line empty: required end condition 1
+                     '() ; no unprocessed: required end condition 2
+                     '() ; indentation-levels: There is nothing more to process
+                 else
+                   loop
+                     append processed
+                       list
+                         line-append-n-parens 
+                           length indentation-levels
+                           current-line
+                     '() ; current-line empty: required end condition 1
+                     '() ; no unprocessed: required end condition 2
+                     '() ; indentation-levels: There is nothing more to process
+             else ; now we come to the line-comparisons and indentation-counting.
+               let*
+                 : next-line : car unprocessed
+                 cond
+                   else
+                     throw 'wisp-not-implemented "Still need to implement the real comparisons."
+             
+             
+             
+
 define : wisp-scheme-read-chunk port
          . "Read and parse one chunk of wisp-code"
          let : : lines : wisp-scheme-read-chunk-lines port
