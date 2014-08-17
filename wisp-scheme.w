@@ -169,6 +169,7 @@ define : wisp-scheme-read-all port
            : tokens '()
            cond
              : eof-object? : peek-char port
+               ; TODO: Join as string.
                . tokens
              else
                append tokens : wisp-scheme-read-chunk port
