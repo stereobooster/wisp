@@ -14,10 +14,12 @@
 ;; directly create a list of codelines with indentation. For this we
 ;; then simply reuse the appropriate function from the generic wisp
 ;; preprocessor.
-;; 
-;; FIXME: Currently this is horribly slow.
-;; 
-;; TODO: Use cons instead of append.
+
+
+define-module : wisp-scheme
+   . #:export (wisp-scheme-read-chunk wisp-scheme-read-all 
+               wisp-scheme-read-file wisp-scheme-read-file-chunk 
+               wisp-scheme-read-string)
 
 use-modules : srfi srfi-1
 
@@ -65,7 +67,7 @@ define : indent-level-reduction indentation-levels level select-fun
              : < level : car newlevels
                loop
                  cdr newlevels
-                 1- diff
+                 1+ diff
              else
                throw 'wisp-syntax-error "Level ~A not found in the indentation-levels ~A."
 
@@ -233,6 +235,8 @@ define : wisp-scheme-indentation-to-parens lines
              current-line : car lines
              unprocessed : cdr lines
              indentation-levels '(0)
+           ; format #t "processed: ~A\ncurrent-line: ~A\nunprocessed: ~A\nindentation-levels: ~A\n\n"
+           ;     .      processed      current-line      unprocessed      indentation-levels
            cond
              ; the recursion end-condition
              : and (null? current-line) (null? unprocessed) (not (null? indentation-levels))
@@ -268,7 +272,7 @@ define : wisp-scheme-indentation-to-parens lines
                      . '() ; unprocessed empty: required end condition 2
                      . '() ; indentation-levels: There is nothing more to process
              else ; now we come to the line-comparisons and indentation-counting.
-               let*
+               let
                  : next-line : car unprocessed
                  cond
                    : line-empty-code? current-line
@@ -421,7 +425,7 @@ define : wisp-scheme-read-string str
 display
   wisp-scheme-read-string  "  foo ; bar\n  ; nop \n\n; nup\n; nup \n  \n\n\n  foo : moo \"\n\" \n___ . goo . hoo"
 newline 
-display : wisp-scheme-read-file-chunk "wisp-scheme.w"
+display : wisp-scheme-read-file "wisp-scheme.w"
 newline 
 ; This correctly throws an error.
 ; display
