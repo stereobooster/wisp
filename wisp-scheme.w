@@ -245,6 +245,22 @@ define : wisp-indentation-to-parens lines
                        . current-line
                        cdr unprocessed
                        . indentation-levels
+                   : = (line-indent current-line) (line-indent next-line)
+                     if : line-continues? current-line ; no parens needed
+                          loop
+                            append processed : list current-line
+                            . next-line
+                            cdr unprocessed
+                            . indentation-levels
+                          loop
+                            append processed 
+                              list 
+                                line-prepend-n-parens 1 
+                                  line-append-n-parens 1 
+                                    . current-line
+                            . next-line
+                            cdr unprocessed
+                            . indentation-levels
                    else
                      throw 'wisp-not-implemented "Still need to implement the line comparisons."
              
