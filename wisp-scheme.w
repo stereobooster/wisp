@@ -166,12 +166,12 @@ define : wisp-scheme-read-chunk port
 define : wisp-scheme-read-all port
          . "Read all chunks from the given port"
          let loop 
-           : s-exps '()
+           : tokens '()
            cond
              : eof-object? : peek-char port
-               . s-exps
+               . tokens
              else
-               append s-exps : wisp-scheme-read-chunk port
+               append tokens : wisp-scheme-read-chunk port
 
 define : wisp-scheme-read-file path
          call-with-input-file path wisp-scheme-read-all
