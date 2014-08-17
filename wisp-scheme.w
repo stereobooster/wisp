@@ -104,6 +104,9 @@ define : wisp-scheme-read-chunk-lines port
                          else
                            . 0
                      parsedline : append (list indent) currentsymbols
+                   ; TODO: If the line is empty, . Either do it here and do not add it, just
+                   ; increment the empty line counter, or strip it later. Replace indent
+                   ; -1 by indent 0 afterwards.
                    loop
                      append indent-and-symbols : list parsedline
                      . #t ; inindent
@@ -210,7 +213,7 @@ define : wisp-indentation-to-parens lines
                            1- : length indentation-levels
                            current-line
                      '() ; current-line empty: required end condition 1
-                     '() ; no unprocessed: required end condition 2
+                     '() ; unprocessed empty: required end condition 2
                      '() ; indentation-levels: There is nothing more to process
                  else
                    loop
@@ -220,14 +223,30 @@ define : wisp-indentation-to-parens lines
                            length indentation-levels
                            current-line
                      '() ; current-line empty: required end condition 1
-                     '() ; no unprocessed: required end condition 2
+                     '() ; unprocessed empty: required end condition 2
                      '() ; indentation-levels: There is nothing more to process
              else ; now we come to the line-comparisons and indentation-counting.
                let*
                  : next-line : car unprocessed
                  cond
+                   : line-empty-code? current-line
+                     ; We cannot process indentation without
+                     ; code. Just switch to the next line. This should
+                     ; only happen at the start of the recursion.
+                     loop
+                       . processed
+                       . next-line
+                       cdr unprocessed
+                       . indentation-levels
+                   : line-empty-code? next-line
+                   ; FIXME: this throws ERROR: Wrong type to apply: "."
+                     loop
+                       . processed
+                       . current-line
+                       cdr unprocessed
+                       . indentation-levels
                    else
-                     throw 'wisp-not-implemented "Still need to implement the real comparisons."
+                     throw 'wisp-not-implemented "Still need to implement the line comparisons."
              
              
              
@@ -236,7 +255,7 @@ define : wisp-scheme-read-chunk port
          . "Read and parse one chunk of wisp-code"
          let : : lines : wisp-scheme-read-chunk-lines port
              ; TODO: process indentation.
-             . lines
+             wisp-indentation-to-parens lines
 
 define : wisp-scheme-read-all port
          . "Read all chunks from the given port"
