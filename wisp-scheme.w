@@ -40,6 +40,40 @@ define : line-empty? line
            = 0 : line-indent line
            line-empty-code? line
 
+define : line-strip-continuation line   
+         if : line-continues? line
+              list 
+                line-indent line
+                cdr : line-code line
+              . line
+
+define : indent-level-reduction indentation-levels level select-fun
+         . "Reduce the INDENTATION-LEVELS to the given LEVEL and return the value selected by SELECT-FUN"
+         let loop 
+           : newlevels indentation-levels
+             diff 0
+           cond
+             : = level : car newlevels
+               select-fun : list diff indentation-levels
+             : < level : car newlevels
+               loop
+                 cdr newlevels
+                 1- diff
+             else
+               throw 'wisp-syntax-error "Level ~A not found in the indentation-levels ~A."
+
+define : indent-level-difference indentation-levels level
+         . "Find how many indentation levels need to be popped off to find the given level."
+         indent-level-reduction indentation-levels level
+           lambda : x ; get the count
+                    car x
+
+define : indent-reduce-to-level indentation-levels level
+         . "Find how many indentation levels need to be popped off to find the given level."
+         indent-level-reduction indentation-levels level
+           lambda : x ; get the levels
+                    car : cdr x
+
 
 define : wisp-scheme-read-chunk-lines port
          let loop
@@ -211,7 +245,7 @@ define : wisp-indentation-to-parens lines
                        list
                          line-append-n-parens 
                            1- : length indentation-levels
-                           . current-line
+                           line-strip-continuation current-line
                      . '() ; current-line empty: required end condition 1
                      . '() ; unprocessed empty: required end condition 2
                      . '() ; indentation-levels: There is nothing more to process
@@ -222,7 +256,7 @@ define : wisp-indentation-to-parens lines
                          line-prepend-n-parens 1 
                            line-append-n-parens
                              length indentation-levels
-                             . current-line
+                             line-strip-continuation current-line
                      . '() ; current-line empty: required end condition 1
                      . '() ; unprocessed empty: required end condition 2
                      . '() ; indentation-levels: There is nothing more to process
@@ -246,21 +280,17 @@ define : wisp-indentation-to-parens lines
                        cdr unprocessed
                        . indentation-levels
                    : = (line-indent current-line) (line-indent next-line)
-                     if : line-continues? current-line ; no parens needed
-                          loop
-                            append processed : list current-line
-                            . next-line
-                            cdr unprocessed
-                            . indentation-levels
-                          loop
-                            append processed 
-                              list 
-                                line-prepend-n-parens 1 
-                                  line-append-n-parens 1 
-                                    . current-line
-                            . next-line
-                            cdr unprocessed
-                            . indentation-levels
+                     let 
+                       : parens-to-add : if (line-continues? current-line) 0 1
+                       loop
+                         append processed 
+                           list 
+                             line-prepend-n-parens parens-to-add
+                               line-append-n-parens parens-to-add
+                                 line-strip-continuation current-line
+                         . next-line
+                         cdr unprocessed
+                         . indentation-levels
                    : < (line-indent current-line) (line-indent next-line)
                      if : line-continues? current-line
                           ; this is a syntax error.
@@ -270,14 +300,36 @@ define : wisp-indentation-to-parens lines
                             append processed 
                               list
                                 line-prepend-n-parens 1 
-                                  . current-line
+                                  line-strip-continuation current-line
                             . next-line
                             cdr unprocessed
                             ; we need to add an indentation level for the next-line.
                             cons (line-indent next-line) indentation-levels
+                   : > (line-indent current-line) (line-indent next-line)
+                     ; first we need to find out how many indentation levels we need to pop.
+                     let*
+                       : newlevels : indent-reduce-to-level indentation-levels : line-indent next-line
+                         level-difference : indent-level-difference indentation-levels : line-indent next-line
+                         parens-to-prepend 
+                           if : line-continues? current-line
+                                . 1
+                                . 0
+                         parens-to-append 
+                           if : line-continues? current-line
+                                . level-difference
+                                1+ level-difference
+                       loop
+                         append processed 
+                           list
+                             line-prepend-n-parens parens-to-prepend
+                               line-append-n-parens parens-to-append
+                                 line-strip-continuation current-line
+                         . next-line
+                         cdr unprocessed
+                         . newlevels
                    else
                      throw 'wisp-not-implemented 
-                           format #f "Need to implement further line comparison: current: ~A, next: ~A, processed: ~A"
+                           format #f "Need to implement further line comparison: current: ~A, next: ~A, processed: ~A."
                              . current-line next-line processed
              
              
@@ -285,9 +337,7 @@ define : wisp-indentation-to-parens lines
 
 define : wisp-scheme-read-chunk port
          . "Read and parse one chunk of wisp-code"
-         let : : lines : wisp-scheme-read-chunk-lines port
-             ; TODO: process indentation.
-             wisp-indentation-to-parens lines
+         wisp-indentation-to-parens : wisp-scheme-read-chunk-lines port
 
 define : wisp-scheme-read-all port
          . "Read all chunks from the given port"
@@ -298,7 +348,8 @@ define : wisp-scheme-read-all port
                ; TODO: Join as string.
                . tokens
              else
-               append tokens : wisp-scheme-read-chunk port
+               loop
+                 append tokens : wisp-scheme-read-chunk port
 
 define : wisp-scheme-read-file path
          call-with-input-file path wisp-scheme-read-all
@@ -310,11 +361,9 @@ define : wisp-scheme-read-string str
 display  
   wisp-scheme-read-string  "  foo ; bar\n  ; nop \n\n; nup\n; nup \n  \n\n\n  foo : moo \"\n\" \n___ . goo . hoo"
 newline 
-display : wisp-scheme-read-file "wisp-scheme.w"
-newline 
+; display : wisp-scheme-read-file "wisp-scheme.w"
+; newline 
 ; This correctly throws an error.
 ; display
 ;   wisp-scheme-read-string  "  foo \n___. goo . hoo"
 ; newline
-
-
