@@ -262,7 +262,9 @@ define : wisp-indentation-to-parens lines
                             cdr unprocessed
                             . indentation-levels
                    else
-                     throw 'wisp-not-implemented "Still need to implement the line comparisons."
+                     throw 'wisp-not-implemented 
+                           format #f "Need to implement further line comparison: current: ~A, next: ~A."
+                             . current-line next-line
              
              
              
