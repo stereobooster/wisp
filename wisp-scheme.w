@@ -342,6 +342,10 @@ define : wisp-scheme-replace-inline-colons lines
          ' "Replace inline colons by opening parens which close at the end of the line"
          . #t
 
+define : wisp-scheme-strip-indentation-markers lines
+         ' "Strip the indentation markers from the beginning of the lines"
+         . #t
+
 
 define : wisp-scheme-read-chunk port
          . "Read and parse one chunk of wisp-code"
