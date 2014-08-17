@@ -44,8 +44,9 @@ define : line-empty? line
 
 define : line-strip-continuation line   
          if : line-continues? line
-              list 
-                line-indent line
+              append 
+                list 
+                  line-indent line
                 cdr : line-code line
               . line
 
