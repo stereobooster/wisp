@@ -263,6 +263,14 @@ define : wisp-scheme-indentation-to-parens lines
          ; FIXME: Find new algorithm which mostly uses current-line
          ; and the indentation-levels for tracking. The try I have in
          ; here right now is wrong.
+         when 
+           and 
+             not : null? lines
+             not : line-empty-code? : car lines
+             not : = 0 : line-indent : car lines
+           throw 'wisp-syntax-error 
+             format #f "The first symbol in a chunk must start at zero indentation. Line: ~A"
+               car lines
          let loop
            : processed '()
              unprocessed lines
@@ -418,7 +426,10 @@ define : wisp-scheme-read-string str
 
 
 display
-  wisp-scheme-read-string  "  foo ; bar\n  ; nop \n\n; nup\n; nup \n  \n\n\n  foo : moo \"\n\" \n___ . goo . hoo"
+  wisp-scheme-read-string  "foo ; bar\n  ; nop \n\n; nup\n; nup \n  \n\n\nfoo : moo \"\n\" \n___ . goo . hoo"
+newline 
+display
+  wisp-scheme-read-string  "  foo ; bar\n  ; nop \n\n; nup\n; nup \n  \n\n\ nfoo : moo"
 newline 
 ; display : wisp-scheme-read-file-chunk "wisp-scheme.w"
 ; newline 
