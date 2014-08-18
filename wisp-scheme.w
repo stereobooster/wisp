@@ -279,8 +279,8 @@ define : wisp-scheme-indentation-to-parens lines
                       list 0 ; empty code
                current-indentation
                       car indentation-levels
-             format #t "processed: ~A\ncurrent-line: ~A\nnext-line: ~A\nunprocessed: ~A\nindentation-levels: ~A\n\n"
-                 . processed current-line next-line unprocessed indentation-levels
+             format #t "processed: ~A\ncurrent-line: ~A\nnext-line: ~A\nunprocessed: ~A\nindentation-levels: ~A\ncurrent-indentation: ~A\n\n"
+                 . processed current-line next-line unprocessed indentation-levels current-indentation
              cond
                  ; the real end: this is reported to the outside world.
                : and (null? unprocessed) (not (null? indentation-levels)) (null? (cdr indentation-levels))
@@ -348,14 +348,14 @@ define : wisp-scheme-indentation-to-parens lines
                                . unprocessed ; no cdr: the recursion happens in the indentation-levels
                                cons 
                                  line-indent current-line
-                                 . indentation-levels
+                                 cons (line-indent current-line) indentation-levels
                          loop
-                           cons subprocessed processed
+                           append subprocessed processed
                            if : null? subunprocessed
                              . subunprocessed
                              cdr subunprocessed
                            ; we need to add an indentation level for the next-line.
-                           cons (line-indent next-line) indentation-levels
+                           . indentation-levels
                      : > current-indentation (line-indent next-line)
                        display "current-indent > next-line\n"
                        ; this just steps back one level via the side-recursion.
