@@ -325,12 +325,14 @@ define : wisp-scheme-indentation-to-parens lines
                          level-difference : indent-level-difference indentation-levels : line-indent next-line
                          parens-to-prepend 
                            if : line-continues? current-line
-                                . 1
                                 . 0
+                                . 1
                          parens-to-append 
                            if : line-continues? current-line
+                                ; FIXME: This looks wrong, but it has
+                                ; the right result.
+                                1- level-difference
                                 . level-difference
-                                1+ level-difference
                        loop
                          append processed 
                            list
