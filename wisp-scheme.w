@@ -305,6 +305,12 @@ define : wisp-scheme-indentation-to-parens lines
                          cdr unprocessed
                          . indentation-levels
                    : < (line-indent current-line) (line-indent next-line)
+                     ; FIXME: This should get a sublist via recursion
+                     ; and add that to processed instead of using the
+                     ; atrocity of adding parens by hand (which I
+                     ; perceived as very nice up to an hour ago). The
+                     ; sublist should end when we have to pop an
+                     ; indentation-level - level by level.
                      if : line-continues? current-line
                           ; this is a syntax error.
                           throw 'wisp-syntax-error "Line with deeper indentation follows after a continuation line: current: ~A, next: ~A."
