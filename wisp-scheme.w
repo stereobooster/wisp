@@ -357,8 +357,9 @@ define : line-code-replace-inline-colons line
                  . processed
                : equal? readcolon : car unprocessed
                  loop
-                   append processed : list "("
-                   append (cdr unprocessed) : list ")"
+                   ; FIXME: This should turn unprocessed into a list. 
+                   append processed : list : loop '() (cdr unprocessed)
+                   . '()
                else
                  loop 
                    append processed : list : car unprocessed
@@ -425,7 +426,7 @@ define : wisp-scheme-read-string str
 display
   wisp-scheme-read-string  "  foo ; bar\n  ; nop \n\n; nup\n; nup \n  \n\n\n  foo : moo \"\n\" \n___ . goo . hoo"
 newline 
-display : wisp-scheme-read-file "wisp-scheme.w"
+display : wisp-scheme-read-file-chunk "wisp-scheme.w"
 newline 
 ; This correctly throws an error.
 ; display
