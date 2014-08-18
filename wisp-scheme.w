@@ -21,7 +21,9 @@ define-module : wisp-scheme
                wisp-scheme-read-file-chunk wisp-scheme-read-file
                wisp-scheme-read-string)
 
-use-modules : srfi srfi-1
+use-modules 
+  srfi srfi-1
+  srfi srfi-11 ; let-values
 
 
 ;; Helper functions for the indent-and-symbols data structure: '((indent token token ...) ...)
@@ -55,6 +57,10 @@ define : line-strip-continuation line
                   line-indent line
                 cdr : line-code line
               . line
+
+define : line-strip-indentation-marker line
+         ' "Strip the indentation markers from the beginning of the line"
+         cdr line
 
 define : indent-level-reduction indentation-levels level select-fun
          . "Reduce the INDENTATION-LEVELS to the given LEVEL and return the value selected by SELECT-FUN"
@@ -226,133 +232,6 @@ define : line-prepend-n-parens n line
                    . '("(")
                    cdr l
 
-; TODO: process inline colons
-
-define : wisp-scheme-indentation-to-parens lines
-         . "Add parentheses to lines and remove the indentation markers"
-         let loop
-           : processed '()
-             current-line : car lines
-             unprocessed : cdr lines
-             indentation-levels '(0)
-           ; format #t "processed: ~A\ncurrent-line: ~A\nunprocessed: ~A\nindentation-levels: ~A\n\n"
-           ;     .      processed      current-line      unprocessed      indentation-levels
-           cond
-             ; the recursion end-condition
-             : and (null? current-line) (null? unprocessed) (not (null? indentation-levels))
-               throw 'wisp-programming-error "The current-line is null but there are indentation-levels: Something returned a broken line as new current-line."
-             : and (not (null? current-line)) (null? indentation-levels)
-               throw 'wisp-programming-error "The indentation-levels are null but the current-line is null: Something killed the indentation-levels."
-             ; the recursion end-condition
-             : and (null? current-line) (null? unprocessed)
-               . processed
-             ; now care for the last step
-             : null? unprocessed 
-               ; current is the last line
-               cond
-                 : line-continues? current-line
-                   loop
-                     append processed 
-                       list
-                         line-append-n-parens 
-                           1- : length indentation-levels
-                           line-strip-continuation current-line
-                     . '() ; current-line empty: required end condition 1
-                     . '() ; unprocessed empty: required end condition 2
-                     . '() ; indentation-levels: There is nothing more to process
-                 else
-                   loop
-                     append processed
-                       list
-                         line-prepend-n-parens 1 
-                           line-append-n-parens
-                             length indentation-levels
-                             line-strip-continuation current-line
-                     . '() ; current-line empty: required end condition 1
-                     . '() ; unprocessed empty: required end condition 2
-                     . '() ; indentation-levels: There is nothing more to process
-             else ; now we come to the line-comparisons and indentation-counting.
-               let
-                 : next-line : car unprocessed
-                 cond
-                   : line-empty-code? current-line
-                     ; We cannot process indentation without
-                     ; code. Just switch to the next line. This should
-                     ; only happen at the start of the recursion.
-                     ; TODO: Somehow preserve the line-numbers.
-                     loop
-                       . processed
-                       . next-line
-                       cdr unprocessed
-                       . indentation-levels
-                   : line-empty-code? next-line
-                     ; TODO: Somehow preserve the line-numbers.
-                     loop
-                       . processed
-                       . current-line
-                       cdr unprocessed
-                       . indentation-levels
-                   : = (line-indent current-line) (line-indent next-line)
-                     let 
-                       : parens-to-add : if (line-continues? current-line) 0 1
-                       loop
-                         append processed 
-                           list 
-                             line-prepend-n-parens parens-to-add
-                               line-append-n-parens parens-to-add
-                                 line-strip-continuation current-line
-                         . next-line
-                         cdr unprocessed
-                         . indentation-levels
-                   : < (line-indent current-line) (line-indent next-line)
-                     ; FIXME: This should get a sublist via recursion
-                     ; and add that to processed instead of using the
-                     ; atrocity of adding parens by hand (which I
-                     ; perceived as very nice up to an hour ago). The
-                     ; sublist should end when we have to pop an
-                     ; indentation-level - level by level.
-                     if : line-continues? current-line
-                          ; this is a syntax error.
-                          throw 'wisp-syntax-error "Line with deeper indentation follows after a continuation line: current: ~A, next: ~A."
-                             . current-line next-line
-                          loop
-                            append processed 
-                              list
-                                line-prepend-n-parens 1 
-                                  line-strip-continuation current-line
-                            . next-line
-                            cdr unprocessed
-                            ; we need to add an indentation level for the next-line.
-                            cons (line-indent next-line) indentation-levels
-                   : > (line-indent current-line) (line-indent next-line)
-                     ; first we need to find out how many indentation levels we need to pop.
-                     let*
-                       : newlevels : indent-reduce-to-level indentation-levels : line-indent next-line
-                         level-difference : indent-level-difference indentation-levels : line-indent next-line
-                         parens-to-prepend 
-                           if : line-continues? current-line
-                                . 0
-                                . 1
-                         parens-to-append 
-                           if : line-continues? current-line
-                                ; FIXME: This looks wrong, but it has
-                                ; the right result.
-                                1- level-difference
-                                . level-difference
-                       loop
-                         append processed 
-                           list
-                             line-prepend-n-parens parens-to-prepend
-                               line-append-n-parens parens-to-append
-                                 line-strip-continuation current-line
-                         . next-line
-                         cdr unprocessed
-                         . newlevels
-                   else
-                     throw 'wisp-not-implemented 
-                           format #f "Need to implement further line comparison: current: ~A, next: ~A, processed: ~A."
-                             . current-line next-line processed
-
 
 define : line-code-replace-inline-colons line
          ' "Replace inline colons by opening parens which close at the end of the line"
@@ -377,6 +256,115 @@ define : line-replace-inline-colons line
          cons 
            line-indent line
            line-code-replace-inline-colons : line-code line
+
+
+define : wisp-scheme-indentation-to-parens lines
+         . "Add parentheses to lines and remove the indentation markers"
+         ; FIXME: Find new algorithm which mostly uses current-line
+         ; and the indentation-levels for tracking. The try I have in
+         ; here right now is wrong.
+         let loop
+           : processed '()
+             unprocessed lines
+             indentation-levels '(0)
+           let
+             : 
+               current-line 
+                 if : <= 1 : length unprocessed
+                      car unprocessed
+                      list 0 ; empty code
+               next-line
+                 if : <= 2 : length unprocessed
+                      car : cdr unprocessed
+                      list 0 ; empty code
+               current-indentation
+                      car indentation-levels
+             format #t "processed: ~A\ncurrent-line: ~A\nnext-line: ~A\nunprocessed: ~A\nindentation-levels: ~A\n\n"
+                 . processed current-line next-line unprocessed indentation-levels
+             cond
+                 ; the real end: this is reported to the outside world.
+               : and (null? unprocessed) (not (null? indentation-levels)) (null? (cdr indentation-levels))
+                 display "done\n"
+                 ; reverse the processed lines, because I use cons.
+                 reverse processed
+               ; the recursion end-condition
+               : and (null? unprocessed)
+                 display "last step\n"
+                 ; this is the last step. Nothing more to do except
+                 ; for rolling up the indentation levels.  return the
+                 ; new processed and unprocessed lists: this is a
+                 ; side-recursion
+                 values processed unprocessed
+               : null? indentation-levels
+                 display "indentation-levels null\n"
+                 throw 'wisp-programming-error "The indentation-levels are null but the current-line is null: Something killed the indentation-levels."
+               else ; now we come to the line-comparisons and indentation-counting.
+                   cond
+                     : line-empty-code? current-line
+                       display "current-line empty\n"
+                       ; We cannot process indentation without
+                       ; code. Just switch to the next line. This should
+                       ; only happen at the start of the recursion.
+                       ; TODO: Somehow preserve the line-numbers.
+                       loop
+                         . processed
+                         cdr unprocessed
+                         . indentation-levels
+                     : and (line-empty-code? next-line) : <= 2 : length unprocessed 
+                       display "next-line empty\n"
+                       ; TODO: Somehow preserve the line-numbers.
+                       ; take out the next-line from unprocessed.
+                       loop
+                         . processed
+                         cons current-line
+                           cdr : cdr unprocessed
+                         . indentation-levels
+                     : = current-indentation (line-indent current-line)
+                       display "current-indent = next-line\n"
+                       loop
+                         cons
+                           if : line-continues? current-line
+                             line-code-replace-inline-colons 
+                               line-strip-indentation-marker 
+                                 line-strip-continuation current-line
+                             list
+                               line-code-replace-inline-colons 
+                                 line-strip-indentation-marker 
+                                   line-strip-continuation current-line
+                           . processed
+                         cdr unprocessed
+                         . indentation-levels
+                     : < current-indentation (line-indent current-line)
+                       display "current indent < current-line\n"
+                       ; when : line-continues? current-line ; FIXME: Recreate in new structure.
+                            ; this is a syntax error.
+                       ;      throw 'wisp-syntax-error "Line with deeper indentation follows after a continuation line: current: ~A, next: ~A."
+                       ;         . current-line next-line
+                       let-values 
+                         : 
+                           : subprocessed subunprocessed
+                             loop
+                               . '() ; start with empty processed: this is a sublist.
+                               . unprocessed ; no cdr: the recursion happens in the indentation-levels
+                               cons 
+                                 line-indent current-line
+                                 . indentation-levels
+                         loop
+                           cons subprocessed processed
+                           if : null? subunprocessed
+                             . subunprocessed
+                             cdr subunprocessed
+                           ; we need to add an indentation level for the next-line.
+                           cons (line-indent next-line) indentation-levels
+                     : > current-indentation (line-indent next-line)
+                       display "current-indent > next-line\n"
+                       ; this just steps back one level via the side-recursion.
+                       values processed unprocessed
+                     else
+                       throw 'wisp-not-implemented 
+                             format #f "Need to implement further line comparison: current: ~A, next: ~A, processed: ~A."
+                               . current-line next-line processed
+
 
 define : wisp-scheme-replace-inline-colons lines
          ' "Replace inline colons by opening parens which close at the end of the line"
@@ -404,10 +392,8 @@ define : wisp-scheme-strip-indentation-markers lines
 
 define : wisp-scheme-read-chunk port
          . "Read and parse one chunk of wisp-code"
-         wisp-scheme-strip-indentation-markers
-           wisp-scheme-replace-inline-colons 
-             wisp-scheme-indentation-to-parens 
-               wisp-scheme-read-chunk-lines port
+         wisp-scheme-indentation-to-parens 
+             wisp-scheme-read-chunk-lines port
 
 define : wisp-scheme-read-all port
          . "Read all chunks from the given port"
@@ -434,8 +420,8 @@ define : wisp-scheme-read-string str
 display
   wisp-scheme-read-string  "  foo ; bar\n  ; nop \n\n; nup\n; nup \n  \n\n\n  foo : moo \"\n\" \n___ . goo . hoo"
 newline 
-display : wisp-scheme-read-file-chunk "wisp-scheme.w"
-newline 
+; display : wisp-scheme-read-file-chunk "wisp-scheme.w"
+; newline 
 ; This correctly throws an error.
 ; display
 ;   wisp-scheme-read-string  "  foo \n___. goo . hoo"
