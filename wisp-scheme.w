@@ -23,8 +23,8 @@ define-module : wisp-scheme
 
 use-modules 
   srfi srfi-1
-  srfi srfi-11 ; let-values
-
+  srfi srfi-11 ; for let-values
+  ice-9 rw ; for write-string/partial
 
 ;; Helper functions for the indent-and-symbols data structure: '((indent token token ...) ...)
 define : line-indent line
@@ -468,9 +468,7 @@ define : wisp-scheme-read-string str
 ; newline 
 ; display : wisp-scheme-read-file-chunk "wisp-scheme.w"
 ; newline 
-display : wisp-scheme-read-file-chunk "wisp-guile.w"
-newline 
-; This correctly throws an error.
-; display
-;   wisp-scheme-read-string  "  foo \n___. goo . hoo"
-; newline
+; run all chunks in wisp-guile.w as parsed by wisp-scheme.w. Give wisp-guile.w to parse as argument.
+map primitive-eval : wisp-scheme-read-file "wisp-guile.w"
+; pipe the output into 1, then compare it with the output of wisp.scm. If it is equal, this parser works!
+; guile wisp.scm wisp-scheme.w > wisp-scheme.scm; guile wisp-scheme.scm wisp-guile.w > 1; guile wisp.scm wisp-guile.w > 2; diff 1 2
