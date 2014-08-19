@@ -245,13 +245,13 @@ define readcolon
 
 define : line-code-replace-inline-colons line
          ' "Replace inline colons by opening parens which close at the end of the line"
-         format #t "replace inline colons for line ~A\n" line
+         ; format #t "replace inline colons for line ~A\n" line
          let loop
            : processed '()
               unprocessed line
            cond
              : null? unprocessed
-               format #t "inline-colons processed line: ~A\n" processed
+               ; format #t "inline-colons processed line: ~A\n" processed
                . processed
              : equal? readcolon : car unprocessed
                loop
@@ -317,29 +317,29 @@ define : wisp-scheme-indentation-to-parens lines
                current-indentation
                       car indentation-levels
                current-line-indentation : line-real-indent current-line
-             format #t "processed: ~A\ncurrent-line: ~A\nnext-line: ~A\nunprocessed: ~A\nindentation-levels: ~A\ncurrent-indentation: ~A\n\n"
-                 . processed current-line next-line unprocessed indentation-levels current-indentation
+             ; format #t "processed: ~A\ncurrent-line: ~A\nnext-line: ~A\nunprocessed: ~A\nindentation-levels: ~A\ncurrent-indentation: ~A\n\n"
+             ;     . processed current-line next-line unprocessed indentation-levels current-indentation
              cond
                  ; the real end: this is reported to the outside world.
                : and (null? unprocessed) (not (null? indentation-levels)) (null? (cdr indentation-levels))
-                 display "done\n"
+                 ; display "done\n"
                  ; reverse the processed lines, because I use cons.
                  . processed
                ; the recursion end-condition
                : and (null? unprocessed)
-                 display "last step\n"
+                 ; display "last step\n"
                  ; this is the last step. Nothing more to do except
                  ; for rolling up the indentation levels.  return the
                  ; new processed and unprocessed lists: this is a
                  ; side-recursion
                  values processed unprocessed
                : null? indentation-levels
-                 display "indentation-levels null\n"
+                 ; display "indentation-levels null\n"
                  throw 'wisp-programming-error "The indentation-levels are null but the current-line is null: Something killed the indentation-levels."
                else ; now we come to the line-comparisons and indentation-counting.
                    cond
                      : line-empty-code? current-line
-                       display "current-line empty\n"
+                       ; display "current-line empty\n"
                        ; We cannot process indentation without
                        ; code. Just switch to the next line. This should
                        ; only happen at the start of the recursion.
@@ -349,7 +349,7 @@ define : wisp-scheme-indentation-to-parens lines
                          cdr unprocessed
                          . indentation-levels
                      : and (line-empty-code? next-line) : <= 2 : length unprocessed 
-                       display "next-line empty\n"
+                       ; display "next-line empty\n"
                        ; TODO: Somehow preserve the line-numbers.
                        ; take out the next-line from unprocessed.
                        loop
@@ -358,18 +358,18 @@ define : wisp-scheme-indentation-to-parens lines
                            cdr : cdr unprocessed
                          . indentation-levels
                      : > current-indentation current-line-indentation
-                       display "current-indent > next-line\n"
+                       ; display "current-indent > next-line\n"
                        ; this just steps back one level via the side-recursion.
                        values processed unprocessed
                      : = current-indentation current-line-indentation
-                       display "current-indent = next-line\n"
+                       ; display "current-indent = next-line\n"
                        let 
                          : line : line-finalize current-line
                            next-line-indentation : line-real-indent next-line
                          cond
                            : >= current-line-indentation next-line-indentation
                              ; simple recursiive step to the next line
-                             display "current-line-indent >= next-line-indent\n"
+                             ; display "current-line-indent >= next-line-indent\n"
                              loop
                                append processed 
                                  if : line-continues? current-line
@@ -378,8 +378,8 @@ define : wisp-scheme-indentation-to-parens lines
                                cdr unprocessed ; recursion here
                                . indentation-levels
                            : < current-line-indentation next-line-indentation
-                             display "current-line-indent < next-line-indent\n"
-                             format #t "line: ~A\n" line
+                             ; display "current-line-indent < next-line-indent\n"
+                             ; format #t "line: ~A\n" line
                              ; side-recursion via a sublist
                              let-values 
                                :
@@ -388,13 +388,13 @@ define : wisp-scheme-indentation-to-parens lines
                                      . line
                                      cdr unprocessed ; recursion here
                                      . indentation-levels
-                               format #t "side-recursion:\n  sub-processed: ~A\n  processed: ~A\n\n" sub-processed processed
+                               ; format #t "side-recursion:\n  sub-processed: ~A\n  processed: ~A\n\n" sub-processed processed
                                loop
                                  append processed : list sub-processed
                                  . sub-unprocessed ; simply use the recursion from the sub-recursion
                                  . indentation-levels
                      : < current-indentation current-line-indentation
-                       display "current-indent < next-line\n"
+                       ; display "current-indent < next-line\n"
                        loop
                          . processed
                          . unprocessed
@@ -434,8 +434,8 @@ define : wisp-scheme-strip-indentation-markers lines
 define : wisp-scheme-read-chunk port
          . "Read and parse one chunk of wisp-code"
          let : :  lines : wisp-scheme-read-chunk-lines port
-              display lines
-              newline
+              ; display lines
+              ; newline
               wisp-scheme-indentation-to-parens lines
 
 define : wisp-scheme-read-all port
