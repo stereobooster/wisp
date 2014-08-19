@@ -490,7 +490,7 @@ Also unescape \\: to :.
                                         linebracketizer instring inbrackets bracketstoadd 
                                             . (string-append (string-drop-right unprocessed 5) "#,@,")
                                             . processed
-                          : . else ; just go on
+                          else ; just go on
                                         linebracketizer instring inbrackets bracketstoadd 
                                             . (string-drop-right unprocessed 1)
                                             . (string-append lastletter processed)
