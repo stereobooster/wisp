@@ -214,6 +214,7 @@ define : wisp-scheme-read-chunk-lines port
                    . #f ; incomment
                    . currentindent
                    ; this also takes care of the hashbang and leading comments.
+                   ; TODO: If used from Guile, activate curly infix via read-options.
                    append currentsymbols : list : read port
                    . emptylines
 
