@@ -1,3 +1,4 @@
+testsuite: to pass, the tree-il has to match, not the emitted string. This allows for reader-only implementations. | owner:, open:True, id:00b74a730bbf076e73166e817ca7b0a273b376d4, time:1408224636.42
 fails when I add stuff at the end of end of example.w        | owner:, open:False, id:08c68e1ce0c9798184c01806d2661a3220bff3cd, time:1363789693.79
 wisp-mode in quoted lists only the first item is colorized as data, but all words up to the last paren should be colorized. | owner:, open:True, id:1675ca3f894ed8470fa292149a476a2fa0d17140, time:1397196957.45
 add a testsuite for wisp parsers.                            | owner:, open:False, id:1c05d27ac916e1a823b8985a094947907c3c19af, time:1379064922.74
@@ -19,6 +20,7 @@ the repl does not require 3 returns when you use a single char as function, or r
 wisp-guile.w breaks on ";" and complex brackets with bracket char literals. See wisp-guile.w::91 | owner:, open:False, id:9d8b6f87fa5365733fc8655614dbf2a9ba5bd054, time:1377533321.27
 FIX regression: empty line with only : does not remove the :. It transforms to (:, it should transform to ( | owner:, open:False, id:a2323d347612425bc5af577c939916c8b60ec1c9, time:1389631450.78
 wisp-mode: handle lines starting with underscores: currently sees the underscores as function call. | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:b2c3755e1deb8355655a334d569679e2e62d2836, time:1376612093.55
+parens in comments can throw off the parser.                 | owner:, open:True, id:ce28d6c0d1f9894c9b946e56b17934473800edfe, time:1408224406.79
 make this work: let : : origfile ( open-file : nth 1 : command-line ) r | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:d6de2074a5017f1f29f34d142ce797981ed270a0, time:1366529287.67
 wisp.py breaks on \ - quote, escaped backslash, quote. Ignored, because wisp.py is only needed for bootstrapping. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:d75a93ca58ade5b3e3e51f1e7ee9782e743ac131, time:1377424552.02
 comments containing a closing parenthesis can break the parser. | owner:, open:False, id:d9147504868960e5fbc2648474d48ce5c9bd1a02, time:1374838747.22
