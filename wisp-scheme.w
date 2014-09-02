@@ -457,8 +457,6 @@ Match is awesome!"
             : a . '#{.}#
               syntax-error tocheck
             ; more complex pairs
-            : a '#{.}# . c
-              syntax-error tocheck
             : ? pair? a
               let 
                 : head : drop-right a 1
@@ -472,9 +470,6 @@ Match is awesome!"
                    syntax-error tocheck
                  else
                    . a
-              ; if : member readdot a
-              ;      syntax-error
-              ;      map check a
             a
               . a
 
