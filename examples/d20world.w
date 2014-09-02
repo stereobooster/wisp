@@ -187,6 +187,27 @@ define : d20-advect world advection-directions A
 
 define φ : * (/ 1 2) : 1+ : sqrt 5
 
+define : latlon2cellidx lat lon 
+        . "Convert a position given as latitude and longitude into the correct cell index."
+        ; cell 1 (index 0) is on top, cell 20 at the bottom. The right
+        ; border of cell 2 is situated at longitude 0. With that, the
+        ; left corner of cell 19 is at longitude 180. Top and bottom
+        ; are point-symmetric. We can cleanly divide the upper part of
+        ; the icosaeder into 3 regions by longitude. Let's do that.
+        let*
+            : upper : > lat 0
+              ; we start by switching to a symmetric longitude
+              slon : if upper lon : + lon 180
+              ; the sector number is defined by the uppermost triangle
+              ; in it.
+              sector : if (< slon 120) 4 (if (< slon 270) 3 2)
+              ; we start by calculating the fraction inside the sector
+              lonsectorfraction : modulo slon 120
+              ; we can further subdivide the sector by longitude into two subsectors
+              subseclon : if (< lon 60) lon (-120 lon)
+              ; TODO find some more symmetry or start nontrivial geometry.
+            . #t
+
 
 display : d20-as-text world
 newline
