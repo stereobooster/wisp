@@ -9,7 +9,7 @@ fi
 
 # Bootstrap wisp-guile with wisp.py
 if [[ x"$2" == x"" ]]; then 
-    guile="guile"
+    guile='guile'
 else
     guile="$2"
 fi
