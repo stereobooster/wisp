@@ -47,9 +47,9 @@ define : line-code line
 
 ; literal values I need
 define readcolon 
-       call-with-input-string ":" read
+       string->symbol ":"
 define readdot
-       call-with-input-string "." read
+       string->symbol "."
 
 define : line-continues? line
          equal? readdot : car : line-code line
