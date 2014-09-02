@@ -549,13 +549,13 @@ define : wisp-scheme-read-string-chunk str
 ; newline 
 ; write : wisp-scheme-read-file-chunk "wisp-scheme.w"
 ; newline 
-; run all chunks in wisp-guile.w as parsed by wisp-scheme.w. Give wisp-guile.w to parse as argument.
-; map primitive-eval : wisp-scheme-read-file "wisp-guile.w"
 ; call-with-output-file "wisp-guile.scm"
 ;   lambda : port
 ;     map 
 ;        lambda : chunk
 ;                 write chunk port
 ;        wisp-scheme-read-file "wisp-guile.w"
-; pipe the output into 1, then compare it with the output of wisp.scm. If it is equal, this parser works!
+; run all chunks in wisp-guile.w as parsed by wisp-scheme.w. Give wisp-guile.w to parse as argument.
+; map primitive-eval : wisp-scheme-read-file "wisp-guile.w" ; actually runs wisp-guile.w with the arguments supplied to this script.
+; uncomment the previous line, then run the next line in the shell. If 1 and 2 are equal, this parser works!
 ; guile wisp.scm wisp-scheme.w > wisp-scheme.scm; guile wisp-scheme.scm wisp-guile.w > 1; guile wisp.scm wisp-guile.w > 2; diff 1 2
