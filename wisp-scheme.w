@@ -223,29 +223,6 @@ define : wisp-scheme-read-chunk-lines port
                    append currentsymbols : list : read port
                    . emptylines
 
-define : line-append-n-parens n line
-         . "Append N parens at the end of the line"
-         let loop : (rest n) (l line)
-           cond
-             : = 0 rest 
-               . l
-             else
-               loop (1- rest) (append l '(")"))
-
-define : line-prepend-n-parens n line
-         . "Prepend N parens at the beginning of the line, but after the indentation-marker"
-         let loop : (rest n) (l line)
-           cond
-             : = 0 rest 
-               . l
-             else
-               loop 
-                 1- rest
-                 append 
-                   list : car l
-                   . '("(")
-                   cdr l
-
 
 define : line-code-replace-inline-colons line
          ' "Replace inline colons by opening parens which close at the end of the line"
