@@ -426,7 +426,10 @@ when it reads a dot. So we have to take another pass over the
 code to recreate the improper lists.
 
 Match is awesome!"
-         match code
+      let 
+        : 
+          improper
+            match code
                : a ... b '#{.}# c
                  append (map wisp-make-improper a) 
                    cons (wisp-make-improper b) (wisp-make-improper c)
@@ -434,6 +437,46 @@ Match is awesome!"
                  map wisp-make-improper a
                a
                  . a
+        define : syntax-error li
+                throw 'wisp-syntax-error (format #f "incorrect dot-syntax #{.}# in code: not a proper pair: ~A" li)
+        let check
+          : tocheck improper
+          match tocheck
+            ; lists with only one member
+            : '#{.}#
+              syntax-error tocheck
+            ; list with remaining dot.
+            : a ...
+              if : member readdot a
+                   syntax-error tocheck
+                   map check a
+            ; simple pair
+            : '#{.}# . c
+              syntax-error tocheck
+            ; simple pair, other way round
+            : a . '#{.}#
+              syntax-error tocheck
+            ; more complex pairs
+            : a '#{.}# . c
+              syntax-error tocheck
+            : ? pair? a
+              let 
+                : head : drop-right a 1
+                  tail : last-pair a
+                cond
+                 : equal? readdot : car tail
+                   syntax-error tocheck
+                 : equal? readdot : cdr tail
+                   syntax-error tocheck
+                 : member readdot head
+                   syntax-error tocheck
+                 else
+                   . a
+              ; if : member readdot a
+              ;      syntax-error
+              ;      map check a
+            a
+              . a
 
 
 define : wisp-scheme-read-chunk port
@@ -481,7 +524,7 @@ newline
 write
   wisp-scheme-read-string  "moo
   foo
-    . . bar
+    . . bar baz
 baz waz"
 newline 
 ; systax error
