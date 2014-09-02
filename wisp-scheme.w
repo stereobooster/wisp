@@ -14,7 +14,11 @@
 ;; directly create a list of codelines with indentation. For this we
 ;; then simply reuse the appropriate function from the generic wisp
 ;; preprocessor.
-
+;; 
+;; TODO: use match:
+;; (use-modules (ice-9 match))
+;; (define dot (call-with-input-string "." read))
+;; (match (list 'u 'v dot 'w) ((a ... b '#{.}# c) (append a (cons b c))) )
 
 define-module : wisp-scheme
    . #:export (wisp-scheme-read-chunk wisp-scheme-read-all 
@@ -25,6 +29,7 @@ use-modules
   srfi srfi-1
   srfi srfi-11 ; for let-values
   ice-9 rw ; for write-string/partial
+  ice-9 match
 
 ;; Helper functions for the indent-and-symbols data structure: '((indent token token ...) ...)
 define : line-indent line
@@ -411,7 +416,7 @@ define : wisp-scheme-strip-indentation-markers lines
                   append processed : cdr : car unprocessed
                   cdr unprocessed
 
-define : wisp-scheme-recreate-improper-lists expressions
+define : wisp-make-improper code
          . "Turn (a #{.}# b) into the correct (a . b).
 
 read called on a single dot creates a variable named #{.}# (|.|
@@ -420,67 +425,22 @@ structure is known, the reader cannot create improper lists
 when it reads a dot. So we have to take another pass over the
 code to recreate the improper lists.
 
-Traverse each list and sublist backwards, and if it contains a
-readdot, cons every element in the list on the last element.
+Match is awesome!"
+         match code
+               : a ... b '#{.}# c
+                 append (map wisp-make-improper a) 
+                   cons (wisp-make-improper b) (wisp-make-improper c)
+               : a ...
+                 map wisp-make-improper a
+               a
+                 . a
 
-TODO: Find out how I can do that, when the second element is a
-function call (a list). Problem: (cons 1 '(2)) -> '(1 2).
-
-TODO: Find out whether this would actually be legal scheme code.
-      (write (1 . (+ 1 2))) -> error
-      (write . (+ 1 2)) -> strange
-      (write (list 1 . (+ 1 2))) -> (1 #<procedure + (#:optional _ _ . _)> 1 2) ???
-      (list 1 . (list 2 3)) -> (1 #<procedure list _> 2 3)
-      (list . (list 2 3)) -> (#<procedure list _> 2 3) == (list list 2 3)"
-         ; FIXME: Implement recreating improper lists!
-         let loop
-           : processed '()
-             unprocessed-reversed expressions
-           cond
-             : null? unprocessed-reversed
-               . processed
-             : not : list? unprocessed-reversed
-               ; FIXME: This requires unlimited amounts of memory.
-               cons unprocessed-reversed processed
-             : not : member readdot unprocessed-reversed
-               cond
-                 : list? : car unprocessed-reversed
-                   loop
-                     cons 
-                       loop '() : car unprocessed-reversed
-                       . processed
-                     . unprocessed-reversed
-                 else
-                   loop
-                     cons (car unprocessed-reversed) processed
-                     cdr unprocessed-reversed
-             else ; cons unprocessed on its tail
-               let conser
-                 : proc-reversed : car unprocessed-reversed
-                   unproc : cdr unprocessed-reversed
-                 cond
-                   : null? unproc
-                     ; back to the main loop
-                     loop
-                       . processed
-                       . proc-reversed
-                   : equal? readdot : car unproc ; just skip the dot. It is why we cons.
-                     conser
-                       . proc-reversed
-                       cdr unproc
-                   else
-                     conser
-                       cons (car unproc) proc-reversed
-                       cdr unproc
 
 define : wisp-scheme-read-chunk port
          . "Read and parse one chunk of wisp-code"
          let : :  lines : wisp-scheme-read-chunk-lines port
-              ; display lines
-              ; newline
-              ; FIXME: incmoplete list recreation does not work yet
-              ; wisp-scheme-recreate-improper-lists 
-              wisp-scheme-indentation-to-parens lines
+              wisp-make-improper
+                wisp-scheme-indentation-to-parens lines
 
 define : wisp-scheme-read-all port
          . "Read all chunks from the given port"
@@ -488,7 +448,6 @@ define : wisp-scheme-read-all port
            : tokens '()
            cond
              : eof-object? : peek-char port
-               ; TODO: Join as string.
                . tokens
              else
                loop
@@ -503,8 +462,11 @@ define : wisp-scheme-read-file-chunk path
 define : wisp-scheme-read-string str
          call-with-input-string str wisp-scheme-read-all
 
+define : wisp-scheme-read-string-chunk str
+         call-with-input-string str wisp-scheme-read-chunk
 
-; TODO: Recreate improper lists.
+
+; Test improper lists
 write
   wisp-scheme-read-string  "foo . bar"
 newline 
