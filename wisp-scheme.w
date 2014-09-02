@@ -504,29 +504,43 @@ define : wisp-scheme-read-string-chunk str
          call-with-input-string str wisp-scheme-read-chunk
 
 
-; Test improper lists
-write
-  wisp-scheme-read-string  "foo . bar"
-newline 
-write
-  wisp-scheme-read-string  "foo .
-  . bar"
-newline 
-write
-  wisp-scheme-read-string  "foo
-  . . bar"
-newline 
-write
-  wisp-scheme-read-string  "moo
-  foo
-    . . bar baz
-baz waz"
-newline 
-; systax error
-write
-  wisp-scheme-read-string  "foo .
-  . . bar"
-newline 
+;;;; Test improper lists
+;;;; Good cases
+; write
+;   wisp-scheme-read-string  "foo . bar"
+; newline 
+; write
+;   wisp-scheme-read-string  "foo .
+;   . bar"
+; newline 
+; write
+;   wisp-scheme-read-string  "foo
+;   . . bar"
+; newline 
+; write
+;   wisp-scheme-read-string  "moo
+;   foo
+;     . . bar
+; baz waz"
+; newline 
+;;;; Syntax Error cases
+; write
+;   wisp-scheme-read-string  "foo
+;   . . ."
+; newline 
+; write
+;   wisp-scheme-read-string  "moo : . . bar"
+; write
+;   wisp-scheme-read-string  "foo .
+;   . . bar"
+; newline 
+; write
+;   wisp-scheme-read-string  "moo
+;   foo
+;     . . bar baz
+; baz waz"
+; newline 
+;;;; stranger stuff
 ; write
 ;   wisp-scheme-read-string  "foo ; bar\n  ; nop \n\n; nup\n; nup \n  \n\n\nfoo : moo \"\n\" \n___ . goo . hoo"
 ; newline 
