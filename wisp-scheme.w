@@ -411,14 +411,14 @@ define : wisp-scheme-strip-indentation-markers lines
                   append processed : cdr : car unprocessed
                   cdr unprocessed
 
-define : wisp-scheme-recreate-incomeplete-lists expressions
+define : wisp-scheme-recreate-improper-lists expressions
          . "Turn (a #{.}# b) into the correct (a . b).
 
 read called on a single dot creates a variable named #{.}# (|.|
 in r7rs). Due to parsing the indentation before the list
-structure is known, the reader cannot create incomplete lists
+structure is known, the reader cannot create improper lists
 when it reads a dot. So we have to take another pass over the
-code to recreate the incomplete lists.
+code to recreate the improper lists.
 
 Traverse each list and sublist backwards, and if it contains a
 readdot, cons every element in the list on the last element.
@@ -432,7 +432,7 @@ TODO: Find out whether this would actually be legal scheme code.
       (write (list 1 . (+ 1 2))) -> (1 #<procedure + (#:optional _ _ . _)> 1 2) ???
       (list 1 . (list 2 3)) -> (1 #<procedure list _> 2 3)
       (list . (list 2 3)) -> (#<procedure list _> 2 3) == (list list 2 3)"
-         ; FIXME: Implement recreating incomplete lists!
+         ; FIXME: Implement recreating improper lists!
          let loop
            : processed '()
              unprocessed-reversed expressions
@@ -479,7 +479,7 @@ define : wisp-scheme-read-chunk port
               ; display lines
               ; newline
               ; FIXME: incmoplete list recreation does not work yet
-              ; wisp-scheme-recreate-incomeplete-lists 
+              ; wisp-scheme-recreate-improper-lists 
               wisp-scheme-indentation-to-parens lines
 
 define : wisp-scheme-read-all port
@@ -504,7 +504,7 @@ define : wisp-scheme-read-string str
          call-with-input-string str wisp-scheme-read-all
 
 
-; TODO: Recreate incomplete lists.
+; TODO: Recreate improper lists.
 write
   wisp-scheme-read-string  "foo . bar"
 newline 
