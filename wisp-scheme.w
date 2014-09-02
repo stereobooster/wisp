@@ -14,7 +14,11 @@
 ;; directly create a list of codelines with indentation. For this we
 ;; then simply reuse the appropriate function from the generic wisp
 ;; preprocessor.
-
+;; 
+;; TODO: use match:
+;; (use-modules (ice-9 match))
+;; (define dot (call-with-input-string "." read))
+;; (match (list 'u 'v dot 'w) ((a ... b '#{.}# c) (append a (cons b c))) )
 
 define-module : wisp-scheme
    . #:export (wisp-scheme-read-chunk wisp-scheme-read-all 
@@ -25,6 +29,7 @@ use-modules
   srfi srfi-1
   srfi srfi-11 ; for let-values
   ice-9 rw ; for write-string/partial
+  ice-9 match
 
 ;; Helper functions for the indent-and-symbols data structure: '((indent token token ...) ...)
 define : line-indent line
@@ -42,9 +47,9 @@ define : line-code line
 
 ; literal values I need
 define readcolon 
-       call-with-input-string ":" read
+       string->symbol ":"
 define readdot
-       call-with-input-string "." read
+       string->symbol "."
 
 define : line-continues? line
          equal? readdot : car : line-code line
@@ -200,7 +205,7 @@ define : wisp-scheme-read-chunk-lines port
                    . currentsymbols
                    . emptylines
                         ; | cludge to appease the former wisp parser
-                        ; | which had a prblem with the literal comment
+                        ; | which had a problem with the literal comment
                         ; v char.
                : equal? (string-ref ";" 0) next-char
                  loop 
@@ -222,29 +227,6 @@ define : wisp-scheme-read-chunk-lines port
                    ; TODO: If used from Guile, activate curly infix via read-options.
                    append currentsymbols : list : read port
                    . emptylines
-
-define : line-append-n-parens n line
-         . "Append N parens at the end of the line"
-         let loop : (rest n) (l line)
-           cond
-             : = 0 rest 
-               . l
-             else
-               loop (1- rest) (append l '(")"))
-
-define : line-prepend-n-parens n line
-         . "Prepend N parens at the beginning of the line, but after the indentation-marker"
-         let loop : (rest n) (l line)
-           cond
-             : = 0 rest 
-               . l
-             else
-               loop 
-                 1- rest
-                 append 
-                   list : car l
-                   . '("(")
-                   cdr l
 
 
 define : line-code-replace-inline-colons line
@@ -434,76 +416,69 @@ define : wisp-scheme-strip-indentation-markers lines
                   append processed : cdr : car unprocessed
                   cdr unprocessed
 
-define : wisp-scheme-recreate-incomeplete-lists expressions
+define : wisp-make-improper code
          . "Turn (a #{.}# b) into the correct (a . b).
 
 read called on a single dot creates a variable named #{.}# (|.|
 in r7rs). Due to parsing the indentation before the list
-structure is known, the reader cannot create incomplete lists
+structure is known, the reader cannot create improper lists
 when it reads a dot. So we have to take another pass over the
-code to recreate the incomplete lists.
+code to recreate the improper lists.
 
-Traverse each list and sublist backwards, and if it contains a
-readdot, cons every element in the list on the last element.
-
-TODO: Find out how I can do that, when the second element is a
-function call (a list). Problem: (cons 1 '(2)) -> '(1 2).
-
-TODO: Find out whether this would actually be legal scheme code.
-      (write (1 . (+ 1 2))) -> error
-      (write . (+ 1 2)) -> strange
-      (write (list 1 . (+ 1 2))) -> (1 #<procedure + (#:optional _ _ . _)> 1 2) ???
-      (list 1 . (list 2 3)) -> (1 #<procedure list _> 2 3)
-      (list . (list 2 3)) -> (#<procedure list _> 2 3) == (list list 2 3)"
-         ; FIXME: Implement recreating incomplete lists!
-         let loop
-           : processed '()
-             unprocessed-reversed expressions
-           cond
-             : null? unprocessed-reversed
-               . processed
-             : not : list? unprocessed-reversed
-               ; FIXME: This requires unlimited amounts of memory.
-               cons unprocessed-reversed processed
-             : not : member readdot unprocessed-reversed
-               cond
-                 : list? : car unprocessed-reversed
-                   loop
-                     cons 
-                       loop '() : car unprocessed-reversed
-                       . processed
-                     . unprocessed-reversed
+Match is awesome!"
+      let 
+        : 
+          improper
+            match code
+               : a ... b '#{.}# c
+                 append (map wisp-make-improper a) 
+                   cons (wisp-make-improper b) (wisp-make-improper c)
+               : a ...
+                 map wisp-make-improper a
+               a
+                 . a
+        define : syntax-error li
+                throw 'wisp-syntax-error (format #f "incorrect dot-syntax #{.}# in code: not a proper pair: ~A" li)
+        let check
+          : tocheck improper
+          match tocheck
+            ; lists with only one member
+            : '#{.}#
+              syntax-error tocheck
+            ; list with remaining dot.
+            : a ...
+              if : member readdot a
+                   syntax-error tocheck
+                   map check a
+            ; simple pair
+            : '#{.}# . c
+              syntax-error tocheck
+            ; simple pair, other way round
+            : a . '#{.}#
+              syntax-error tocheck
+            ; more complex pairs
+            : ? pair? a
+              let 
+                : head : drop-right a 1
+                  tail : last-pair a
+                cond
+                 : equal? readdot : car tail
+                   syntax-error tocheck
+                 : equal? readdot : cdr tail
+                   syntax-error tocheck
+                 : member readdot head
+                   syntax-error tocheck
                  else
-                   loop
-                     cons (car unprocessed-reversed) processed
-                     cdr unprocessed-reversed
-             else ; cons unprocessed on its tail
-               let conser
-                 : proc-reversed : car unprocessed-reversed
-                   unproc : cdr unprocessed-reversed
-                 cond
-                   : null? unproc
-                     ; back to the main loop
-                     loop
-                       . processed
-                       . proc-reversed
-                   : equal? readdot : car unproc ; just skip the dot. It is why we cons.
-                     conser
-                       . proc-reversed
-                       cdr unproc
-                   else
-                     conser
-                       cons (car unproc) proc-reversed
-                       cdr unproc
+                   . a
+            a
+              . a
+
 
 define : wisp-scheme-read-chunk port
          . "Read and parse one chunk of wisp-code"
          let : :  lines : wisp-scheme-read-chunk-lines port
-              ; display lines
-              ; newline
-              ; FIXME: incmoplete list recreation does not work yet
-              ; wisp-scheme-recreate-incomeplete-lists 
-              wisp-scheme-indentation-to-parens lines
+              wisp-make-improper
+                wisp-scheme-indentation-to-parens lines
 
 define : wisp-scheme-read-all port
          . "Read all chunks from the given port"
@@ -511,7 +486,6 @@ define : wisp-scheme-read-all port
            : tokens '()
            cond
              : eof-object? : peek-char port
-               ; TODO: Join as string.
                . tokens
              else
                loop
@@ -526,30 +500,47 @@ define : wisp-scheme-read-file-chunk path
 define : wisp-scheme-read-string str
          call-with-input-string str wisp-scheme-read-all
 
+define : wisp-scheme-read-string-chunk str
+         call-with-input-string str wisp-scheme-read-chunk
 
-; TODO: Recreate incomplete lists.
-write
-  wisp-scheme-read-string  "foo . bar"
-newline 
-write
-  wisp-scheme-read-string  "foo .
-  . bar"
-newline 
-write
-  wisp-scheme-read-string  "foo
-  . . bar"
-newline 
-write
-  wisp-scheme-read-string  "moo
-  foo
-    . . bar
-baz waz"
-newline 
-; systax error
-write
-  wisp-scheme-read-string  "foo .
-  . . bar"
-newline 
+
+;;;; Test improper lists
+;;;; Good cases
+; write
+;   wisp-scheme-read-string  "foo . bar"
+; newline 
+; write
+;   wisp-scheme-read-string  "foo .
+;   . bar"
+; newline 
+; write
+;   wisp-scheme-read-string  "foo
+;   . . bar"
+; newline 
+; write
+;   wisp-scheme-read-string  "moo
+;   foo
+;     . . bar
+; baz waz"
+; newline 
+;;;; Syntax Error cases
+; write
+;   wisp-scheme-read-string  "foo
+;   . . ."
+; newline 
+; write
+;   wisp-scheme-read-string  "moo : . . bar"
+; write
+;   wisp-scheme-read-string  "foo .
+;   . . bar"
+; newline 
+; write
+;   wisp-scheme-read-string  "moo
+;   foo
+;     . . bar baz
+; baz waz"
+; newline 
+;;;; stranger stuff
 ; write
 ;   wisp-scheme-read-string  "foo ; bar\n  ; nop \n\n; nup\n; nup \n  \n\n\nfoo : moo \"\n\" \n___ . goo . hoo"
 ; newline 
@@ -558,13 +549,13 @@ newline
 ; newline 
 ; write : wisp-scheme-read-file-chunk "wisp-scheme.w"
 ; newline 
-; run all chunks in wisp-guile.w as parsed by wisp-scheme.w. Give wisp-guile.w to parse as argument.
-; map primitive-eval : wisp-scheme-read-file "wisp-guile.w"
 ; call-with-output-file "wisp-guile.scm"
 ;   lambda : port
 ;     map 
 ;        lambda : chunk
 ;                 write chunk port
 ;        wisp-scheme-read-file "wisp-guile.w"
-; pipe the output into 1, then compare it with the output of wisp.scm. If it is equal, this parser works!
+; run all chunks in wisp-guile.w as parsed by wisp-scheme.w. Give wisp-guile.w to parse as argument.
+; map primitive-eval : wisp-scheme-read-file "wisp-guile.w" ; actually runs wisp-guile.w with the arguments supplied to this script.
+; uncomment the previous line, then run the next line in the shell. If 1 and 2 are equal, this parser works!
 ; guile wisp.scm wisp-scheme.w > wisp-scheme.scm; guile wisp-scheme.scm wisp-guile.w > 1; guile wisp.scm wisp-guile.w > 2; diff 1 2
