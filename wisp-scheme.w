@@ -200,7 +200,7 @@ define : wisp-scheme-read-chunk-lines port
                    . currentsymbols
                    . emptylines
                         ; | cludge to appease the former wisp parser
-                        ; | which had a prblem with the literal comment
+                        ; | which had a problem with the literal comment
                         ; v char.
                : equal? (string-ref ";" 0) next-char
                  loop 
