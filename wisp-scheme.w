@@ -225,6 +225,16 @@ define : wisp-scheme-read-chunk-lines port
                    . currentindent
                    . currentsymbols
                    . emptylines
+               : and inindent : equal? (string-ref "." 0) next-char
+                 ; TODO: special case for the dot using the dotrepr as
+                 ; intermediate representation
+                 read-char port ; remove next-char
+                 let : : next-next-char : peek-char port
+                   if : not : equal? #\space next-next-char
+                     ; use the reader
+                     ; add the next char to the port again
+                     unread-char next-char port
+                     ; TODO: finish 
                else ; use the reader
                  loop 
                    . indent-and-symbols
