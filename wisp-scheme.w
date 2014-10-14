@@ -80,7 +80,7 @@ define : line-strip-continuation line
               . line
 
 define : line-strip-indentation-marker line
-         ' "Strip the indentation markers from the beginning of the line"
+         . "Strip the indentation markers from the beginning of the line"
          cdr line
 
 define : indent-level-reduction indentation-levels level select-fun
@@ -259,7 +259,7 @@ define : wisp-scheme-read-chunk-lines port
 
 
 define : line-code-replace-inline-colons line
-         ' "Replace inline colons by opening parens which close at the end of the line"
+         . "Replace inline colons by opening parens which close at the end of the line"
          ; format #t "replace inline colons for line ~A\n" line
          let loop
            : processed '()
@@ -423,7 +423,7 @@ define : wisp-scheme-indentation-to-parens lines
 
 
 define : wisp-scheme-replace-inline-colons lines
-         ' "Replace inline colons by opening parens which close at the end of the line"
+         . "Replace inline colons by opening parens which close at the end of the line"
          let loop
            : processed '()
              unprocessed lines
@@ -435,7 +435,7 @@ define : wisp-scheme-replace-inline-colons lines
                   
 
 define : wisp-scheme-strip-indentation-markers lines
-         ' "Strip the indentation markers from the beginning of the lines"
+         . "Strip the indentation markers from the beginning of the lines"
          let loop
            : processed '()
              unprocessed lines
