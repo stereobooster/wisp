@@ -50,6 +50,15 @@ define readcolon
        string->symbol ":"
 define readdot
        string->symbol "."
+; TODO: define an intermediate dot replacement with UUID
+; ensure that we get real randomness.
+set! *random-state* : random-state-from-platform
+define dotrepr 
+       string->symbol
+           string-append "DOTREPR-"
+               number->string 
+                   random : expt 2 16
+
 
 define : line-continues? line
          equal? readdot : car : line-code line
