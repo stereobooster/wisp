@@ -48,20 +48,14 @@ define : line-code line
 ; literal values I need
 define readcolon 
        string->symbol ":"
-define readdot
-       string->symbol "."
-; TODO: define an intermediate dot replacement with UUID
-; ensure that we get real randomness.
-set! *random-state* : random-state-from-platform
+
+; define an intermediate dot replacement with UUID to avoid clashes.
 define dotrepr 
-       string->symbol
-           string-append "DOTREPR-"
-               number->string 
-                   random : expt 2 16
+       string->symbol "DOTREPR-e749c73d-c826-47e2-a798-c16c13cb89dd"
 
 
 define : line-continues? line
-         equal? readdot : car : line-code line
+         equal? dotrepr : car : line-code line
 
 define : line-only-colon? line
          and
@@ -225,15 +219,31 @@ define : wisp-scheme-read-chunk-lines port
                    . currentindent
                    . currentsymbols
                    . emptylines
-               : and inindent : equal? (string-ref "." 0) next-char
+               : equal? (string-ref "." 0) next-char
                  ; TODO: special case for the dot using the dotrepr as
                  ; intermediate representation
                  read-char port ; remove next-char
                  let : : next-next-char : peek-char port
-                   if : not : equal? #\space next-next-char
-                     ; use the reader
-                     ; add the next char to the port again
+                   ; if we don’t need the special handling, add the
+                   ; next char to the port again
+                   if : not : or (equal? #\space next-next-char) (equal? #\newline next-next-char) (equal? #\return next-next-char) (eof-object? next-next-char)
                      unread-char next-char port
+                   loop 
+                     . indent-and-symbols
+                     . #f ; inindent
+                     . #f ; inunderscoreindent
+                     . #f ; incomment
+                     . currentindent
+                     ; this also takes care of the hashbang and leading comments.
+                     append currentsymbols 
+                       ; if we don’t need the special handling, just
+                       ; use the reader. Otherwise append the special
+                       ; representation of the dot to avoid triggering
+                       ; this for the dot escaped as |.| or #{.}#
+                       if : not : or (equal? #\space next-next-char) (equal? #\newline next-next-char) (equal? #\return next-next-char) (eof-object? next-next-char)
+                         list : read port
+                         list dotrepr
+                     . emptylines
                      ; TODO: finish 
                else ; use the reader
                  loop 
@@ -445,52 +455,52 @@ when it reads a dot. So we have to take another pass over the
 code to recreate the improper lists.
 
 Match is awesome!"
-      let 
-        : 
-          improper
-            match code
-               : a ... b '#{.}# c
-                 append (map wisp-make-improper a) 
-                   cons (wisp-make-improper b) (wisp-make-improper c)
+         let 
+           : 
+             improper
+               match code
+                  : a ... b 'DOTREPR-e749c73d-c826-47e2-a798-c16c13cb89dd c
+                    append (map wisp-make-improper a) 
+                      cons (wisp-make-improper b) (wisp-make-improper c)
+                  : a ...
+                    map wisp-make-improper a
+                  a
+                    . a
+           define : syntax-error li
+                   throw 'wisp-syntax-error (format #f "incorrect dot-syntax #{.}# in code: not a proper pair: ~A" li)
+           let check
+             : tocheck improper
+             match tocheck
+               ; lists with only one member
+               : 'DOTREPR-e749c73d-c826-47e2-a798-c16c13cb89dd
+                 syntax-error tocheck
+               ; list with remaining dot.
                : a ...
-                 map wisp-make-improper a
+                 if : member dotrepr a
+                      syntax-error tocheck
+                      map check a
+               ; simple pair
+               : 'DOTREPR-e749c73d-c826-47e2-a798-c16c13cb89dd . c
+                 syntax-error tocheck
+               ; simple pair, other way round
+               : a . 'DOTREPR-e749c73d-c826-47e2-a798-c16c13cb89dd
+                 syntax-error tocheck
+               ; more complex pairs
+               : ? pair? a
+                 let 
+                   : head : drop-right a 1
+                     tail : last-pair a
+                   cond
+                    : equal? dotrepr : car tail
+                      syntax-error tocheck
+                    : equal? dotrepr : cdr tail
+                      syntax-error tocheck
+                    : member dotrepr head
+                      syntax-error tocheck
+                    else
+                      . a
                a
                  . a
-        define : syntax-error li
-                throw 'wisp-syntax-error (format #f "incorrect dot-syntax #{.}# in code: not a proper pair: ~A" li)
-        let check
-          : tocheck improper
-          match tocheck
-            ; lists with only one member
-            : '#{.}#
-              syntax-error tocheck
-            ; list with remaining dot.
-            : a ...
-              if : member readdot a
-                   syntax-error tocheck
-                   map check a
-            ; simple pair
-            : '#{.}# . c
-              syntax-error tocheck
-            ; simple pair, other way round
-            : a . '#{.}#
-              syntax-error tocheck
-            ; more complex pairs
-            : ? pair? a
-              let 
-                : head : drop-right a 1
-                  tail : last-pair a
-                cond
-                 : equal? readdot : car tail
-                   syntax-error tocheck
-                 : equal? readdot : cdr tail
-                   syntax-error tocheck
-                 : member readdot head
-                   syntax-error tocheck
-                 else
-                   . a
-            a
-              . a
 
 
 define : wisp-scheme-read-chunk port
