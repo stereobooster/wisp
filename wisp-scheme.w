@@ -188,7 +188,8 @@ define : wisp-scheme-read-chunk-lines port
                        1+ emptylines ; FIXME: if emptylines is now 2,
                                      ; we should return here to avoid
                                      ; blocking on the next text
-                                     ; entry.
+                                     ; entry. or maybe earlier in
+                                     ; recursion.
                        . 0
                : equal? #t incomment
                  read-char port ; remove one comment character
