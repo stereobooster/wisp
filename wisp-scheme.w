@@ -120,118 +120,140 @@ define : wisp-scheme-read-chunk-lines port
              currentindent 0
              currentsymbols '()
              emptylines 0
-           let : : next-char : peek-char port
-             cond
-               : eof-object? next-char
-                 append indent-and-symbols : list : append (list currentindent) currentsymbols
-               : <= 2 emptylines
-                 . indent-and-symbols
-               : and inindent : equal? #\space next-char
-                 read-char port ; remove char
-                 loop
-                   . indent-and-symbols
-                   . #t ; inindent
-                   . #f ; inunderscoreindent
-                   . #f ; incomment
-                   1+ currentindent
-                   . currentsymbols
-                   . emptylines
-               : and inunderscoreindent : equal? #\_ next-char
-                 read-char port ; remove char
-                 loop 
-                   . indent-and-symbols
-                   . #t ; inindent
-                   . #t ; inunderscoreindent
-                   . #f ; incomment
-                   1+ currentindent
-                   . currentsymbols
-                   . emptylines
-               ; any char but whitespace *after* underscoreindent is
-               ; an error. This is stricter than the current wisp
-               ; syntax definition. TODO: Fix the definition. Better
-               ; start too strict.
-               : and inunderscoreindent : not : equal? #\space next-char
-                 throw 'wisp-syntax-error "initial underscores without following whitespace at beginning of the line after" : last indent-and-symbols
-               : or (equal? #\newline next-char) (equal? #\return next-char)
-                 read-char port ; remove the newline
-                 ; TODO: Check whether when or if should be preferred here. guile 1.8 only has if.
-                 if : and (equal? #\newline next-char) : equal? #\return : peek-char port
-                      read-char port ; remove a full \n\r. Damn special cases...
-                 let* ; distinguish pure whitespace lines and lines
-                      ; with comment by giving the former zero
-                      ; indent. Lines with a comment at zero indent
-                      ; get indent -1 for the same reason - meaning
-                      ; not actually empty.
-                   :
-                     indent 
-                       cond 
-                         incomment 
-                           if : = 0 currentindent ; specialcase
-                             . -1
-                             . currentindent 
-                         : not : null? currentsymbols ; pure whitespace
-                           . currentindent
-                         else
-                           . 0
-                     parsedline : append (list indent) currentsymbols
-                   ; TODO: If the line is empty. Either do it here and do not add it, just
-                   ; increment the empty line counter, or strip it later. Replace indent
-                   ; -1 by indent 0 afterwards.
+           if : <= 2 emptylines ; the chunk end has to be checked
+                                ; before we look for new chars in the
+                                ; port to make execution in the REPL
+                                ; after two empty lines work
+                                ; (otherwise it shows one more line).
+             . indent-and-symbols
+             let : : next-char : peek-char port
+               cond
+                 : eof-object? next-char
+                   append indent-and-symbols : list : append (list currentindent) currentsymbols
+                 : and inindent : equal? #\space next-char
+                   read-char port ; remove char
                    loop
-                     append indent-and-symbols : list parsedline
+                     . indent-and-symbols
                      . #t ; inindent
-                     equal? #\_ : peek-char port
+                     . #f ; inunderscoreindent
                      . #f ; incomment
-                     . 0
-                     . '()
-                     if : line-empty? parsedline
-                       1+ emptylines ; FIXME: if emptylines is now 2,
-                                     ; we should return here to avoid
-                                     ; blocking on the next text
-                                     ; entry. or maybe earlier in
-                                     ; recursion.
+                     1+ currentindent
+                     . currentsymbols
+                     . emptylines
+                 : and inunderscoreindent : equal? #\_ next-char
+                   read-char port ; remove char
+                   loop 
+                     . indent-and-symbols
+                     . #t ; inindent
+                     . #t ; inunderscoreindent
+                     . #f ; incomment
+                     1+ currentindent
+                     . currentsymbols
+                     . emptylines
+                 ; any char but whitespace *after* underscoreindent is
+                 ; an error. This is stricter than the current wisp
+                 ; syntax definition. TODO: Fix the definition. Better
+                 ; start too strict.
+                 : and inunderscoreindent : not : equal? #\space next-char
+                   throw 'wisp-syntax-error "initial underscores without following whitespace at beginning of the line after" : last indent-and-symbols
+                 : or (equal? #\newline next-char) ; (equal? #\return next-char)
+                   read-char port ; remove the newline
+                   ; The following two lines would break the REPL by requiring one char too many.
+                   ; if : and (equal? #\newline next-char) : equal? #\return : peek-char port
+                   ;      read-char port ; remove a full \n\r. Damn special cases...
+                   let* ; distinguish pure whitespace lines and lines
+                        ; with comment by giving the former zero
+                        ; indent. Lines with a comment at zero indent
+                        ; get indent -1 for the same reason - meaning
+                        ; not actually empty.
+                     :
+                       indent 
+                         cond 
+                           incomment 
+                             if : = 0 currentindent ; specialcase
+                               . -1
+                               . currentindent 
+                           : not : null? currentsymbols ; pure whitespace
+                             . currentindent
+                           else
+                             . 0
+                       parsedline : append (list indent) currentsymbols
+                       emptylines 
+                         if : not : line-empty? parsedline
+                            . 0 
+                            1+ emptylines
+                     ; TODO: If the line is empty. Either do it here and do not add it, just
+                     ; increment the empty line counter, or strip it later. Replace indent
+                     ; -1 by indent 0 afterwards.
+                     loop
+                       append indent-and-symbols : list parsedline
+                       . #t ; inindent
+                       if : <= 2 emptylines
+                         . #f ; chunk ends here
+                         equal? #\_ : peek-char port
+                       . #f ; incomment
                        . 0
-               : equal? #t incomment
-                 read-char port ; remove one comment character
-                 loop 
-                   . indent-and-symbols
-                   . #f ; inindent 
-                   . #f ; inunderscoreindent 
-                   . #t ; incomment
-                   . currentindent
-                   . currentsymbols
-                   . emptylines
-               : or (equal? #\space next-char) (equal? #\tab next-char) ; remove whitespace when not in indent
-                 read-char port ; remove char
-                 loop 
-                   . indent-and-symbols
-                   . #f ; inindent
-                   . #f ; inunderscoreindent
-                   . #f ; incomment
-                   . currentindent
-                   . currentsymbols
-                   . emptylines
-                        ; | cludge to appease the former wisp parser
-                        ; | which had a problem with the literal comment
-                        ; v char.
-               : equal? (string-ref ";" 0) next-char
-                 loop 
-                   . indent-and-symbols
-                   . #f ; inindent 
-                   . #f ; inunderscoreindent 
-                   . #t ; incomment
-                   . currentindent
-                   . currentsymbols
-                   . emptylines
-               : equal? (string-ref "." 0) next-char
-                 ; TODO: special case for the dot using the dotrepr as
-                 ; intermediate representation
-                 read-char port ; remove next-char
-                 let : : next-next-char : peek-char port
-                   ; if we don’t need the special handling, add the
-                   ; next char to the port again
-                   if : not : or (equal? #\space next-next-char) (equal? #\newline next-next-char) (equal? #\return next-next-char) (eof-object? next-next-char)
-                     unread-char next-char port
+                       . '()
+                       . emptylines
+                 : equal? #t incomment
+                   read-char port ; remove one comment character
+                   loop 
+                     . indent-and-symbols
+                     . #f ; inindent 
+                     . #f ; inunderscoreindent 
+                     . #t ; incomment
+                     . currentindent
+                     . currentsymbols
+                     . emptylines
+                 : or (equal? #\space next-char) (equal? #\tab next-char) ; remove whitespace when not in indent
+                   read-char port ; remove char
+                   loop 
+                     . indent-and-symbols
+                     . #f ; inindent
+                     . #f ; inunderscoreindent
+                     . #f ; incomment
+                     . currentindent
+                     . currentsymbols
+                     . emptylines
+                          ; | cludge to appease the former wisp parser
+                          ; | which had a problem with the literal comment
+                          ; v char.
+                 : equal? (string-ref ";" 0) next-char
+                   loop 
+                     . indent-and-symbols
+                     . #f ; inindent 
+                     . #f ; inunderscoreindent 
+                     . #t ; incomment
+                     . currentindent
+                     . currentsymbols
+                     . emptylines
+                 : equal? (string-ref "." 0) next-char
+                   ; TODO: special case for the dot using the dotrepr as
+                   ; intermediate representation
+                   read-char port ; remove next-char
+                   let : : next-next-char : peek-char port
+                     ; if we don’t need the special handling, add the
+                     ; next char to the port again
+                     if : not : or (equal? #\space next-next-char) (equal? #\newline next-next-char) (eof-object? next-next-char) ; (equal? #\return next-next-char) 
+                       unread-char next-char port
+                     loop 
+                       . indent-and-symbols
+                       . #f ; inindent
+                       . #f ; inunderscoreindent
+                       . #f ; incomment
+                       . currentindent
+                       ; this also takes care of the hashbang and leading comments.
+                       append currentsymbols 
+                         ; if we don’t need the special handling, just
+                         ; use the reader. Otherwise append the special
+                         ; representation of the dot to avoid triggering
+                         ; this for the dot escaped as |.| or #{.}#
+                         if : not : or (equal? #\space next-next-char) (equal? #\newline next-next-char) (eof-object? next-next-char) ; (equal? #\return next-next-char)
+                           list : read port
+                           list dotrepr
+                       . emptylines
+                       ; TODO: finish 
+                 else ; use the reader
                    loop 
                      . indent-and-symbols
                      . #f ; inindent
@@ -239,27 +261,9 @@ define : wisp-scheme-read-chunk-lines port
                      . #f ; incomment
                      . currentindent
                      ; this also takes care of the hashbang and leading comments.
-                     append currentsymbols 
-                       ; if we don’t need the special handling, just
-                       ; use the reader. Otherwise append the special
-                       ; representation of the dot to avoid triggering
-                       ; this for the dot escaped as |.| or #{.}#
-                       if : not : or (equal? #\space next-next-char) (equal? #\newline next-next-char) (equal? #\return next-next-char) (eof-object? next-next-char)
-                         list : read port
-                         list dotrepr
+                     ; TODO: If used from Guile, activate curly infix via read-options.
+                     append currentsymbols : list : read port
                      . emptylines
-                     ; TODO: finish 
-               else ; use the reader
-                 loop 
-                   . indent-and-symbols
-                   . #f ; inindent
-                   . #f ; inunderscoreindent
-                   . #f ; incomment
-                   . currentindent
-                   ; this also takes care of the hashbang and leading comments.
-                   ; TODO: If used from Guile, activate curly infix via read-options.
-                   append currentsymbols : list : read port
-                   . emptylines
 
 
 define : line-code-replace-inline-colons line
