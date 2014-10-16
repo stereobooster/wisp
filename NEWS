@@ -1,3 +1,6 @@
+wisp 0.6.5 (2014-10-16):
+- use wisp-scheme in the REPL.
+
 wisp 0.6.4 (2014-09-02):
 - an actually working wisp implementation for scheme (only) which uses the guile reader. This should be actually correct for scheme. And match-magic ☺
 - polishing.
