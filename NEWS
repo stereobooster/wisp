@@ -1,3 +1,6 @@
+wisp 0.6.6 (2014-10-16):
+- fix boostrap.
+
 wisp 0.6.5 (2014-10-16):
 - use wisp-scheme in the REPL.
 - safe dot representation for reading a literal dot (.) for creating improper lists.
