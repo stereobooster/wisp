@@ -11,6 +11,7 @@
 ; adapted from spec.scm: https://gitorious.org/nacre/guile-sweet/source/ae306867e371cb4b56e00bb60a50d9a0b8353109:sweet/spec.scm
 define-module : language wisp spec
   . #:use-module : wisp
+  . #:use-module : wisp-scheme
   . #:use-module : system base compile
   . #:use-module : system base language
   . #:export : wisp
@@ -49,10 +50,16 @@ define : read-one-wisp-sexp port env
           read-wisp-chunk
   try-pending
 
+define : wisp-scheme-read-chunk-env port env
+       cons 'begin : wisp-scheme-read-chunk port
+
 define-language wisp
   . #:title "Wisp Scheme Syntax THIS IS EXPERIMENTAL, USE AT YOUR OWN RISK"
-  . #:reader read-one-wisp-sexp
-  . #:compilers `((scheme . ,compile-scheme)) ; I do not touch quasiquotes yet.
+  ; . #:reader read-one-wisp-sexp
+  . #:reader wisp-scheme-read-chunk-env
+  . #:compilers `((scheme . ,compile-scheme)) ; this is scheme, not
+                                              ; wisp, because I do not
+                                              ; touch quasiquotes yet.
   . #:decompilers `((scheme . ,decompile-scheme))
   . #:evaluator : lambda (x module) : primitive-eval x
   . #:printer write
