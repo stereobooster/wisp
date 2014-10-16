@@ -205,7 +205,7 @@ define : wisp-scheme-read-chunk-lines port
                      . currentindent
                      . currentsymbols
                      . emptylines
-                 : or (equal? #\space next-char) (equal? #\tab next-char) (equal? #\return) ; remove whitespace when not in indent
+                 : or (equal? #\space next-char) (equal? #\tab next-char) (equal? #\return next-char) ; remove whitespace when not in indent
                    read-char port ; remove char
                    loop 
                      . indent-and-symbols
