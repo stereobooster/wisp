@@ -205,7 +205,7 @@ define : wisp-scheme-read-chunk-lines port
                      . currentindent
                      . currentsymbols
                      . emptylines
-                 : or (equal? #\space next-char) (equal? #\tab next-char) ; remove whitespace when not in indent
+                 : or (equal? #\space next-char) (equal? #\tab next-char) (equal? #\return) ; remove whitespace when not in indent
                    read-char port ; remove char
                    loop 
                      . indent-and-symbols
@@ -234,7 +234,7 @@ define : wisp-scheme-read-chunk-lines port
                    let : : next-next-char : peek-char port
                      ; if we don’t need the special handling, add the
                      ; next char to the port again
-                     if : not : or (equal? #\space next-next-char) (equal? #\newline next-next-char) (eof-object? next-next-char) ; (equal? #\return next-next-char) 
+                     if : not : or (equal? #\space next-next-char) (equal? #\newline next-next-char) (eof-object? next-next-char) (equal? #\return next-next-char) 
                        unread-char next-char port
                      loop 
                        . indent-and-symbols
@@ -248,7 +248,7 @@ define : wisp-scheme-read-chunk-lines port
                          ; use the reader. Otherwise append the special
                          ; representation of the dot to avoid triggering
                          ; this for the dot escaped as |.| or #{.}#
-                         if : not : or (equal? #\space next-next-char) (equal? #\newline next-next-char) (eof-object? next-next-char) ; (equal? #\return next-next-char)
+                         if : not : or (equal? #\space next-next-char) (equal? #\newline next-next-char) (eof-object? next-next-char) (equal? #\return next-next-char)
                            list : read port
                            list dotrepr
                        . emptylines
