@@ -49,13 +49,34 @@ define : line-code line
 define readcolon 
        string->symbol ":"
 
+define wisp-uuid "e749c73d-c826-47e2-a798-c16c13cb89dd"
 ; define an intermediate dot replacement with UUID to avoid clashes.
-define dotrepr 
-       string->symbol "DOTREPR-e749c73d-c826-47e2-a798-c16c13cb89dd"
+define repr-dot ; .
+       string->symbol : string-append "REPR-DOT-" wisp-uuid
 
+; allow using reader additions as the first element on a line to prefix the list
+define repr-quote ; '
+       string->symbol : string-append "REPR-QUOTE-" wisp-uuid
+define repr-unquote ; ,
+       string->symbol : string-append "REPR-UNQUOTE-" wisp-uuid
+define repr-unquotesplicing ; ,@
+       string->symbol : string-append "REPR-UNQUOTESPLICING-" wisp-uuid
+define repr-quasiquote ; `
+       string->symbol : string-append "REPR-QUASIQUOTE-" wisp-uuid
+
+define repr-syntax ; #'
+       string->symbol : string-append "REPR-SYNTAX-" wisp-uuid
+define repr-unsyntax ; #,
+       string->symbol : string-append "REPR-UNSYNTAX-" wisp-uuid
+define repr-unsyntaxsplicing ; #,@
+       string->symbol : string-append "REPR-UNSYNTAXSPLICING-" wisp-uuid
+define repr-quasisyntax ; #`
+       string->symbol : string-append "REPR-QUASISYNTAX-" wisp-uuid
+
+; TODO: wrap the reader to return the repr of 
 
 define : line-continues? line
-         equal? dotrepr : car : line-code line
+         equal? repr-dot : car : line-code line
 
 define : line-only-colon? line
          and
@@ -228,7 +249,7 @@ define : wisp-scheme-read-chunk-lines port
                      . currentsymbols
                      . emptylines
                  : equal? (string-ref "." 0) next-char
-                   ; TODO: special case for the dot using the dotrepr as
+                   ; TODO: special case for the dot using the repr-dot as
                    ; intermediate representation
                    read-char port ; remove next-char
                    let : : next-next-char : peek-char port
@@ -250,7 +271,7 @@ define : wisp-scheme-read-chunk-lines port
                          ; this for the dot escaped as |.| or #{.}#
                          if : not : or (equal? #\space next-next-char) (equal? #\newline next-next-char) (eof-object? next-next-char) (equal? #\return next-next-char)
                            list : read port
-                           list dotrepr
+                           list repr-dot
                        . emptylines
                        ; TODO: finish 
                  else ; use the reader
@@ -467,7 +488,7 @@ Match is awesome!"
            : 
              improper
                match code
-                  : a ... b 'DOTREPR-e749c73d-c826-47e2-a798-c16c13cb89dd c
+                  : a ... b 'REPR-DOT-e749c73d-c826-47e2-a798-c16c13cb89dd c
                     append (map wisp-make-improper a) 
                       cons (wisp-make-improper b) (wisp-make-improper c)
                   : a ...
@@ -480,18 +501,18 @@ Match is awesome!"
              : tocheck improper
              match tocheck
                ; lists with only one member
-               : 'DOTREPR-e749c73d-c826-47e2-a798-c16c13cb89dd
+               : 'REPR-DOT-e749c73d-c826-47e2-a798-c16c13cb89dd
                  syntax-error tocheck
                ; list with remaining dot.
                : a ...
-                 if : member dotrepr a
+                 if : member repr-dot a
                       syntax-error tocheck
                       map check a
                ; simple pair
-               : 'DOTREPR-e749c73d-c826-47e2-a798-c16c13cb89dd . c
+               : 'REPR-DOT-e749c73d-c826-47e2-a798-c16c13cb89dd . c
                  syntax-error tocheck
                ; simple pair, other way round
-               : a . 'DOTREPR-e749c73d-c826-47e2-a798-c16c13cb89dd
+               : a . 'REPR-DOT-e749c73d-c826-47e2-a798-c16c13cb89dd
                  syntax-error tocheck
                ; more complex pairs
                : ? pair? a
@@ -499,11 +520,11 @@ Match is awesome!"
                    : head : drop-right a 1
                      tail : last-pair a
                    cond
-                    : equal? dotrepr : car tail
+                    : equal? repr-dot : car tail
                       syntax-error tocheck
-                    : equal? dotrepr : cdr tail
+                    : equal? repr-dot : cdr tail
                       syntax-error tocheck
-                    : member dotrepr head
+                    : member repr-dot head
                       syntax-error tocheck
                     else
                       . a
