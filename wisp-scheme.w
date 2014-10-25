@@ -73,7 +73,11 @@ define repr-unsyntaxsplicing ; #,@
 define repr-quasisyntax ; #`
        string->symbol : string-append "REPR-QUASISYNTAX-" wisp-uuid
 
-; TODO: wrap the reader to return the repr of 
+; TODO: wrap the reader to return the repr of the syntax reader
+; additions 
+
+define : wisp-read-linestart port
+       . #f
 
 define : line-continues? line
          equal? repr-dot : car : line-code line
