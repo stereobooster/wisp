@@ -59,25 +59,71 @@ define repr-quote ; '
        string->symbol : string-append "REPR-QUOTE-" wisp-uuid
 define repr-unquote ; ,
        string->symbol : string-append "REPR-UNQUOTE-" wisp-uuid
-define repr-unquotesplicing ; ,@
-       string->symbol : string-append "REPR-UNQUOTESPLICING-" wisp-uuid
 define repr-quasiquote ; `
        string->symbol : string-append "REPR-QUASIQUOTE-" wisp-uuid
+define repr-unquotesplicing ; ,@
+       string->symbol : string-append "REPR-UNQUOTESPLICING-" wisp-uuid
 
 define repr-syntax ; #'
        string->symbol : string-append "REPR-SYNTAX-" wisp-uuid
 define repr-unsyntax ; #,
        string->symbol : string-append "REPR-UNSYNTAX-" wisp-uuid
-define repr-unsyntaxsplicing ; #,@
-       string->symbol : string-append "REPR-UNSYNTAXSPLICING-" wisp-uuid
 define repr-quasisyntax ; #`
        string->symbol : string-append "REPR-QUASISYNTAX-" wisp-uuid
+define repr-unsyntaxsplicing ; #,@
+       string->symbol : string-append "REPR-UNSYNTAXSPLICING-" wisp-uuid
 
 ; TODO: wrap the reader to return the repr of the syntax reader
 ; additions 
 
-define : wisp-read-linestart port
-       . #f
+define : match-charlist-to-repr charlist
+         case : reverse charlist ; it is created via cons, so the last item is first.
+           : list #\.
+             . repr-dot
+           : list #\'
+             . repr-quote
+           : list #\,
+             . repr-unquote
+           : list #\`
+             . repr-quasiquote
+           : list #\, #\@ 
+             . repr-unquotesplicing
+           : list #\# #\' 
+             . repr-syntax
+           : list #\# #\, 
+             . repr-unsyntax
+           : list #\# #\` 
+             . repr-quasisyntax
+           : list #\# #\, #\@ 
+             . repr-unsyntaxsplicing
+           else
+             . #f
+
+define : wisp-read port
+         let longpeek 
+           : peeked '()
+             repr-symbol #f
+           cond
+             : or (equal? #\space (peek-char port)) (equal? #\newline (peek-char port)) (equal? #\( (peek-char port))
+               if repr-symbol ; found a special symbol, return it.
+                  . repr-symbol
+                  let unpeek
+                    : remaining peeked
+                    cond
+                      : equal? '() remaining 
+                        read port ; let read to the work
+                      else
+                        unread-char (car remaining) port
+                        unpeek : cdr remaining
+             else
+               let* 
+                 : next-char : read-char port
+                   peeked : cons next-char peeked
+                 longpeek
+                   . peeked
+                   match-charlist-to-repr peeked
+                 
+
 
 define : line-continues? line
          equal? repr-dot : car : line-code line
@@ -252,32 +298,6 @@ define : wisp-scheme-read-chunk-lines port
                      . currentindent
                      . currentsymbols
                      . emptylines
-                 : equal? (string-ref "." 0) next-char
-                   ; TODO: special case for the dot using the repr-dot as
-                   ; intermediate representation
-                   read-char port ; remove next-char
-                   let : : next-next-char : peek-char port
-                     ; if we don’t need the special handling, add the
-                     ; next char to the port again
-                     if : not : or (equal? #\space next-next-char) (equal? #\newline next-next-char) (eof-object? next-next-char) (equal? #\return next-next-char) 
-                       unread-char next-char port
-                     loop 
-                       . indent-and-symbols
-                       . #f ; inindent
-                       . #f ; inunderscoreindent
-                       . #f ; incomment
-                       . currentindent
-                       ; this also takes care of the hashbang and leading comments.
-                       append currentsymbols 
-                         ; if we don’t need the special handling, just
-                         ; use the reader. Otherwise append the special
-                         ; representation of the dot to avoid triggering
-                         ; this for the dot escaped as |.| or #{.}#
-                         if : not : or (equal? #\space next-next-char) (equal? #\newline next-next-char) (eof-object? next-next-char) (equal? #\return next-next-char)
-                           list : read port
-                           list repr-dot
-                       . emptylines
-                       ; TODO: finish 
                  else ; use the reader
                    loop 
                      . indent-and-symbols
@@ -287,7 +307,7 @@ define : wisp-scheme-read-chunk-lines port
                      . currentindent
                      ; this also takes care of the hashbang and leading comments.
                      ; TODO: If used from Guile, activate curly infix via read-options.
-                     append currentsymbols : list : read port
+                     append currentsymbols : list : wisp-read port
                      . emptylines
 
 
