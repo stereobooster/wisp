@@ -588,6 +588,22 @@ define : wisp-scheme-read-string-chunk str
          call-with-input-string str wisp-scheme-read-chunk
 
 
+;;;; Test special syntax
+; ;; quote the list
+; write
+;   wisp-scheme-read-string  "moo
+;   foo
+;     ' bar
+; baz waz"
+; newline 
+; ;; quote the symbol - in wisp, whitespace after quote is not allowed!
+; write
+;   wisp-scheme-read-string  "moo
+;   foo
+;     'bar
+; baz waz"
+; newline 
+; 
 ;;;; Test improper lists
 ;;;; Good cases
 ; write
