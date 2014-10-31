@@ -77,27 +77,29 @@ define repr-unsyntaxsplicing ; #,@
 ; additions 
 
 define : match-charlist-to-repr charlist
-         case : reverse charlist ; it is created via cons, so the last item is first.
-           : list #\.
-             . repr-dot
-           : list #\'
-             . repr-quote
-           : list #\,
-             . repr-unquote
-           : list #\`
-             . repr-quasiquote
-           : list #\, #\@ 
-             . repr-unquotesplicing
-           : list #\# #\' 
-             . repr-syntax
-           : list #\# #\, 
-             . repr-unsyntax
-           : list #\# #\` 
-             . repr-quasisyntax
-           : list #\# #\, #\@ 
-             . repr-unsyntaxsplicing
-           else
-             . #f
+         let 
+           : chlist : reverse charlist
+           cond
+             : equal? chlist : list #\.
+               . repr-dot
+             : equal? chlist : list #\'
+               . repr-quote
+             : equal? chlist : list #\,
+               . repr-unquote
+             : equal? chlist : list #\`
+               . repr-quasiquote
+             : equal? chlist : list #\, #\@ 
+               . repr-unquotesplicing
+             : equal? chlist : list #\# #\' 
+               . repr-syntax
+             : equal? chlist : list #\# #\, 
+               . repr-unsyntax
+             : equal? chlist : list #\# #\` 
+               . repr-quasisyntax
+             : equal? chlist : list #\# #\, #\@ 
+               . repr-unsyntaxsplicing
+             else
+               . #f
 
 define : wisp-read port
          let longpeek 
