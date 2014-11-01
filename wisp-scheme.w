@@ -61,7 +61,7 @@ define repr-unquote ; ,
        string->symbol : string-append "REPR-UNQUOTE-" wisp-uuid
 define repr-quasiquote ; `
        string->symbol : string-append "REPR-QUASIQUOTE-" wisp-uuid
-define repr-unquotesplicing ; ,@
+define repr-unquote-splicing ; ,@
        string->symbol : string-append "REPR-UNQUOTESPLICING-" wisp-uuid
 
 define repr-syntax ; #'
@@ -70,7 +70,7 @@ define repr-unsyntax ; #,
        string->symbol : string-append "REPR-UNSYNTAX-" wisp-uuid
 define repr-quasisyntax ; #`
        string->symbol : string-append "REPR-QUASISYNTAX-" wisp-uuid
-define repr-unsyntaxsplicing ; #,@
+define repr-unsyntax-splicing ; #,@
        string->symbol : string-append "REPR-UNSYNTAXSPLICING-" wisp-uuid
 
 ; TODO: wrap the reader to return the repr of the syntax reader
@@ -89,7 +89,7 @@ define : match-charlist-to-repr charlist
              : equal? chlist : list #\`
                . repr-quasiquote
              : equal? chlist : list #\, #\@ 
-               . repr-unquotesplicing
+               . repr-unquote-splicing
              : equal? chlist : list #\# #\' 
                . repr-syntax
              : equal? chlist : list #\# #\, 
@@ -97,7 +97,7 @@ define : match-charlist-to-repr charlist
              : equal? chlist : list #\# #\` 
                . repr-quasisyntax
              : equal? chlist : list #\# #\, #\@ 
-               . repr-unsyntaxsplicing
+               . repr-unsyntax-splicing
              else
                . #f
 
