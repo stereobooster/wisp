@@ -616,6 +616,13 @@ define : wisp-scheme-read-string-chunk str
 ;     'bar
 ; baz waz"
 ; newline 
+; ; ;; quote the list with colon
+; write
+;   wisp-scheme-read-string  "moo : ' foo
+;   foo
+;     ' bar bah
+; baz waz"
+; newline 
 ; 
 ;;;; Test improper lists
 ;;;; Good cases
