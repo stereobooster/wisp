@@ -500,6 +500,18 @@ define : wisp-scheme-strip-indentation-markers lines
                   append processed : cdr : car unprocessed
                   cdr unprocessed
 
+define : wisp-replace-paren-quotation-repr code
+         . "Replace lists starting with a quotation symbol by
+         quoted lists."
+         match code
+             : 'REPR-QUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
+                list 'quote : map wisp-replace-paren-quotation-repr a
+             ; TODO: Add all other repr’s
+             : a ...
+               map wisp-replace-paren-quotation-repr a
+             a
+               . a
+
 define : wisp-make-improper code
          . "Turn (a #{.}# b) into the correct (a . b).
 
@@ -562,7 +574,8 @@ define : wisp-scheme-read-chunk port
          . "Read and parse one chunk of wisp-code"
          let : :  lines : wisp-scheme-read-chunk-lines port
               wisp-make-improper
-                wisp-scheme-indentation-to-parens lines
+                wisp-replace-paren-quotation-repr
+                  wisp-scheme-indentation-to-parens lines
 
 define : wisp-scheme-read-all port
          . "Read all chunks from the given port"
