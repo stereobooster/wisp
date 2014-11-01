@@ -102,11 +102,13 @@ define : match-charlist-to-repr charlist
                . #f
 
 define : wisp-read port
+       . "wrap read to catch list prefixes."
+       let : : prefix-maxlen 4
          let longpeek 
            : peeked '()
              repr-symbol #f
            cond
-             : or (eof-object? (peek-char port)) (equal? #\space (peek-char port)) (equal? #\newline (peek-char port)) (equal? #\( (peek-char port))
+             : or (< prefix-maxlen (length peeked)) (eof-object? (peek-char port)) (equal? #\space (peek-char port)) (equal? #\newline (peek-char port)) (equal? #\( (peek-char port))
                if repr-symbol ; found a special symbol, return it.
                   . repr-symbol
                   let unpeek
