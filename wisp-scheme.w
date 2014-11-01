@@ -508,7 +508,20 @@ define : wisp-replace-paren-quotation-repr code
          match code
              : 'REPR-QUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
                 list 'quote : map wisp-replace-paren-quotation-repr a
-             ; TODO: Add all other repr’s
+             : 'REPR-UNQUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
+                list 'unquote : map wisp-replace-paren-quotation-repr a
+             : 'REPR-QUASIQUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
+                list 'quasiquote : map wisp-replace-paren-quotation-repr a
+             : 'REPR-UNQUOTESPLICING-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
+                list 'unquote-splicing : map wisp-replace-paren-quotation-repr a
+             : 'REPR-SYNTAX-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
+                list 'syntax : map wisp-replace-paren-quotation-repr a
+             : 'REPR-UNSYNTAX-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
+                list 'unsyntax : map wisp-replace-paren-quotation-repr a
+             : 'REPR-QUASISYNTAX-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
+                list 'quasisyntax : map wisp-replace-paren-quotation-repr a
+             : 'REPR-UNSYNTAXSPLICING-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
+                list 'unsyntax-splicing : map wisp-replace-paren-quotation-repr a
              : a ...
                map wisp-replace-paren-quotation-repr a
              a
@@ -623,6 +636,13 @@ define : wisp-scheme-read-string-chunk str
 ;   wisp-scheme-read-string  "moo : ' foo
 ;   foo
 ;     ' bar bah
+; baz waz"
+; newline 
+; ; ;; syntax the list
+; write
+;   wisp-scheme-read-string  "moo : #' foo
+;   foo
+;     #' bar bah
 ; baz waz"
 ; newline 
 ; 
