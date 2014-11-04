@@ -235,7 +235,7 @@ define : wisp-scheme-read-chunk-lines port
                  ; underscores which should empty lines.
                  : and inunderscoreindent : and (not (equal? #\space next-char)) (not (equal? #\newline next-char))
                    throw 'wisp-syntax-error "initial underscores without following whitespace at beginning of the line after" : last indent-and-symbols
-                 : or (equal? #\newline next-char) ; (equal? #\return next-char)
+                 : equal? #\newline next-char
                    read-char port ; remove the newline
                    ; The following two lines would break the REPL by requiring one char too many.
                    ; if : and (equal? #\newline next-char) : equal? #\return : peek-char port
