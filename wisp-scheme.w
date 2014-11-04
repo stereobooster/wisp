@@ -511,6 +511,10 @@ define : wisp-replace-paren-quotation-repr code
          match code
              : 'REPR-QUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
                 list 'quote : map wisp-replace-paren-quotation-repr a
+             : a ... 'REPR-QUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd b ; this is the quoted empty list 
+                append
+                        map wisp-replace-paren-quotation-repr a
+                        list : list 'quote : map wisp-replace-paren-quotation-repr b
              : 'REPR-UNQUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
                 list 'unquote : map wisp-replace-paren-quotation-repr a
              : 'REPR-QUASIQUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
