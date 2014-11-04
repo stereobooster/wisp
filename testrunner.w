@@ -33,4 +33,4 @@ let
            wisp-scheme-read-all : current-input-port
    if : equal? parsed-wisp read-scheme
         format #t "Files ~A and ~A have equivalent content.\n" scheme-file wisp-file
-        format #t "Files ~A and ~A are different!\n\nwisp: ~A\n\nscheme: ~A\n\n\n" scheme-file wisp-file parsed-wisp read-scheme
+        format #t "Files ~A and ~A are different!\n\nwisp:   ~A\n\nscheme: ~A\n\n\n" scheme-file wisp-file parsed-wisp read-scheme
