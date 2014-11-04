@@ -25,6 +25,9 @@ define-module : wisp-scheme
                wisp-scheme-read-file-chunk wisp-scheme-read-file
                wisp-scheme-read-string)
 
+; use curly-infix by default
+read-enable 'curly-infix
+
 use-modules 
   srfi srfi-1
   srfi srfi-11 ; for let-values
