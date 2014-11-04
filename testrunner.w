@@ -22,13 +22,16 @@ define : read-all port
           readloop : append res : list next
 
 
-if
-  equal? 
+let
+   :
+     read-scheme
        with-input-from-file scheme-file 
          λ ()
            read-all : current-input-port
+     parsed-wisp
        with-input-from-file wisp-file
          λ () 
            wisp-scheme-read-all : current-input-port
-  format #t "Files ~A and ~A have equivalent content.\n" scheme-file wisp-file
-  format #t "Files ~A and ~A are different!\n" scheme-file wisp-file
+   if : equal? parsed-wisp read-scheme
+        format #t "Files ~A and ~A have equivalent content.\n" scheme-file wisp-file
+        format #t "Files ~A and ~A are different!\nwisp: ~A, \nscheme: ~a" scheme-file wisp-file parsed-wisp read-scheme
