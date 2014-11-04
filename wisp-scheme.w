@@ -231,7 +231,8 @@ define : wisp-scheme-read-chunk-lines port
                  ; any char but whitespace *after* underscoreindent is
                  ; an error. This is stricter than the current wisp
                  ; syntax definition. TODO: Fix the definition. Better
-                 ; start too strict.
+                 ; start too strict. FIXME: breaks on lines with only
+                 ; underscores which should empty lines.
                  : and inunderscoreindent : not : equal? #\space next-char
                    throw 'wisp-syntax-error "initial underscores without following whitespace at beginning of the line after" : last indent-and-symbols
                  : or (equal? #\newline next-char) ; (equal? #\return next-char)
