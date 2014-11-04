@@ -111,7 +111,7 @@ define : wisp-read port
            : peeked '()
              repr-symbol #f
            cond
-             : or (< prefix-maxlen (length peeked)) (eof-object? (peek-char port)) (equal? #\space (peek-char port)) (equal? #\newline (peek-char port)) (equal? #\( (peek-char port))
+             : or (< prefix-maxlen (length peeked)) (eof-object? (peek-char port)) (equal? #\space (peek-char port)) (equal? #\newline (peek-char port)) 
                if repr-symbol ; found a special symbol, return it.
                   . repr-symbol
                   let unpeek
