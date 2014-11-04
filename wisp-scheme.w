@@ -519,6 +519,15 @@ define : wisp-unescape-underscore-and-colon code
                . a
 
 
+define : wisp-replace-empty-eof code
+         . "replace ((#<eof>)) by ()"
+         ; FIXME: Actually this is a hack which fixes a bug when the
+         ; parser hits files with only hashbang and comments.
+         if : and (pair? (car code)) (eof-object? (car (car code))) (null? (cdr code)) (null? (cdr (car code)))
+              list
+              . code
+
+
 define : wisp-replace-paren-quotation-repr code
          . "Replace lists starting with a quotation symbol by
          quoted lists."
@@ -610,9 +619,10 @@ define : wisp-scheme-read-chunk port
          . "Read and parse one chunk of wisp-code"
          let : :  lines : wisp-scheme-read-chunk-lines port
               wisp-make-improper
-                wisp-unescape-underscore-and-colon
-                  wisp-replace-paren-quotation-repr
-                    wisp-scheme-indentation-to-parens lines
+                wisp-replace-empty-eof
+                  wisp-unescape-underscore-and-colon
+                    wisp-replace-paren-quotation-repr
+                      wisp-scheme-indentation-to-parens lines
 
 define : wisp-scheme-read-all port
          . "Read all chunks from the given port"
