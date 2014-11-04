@@ -1,4 +1,5 @@
 testsuite: to pass, the tree-il has to match, not the emitted string. This allows for reader-only implementations. | owner:, open:True, id:00b74a730bbf076e73166e817ca7b0a273b376d4, time:1408224636.42
+wisp-scheme: unescape \_                                     | owner:, open:True, id:086f61a06e16f1ef56e9917453bbd55b5879d15d, time:1415121255.99
 fails when I add stuff at the end of end of example.w        | owner:, open:False, id:08c68e1ce0c9798184c01806d2661a3220bff3cd, time:1363789693.79
 wisp-mode in quoted lists only the first item is colorized as data, but all words up to the last paren should be colorized. | owner:, open:True, id:1675ca3f894ed8470fa292149a476a2fa0d17140, time:1397196957.45
 add a testsuite for wisp parsers.                            | owner:, open:False, id:1c05d27ac916e1a823b8985a094947907c3c19af, time:1379064922.74
@@ -19,7 +20,7 @@ non-nested multiline comments with #! !#. Requires restructuring. | owner:, open
 wisp-guile: support nested multi-line comments with #| ... |#: multiline comments (srfi-30). Requires restructuring. | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:8cf6202873d4454f57813dd17cf60432059f7c62, time:1389569421.6
 wisp-guile: the repl does not require 3 returns when you use a single char as function, or rather only does so every second time | owner:, open:True, id:9cedd0bdbf4a3b17add4bfe86ad5a23e500cfc6c, time:1379064870.78
 wisp-guile.w breaks on ";" and complex brackets with bracket char literals. See wisp-guile.w::91 | owner:, open:False, id:9d8b6f87fa5365733fc8655614dbf2a9ba5bd054, time:1377533321.27
-wisp-scheme: treat quote quasiquote syntax quasisyntax and so on similar to the dot. | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:9e587f38115099c0825c13a2159605e5f560aeec, time:1413623986.49
+wisp-scheme: treat quote quasiquote syntax quasisyntax and so on similar to the dot. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:9e587f38115099c0825c13a2159605e5f560aeec, time:1413623986.49
 FIX regression: empty line with only : does not remove the :. It transforms to (:, it should transform to ( | owner:, open:False, id:a2323d347612425bc5af577c939916c8b60ec1c9, time:1389631450.78
 wisp-mode: handle lines starting with underscores: currently sees the underscores as function call. | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:b2c3755e1deb8355655a334d569679e2e62d2836, time:1376612093.55
 wisp-guile: parens in strings can throw off the parser       | owner:, open:True, id:ce28d6c0d1f9894c9b946e56b17934473800edfe, time:1408224406.79
