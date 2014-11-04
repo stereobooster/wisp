@@ -1,5 +1,5 @@
 testsuite: to pass, the tree-il has to match, not the emitted string. This allows for reader-only implementations. | owner:, open:True, id:00b74a730bbf076e73166e817ca7b0a273b376d4, time:1408224636.42
-wisp-scheme: unescape \_ and \:                              | owner:, open:True, id:086f61a06e16f1ef56e9917453bbd55b5879d15d, time:1415121255.99
+wisp-scheme: unescape \_ and \:                              | owner:, open:False, id:086f61a06e16f1ef56e9917453bbd55b5879d15d, time:1415121255.99
 fails when I add stuff at the end of end of example.w        | owner:, open:False, id:08c68e1ce0c9798184c01806d2661a3220bff3cd, time:1363789693.79
 wisp-mode in quoted lists only the first item is colorized as data, but all words up to the last paren should be colorized. | owner:, open:True, id:1675ca3f894ed8470fa292149a476a2fa0d17140, time:1397196957.45
 add a testsuite for wisp parsers.                            | owner:, open:False, id:1c05d27ac916e1a823b8985a094947907c3c19af, time:1379064922.74

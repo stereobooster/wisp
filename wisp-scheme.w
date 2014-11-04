@@ -505,6 +505,19 @@ define : wisp-scheme-strip-indentation-markers lines
                   append processed : cdr : car unprocessed
                   cdr unprocessed
 
+define : wisp-unescape-underscore-and-colon code
+         . "replace \\_ and \\: by _ and :"
+         match code
+             : a ...
+               map wisp-unescape-underscore-and-colon a
+             '\_
+               . '_
+             '\:
+               . ':
+             a
+               . a
+
+
 define : wisp-replace-paren-quotation-repr code
          . "Replace lists starting with a quotation symbol by
          quoted lists."
@@ -596,8 +609,9 @@ define : wisp-scheme-read-chunk port
          . "Read and parse one chunk of wisp-code"
          let : :  lines : wisp-scheme-read-chunk-lines port
               wisp-make-improper
-                wisp-replace-paren-quotation-repr
-                  wisp-scheme-indentation-to-parens lines
+                wisp-unescape-underscore-and-colon
+                  wisp-replace-paren-quotation-repr
+                    wisp-scheme-indentation-to-parens lines
 
 define : wisp-scheme-read-all port
          . "Read all chunks from the given port"
