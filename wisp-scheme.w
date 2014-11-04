@@ -233,7 +233,7 @@ define : wisp-scheme-read-chunk-lines port
                  ; syntax definition. TODO: Fix the definition. Better
                  ; start too strict. FIXME: breaks on lines with only
                  ; underscores which should empty lines.
-                 : and inunderscoreindent : not : equal? #\space next-char
+                 : and inunderscoreindent : and (not (equal? #\space next-char)) (not (equal? #\newline next-char))
                    throw 'wisp-syntax-error "initial underscores without following whitespace at beginning of the line after" : last indent-and-symbols
                  : or (equal? #\newline next-char) ; (equal? #\return next-char)
                    read-char port ; remove the newline
