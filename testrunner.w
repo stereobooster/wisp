@@ -21,7 +21,6 @@ define : read-all port
           . res 
           readloop : append res : list next
 
-
 let
    :
      read-scheme
@@ -34,4 +33,4 @@ let
            wisp-scheme-read-all : current-input-port
    if : equal? parsed-wisp read-scheme
         format #t "Files ~A and ~A have equivalent content.\n" scheme-file wisp-file
-        format #t "Files ~A and ~A are different!\nwisp: ~A, \nscheme: ~a" scheme-file wisp-file parsed-wisp read-scheme
+        format #t "Files ~A and ~A are different!\n\nwisp: ~A\n\nscheme: ~A\n\n\n" scheme-file wisp-file parsed-wisp read-scheme
