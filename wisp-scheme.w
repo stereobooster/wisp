@@ -268,7 +268,7 @@ define : wisp-scheme-read-chunk-lines port
                        . #t ; inindent
                        if : <= 2 emptylines
                          . #f ; chunk ends here
-                         equal? #\_ : peek-char port
+                         equal? #\_ : peek-char port ; are we in underscore indent?
                        . #f ; incomment
                        . 0
                        . '()
