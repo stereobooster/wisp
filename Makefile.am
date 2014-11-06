@@ -20,9 +20,9 @@ input.in.intermediate: ${wisp_SOURCES}
 	@abs_top_srcdir@/bootstrap.sh @abs_top_srcdir@ @guile@ @python3@ 2>&1 | sed "s/^;;;.*//" 2>&1 | grep . 1>&2 ; test ! $$? -eq 0 # grep did not find anything
 
 .PHONY: syntaxtests.sh
-syntaxtests.sh : wisp.scm runtests.sh
+syntaxtests.sh : wisp.scm tests/runtests-scheme-preprocessor.sh
 	echo '#!/bin/bash' > @abs_top_builddir@/$@
-	echo @abs_top_srcdir@/runtests.sh @abs_top_srcdir@ @abs_top_builddir@ >> @abs_top_builddir@/$@
+	echo @abs_top_srcdir@/tests/runtests-scheme-preprocessor.sh @abs_top_srcdir@ @abs_top_builddir@ >> @abs_top_builddir@/$@
 	chmod +x @abs_top_builddir@/$@
 
 .PHONY: syntaxtestsreader.sh
