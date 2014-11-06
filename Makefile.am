@@ -21,8 +21,14 @@ input.in.intermediate: ${wisp_SOURCES}
 
 .PHONY: syntaxtests.sh
 syntaxtests.sh : wisp.scm runtests.sh
-	echo '#!/bin/bash' > @abs_top_builddir@/syntaxtests.sh
-	echo @abs_top_srcdir@/runtests.sh @abs_top_srcdir@ @abs_top_builddir@ >> @abs_top_builddir@/syntaxtests.sh
-	chmod +x @abs_top_builddir@/syntaxtests.sh
+	echo '#!/bin/bash' > @abs_top_builddir@/$@
+	echo @abs_top_srcdir@/runtests.sh @abs_top_srcdir@ @abs_top_builddir@ >> @abs_top_builddir@/$@
+	chmod +x @abs_top_builddir@/$@
 
-TESTS=syntaxtests.sh
+.PHONY: syntaxtestsreader.sh
+syntaxtestsreader.sh : wisp.scm tests/runtests-scheme-reader.sh
+	echo '#!/bin/bash' > @abs_top_builddir@/$@
+	echo @abs_top_srcdir@/tests/runtests-scheme-reader.sh @abs_top_srcdir@ @abs_top_builddir@ >> @abs_top_builddir@/$@
+	chmod +x @abs_top_builddir@/$@
+
+TESTS=syntaxtests.sh syntaxtestsreader.sh
