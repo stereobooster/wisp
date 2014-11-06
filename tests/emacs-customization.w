@@ -1,7 +1,8 @@
 if : file-directory-p "~/.emacs.d/private/journal/"
      setq-default journal-dir "~/.emacs.d/private/journal/"
 
-global-set-key [(control meta .)] 'goto-last-change-reverse
+; the following line is not valid scheme and as such would break the scheme tests.
+; global-set-key [(control meta .)] 'goto-last-change-reverse
 
 require 'org-latex
 add-to-list 'org-export-latex-packages-alist 

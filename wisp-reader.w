@@ -51,7 +51,9 @@ define : read-one-wisp-sexp port env
   try-pending
 
 define : wisp-scheme-read-chunk-env port env
-       cons 'begin : wisp-scheme-read-chunk port
+         if : eof-object? : peek-char port
+              read-char port ; return eof: we’re done
+              cons 'begin : wisp-scheme-read-chunk port
 
 define-language wisp
   . #:title "Wisp Scheme Syntax THIS IS EXPERIMENTAL, USE AT YOUR OWN RISK"

@@ -25,6 +25,9 @@ define-module : wisp-scheme
                wisp-scheme-read-file-chunk wisp-scheme-read-file
                wisp-scheme-read-string)
 
+; use curly-infix by default
+read-enable 'curly-infix
+
 use-modules 
   srfi srfi-1
   srfi srfi-11 ; for let-values
@@ -49,13 +52,88 @@ define : line-code line
 define readcolon 
        string->symbol ":"
 
+define wisp-uuid "e749c73d-c826-47e2-a798-c16c13cb89dd"
 ; define an intermediate dot replacement with UUID to avoid clashes.
-define dotrepr 
-       string->symbol "DOTREPR-e749c73d-c826-47e2-a798-c16c13cb89dd"
+define repr-dot ; .
+       string->symbol : string-append "REPR-DOT-" wisp-uuid
+
+; allow using reader additions as the first element on a line to prefix the list
+define repr-quote ; '
+       string->symbol : string-append "REPR-QUOTE-" wisp-uuid
+define repr-unquote ; ,
+       string->symbol : string-append "REPR-UNQUOTE-" wisp-uuid
+define repr-quasiquote ; `
+       string->symbol : string-append "REPR-QUASIQUOTE-" wisp-uuid
+define repr-unquote-splicing ; ,@
+       string->symbol : string-append "REPR-UNQUOTESPLICING-" wisp-uuid
+
+define repr-syntax ; #'
+       string->symbol : string-append "REPR-SYNTAX-" wisp-uuid
+define repr-unsyntax ; #,
+       string->symbol : string-append "REPR-UNSYNTAX-" wisp-uuid
+define repr-quasisyntax ; #`
+       string->symbol : string-append "REPR-QUASISYNTAX-" wisp-uuid
+define repr-unsyntax-splicing ; #,@
+       string->symbol : string-append "REPR-UNSYNTAXSPLICING-" wisp-uuid
+
+; TODO: wrap the reader to return the repr of the syntax reader
+; additions 
+
+define : match-charlist-to-repr charlist
+         let 
+           : chlist : reverse charlist
+           cond
+             : equal? chlist : list #\.
+               . repr-dot
+             : equal? chlist : list #\'
+               . repr-quote
+             : equal? chlist : list #\,
+               . repr-unquote
+             : equal? chlist : list #\`
+               . repr-quasiquote
+             : equal? chlist : list #\, #\@ 
+               . repr-unquote-splicing
+             : equal? chlist : list #\# #\' 
+               . repr-syntax
+             : equal? chlist : list #\# #\, 
+               . repr-unsyntax
+             : equal? chlist : list #\# #\` 
+               . repr-quasisyntax
+             : equal? chlist : list #\# #\, #\@ 
+               . repr-unsyntax-splicing
+             else
+               . #f
+
+define : wisp-read port
+       . "wrap read to catch list prefixes."
+       let : : prefix-maxlen 4
+         let longpeek 
+           : peeked '()
+             repr-symbol #f
+           cond
+             : or (< prefix-maxlen (length peeked)) (eof-object? (peek-char port)) (equal? #\space (peek-char port)) (equal? #\newline (peek-char port)) 
+               if repr-symbol ; found a special symbol, return it.
+                  . repr-symbol
+                  let unpeek
+                    : remaining peeked
+                    cond
+                      : equal? '() remaining 
+                        read port ; let read to the work
+                      else
+                        unread-char (car remaining) port
+                        unpeek : cdr remaining
+             else
+               let* 
+                 : next-char : read-char port
+                   peeked : cons next-char peeked
+                 longpeek
+                   . peeked
+                   match-charlist-to-repr peeked
+                 
 
 
 define : line-continues? line
-         equal? dotrepr : car : line-code line
+         equal? repr-dot : car : line-code line
 
 define : line-only-colon? line
          and
@@ -153,10 +231,11 @@ define : wisp-scheme-read-chunk-lines port
                  ; any char but whitespace *after* underscoreindent is
                  ; an error. This is stricter than the current wisp
                  ; syntax definition. TODO: Fix the definition. Better
-                 ; start too strict.
-                 : and inunderscoreindent : not : equal? #\space next-char
+                 ; start too strict. FIXME: breaks on lines with only
+                 ; underscores which should empty lines.
+                 : and inunderscoreindent : and (not (equal? #\space next-char)) (not (equal? #\newline next-char))
                    throw 'wisp-syntax-error "initial underscores without following whitespace at beginning of the line after" : last indent-and-symbols
-                 : or (equal? #\newline next-char) ; (equal? #\return next-char)
+                 : equal? #\newline next-char
                    read-char port ; remove the newline
                    ; The following two lines would break the REPL by requiring one char too many.
                    ; if : and (equal? #\newline next-char) : equal? #\return : peek-char port
@@ -190,7 +269,7 @@ define : wisp-scheme-read-chunk-lines port
                        . #t ; inindent
                        if : <= 2 emptylines
                          . #f ; chunk ends here
-                         equal? #\_ : peek-char port
+                         equal? #\_ : peek-char port ; are we in underscore indent?
                        . #f ; incomment
                        . 0
                        . '()
@@ -227,32 +306,6 @@ define : wisp-scheme-read-chunk-lines port
                      . currentindent
                      . currentsymbols
                      . emptylines
-                 : equal? (string-ref "." 0) next-char
-                   ; TODO: special case for the dot using the dotrepr as
-                   ; intermediate representation
-                   read-char port ; remove next-char
-                   let : : next-next-char : peek-char port
-                     ; if we don’t need the special handling, add the
-                     ; next char to the port again
-                     if : not : or (equal? #\space next-next-char) (equal? #\newline next-next-char) (eof-object? next-next-char) (equal? #\return next-next-char) 
-                       unread-char next-char port
-                     loop 
-                       . indent-and-symbols
-                       . #f ; inindent
-                       . #f ; inunderscoreindent
-                       . #f ; incomment
-                       . currentindent
-                       ; this also takes care of the hashbang and leading comments.
-                       append currentsymbols 
-                         ; if we don’t need the special handling, just
-                         ; use the reader. Otherwise append the special
-                         ; representation of the dot to avoid triggering
-                         ; this for the dot escaped as |.| or #{.}#
-                         if : not : or (equal? #\space next-next-char) (equal? #\newline next-next-char) (eof-object? next-next-char) (equal? #\return next-next-char)
-                           list : read port
-                           list dotrepr
-                       . emptylines
-                       ; TODO: finish 
                  else ; use the reader
                    loop 
                      . indent-and-symbols
@@ -262,7 +315,7 @@ define : wisp-scheme-read-chunk-lines port
                      . currentindent
                      ; this also takes care of the hashbang and leading comments.
                      ; TODO: If used from Guile, activate curly infix via read-options.
-                     append currentsymbols : list : read port
+                     append currentsymbols : list : wisp-read port
                      . emptylines
 
 
@@ -453,6 +506,57 @@ define : wisp-scheme-strip-indentation-markers lines
                   append processed : cdr : car unprocessed
                   cdr unprocessed
 
+define : wisp-unescape-underscore-and-colon code
+         . "replace \\_ and \\: by _ and :"
+         match code
+             : a ...
+               map wisp-unescape-underscore-and-colon a
+             '\_
+               . '_
+             '\:
+               . ':
+             a
+               . a
+
+
+define : wisp-replace-empty-eof code
+         . "replace ((#<eof>)) by ()"
+         ; FIXME: Actually this is a hack which fixes a bug when the
+         ; parser hits files with only hashbang and comments.
+         if : and (pair? (car code)) (eof-object? (car (car code))) (null? (cdr code)) (null? (cdr (car code)))
+              list
+              . code
+
+
+define : wisp-replace-paren-quotation-repr code
+         . "Replace lists starting with a quotation symbol by
+         quoted lists."
+         match code
+             : 'REPR-QUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
+                list 'quote : map wisp-replace-paren-quotation-repr a
+             : a ... 'REPR-QUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd b ; this is the quoted empty list 
+                append
+                        map wisp-replace-paren-quotation-repr a
+                        list : list 'quote : map wisp-replace-paren-quotation-repr b
+             : 'REPR-UNQUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
+                list 'unquote : map wisp-replace-paren-quotation-repr a
+             : 'REPR-QUASIQUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
+                list 'quasiquote : map wisp-replace-paren-quotation-repr a
+             : 'REPR-UNQUOTESPLICING-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
+                list 'unquote-splicing : map wisp-replace-paren-quotation-repr a
+             : 'REPR-SYNTAX-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
+                list 'syntax : map wisp-replace-paren-quotation-repr a
+             : 'REPR-UNSYNTAX-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
+                list 'unsyntax : map wisp-replace-paren-quotation-repr a
+             : 'REPR-QUASISYNTAX-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
+                list 'quasisyntax : map wisp-replace-paren-quotation-repr a
+             : 'REPR-UNSYNTAXSPLICING-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
+                list 'unsyntax-splicing : map wisp-replace-paren-quotation-repr a
+             : a ...
+               map wisp-replace-paren-quotation-repr a
+             a
+               . a
+
 define : wisp-make-improper code
          . "Turn (a #{.}# b) into the correct (a . b).
 
@@ -467,7 +571,7 @@ Match is awesome!"
            : 
              improper
                match code
-                  : a ... b 'DOTREPR-e749c73d-c826-47e2-a798-c16c13cb89dd c
+                  : a ... b 'REPR-DOT-e749c73d-c826-47e2-a798-c16c13cb89dd c
                     append (map wisp-make-improper a) 
                       cons (wisp-make-improper b) (wisp-make-improper c)
                   : a ...
@@ -480,18 +584,18 @@ Match is awesome!"
              : tocheck improper
              match tocheck
                ; lists with only one member
-               : 'DOTREPR-e749c73d-c826-47e2-a798-c16c13cb89dd
+               : 'REPR-DOT-e749c73d-c826-47e2-a798-c16c13cb89dd
                  syntax-error tocheck
                ; list with remaining dot.
                : a ...
-                 if : member dotrepr a
+                 if : member repr-dot a
                       syntax-error tocheck
                       map check a
                ; simple pair
-               : 'DOTREPR-e749c73d-c826-47e2-a798-c16c13cb89dd . c
+               : 'REPR-DOT-e749c73d-c826-47e2-a798-c16c13cb89dd . c
                  syntax-error tocheck
                ; simple pair, other way round
-               : a . 'DOTREPR-e749c73d-c826-47e2-a798-c16c13cb89dd
+               : a . 'REPR-DOT-e749c73d-c826-47e2-a798-c16c13cb89dd
                  syntax-error tocheck
                ; more complex pairs
                : ? pair? a
@@ -499,11 +603,11 @@ Match is awesome!"
                    : head : drop-right a 1
                      tail : last-pair a
                    cond
-                    : equal? dotrepr : car tail
+                    : equal? repr-dot : car tail
                       syntax-error tocheck
-                    : equal? dotrepr : cdr tail
+                    : equal? repr-dot : cdr tail
                       syntax-error tocheck
-                    : member dotrepr head
+                    : member repr-dot head
                       syntax-error tocheck
                     else
                       . a
@@ -515,7 +619,10 @@ define : wisp-scheme-read-chunk port
          . "Read and parse one chunk of wisp-code"
          let : :  lines : wisp-scheme-read-chunk-lines port
               wisp-make-improper
-                wisp-scheme-indentation-to-parens lines
+                wisp-replace-empty-eof
+                  wisp-unescape-underscore-and-colon
+                    wisp-replace-paren-quotation-repr
+                      wisp-scheme-indentation-to-parens lines
 
 define : wisp-scheme-read-all port
          . "Read all chunks from the given port"
@@ -541,6 +648,36 @@ define : wisp-scheme-read-string-chunk str
          call-with-input-string str wisp-scheme-read-chunk
 
 
+;;;; Test special syntax
+; ;; quote the list
+; write
+;   wisp-scheme-read-string  "moo
+;   foo
+;     ' bar
+; baz waz"
+; newline 
+; ;; quote the symbol - in wisp, whitespace after quote is not allowed!
+; write
+;   wisp-scheme-read-string  "moo
+;   foo
+;     'bar
+; baz waz"
+; newline 
+; ; ;; quote the list with colon
+; write
+;   wisp-scheme-read-string  "moo : ' foo
+;   foo
+;     ' bar bah
+; baz waz"
+; newline 
+; ; ;; syntax the list
+; write
+;   wisp-scheme-read-string  "moo : #' foo
+;   foo
+;     #' bar bah
+; baz waz"
+; newline 
+; 
 ;;;; Test improper lists
 ;;;; Good cases
 ; write
