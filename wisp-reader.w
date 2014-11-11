@@ -10,7 +10,7 @@
 
 ; adapted from spec.scm: https://gitorious.org/nacre/guile-sweet/source/ae306867e371cb4b56e00bb60a50d9a0b8353109:sweet/spec.scm
 define-module : language wisp spec
-  . #:use-module : wisp
+;   . #:use-module : wisp
   . #:use-module : wisp-scheme
   . #:use-module : system base compile
   . #:use-module : system base language
@@ -32,23 +32,23 @@ define : decompile-scheme x e opts
 define wisp-pending-port : make-object-property
 
 ; Code thanks to Mark Weaver
-define : read-one-wisp-sexp port env
-  define : read-wisp-chunk
-    if : eof-object? : peek-char port
-      read-char port ; return eof: we’re done
-      let : : s : wisp2lisp : wisp-chunkreader port
-        set! : wisp-pending-port port
-               open-input-string s
-        try-pending
-  define : try-pending
-    let : : pending-port : wisp-pending-port port
-      if pending-port
-          let : : x : read pending-port
-             if : eof-object? x
-                read-wisp-chunk
-                . x
-          read-wisp-chunk
-  try-pending
+; define : read-one-wisp-sexp port env
+;   define : read-wisp-chunk
+;     if : eof-object? : peek-char port
+;       read-char port ; return eof: we’re done
+;       let : : s : wisp2lisp : wisp-chunkreader port
+;         set! : wisp-pending-port port
+;                open-input-string s
+;         try-pending
+;   define : try-pending
+;     let : : pending-port : wisp-pending-port port
+;       if pending-port
+;           let : : x : read pending-port
+;              if : eof-object? x
+;                 read-wisp-chunk
+;                 . x
+;           read-wisp-chunk
+;   try-pending
 
 define : wisp-scheme-read-chunk-env port env
          if : eof-object? : peek-char port
