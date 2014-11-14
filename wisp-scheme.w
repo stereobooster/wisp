@@ -15,11 +15,7 @@ exec guile -L . --language=wisp -s "$0" "$@"
 ;; directly create a list of codelines with indentation. For this we
 ;; then simply reuse the appropriate function from the generic wisp
 ;; preprocessor.
-;; 
-;; TODO: use match:
-;; (use-modules (ice-9 match))
-;; (define dot (call-with-input-string "." read))
-;; (match (list 'u 'v dot 'w) ((a ... b '#{.}# c) (append a (cons b c))) )
+
 
 define-module : wisp-scheme
    . #:export (wisp-scheme-read-chunk wisp-scheme-read-all 
