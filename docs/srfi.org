@@ -1,10 +1,12 @@
-#+title: SRFI: wisp: whitespace-to-lisp preprocessing
-#+options: toc:nil num:t
+#+title: SRFI: wisp: simpler indentation-sensitive scheme
+#+options: toc:nil num:t ^:nil
+
+# wisp: indentation-based scheme project
 
 #+BEGIN_ABSTRACT
 This SRFI describes a simple syntax which allows making scheme easier to read for newcomers while keeping the simplicity, generality and elegance of s-expressions. Similar to SRFI-110, SRFI-49 and Python it uses indentation to group expressions. Like SRFI-110 wisp is general and homoiconic. 
 
-Different from its precedessors, wisp only uses the absolute minimum of additional syntax-elements which are required for writing and exchanging arbitrary code-structures. As syntax elements it only uses a colon surrounded by whitespace, the period as first code-character on the line and underscores at the beginning of the line.
+Different from its precedessors, wisp only uses the absolute minimum of additional syntax-elements which are required for writing and exchanging arbitrary code-structures. As syntax elements it only uses a colon surrounded by whitespace, the period followed by whitespace as first code-character on the line and optional underscores followed by whitespace at the beginning of the line.
 
 It resolves a limitation of SRFI-110 and SRFI-49, both of which force the programmer to use a single argument per line if the arguments to a function need to be continued after a function-call.
 
@@ -25,6 +27,8 @@ Wisp expressions can include any s-expressions and as such provide backwards com
 #+html: </td></tr></table>
 
 #+END_ABSTRACT
+
+# to make indentation-based code safe to share in non-whitespace preserving environments
 
 #+toc: headlines 2
 
@@ -80,25 +84,25 @@ Remember, even if a proposal becomes an final SRFI, the need for it must be comp
 
 ** Acknowledgments
 
-- Thanks for lots of constructive discussions goes to Alan Manuel K. Gloria and David A. Wheeler.
+- Thanks for many constructive discussions goes to Alan Manuel K. Gloria and David A. Wheeler.
 - Also thanks to Mark Weaver for his help with the wisp parser and the guile integration - including a 20x speedup.
 
 * Related SRFIs
 
 - SRFI-49 (Indentation-sensitive syntax): superceded by this SRFI, 
 - SRFI-110 (Sweet-expressions (t-expressions)): alternative to this SRFI,
-- SRFI-105 (neoteric expressions and curly infix): supported in this SRFI by treating curly braces like brackets and parens.
+- SRFI-105 (neoteric expressions and curly infix): supported in this SRFI by treating curly braces like brackets and parentheses. Curly infix is required.
 - SRFI-30 (Nested Multi-line comments): complex interaction. Should be avoided at the beginning of lines, because it can make the indentation hard to distinguish for humans. SRFI-110 includes them, so there might be value in adding them. The wisp reference implementation does not treat them specially, though, which might create arbitrary complications.
 
 * Rationale
 
-A big strength of Scheme and other lisp-like languages is their minimalistic syntax. By using only the most common characters like the period, the comma, the quote and quasiquote, the hash, the semicolon and the parens for the syntax[fn:1], they are very close to natural language. Along with the minimal list-structure of the code, this gives these languages a timeless elegance.
+A big strength of Scheme and other lisp-like languages is their minimalistic syntax. By using only the most common characters like the period, the comma, the quote and quasiquote, the hash, the semicolon and the parens for the syntax (=.,"'`#;()=), they are very close to natural language[fn:1]. Along with the minimal list-structure of the code, this gives these languages a timeless elegance.
 
-But as SRFI-110 explains very thoroughly (which we need not repeat here), the parentheses at the beginning of lines hurt readability and scare away newcomers. Additionally using indentation to mark the structure of the code follows naturally from the observation that most programmers use indentation, with many programmers actually letting their editor indent code automatically to fit the structure. Indentation is an important way how programmers understand code and using it directly to define the structure avoids errors due to mismatches between indentation and actual meaning.
+But as SRFI-110 explains very thoroughly (which we need not repeat here), the parentheses at the beginning of lines hurt readability and scare away newcomers. Additionally using indentation to mark the structure of the code follows naturally from the observation that most programmers use indentation, with many programmers letting their editor indent code automatically to fit the structure. Indentation is an important way how programmers understand code and using it directly to define the structure avoids errors due to mismatches between indentation and actual meaning.
 
-As a solution to this, SRFI-49 and SRFI-110 provide a way to write whitespace sensitive scheme, but both have their share of problems.
+As a solution to this, SRFI-49 and SRFI-110 provide a way to write whitespace sensitive scheme, but both have their share of issues.
 
-As noted in SRFI-110, there are a number of implementation-problems in SRFI-49, as well as specification shortcomings like choosing the name “group” for the construct which is necessary to represent double parentheses. Additionally to the problems named in SRFI-110, SRFI-49 is not able to continue the arguments to a function on one line, if a prior argument was a function call. The example code in the abstract would have to be written in SRFI-49 as follows:
+As noted in SRFI-110, there are a number of implementation-problems in SRFI-49, as well as specification shortcomings like choosing the name “group” for the construct which is necessary to represent double parentheses. In addition to the problems named in SRFI-110, SRFI-49 is not able to continue the arguments to a function on one line, if a prior argument was a function call. The example code in the abstract would have to be written in SRFI-49 as follows:
 
 #+BEGIN_SRC scheme
   ,* 5
@@ -107,7 +111,7 @@ As noted in SRFI-110, there are a number of implementation-problems in SRFI-49, 
     1
 #+END_SRC
 
-SRFI-110 improves a lot over the implementation of SRFI-49. It resolves the group-naming and tries to reduce the need to continue the argument-list by introducing 3 different grouping-syntaxes (=$=, =\\= and =<* *>=). These additional syntax-elements however hurt readability for newcomers a lot (obviously the authors of SRFI-110 disagree with this assertion. Their point is discussed in SRFI-110 in the section about wisp). The additional syntax elements lead to structures like the following:
+SRFI-110 improves a lot over the implementation of SRFI-49. It resolves the group-naming and reduces the need to continue the argument-list by introducing 3 different grouping syntaxes (=$=, =\\= and =<* *>=). These additional syntax-elements however hurt readability for newcomers (obviously the authors of SRFI-110 disagree with this assertion. Their view is discussed in SRFI-110 in the section about wisp). The additional syntax elements lead to structures like the following (taken from examples from the readable project):
 #+BEGIN_SRC scheme
 myfunction 
   x: \\ original-x
@@ -125,19 +129,21 @@ myfunction
 
 This is not only hard to read, but also makes it harder to work with the code, because the programmer has to learn these additional syntax elements and keep them in mind before being able to understand the code.
 
-Like SRFI-49 SRFI-110 also cannot continue the argument-list without resorting to single-element lines, though it reduces this problem by advertising the use of neoteric expressions (SRFI-105).
+Like SRFI-49 SRFI-110 also cannot continue the argument-list without resorting to single-element lines, though it reduces this problem by the above grouping syntaxes and advertising the use of neoteric expressions from SRFI-105.
 
 ** Advantages of Wisp
 
-Wisp draws on the strength of SRFI-110 but avoids its complexities. It was actually conceived and improved in the discussions within the readable-project which preceded SRFI-110 and there is a comparison between readable in wisp in SRFI-110.
+Wisp draws on the strength of SRFI-110 but avoids its complexities. It was conceived and improved in the discussions within the readable-project which preceded SRFI-110 and there is a comparison between readable in wisp in SRFI-110.
 
-Like SRFI-110, wisp is general and homoiconic and interacts nicely with SRFI-105 (neoteric expressions and curly infix). Like SRFI-110, the expressions are the same in the REPL and in code-files. Like SRFI-110, wisp has been used for implementing multiple smaller programs, though the biggest program in wisp is still its implementation.
+Like SRFI-110, wisp is general and homoiconic and interacts nicely with SRFI-105 (neoteric expressions and curly infix). Like SRFI-110, the expressions are the same in the REPL and in code-files. Like SRFI-110, wisp has been used for implementing multiple smaller programs, though the biggest program in wisp is still its implementations (written in wisp and bootstrapped via a simpler wisp preprocessor).
 
 But unlike SRFI-110, wisp only uses the minimum of additional syntax-elements which are necessary to support arbitrary code-structures with indentation-sensitive code which is intended to be shared over the internet. To realize these syntax-elements, it generalizes existing syntax and draws on the most common non-letter non-math characters in prose. This allows keeping the actual representation of the code elegant and inviting to newcomers.
 
 ** Disadvantages of Wisp
 
-Using the colon as syntax element keeps the code very close to written prose, but it can interfere with type definitions as for example used in Typed Racket[fn:6]. This can be mitigated in let- and lambda-forms by using the parenthesized form. When doing so, wisp avoid the double-paren for type-declarations and as such makes them easier to catch by eye. For function definitions (the only =define= call where type declarations are needed in typed-racket[fn:7]), a =declare= macro directly before the =define= should work well.
+Using the colon as syntax element keeps the code very close to written prose, but it can interfere with type definitions as for example used in Typed Racket[fn:6]. This can be mitigated in let- and lambda-forms by using the parenthesized form. When doing so, wisp avoids the double-paren for type-declarations and as such makes them easier to catch by eye. For function definitions (the only =define= call where type declarations are needed in typed-racket[fn:7]), a =declare= macro directly before the =define= should work well.
+
+Using the period to continue the argument list is unusual compared to other languages and as such can lead to errors when trying to return a variable from a procedure and forgetting the period.
 
 * Specification
 
@@ -321,7 +327,7 @@ If the colon starts a line, it starts a bracket which gets closed at the end of 
 #+BEGIN_SRC wisp
 define : stringy s 
          string-append s "can be varied as follows:
-"
+ "
            string-capitalize s
            string-reverse s
            . (string-capitalize
@@ -333,15 +339,17 @@ define : stringy s
 
 ** Clarifications
 
-- Code-blocks end after 2 empty lines followed by a newline. Indented non-empty lines after 2 empty lines should be treated as error. A line is empty if it only contains whitespace.
+- Code-blocks end after 2 empty lines followed by a newline. Indented non-empty lines after 2 empty lines should be treated as error. A line is empty if it only contains whitespace. A line with a comment is never empty.
 
-- Inside parentheses wisp parsing is disabled. Consequently linebreaks inside parentheses are not considered linebreaks for wisp-parsing. For the parser everything which happens inside parentheses is considered as a black box.
+- Inside parentheses, wisp parsing is disabled. Consequently linebreaks inside parentheses are not considered linebreaks for wisp-parsing. For the parser everything which happens inside parentheses is treated as a black box.
 
 - Square brackets and curly braces should be treated the same way as parentheses: They stop the indentation processing until they are closed.
 
 - Likewise linebreaks inside strings are not considered linebreaks for wisp-parsing.
 
 - A colon (:) at the beginning of a line adds an extra open parentheses that gets closed at end-of-line (rule 4.2.7) *and* defines an indentation level.
+
+- using a quote to escape a symbol separated from it by whitespace is forbidden. This would make the meaning of quoted lines ambigous.
 
 * Syntax justification
 
@@ -356,21 +364,27 @@ See also http://draketo.de/light/english/wisp-lisp-indentation-preprocessor#sec-
 
 The dot at the beginning of the line as marker of the continuation of a variable list is a generalization of using the dot as identity function - which is an implementation detail in many lisps.
 
-`(. a)` is just `a`.
+#+BEGIN_QUOTE
+=(. a)= is just =a=
+#+END_QUOTE
 
-So for the single variable case, this would not even need additional parsing: wisp could just parse ". a" to "(. a)" and produce the correct result in most lisps. But forcing programmers to always use separate lines for each parameter would be very inconvenient, so the definition of the dot at the beginning of the line is extended to mean “take every element in this line as parameter to the parent function”.
+So for the single variable case, this would not even need additional parsing: wisp could just parse =. a= to =(. a)= and produce the correct result in most lisps. But forcing programmers to always use separate lines for each parameter would be very inconvenient, so the definition of the dot at the beginning of the line is extended to mean “take every element in this line as parameter to the parent function”. 
 
-Essentially this dot-rule means that we mark variables in the code instead of function calls, since in Lisp variables at the beginning of a line are much rarer than in other programming languages. In lisp assigning a value to a variable is a function call while it is a syntax element in many other languages, so what would be a variable at the beginning of a line in other languages is a function call in lisp..
+#+BEGIN_QUOTE
+=(. a)= → =a= is generalized to =(. a b c)= → =a b c=.
+#+END_QUOTE
+
+At its core, this dot-rule means that we mark variables in the code instead of function calls. We do so, because variables at the beginning of a line are much rarer in Scheme than in other programming languages.
 
 ** : (the colon)
 
-For double brackets and for some other cases we must have a way to mark indentation levels without any code. I chose the colon, because it is the most common non-alpha-numeric character in normal prose which is not already reserved as syntax by lisp when it is surrounded by whitespace, and because it already gets used for marking keyword arguments to functions in Emacs Lisp, so it does not add completely alien characters.
+For double parentheses and for some other cases we must have a way to mark indentation levels without any code. Wisp uses the colon, because it is the most common non-alpha-numeric character in normal prose which is not already reserved as syntax by Scheme when it is surrounded by whitespace, and because it already gets used without sourrounding whitespace for marking keyword arguments to functions in Emacs Lisp and Common Lisp, so it does not add completely alien concepts.
 
 The inline function call via inline " : " is a limited generalization of using the colon to mark an indentation level: If we add a syntax-element, we should use it as widely as possible to justify adding syntax overhead.
 
-But if you need to use : as variable or function name, you can still do so by escaping it with a backslash, so this does not forbid using the character.
+But if you need to use =:= as variable or function name, you can still do so by escaping it with a backslash (=\:=), so this does not forbid using the character.
 
-For simple cases, the colon could be replaced by clever whitespace parsing, but there are complex cases which make this impossible. A simple example is a theoretical doublelet which does not require a body:[fn:4]
+For simple cases, the colon could be replaced by clever whitespace parsing, but there are complex cases which make this impossible. The minimal example is a theoretical doublelet which does not require a body:[fn:4]
 
 #+BEGIN_SRC scheme
 (doublelet
@@ -396,7 +410,7 @@ doublelet
   : bla foo
 #+END_SRC
 
-The need to be able to represent things like this is the real reason, why the colon exists. The inline and start-of-line use is only a generalization of that principle (we add a syntax-element, so we should see how far we can push it to reduce the effective cost of introducing the additional syntax).
+The need to be able to represent arbitrary syntax trees which can contain expressions like this is the real reason, why the colon exists. The inline and start-of-line use is only a generalization of that principle (we add a syntax-element, so we should see how far we can push it to reduce the effective cost of introducing the additional syntax).
 
 *** Clever whitespace-parsing which would not work
 
@@ -405,19 +419,42 @@ There are two alternative ways to tackle this issue: deferred level-definition a
 Defining intermediate indentation-levels by later elements (deferred definition) would be a problem, because it would create code which is really hard to understand. An example is the following:
 
 #+BEGIN_SRC wisp
-defun flubb
-   
+define (flubb)
     nubb
+    hubb
+    subb
    gam
 #+END_SRC
 
 would become
 
 #+BEGIN_SRC scheme
-(defun flubb ()
+(define (flubb)
    ((nubb))
+   ((hubb))
+   ((subb))
   (gam))
 #+END_SRC
+
+while
+
+#+BEGIN_SRC wisp
+define (flubb)
+    nubb
+    hubb
+    subb
+#+END_SRC
+
+would become
+
+#+BEGIN_SRC scheme
+(define (flubb)
+   (nubb)
+   (hubb)
+   (subb))
+#+END_SRC
+
+Knowledge of later parts of the code would be necessary to understand the parts a programmer is working on at the moment. This would call for subtle errors which would be hard to track down, because the effect of a change in code would not be localized at the point where the change is done but could propagate backwards.
 
 Fixed indentation width (alternative option to inferring it from later lines) would make it really hard to write readable code. Stuff like this would not be possible:
 
@@ -430,19 +467,19 @@ if
 
 ** _ (the underscore)
 
-In Python the whitespace hostile html already presents problems with sharing code - for example in email list archives and forums. But in Python the indentation can mostly be inferred by looking at the previous line: If that ends with a colon, the next line must be more indented (there is nothing to clearly mark reduced indentation, though). In wisp we do not have this help, so we need a way to survive in that hostile environment.
+In Python the whitespace hostile html already presents problems with sharing code - for example in email list archives and forums. But Python-programmers can mostly be infer the indentation by looking at the previous line: If that ends with a colon, the next line must be more indented (there is nothing to clearly mark reduced indentation, though). In wisp we do not have this support, so we need a way to survive in the hostile environment of todays web.
 
-The underscore is commonly used to denote a space in URLs, where spaces are inconvenient, but it is rarely used in lisp (where the dash ("-") is mostly used instead), so it seems like a a natural choice.
+The underscore is commonly used to denote a space in URLs, where spaces are inconvenient, but it is rarely used in Scheme (where the dash ("-") is mostly used instead), so it seems like a a natural choice.
 
 You can still use underscores anywhere but at the beginning of the line, and even at the beginning of the line you simply need to escape it by prefixing the first underscore with a backslash ("\____").
 
 * Implementation
 
-This reference implementation realizes a general wisp-preprocessor which can be used for any lisp-like language. It contains special syntax-constructs for scheme, though. The reference-preprocessor uses GNU Guile and can also be used at the REPL. Due to being a simple preprocessor, wisp can also be implemented as an external program which gets called on reading. It does not actually have to understand the code itself.
+This reference implementation realizes a specialized parser for Scheme. It uses GNU Guile and can also be used at the REPL. 
 
-A wisp-preprocessor which is specialiized for scheme should be much easier to realize, though, by using the parsing methods from an existing scheme implementation.
+The wisp code also contains a general wisp-preprocessor which can be used for any lisp-like language and can used as an external program which gets called on reading. It does not actually have to understand the code itself. This is not part of this SRFI, though.
 
-Since generality of the reference implementation makes it quite heavyweight, it would be great to have someone step up and create a more lightweight scheme-specific alternative. To allow for this, the test-suite in the next chapter only contains scheme-specific snippets.
+To allow for easy re-implementation, the next chapter contains a test-suite with common wisp constructs and their scheme counterparts.
 
 ** The generic wisp preprocessor (code)
 
@@ -450,13 +487,13 @@ TODO: Include the code from http://draketo.de/proj/wisp
 
 ** Test Suite
 
-The wisp test-suite consists of a large number of wisp-snippets and the corresponding scheme-code. A wisp-implementation may call itself compliant to the wisp test-suite if it successfully converts each wisp-snippet into the corresponging scheme-snippet. Blank lines at the end of the file and non-functional white-space in the produced scheme-file do not matter for this purpose.
+The wisp test-suite consists of a large number of wisp-snippets and the corresponding scheme-code. 
+
+A wisp-implementation may call itself compliant with the wisp test-suite if the code tree parsed from the wisp file is the same as a code tree parsed from the equivalent Scheme file.
+
+A wisp-implementation may call itself a compliant wisp pre-processor if it successfully converts each wisp-snippet into the corresponging scheme-snippet. Blank lines at the end of the file and non-functional white-space in the produced scheme-file do not matter for this purpose.
 
 This test-suite is also available in the [[http://draketo.de/proj/wisp][wisp repository]] along with a script-runner (runtests.sh) which tests the reference wisp-implementation with GNU Guile against this testsuite.[fn:5]
-
-The test-suite included here only contains scheme-compatible code to allow for scheme-specific wisp-implementations which use existing parsing functions to simplify the code.
-
-/TODO: Some of the snippets were transformed from emacs lisp to scheme by hand and this might have introduced bugs. They still need to be tested again./
 
 *** tests/syntax-underscore.w
 #+begin_src wisp
@@ -1028,7 +1065,7 @@ do not break me!"
         h (I am in brackets:
            do not : change "me")
         . i
-  , ' j k
+  , 'j k
 
   . l
 
@@ -1090,7 +1127,7 @@ do not break me!")
         (h (I am in brackets:
            do not : change "me"))
         i)))
-  ,(' j k)
+  ,('j k)
 
   l
 
@@ -1195,6 +1232,6 @@ newline
 
 [fn:5] To run the tests in the wisp testsuite with a separately built GNU Guile, you can use any given guile interpreter by adjusting the following command: =PATH=~/guile-2.0.11/meta:${PATH} ./runtests.sh=
 
-[fn:6] Typed Racket uses calls of the form =(: x Number)= to declare types. These forms can still be used in parenthesized form, but not in wisp-form (as the colon has to be replaced with =\:=).
+[fn:6] Typed Racket uses calls of the form =(: x Number)= to declare types. These forms can still be used directly in parenthesized form, but in wisp-form the colon has to be replaced with =\:=.
 
 [fn:7] In most cases type-declarations are not needed in typed racket, since the type can be inferred. See [[http://docs.racket-lang.org/ts-guide/more.html?q=typed#%28part._when-annotations~3f%29][When do you need type annotations?]]
