@@ -50,18 +50,30 @@ define wisp-pending-port : make-object-property
 ;           read-wisp-chunk
 ;   try-pending
 
-define : wisp-scheme-read-chunk-env port env
-         if : eof-object? : peek-char port
-              read-char port ; return eof: we’re done
-              cons 'begin : wisp-scheme-read-chunk port
+
+define wisp-pending-sexps '()
+
+define : read-one-wisp-sexp port env
+  define : wisp-scheme-read-chunk-env
+           if : eof-object? : peek-char port
+                read-char port ; return eof: we’re done
+                begin
+                  set! wisp-pending-sexps
+                       append wisp-pending-sexps : wisp-scheme-read-chunk port
+                  try-pending
+  define : try-pending
+    if : null? wisp-pending-sexps
+         wisp-scheme-read-chunk-env
+         let : : sexp : car wisp-pending-sexps
+            set! wisp-pending-sexps : cdr wisp-pending-sexps
+            . sexp
+  try-pending
 
 define-language wisp
   . #:title "Wisp Scheme Syntax THIS IS EXPERIMENTAL, USE AT YOUR OWN RISK"
   ; . #:reader read-one-wisp-sexp
-  . #:reader wisp-scheme-read-chunk-env
-  . #:compilers `((scheme . ,compile-scheme)) ; this is scheme, not
-                                              ; wisp, because I do not
-                                              ; touch quasiquotes yet.
+  . #:reader : lambda (port env) : let ((x (read-one-wisp-sexp port env))) x
+  . #:compilers `((scheme . ,compile-scheme))
   . #:decompilers `((scheme . ,decompile-scheme))
   . #:evaluator : lambda (x module) : primitive-eval x
   . #:printer write
