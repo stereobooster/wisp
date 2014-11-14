@@ -591,15 +591,15 @@ Match is awesome!"
                  syntax-error tocheck "list with the period as only member"
                ; list with remaining dot.
                : a ...
-                 if : and (member repr-dot a) : not : equal? (quote quote) (car a)
+                 if : and (member repr-dot a)
                       syntax-error tocheck "leftover period in list"
                       map check a
-               ; ; simple pair - this and the next do not work when parsed from wisp-scheme itself. Why?
-               ; : 'REPR-DOT-e749c73d-c826-47e2-a798-c16c13cb89dd . c
-               ;   syntax-error tocheck "dot as first element in already improper pair"
-               ; ; simple pair, other way round
-               ; : a . 'REPR-DOT-e749c73d-c826-47e2-a798-c16c13cb89dd
-               ;   syntax-error tocheck "dot as last element in already improper pair"
+               ; simple pair - this and the next do not work when parsed from wisp-scheme itself. Why?
+               : 'REPR-DOT-e749c73d-c826-47e2-a798-c16c13cb89dd . c
+                 syntax-error tocheck "dot as first element in already improper pair"
+               ; simple pair, other way round
+               : a . 'REPR-DOT-e749c73d-c826-47e2-a798-c16c13cb89dd
+                 syntax-error tocheck "dot as last element in already improper pair"
                ; more complex pairs
                : ? pair? a
                  let 
@@ -736,3 +736,4 @@ define : wisp-scheme-read-string-chunk str
 ; map primitive-eval : wisp-scheme-read-file "wisp-guile.w" ; actually runs wisp-guile.w with the arguments supplied to this script.
 ; uncomment the previous line, then run the next line in the shell. If 1 and 2 are equal, this parser works!
 ; guile wisp.scm wisp-scheme.w > wisp-scheme.scm; guile wisp-scheme.scm wisp-guile.w > 1; guile wisp.scm wisp-guile.w > 2; diff 1 2
+
