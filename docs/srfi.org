@@ -481,6 +481,8 @@ The wisp code also contains a general wisp-preprocessor which can be used for an
 
 To allow for easy re-implementation, the next chapter contains a test-suite with common wisp constructs and their scheme counterparts.
 
+The wissp implementation can be found at http://draketo.de/proj/wisp.
+
 ** The generic wisp preprocessor (code)
 
 TODO: Include the code from http://draketo.de/proj/wisp
