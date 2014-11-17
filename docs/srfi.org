@@ -488,11 +488,11 @@ This reference implementation realizes a specialized parser for Scheme. It uses 
 
 The wisp code also contains a general wisp-preprocessor which can be used for any lisp-like language and can used as an external program which gets called on reading. It does not actually have to understand the code itself. This is not part of this SRFI, though.
 
-To allow for easy re-implementation, the next chapter contains a test-suite with common wisp constructs and their scheme counterparts.
+To allow for easy re-implementation, the chapter after the implementation itself contains a test-suite with commonly used wisp constructs and parenthesized counterparts.
 
-The wissp implementation can be found at http://draketo.de/proj/wisp.
+The wisp preprocessor implementation can be found at http://draketo.de/proj/wisp. Both implementations are explicitly licensed to allow inclusion in an SRFI.
 
-** The generic wisp preprocessor (code)
+** The generic wisp processor (code)
 
 TODO: Include the code from http://draketo.de/proj/wisp
 
