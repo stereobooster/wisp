@@ -171,7 +171,7 @@ becomes
 (newline)
 #+END_SRC
 
-/requirement: functions without preceding parenthesis./
+/requirement: call functions without parenthesis./
 
 *** Wisp syntax 2/4: Continue Argument list
 
