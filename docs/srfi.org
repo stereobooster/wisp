@@ -469,7 +469,7 @@ Fixed indentation width (alternative option to inferring it from later lines) wo
 
 #+BEGIN_SRC wisp
 if
-    equals wrong
+    equal? wrong
            isright? stuff
     fixstuff﻿
 #+END_SRC
