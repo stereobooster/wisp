@@ -407,7 +407,7 @@ The wisp version of this is
 doublelet
   :
     foo bar
-  : ; <- this double backstep is the real issue
+  : ; <- this empty backstep is the real issue
     bla foo
 #+END_SRC
 
