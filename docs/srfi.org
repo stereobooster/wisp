@@ -22,7 +22,7 @@ Wisp expressions can include any s-expressions and as such provide backwards com
 #+BEGIN_SRC scheme
   (define (hello who)
     (format #t "~A ~A!\n"
-            "Hello" who))
+               "Hello" who))
 #+END_SRC
 #+html: </td></tr></table>
 
