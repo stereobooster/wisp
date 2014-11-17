@@ -387,7 +387,7 @@ At its core, this dot-rule means that we mark variables in the code instead of f
 
 ** : (the colon)
 
-For double parentheses and for some other cases we must have a way to mark indentation levels without any code. Wisp uses the colon, because it is the most common non-alpha-numeric character in normal prose which is not already reserved as syntax by Scheme when it is surrounded by whitespace, and because it already gets used without sourrounding whitespace for marking keyword arguments to functions in Emacs Lisp and Common Lisp, so it does not add completely alien concepts.
+For double parentheses and for some other cases we must have a way to mark indentation levels which do not contain code. Wisp uses the colon, because it is the most common non-alpha-numeric character in normal prose which is not already reserved as syntax by Scheme when it is surrounded by whitespace, and because it already gets used without sourrounding whitespace for marking keyword arguments to functions in Emacs Lisp and Common Lisp, so it does not add completely alien concepts.
 
 The inline function call via inline " : " is a limited generalization of using the colon to mark an indentation level: If we add a syntax-element, we should use it as widely as possible to justify adding syntax overhead.
 
