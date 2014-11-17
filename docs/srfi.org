@@ -369,6 +369,8 @@ See also http://draketo.de/light/english/wisp-lisp-indentation-preprocessor#sec-
 
 ** . (the dot)
 
+To represent general code trees, we have to be able to represent continuation of the arguments of a function with an intermediate call to another (or the same) function.
+
 The dot at the beginning of the line as marker of the continuation of a variable list is a generalization of using the dot as identity function - which is an implementation detail in many lisps.
 
 #+BEGIN_QUOTE
