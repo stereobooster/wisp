@@ -193,7 +193,7 @@ becomes
 
 This also works with just one argument after the period. To start a line without a function call, you have to prefix it with a period followed by whitespace.[fn:2]
 
-/requirement: continue the argument list of a function after intermediate call to another function./
+/requirement: continue the argument list of a function after an intermediate call to another function./
 
 *** Wisp syntax 3/4: Double Parens
 
