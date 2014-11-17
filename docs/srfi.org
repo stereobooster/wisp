@@ -468,7 +468,7 @@ Knowledge of later parts of the code would be necessary to understand the parts 
 Fixed indentation width (alternative option to inferring it from later lines) would make it really hard to write readable code. Stuff like this would not be possible:
 
 #+BEGIN_SRC wisp
-if
+when
     equal? wrong
            isright? stuff
     fixstuff﻿
