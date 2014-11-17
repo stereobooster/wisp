@@ -151,7 +151,7 @@ The specification is separated into four parts: A general overview of the syntax
 
 ** Overview
 
-The basic rules for wisp-code can be defined in 4 rules, each of which emerges directly from a requirement:
+The basics of wisp syntax can be defined in 4 rules, each of which emerges directly from a requirement:
 
 *** Wisp syntax 1/4: function calls
 
@@ -170,6 +170,8 @@ becomes
   (+ 3 4 5))
 (newline)
 #+END_SRC
+
+/requirement: functions without preceding parenthesis./
 
 *** Wisp syntax 2/4: Continue Argument list
 
@@ -190,6 +192,8 @@ becomes
 #+END_SRC
 
 This also works with just one argument after the period. To start a line without a function call, you have to prefix it with a period followed by whitespace.[fn:2]
+
+/requirement: continue the argument list of a function after intermediate call to another function./
 
 *** Wisp syntax 3/4: Double Parens
 
@@ -213,6 +217,8 @@ becomes
   (body))
 #+END_SRC
 
+/requirement: represent code with two adjadent blocks in double-parentheses./
+
 *** Wisp syntax 4/4: Resilient Indentation
 
 The underscore (optional):
@@ -235,6 +241,7 @@ becomes
   (body))
 #+END_SRC
  
+/requirement: share code in environments which do not preserve whitespace./
 
 *** Summary
 
