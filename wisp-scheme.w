@@ -1,4 +1,5 @@
-#!/home/arne/wisp/wisp-multiline.sh
+#!/bin/bash
+exec guile -L . --language=wisp -s "$0" "$@"
 ; !#
 
 ;; Scheme-only implementation of a wisp-preprocessor which output a
@@ -14,11 +15,7 @@
 ;; directly create a list of codelines with indentation. For this we
 ;; then simply reuse the appropriate function from the generic wisp
 ;; preprocessor.
-;; 
-;; TODO: use match:
-;; (use-modules (ice-9 match))
-;; (define dot (call-with-input-string "." read))
-;; (match (list 'u 'v dot 'w) ((a ... b '#{.}# c) (append a (cons b c))) )
+
 
 define-module : wisp-scheme
    . #:export (wisp-scheme-read-chunk wisp-scheme-read-all 
@@ -523,7 +520,7 @@ define : wisp-replace-empty-eof code
          . "replace ((#<eof>)) by ()"
          ; FIXME: Actually this is a hack which fixes a bug when the
          ; parser hits files with only hashbang and comments.
-         if : and (pair? (car code)) (eof-object? (car (car code))) (null? (cdr code)) (null? (cdr (car code)))
+         if : and (not (null? code)) (pair? (car code)) (eof-object? (car (car code))) (null? (cdr code)) (null? (cdr (car code)))
               list
               . code
 
@@ -578,25 +575,27 @@ Match is awesome!"
                     map wisp-make-improper a
                   a
                     . a
-           define : syntax-error li
-                   throw 'wisp-syntax-error (format #f "incorrect dot-syntax #{.}# in code: not a proper pair: ~A" li)
-           let check
+           define : syntax-error li msg
+                   throw 'wisp-syntax-error (format #f "incorrect dot-syntax #{.}# in code: ~A: ~A" msg li)
+           if #t
+            . improper
+            let check
              : tocheck improper
              match tocheck
                ; lists with only one member
                : 'REPR-DOT-e749c73d-c826-47e2-a798-c16c13cb89dd
-                 syntax-error tocheck
+                 syntax-error tocheck "list with the period as only member"
                ; list with remaining dot.
                : a ...
-                 if : member repr-dot a
-                      syntax-error tocheck
+                 if : and (member repr-dot a)
+                      syntax-error tocheck "leftover period in list"
                       map check a
-               ; simple pair
+               ; simple pair - this and the next do not work when parsed from wisp-scheme itself. Why?
                : 'REPR-DOT-e749c73d-c826-47e2-a798-c16c13cb89dd . c
-                 syntax-error tocheck
+                 syntax-error tocheck "dot as first element in already improper pair"
                ; simple pair, other way round
                : a . 'REPR-DOT-e749c73d-c826-47e2-a798-c16c13cb89dd
-                 syntax-error tocheck
+                 syntax-error tocheck "dot as last element in already improper pair"
                ; more complex pairs
                : ? pair? a
                  let 
@@ -604,11 +603,11 @@ Match is awesome!"
                      tail : last-pair a
                    cond
                     : equal? repr-dot : car tail
-                      syntax-error tocheck
+                      syntax-error tocheck "equal? repr-dot : car tail"
                     : equal? repr-dot : cdr tail
-                      syntax-error tocheck
+                      syntax-error tocheck "equal? repr-dot : cdr tail"
                     : member repr-dot head
-                      syntax-error tocheck
+                      syntax-error tocheck "member repr-dot head"
                     else
                       . a
                a
@@ -733,3 +732,4 @@ define : wisp-scheme-read-string-chunk str
 ; map primitive-eval : wisp-scheme-read-file "wisp-guile.w" ; actually runs wisp-guile.w with the arguments supplied to this script.
 ; uncomment the previous line, then run the next line in the shell. If 1 and 2 are equal, this parser works!
 ; guile wisp.scm wisp-scheme.w > wisp-scheme.scm; guile wisp-scheme.scm wisp-guile.w > 1; guile wisp.scm wisp-guile.w > 2; diff 1 2
+
