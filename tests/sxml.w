@@ -8,7 +8,7 @@ define template
          head : title "test"
          body
              h1 "test"
-             header-foo "the header"
+             message "the header"
              p "it " : em "works!"
                br
                " it actually works!"
@@ -18,8 +18,9 @@ define template2
  let loop
   : l template
   match l
-    : 'header-foo a ...
-      list 'p '(@ (style "margin-left: 2em")) : list 'strong : map loop a
+    : 'message a ...
+      ` p : @ : style "margin-left: 2em"
+            strong ,(map loop a)
     : a ...
       map loop a 
     a
