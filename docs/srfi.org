@@ -93,7 +93,7 @@ Remember, even if a proposal becomes an final SRFI, the need for it must be comp
 
 - SRFI-49 (Indentation-sensitive syntax): superceded by this SRFI, 
 - SRFI-110 (Sweet-expressions (t-expressions)): alternative to this SRFI,
-- SRFI-105 (neoteric expressions and curly infix): supported in this SRFI by treating curly braces like brackets and parentheses. Curly infix is required.
+- SRFI-105 (neoteric expressions and curly infix): supported in this SRFI by treating curly braces like brackets and parentheses. Curly infix is required by the implementation and the testsuite.
 - SRFI-30 (Nested Multi-line comments): complex interaction. Should be avoided at the beginning of lines, because it can make the indentation hard to distinguish for humans. SRFI-110 includes them, so there might be value in adding them. The wisp reference implementation does not treat them specially, though, which might create arbitrary complications.
 
 * Rationale
