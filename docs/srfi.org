@@ -17,12 +17,14 @@ Wisp expressions can include any s-expressions and as such provide backwards com
   define : hello who
     format #t "~A ~A!\n"
             . "Hello" who
+  hello       "Wisp"
 #+END_SRC
 #+html: </td><td>
 #+BEGIN_SRC scheme
   (define (hello who)
     (format #t "~A ~A!\n"
                "Hello" who))
+  (hello       "S-exp")
 #+END_SRC
 #+html: </td></tr></table>
 
@@ -131,6 +133,20 @@ This is not only hard to read, but also makes it harder to work with the code, b
 
 Like SRFI-49 SRFI-110 also cannot continue the argument-list without resorting to single-element lines, though it reduces this problem by the above grouping syntaxes and advertising the use of neoteric expressions from SRFI-105.
 
+** Wisp example
+
+Since an example speaks more than a hundred explanations, the following shows wisp exploiting all its features - including curly-infix from SRFI-105:
+
+#+BEGIN_SRC wisp
+define : factorial n
+__  if : zero? n
+____   . 1
+____   * n : factorial {n - 1}
+
+display : factorial 5 
+newline
+#+END_SRC
+
 ** Advantages of Wisp
 
 Wisp draws on the strength of SRFI-110 but avoids its complexities. It was conceived and improved in the discussions within the readable-project which preceded SRFI-110 and there is a comparison between readable in wisp in SRFI-110.
@@ -138,6 +154,8 @@ Wisp draws on the strength of SRFI-110 but avoids its complexities. It was conce
 Like SRFI-110, wisp is general and homoiconic and interacts nicely with SRFI-105 (neoteric expressions and curly infix). Like SRFI-110, the expressions are the same in the REPL and in code-files. Like SRFI-110, wisp has been used for implementing multiple smaller programs, though the biggest program in wisp is still its implementations (written in wisp and bootstrapped via a simpler wisp preprocessor).
 
 But unlike SRFI-110, wisp only uses the minimum of additional syntax-elements which are necessary to support arbitrary code-structures with indentation-sensitive code which is intended to be shared over the internet. To realize these syntax-elements, it generalizes existing syntax and draws on the most common non-letter non-math characters in prose. This allows keeping the actual representation of the code elegant and inviting to newcomers.
+
+Wisp expressions are not as sweet as [[http://readable.sf.net][readable]], but they KISS.
 
 ** Disadvantages of Wisp
 
