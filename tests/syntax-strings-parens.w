@@ -19,5 +19,5 @@ bar] barz {1 + [* 2 2]}
 mara {
 li
 +
-lo (mabba)
+lo - (mabba)
 }
