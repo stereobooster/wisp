@@ -376,6 +376,12 @@ define : stringy s
 
 - using a quote to escape a symbol separated from it by whitespace is forbidden. This would make the meaning of quoted lines ambigous.
 
+- Curly braces should be treated as curly-infix following SRFI-105. This makes most math look natural to newcomers.
+
+- Neoteric expressions from SRFI-105 are not required because they create multiple ways to represent the same code. In wisp they add much less advantages than in sweet expressions from SRFI-110, because wisp can continue the arguments to a function after a function call (with the leading period) and the inline colon provides most of the benefits neoteric expressions give to sweet. However implementations providing wisp should give users the option to activate neoteric expressions as by SRFI-105 to allow experimentation and evolution ([[http://sourceforge.net/p/readable/mailman/message/33068104/][discussion]]).
+
+- It is possible to write code which is at the same time valid wisp and sweet. The readable mailinglist [[http://sourceforge.net/p/readable/mailman/message/33058992/][contains details]].
+
 * Syntax justification
 
 /I do not like adding any unnecessary syntax element to lisp. So I want to show explicitely why the syntax elements are required./
