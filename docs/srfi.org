@@ -359,14 +359,20 @@ If the colon is the last non-whitespace character on a line, it represents an em
 #+BEGIN_SRC wisp
 define : stringy s 
          string-append s "can be varied as follows:
- "
+ " ; linebreak in string does not affect wisp parsing
            string-capitalize s
            string-reverse s
-           . (string-capitalize
+           . (string-capitalize ; linebreaks in parentheses are ignored.
              (string-reverse s))
            . "
 "
+#+END_SRC
 
+Effectively code in parentheses and strings is interpreted directly as Scheme. This way you can simply copy a thunk of scheme into wisp. The following is valid wisp:
+
+#+BEGIN_SRC wisp
+define foo (+ 1
+  (* 2 3)) ; defines foo as 7
 #+END_SRC
 
 ** Clarifications
