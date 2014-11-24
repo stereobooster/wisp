@@ -316,7 +316,7 @@ The syntax shown here is the minimal syntax required for the goal of wisp: inden
 
 
 *** Empty indentation level
-*A line which contains only whitespace and a colon (":") defines an indentation level at the indentation of the colon*. It opens a parenthesis which gets closed by the next less-indented line. If you need to use a colon by itself. you can escape it as "\:".
+*A line which contains only whitespace and a colon (":") defines an indentation level at the indentation of the colon*. It opens a parenthesis which gets closed by the next line which has less or equal indentation. If you need to use a colon by itself. you can escape it as "\:".
 
 #+BEGIN_SRC wisp
     let                       ;    (let
@@ -335,7 +335,14 @@ The syntax shown here is the minimal syntax required for the goal of wisp: inden
         string-append "Hello " who "!"    ;        (string-append "Hello " who "!")))
 #+END_SRC
 
-If the colon starts a line, it starts a parenthesis which gets closed at the end of the line *and* defines an indentation level at the position of the colon.
+If the colon starts a line which also contains other non-whitespace characters, it starts a parenthesis which gets closed at the end of the line *and* defines an indentation level at the position of the colon.
+
+If the colon is the last non-whitespace character on a line, it represents an empty pair of parentheses:
+
+#+BEGIN_SRC wisp
+    let :                 ;    (let ()
+        display "Hello"   ;         (display "Hello"))
+#+END_SRC
      
 *** Initial Underscores
 *You can replace any number of consecutive initial spaces by underscores*, as long as at least one whitespace is left between the underscores and any following character. You can escape initial underscores by prefixing the first one with \ ("\___ a" → "(___ a)"), if you have to use them as function names.
