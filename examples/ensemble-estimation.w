@@ -55,15 +55,17 @@ define : standard-deviation-from-deviations . l
          
 
 ;; Start with the simple case: One variable and independent observations (R diagonal)
-define x^b '(1 2) ; initial guess
-define P : make-covariance-matrix-from-standard-deviations '(0.5 0.01)
+define x^b '(1 1 1 1) ; initial guess
+define P : make-covariance-matrix-from-standard-deviations '(0.5 0.1 0.3 0.1)
 
-define y⁰ '(0.8 0.7 0.9 0.75) ; real value: 0.8
-define R : make-covariance-matrix-from-standard-deviations '(0.1 0.1 0.1 0.1)
+define y⁰-num 10000
+define y⁰ : list-ec (: i y⁰-num) : + 0.8 : * 0.1 : random:normal
+define y⁰-std 0.1
+define R : make-covariance-matrix-from-standard-deviations : list-ec (: i y⁰-num) y⁰-std
 
 define : H . x
        . "Simple single state observation operator which just returns the sum of the state."
-       apply * x
+       apply + : list-ec (: i (length x)) : * {i + 1} : list-ref x i
 
 define* : write-multiple . x
         map : lambda (x) (write x) (newline)
@@ -137,12 +139,16 @@ Limitations: y is a single value. R and P are diagonal.
                    . x^a-deviations
 
 let*
-  : optimized : EnSRT-single-state H x^b P y⁰ R 30
+  : optimized : EnSRT-single-state H x^b P y⁰ R 300
     x-opt : list-ref optimized 0
     x-deviations : list-ref optimized 1
     ; std : sqrt : * {1 / {(length x-deviations) - 1}} : sum-ec (: i x-deviations) : expt i 2
-  format #t "x: ~A ± ~A\n" 
+  format #t "x:  ~A ± ~A\ny:  ~A ± ~A\ny⁰:  ~A ± ~A" 
              . x-opt 
              list-ec (: i (length x-opt))
                 apply standard-deviation-from-deviations : list-ec (: j x-deviations) : list-ref j i
-    
+             apply H x-opt
+             apply standard-deviation-from-deviations : map (lambda (x) (apply H x)) x-deviations
+             * {1 / (length y⁰)} : apply + y⁰ 
+             * : sqrt {1 / (length y⁰)} 
+               . y⁰-std
