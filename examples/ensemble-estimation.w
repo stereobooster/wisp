@@ -44,6 +44,13 @@ define : make-diagonal-matrix-with-trace trace
                       list-ref trace i
                       . 0.0
 
+define : standard-deviation-from-deviations . l
+       . "Calculate the standard deviation from a list of deviations (x - x_mean)."
+       sqrt 
+         / : sum-ec (: i l) : expt i 2
+           . {(length l) - 1}
+         
+
 ;; Start with the simple case: One variable and independent observations (R diagonal)
 define x^b '(1 2) ; initial guess
 define P '((0.25 0) ; standard deviation 0.5
@@ -136,5 +143,7 @@ let*
     x-deviations : list-ref optimized 1
     ; std : sqrt : * {1 / {(length x-deviations) - 1}} : sum-ec (: i x-deviations) : expt i 2
   format #t "x: ~A ± ~A\n" 
-             . (apply H x-opt) x-deviations
+             . x-opt 
+             list-ec (: i (length x-opt))
+                apply standard-deviation-from-deviations : list-ec (: j x-deviations) : list-ref j i
     
