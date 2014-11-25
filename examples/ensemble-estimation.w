@@ -34,16 +34,16 @@ exec guile -L ~/wisp --language=wisp "$0" "$@"
 use-modules : srfi srfi-42 ; list-ec
 
 ; seed the random number generator
-; set! *random-state* : random-state-from-platform
+set! *random-state* : random-state-from-platform
 ;; Start with the simple case: One variable and independent observations (R diagonal)
 define x^b '(1) ; initial guess
 define P '((0.25)) ; standard deviation 0.5
 
 define y⁰ '(0.8 0.7 0.9 0.75) ; real value: 0.8
-define R '((0.1 0 0 0) ; standard deviation √0.1
-           (0 0.1 0 0)
-           (0 0 0.1 0)
-           (0 0 0 0.1))
+define R '((0.01 0 0 0) ; standard deviation √0.1
+           (0 0.01 0 0)
+           (0 0 0.01 0)
+           (0 0 0 0.01))
 
 define : H-single x
        . "Simple single state observation operator which just returns the state."
@@ -69,8 +69,8 @@ Limitations: x is a single value, P is a single value (variance of x).
             : null? observations-to-process
               list x^b x-deviations
             else
-               write : list (expt x^b 2) '± : * {1 / {(length x-deviations) - 1}} : sum-ec (: i x-deviations) : expt i 2
-               newline
+               ; write : list x^b '± : sqrt : * {1 / {(length x-deviations) - 1}} : sum-ec (: i x-deviations) : expt i 2
+               ; newline
                let*
                  : y_cur : car observations-to-process
                    R_cur : car observation-variances
@@ -111,5 +111,11 @@ Limitations: x is a single value, P is a single value (variance of x).
                    list-ref x^a 0
                    . x^a-deviations
 
-write : EnSRT-single-state H-single x^b P y⁰ R 30
-newline
+let*
+  : optimized : EnSRT-single-state H-single x^b P y⁰ R 3000
+    x-opt : list-ref optimized 0
+    x-deviations : list-ref optimized 1
+    std : sqrt : * {1 / {(length x-deviations) - 1}} : sum-ec (: i x-deviations) : expt i 2
+  format #t "x: ~A ± ~A\n" 
+             . x-opt std
+    
