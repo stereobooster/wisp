@@ -71,7 +71,7 @@ define* : write-multiple . x
         map : lambda (x) (write x) (newline)
             . x
 
-define : EnSRT-single-state H x P y R N
+define : EnSRT H x P y R N
        . "Observation function H, parameters x,
 parameter-covariance P, observations y, observation covariance R
 and number of ensemble members N.
@@ -139,7 +139,7 @@ Limitations: y is a single value. R and P are diagonal.
                    . x^a-deviations
 
 let*
-  : optimized : EnSRT-single-state H x^b P y⁰ R 300
+  : optimized : EnSRT H x^b P y⁰ R 300
     x-opt : list-ref optimized 0
     x-deviations : list-ref optimized 1
     ; std : sqrt : * {1 / {(length x-deviations) - 1}} : sum-ec (: i x-deviations) : expt i 2
