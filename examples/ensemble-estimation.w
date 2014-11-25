@@ -149,7 +149,7 @@ let*
              list-ec (: i (length x-opt))
                 apply standard-deviation-from-deviations : list-ec (: j x-deviations) : list-ref j i
              apply H x-opt
-             apply standard-deviation-from-deviations : map (lambda (x) (apply H x)) x-deviations
+             apply standard-deviation-from-deviations : map (lambda (x) (apply H x)) x-deviations ; FIXME: This only works for completely linear H.
              * {1 / (length y⁰)} : apply + y⁰ 
              * : sqrt {1 / (length y⁰)} 
                . y⁰-std
