@@ -53,14 +53,10 @@ define : standard-deviation-from-deviations . l
 
 ;; Start with the simple case: One variable and independent observations (R diagonal)
 define x^b '(1 2) ; initial guess
-define P '((0.25 0) ; standard deviation 0.5
-           (0 0.0001)) ; standard deviation 0.01
+define P : make-diagonal-matrix-with-trace '(0.25 0.0001)
 
 define y⁰ '(0.8 0.7 0.9 0.75) ; real value: 0.8
-define R '((0.01 0 0 0) ; standard deviation √0.1
-           (0 0.01 0 0)
-           (0 0 0.01 0)
-           (0 0 0 0.01))
+define R : make-diagonal-matrix-with-trace '(0.01 0.01 0.01 0.01)
 
 define : H . x
        . "Simple single state observation operator which just returns the sum of the state."
