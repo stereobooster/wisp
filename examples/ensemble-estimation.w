@@ -44,6 +44,9 @@ define : make-diagonal-matrix-with-trace trace
                       list-ref trace i
                       . 0.0
 
+define : make-covariance-matrix-from-standard-deviations stds
+         make-diagonal-matrix-with-trace : map (lambda (x) (expt x 2)) stds
+
 define : standard-deviation-from-deviations . l
        . "Calculate the standard deviation from a list of deviations (x - x_mean)."
        sqrt 
@@ -53,10 +56,10 @@ define : standard-deviation-from-deviations . l
 
 ;; Start with the simple case: One variable and independent observations (R diagonal)
 define x^b '(1 2) ; initial guess
-define P : make-diagonal-matrix-with-trace '(0.25 0.0001)
+define P : make-covariance-matrix-from-standard-deviations '(0.5 0.01)
 
 define y⁰ '(0.8 0.7 0.9 0.75) ; real value: 0.8
-define R : make-diagonal-matrix-with-trace '(0.01 0.01 0.01 0.01)
+define R : make-covariance-matrix-from-standard-deviations '(0.1 0.1 0.1 0.1)
 
 define : H . x
        . "Simple single state observation operator which just returns the sum of the state."
