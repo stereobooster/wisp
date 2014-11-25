@@ -69,7 +69,7 @@ Limitations: x is a single value, P is a single value (variance of x).
             : null? observations-to-process
               list x^b x-deviations
             else
-               write : list x^b : list-ec (: i x-deviations) {x^b + i}
+               write : list (expt x^b 2) '± : * {1 / {(length x-deviations) - 1}} : sum-ec (: i x-deviations) : expt i 2
                newline
                let*
                  : y_cur : car observations-to-process
@@ -91,8 +91,7 @@ Limitations: x is a single value, P is a single value (variance of x).
                              sum-ec (: i N) 
                                * : list-ref x-deviations i ; FIXME: this currently does not use j because I only do length 1 x
                                    list-ref Hx^b-prime i
-                   K : list-ec (: i PHt) {1 / {HPHt + R_cur}}
-                   a : write-multiple "XXX" Hx^b-prime PHt HPHt
+                   K : list-ec (: i PHt) {i / {HPHt + R_cur}}
                    x^a 
                      list-ec (: i (length K)) 
                        + x^b
@@ -112,5 +111,5 @@ Limitations: x is a single value, P is a single value (variance of x).
                    list-ref x^a 0
                    . x^a-deviations
 
-write : EnSRT-single-state H-single x^b P y⁰ R 4
+write : EnSRT-single-state H-single x^b P y⁰ R 30
 newline
