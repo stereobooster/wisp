@@ -58,13 +58,14 @@ define : standard-deviation-from-deviations . l
 define x^b '(1 1 1 1) ; initial guess
 define P : make-covariance-matrix-from-standard-deviations '(0.5 0.1 0.3 0.1)
 
-define y⁰-num 10000
-define y⁰ : list-ec (: i y⁰-num) : + 0.8 : * 0.1 : random:normal
-define y⁰-std 0.1
+define y⁰-num 1000
+define y⁰-mean 0.8
+define y⁰-std 0.01
+define y⁰ : list-ec (: i y⁰-num) : + y⁰-mean : * y⁰-std : random:normal
 define R : make-covariance-matrix-from-standard-deviations : list-ec (: i y⁰-num) y⁰-std
 
 define : H . x
-       . "Simple single state observation operator which just returns the sum of the state."
+       . "Simple observation operator which returns the sum of the state weighted by its index + 1."
        apply + : list-ec (: i (length x)) : * {i + 1} : list-ref x i
 
 define* : write-multiple . x
