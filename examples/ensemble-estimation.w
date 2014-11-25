@@ -34,7 +34,16 @@ exec guile -L ~/wisp --language=wisp "$0" "$@"
 use-modules : srfi srfi-42 ; list-ec
 
 ; seed the random number generator
-set! *random-state* : random-state-from-platform
+; set! *random-state* : random-state-from-platform
+
+define : make-diagonal-matrix-with-trace trace
+         let : : dim : length trace
+             list-ec (: i dim)
+               list-ec (: j dim)
+                 if : = i j
+                      list-ref trace i
+                      . 0.0
+
 ;; Start with the simple case: One variable and independent observations (R diagonal)
 define x^b '(1) ; initial guess
 define P '((0.25)) ; standard deviation 0.5
