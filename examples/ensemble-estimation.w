@@ -34,7 +34,7 @@ exec guile -L ~/wisp --language=wisp "$0" "$@"
 use-modules : srfi srfi-42 ; list-ec
 
 ; seed the random number generator
-; set! *random-state* : random-state-from-platform
+set! *random-state* : random-state-from-platform
 
 define : make-diagonal-matrix-with-trace trace
          let : : dim : length trace
@@ -45,8 +45,9 @@ define : make-diagonal-matrix-with-trace trace
                       . 0.0
 
 ;; Start with the simple case: One variable and independent observations (R diagonal)
-define x^b '(1) ; initial guess
-define P '((0.25)) ; standard deviation 0.5
+define x^b '(1 2) ; initial guess
+define P '((0.25 0) ; standard deviation 0.5
+           (0 0.0001)) ; standard deviation 0.01
 
 define y⁰ '(0.8 0.7 0.9 0.75) ; real value: 0.8
 define R '((0.01 0 0 0) ; standard deviation √0.1
@@ -54,9 +55,9 @@ define R '((0.01 0 0 0) ; standard deviation √0.1
            (0 0 0.01 0)
            (0 0 0 0.01))
 
-define : H-single x
-       . "Simple single state observation operator which just returns the state."
-       . x
+define : H . x
+       . "Simple single state observation operator which just returns the sum of the state."
+       apply * x
 
 define* : write-multiple . x
         map : lambda (x) (write x) (newline)
@@ -67,13 +68,17 @@ define : EnSRT-single-state H x P y R N
 parameter-covariance P, observations y, observation covariance R
 and number of ensemble members N.
 
-Limitations: x is a single value, P is a single value (variance of x).
+Limitations: y is a single value. R and P are diagonal.
 "
        let process-observation
          : observations-to-process y
            observation-variances : list-ec (: i (length y)) : list-ref (list-ref R i) i
-           x^b : list-ref x 0
-           x-deviations : list-ec (: i N) : * (random:normal) : sqrt : list-ref (list-ref P 0) 0; only for single x'^b 
+           x^b x
+           x-deviations 
+               list-ec (: i N)
+                 list-ec (: j (length x))
+                     * : random:normal
+                         sqrt : list-ref (list-ref P j) j ; only for diagonal P!
          cond
             : null? observations-to-process
               list x^b x-deviations
@@ -83,7 +88,11 @@ Limitations: x is a single value, P is a single value (variance of x).
                let*
                  : y_cur : car observations-to-process
                    R_cur : car observation-variances
-                   Hx^b_i : list-ec (: i x-deviations) : H {x^b + i} ; this only works for single value x!
+                   Hx^b_i 
+                       list-ec (: i x-deviations) 
+                           apply H 
+                               list-ec (: j (length i)) 
+                                   + (list-ref x^b j) (list-ref i j)
                    Hx^b 
                       / : sum-ec (: i Hx^b_i) i 
                         . N
@@ -95,36 +104,37 @@ Limitations: x is a single value, P is a single value (variance of x).
                       / : sum-ec (: i Hx^b-prime) {i * i}
                         . {N - 1}
                    PHt 
-                      list-ec (: j (length x)) ; for each x^b_i multiply the state-element and model-deviation for all ensemble members. This is not used at the moment.
+                      list-ec (: j (length x^b)) ; for each x^b_i multiply the state-element and model-deviation for all ensemble members.
                          * {1 / {N - 1}} 
                              sum-ec (: i N) 
-                               * : list-ref x-deviations i ; FIXME: this currently does not use j because I only do length 1 x
+                               * : list-ref (list-ref x-deviations i) j ; FIXME: this currently does not use j because I only do length 1 x
                                    list-ref Hx^b-prime i
                    K : list-ec (: i PHt) {i / {HPHt + R_cur}}
                    x^a 
-                     list-ec (: i (length K)) 
-                       + x^b
-                         * : list-ref K i
+                     list-ec (: j (length x^b))
+                       + : list-ref x^b j
+                         * : list-ref K j
                            . {y_cur - Hx^b}
                    α-weight-sqrt : sqrt {R_cur / {HPHt + R_cur}}
                    α {1 / {1 + α-weight-sqrt}}
                    x^a-deviations 
-                     list-ec (: i N)
-                       - : list-ref x-deviations i
-                         * α
-                           list-ref K 0
-                           list-ref Hx^b-prime i
+                     list-ec (: i N) ; for each ensemble member
+                       list-ec (: j (length x^b)) ; and each state variable
+                         - : list-ref (list-ref x-deviations i) j
+                           * α
+                             list-ref K j
+                             list-ref Hx^b-prime i
                  process-observation
                    cdr observations-to-process
                    cdr observation-variances
-                   list-ref x^a 0
+                   . x^a
                    . x^a-deviations
 
 let*
-  : optimized : EnSRT-single-state H-single x^b P y⁰ R 3000
+  : optimized : EnSRT-single-state H x^b P y⁰ R 30
     x-opt : list-ref optimized 0
     x-deviations : list-ref optimized 1
-    std : sqrt : * {1 / {(length x-deviations) - 1}} : sum-ec (: i x-deviations) : expt i 2
+    ; std : sqrt : * {1 / {(length x-deviations) - 1}} : sum-ec (: i x-deviations) : expt i 2
   format #t "x: ~A ± ~A\n" 
-             . x-opt std
+             . (apply H x-opt) x-deviations
     
