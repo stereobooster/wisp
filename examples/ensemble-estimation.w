@@ -144,7 +144,9 @@ let*
     x-opt : list-ref optimized 0
     x-deviations : list-ref optimized 1
     ; std : sqrt : * {1 / {(length x-deviations) - 1}} : sum-ec (: i x-deviations) : expt i 2
-  format #t "x:  ~A ± ~A\ny:  ~A ± ~A\ny⁰:  ~A ± ~A" 
+  format #t "x⁰:  ~A ± ~A\nx:  ~A ± ~A\ny:  ~A ± ~A\ny⁰:  ~A ± ~A" 
+             . x^b
+             list-ec (: i (length x^b)) : list-ref (list-ref P i) i
              . x-opt 
              list-ec (: i (length x-opt))
                 apply standard-deviation-from-deviations : list-ec (: j x-deviations) : list-ref j i
