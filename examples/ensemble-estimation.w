@@ -33,7 +33,7 @@ exec guile -L ~/wisp --language=wisp -e '(@@ (examples ensemble-estimation) main
 
 define-module : examples ensemble-estimation 
 use-modules : srfi srfi-42 ; list-ec
-              ice-9 futures ; threaded evaluation
+
 ; seed the random number generator
 set! *random-state* : random-state-from-platform
 
@@ -134,16 +134,12 @@ Limitations: y is a single value. R and P are diagonal.
                  : y_cur : car observations-to-process
                    R_cur : car observation-variances
                    y-pos_cur : car observation-positions
-                   ; calculate Hx^b_i in threads.
-                   Hx^b_i-future 
+                   Hx^b_i
                        list-ec (: i x-deviations) 
-                         future
                            H 
                              list-ec (: j (length i)) 
                                  + (list-ref x^b j) (list-ref i j)
                              . y-pos_cur
-                   ; get the calculated values.
-                   Hx^b_i : list-ec (: i Hx^b_i-future) : touch i
                    Hx^b 
                       / : sum-ec (: i Hx^b_i) i 
                         . N
