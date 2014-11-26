@@ -114,7 +114,7 @@ and number of ensemble members N.
 
 Limitations: y is a single value. R and P are diagonal.
 "
-       let process-observation
+       let step
          : observations-to-process y
            observation-variances : list-ec (: i (length y)) : list-ref (list-ref R i) i
            observation-positions y-pos
@@ -171,7 +171,7 @@ Limitations: y is a single value. R and P are diagonal.
                            * α
                              list-ref K j
                              list-ref Hx^b-prime i
-                 process-observation
+                 step
                    cdr observations-to-process
                    cdr observation-variances
                    cdr observation-positions
