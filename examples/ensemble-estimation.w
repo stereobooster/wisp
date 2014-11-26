@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-exec guile -L ~/wisp --language=wisp -e '(@@ (ensemble-estimation) main)' -s "$0" "$@"
+exec guile -L ~/wisp --language=wisp -e '(@@ (examples ensemble-estimation) main)' -s "$0" "$@"
 ; !#
 
 ;; Simple Ensemble Square Root Filter to estimate function parameters
@@ -31,7 +31,7 @@ exec guile -L ~/wisp --language=wisp -e '(@@ (ensemble-estimation) main)' -s "$0
 ;;     α = (1 + √(R/(HPHt+R)))⁻¹
 ;;     x'^a = x'^b - αK·H(x'^b)
 
-define-module : ensemble-estimation 
+define-module : examples ensemble-estimation 
 use-modules : srfi srfi-42 ; list-ec
 
 ; seed the random number generator
