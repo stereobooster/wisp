@@ -52,7 +52,10 @@ define : standard-deviation-from-deviations . l
        sqrt 
          / : sum-ec (: i l) : expt i 2
            . {(length l) - 1}
-         
+
+define : H x
+       . "Observation operator. It generates modelled observations from the input "
+       apply + : list-ec (: i (length x)) : * {i + 1} : list-ref x i
 
 ;; Start with the simple case: One variable and independent observations (R diagonal)
 define x^b '(1 1 1 1) ; initial guess
@@ -63,10 +66,6 @@ define y⁰-mean 0.8
 define y⁰-std 0.01
 define y⁰ : list-ec (: i y⁰-num) : + y⁰-mean : * y⁰-std : random:normal
 define R : make-covariance-matrix-from-standard-deviations : list-ec (: i y⁰-num) y⁰-std
-
-define : H x
-       . "Simple observation operator which returns the sum of the state weighted by its index + 1."
-       apply + : list-ec (: i (length x)) : * {i + 1} : list-ref x i
 
 define* : write-multiple . x
         map : lambda (x) (write x) (newline)
