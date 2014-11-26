@@ -64,7 +64,7 @@ define y⁰-std 0.01
 define y⁰ : list-ec (: i y⁰-num) : + y⁰-mean : * y⁰-std : random:normal
 define R : make-covariance-matrix-from-standard-deviations : list-ec (: i y⁰-num) y⁰-std
 
-define : H . x
+define : H x
        . "Simple observation operator which returns the sum of the state weighted by its index + 1."
        apply + : list-ec (: i (length x)) : * {i + 1} : list-ref x i
 
@@ -99,9 +99,9 @@ Limitations: y is a single value. R and P are diagonal.
                    R_cur : car observation-variances
                    Hx^b_i 
                        list-ec (: i x-deviations) 
-                           apply H 
-                               list-ec (: j (length i)) 
-                                   + (list-ref x^b j) (list-ref i j)
+                           H 
+                             list-ec (: j (length i)) 
+                                 + (list-ref x^b j) (list-ref i j)
                    Hx^b 
                       / : sum-ec (: i Hx^b_i) i 
                         . N
@@ -150,8 +150,8 @@ let*
              . x-opt 
              list-ec (: i (length x-opt))
                 apply standard-deviation-from-deviations : list-ec (: j x-deviations) : list-ref j i
-             apply H x-opt
-             apply standard-deviation-from-deviations : map (lambda (x) (apply H x)) x-deviations ; FIXME: This only works for completely linear H.
+             H x-opt
+             apply standard-deviation-from-deviations : map H x-deviations ; FIXME: This only works for completely linear H.
              * {1 / (length y⁰)} : apply + y⁰ 
              * : sqrt {1 / (length y⁰)} 
                . y⁰-std
