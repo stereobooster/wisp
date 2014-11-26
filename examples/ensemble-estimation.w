@@ -47,6 +47,19 @@ define : make-diagonal-matrix-with-trace trace
 define : make-covariance-matrix-from-standard-deviations stds
          make-diagonal-matrix-with-trace : map (lambda (x) (expt x 2)) stds
 
+define : mean l
+       . "Calculate the average value of l (numbers)."
+       / : apply + l
+           length l
+       
+
+define : standard-deviation l
+       . "Calculate the standard deviation of list l (numbers)."
+       let : : l_mean : mean l
+         sqrt
+           / : sum-ec (: i l) : expt {i - l_mean} 2
+             . {(length l) - 1}
+
 define : standard-deviation-from-deviations . l
        . "Calculate the standard deviation from a list of deviations (x - x_mean)."
        sqrt 
@@ -63,7 +76,7 @@ define : H x pos
 
 x are parameters to be optimized, pos is another input which is not optimized. For plain functions it could be the position of the measurement on the x-axis. We currently assume absolute knowledge about the position.
 "
-       apply + : list-ec (: i (length x)) : * {i + 1} : expt {pos * (list-ref x i)} i
+       apply + : list-ec (: i (length x)) : * {i + 1} (list-ref x i) : expt pos 2
 
 ;; Start with the simple case: One variable and independent observations (R diagonal)
 ;; First define a truth
@@ -71,14 +84,15 @@ define x^true '(0.5 0.6 0.7 0.1)
 
 ;; Then generate observations
 define y⁰-num 1000
-;; At the positions where they are measured, just a 10% variation
-define y⁰-pos : list-ec (: i y⁰-num) i
+;; At the positions where they are measured. Drawn randomly to avoid
+;; giving an undue weight to later values.
+define y⁰-pos : list-ec (: i y⁰-num) : random y⁰-num
 
 ;; We start with true observations which we will disturb later to get
 ;; the equivalent of measured observations
 define y^true : list-ec (: i y⁰-pos) : H x^true i
 ;; now we disturb the observations with a fixed standard deviation. This assumes uncorrelated observations.
-define y⁰-std 0.1
+define y⁰-std 10
 define y⁰ : list-ec (: i y^true) : + i : * y⁰-std : random:normal
 ;; and define the covariance matrix. This assumes uncorrelated observations.
 define R : make-covariance-matrix-from-standard-deviations : list-ec (: i y⁰-num) y⁰-std
@@ -168,18 +182,17 @@ let*
     x-opt : list-ref optimized 0
     x-deviations : list-ref optimized 1
     ; std : sqrt : * {1 / {(length x-deviations) - 1}} : sum-ec (: i x-deviations) : expt i 2
-  format #t "x⁰:  ~A ± ~A\nx:  ~A ± ~A\nx^true: ~A\ny:  ~A ± \ny⁰:  ~A ± ~A" 
+  format #t "x⁰: ~A ± ~A\nx:  ~A ± ~A\nx^t:~A\ny:  ~A ± \ny⁰: ~A ± ~A\nnoise: ~A\n" 
              . x^b
              list-ec (: i (length x^b)) : list-ref (list-ref P i) i
              . x-opt 
-             ; list-ec (: i (length x-opt))
-             ;    apply standard-deviation-from-deviations : list-ec (: j x-deviations) : list-ref j i
-             . #t
+             list-ec (: i (length x-opt))
+                apply standard-deviation-from-deviations : list-ec (: j x-deviations) : list-ref j i
              . x^true
              * {1 / (length y⁰)} : apply + : map (lambda (x) (H x-opt x)) y⁰-pos
              ; apply standard-deviation-from-deviations : map H x-deviations ; FIXME: This only works for trivial H.
-             * {1 / (length y⁰)} : apply + y⁰ 
-             * : sqrt {1 / (length y⁰)} 
-               . y⁰-std
+             mean y⁰
+             standard-deviation y⁰
+             . y⁰-std
 
 
