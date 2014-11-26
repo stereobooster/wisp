@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-exec guile -L ~/wisp --language=wisp "$0" "$@"
+exec guile -L ~/wisp --language=wisp -e '(@@ (ensemble-estimation) main)' -s "$0" "$@"
 ; !#
 
 ;; Simple Ensemble Square Root Filter to estimate function parameters
@@ -31,6 +31,7 @@ exec guile -L ~/wisp --language=wisp "$0" "$@"
 ;;     α = (1 + √(R/(HPHt+R)))⁻¹
 ;;     x'^a = x'^b - αK·H(x'^b)
 
+define-module : ensemble-estimation 
 use-modules : srfi srfi-42 ; list-ec
 
 ; seed the random number generator
@@ -177,22 +178,23 @@ Limitations: y is a single value. R and P are diagonal.
                    . x^a
                    . x^a-deviations
 
-let*
-  : optimized : EnSRT H x^b P y⁰ R y⁰-pos 300
-    x-opt : list-ref optimized 0
-    x-deviations : list-ref optimized 1
-    ; std : sqrt : * {1 / {(length x-deviations) - 1}} : sum-ec (: i x-deviations) : expt i 2
-  format #t "x⁰: ~A ± ~A\nx:  ~A ± ~A\nx^t:~A\ny:  ~A ± \ny⁰: ~A ± ~A\nnoise: ~A\n" 
-             . x^b
-             list-ec (: i (length x^b)) : list-ref (list-ref P i) i
-             . x-opt 
-             list-ec (: i (length x-opt))
-                apply standard-deviation-from-deviations : list-ec (: j x-deviations) : list-ref j i
-             . x^true
-             * {1 / (length y⁰)} : apply + : map (lambda (x) (H x-opt x)) y⁰-pos
-             ; apply standard-deviation-from-deviations : map H x-deviations ; FIXME: This only works for trivial H.
-             mean y⁰
-             standard-deviation y⁰
-             . y⁰-std
 
+define : main args
+    let*
+      : optimized : EnSRT H x^b P y⁰ R y⁰-pos 300
+        x-opt : list-ref optimized 0
+        x-deviations : list-ref optimized 1
+        ; std : sqrt : * {1 / {(length x-deviations) - 1}} : sum-ec (: i x-deviations) : expt i 2
+      format #t "x⁰: ~A ± ~A\nx:  ~A ± ~A\nx^t:~A\ny:  ~A ± \ny⁰: ~A ± ~A\nnoise: ~A\n" 
+                 . x^b
+                 list-ec (: i (length x^b)) : list-ref (list-ref P i) i
+                 . x-opt 
+                 list-ec (: i (length x-opt))
+                    apply standard-deviation-from-deviations : list-ec (: j x-deviations) : list-ref j i
+                 . x^true
+                 * {1 / (length y⁰)} : apply + : map (lambda (x) (H x-opt x)) y⁰-pos
+                 ; apply standard-deviation-from-deviations : map H x-deviations ; FIXME: This only works for trivial H.
+                 mean y⁰
+                 standard-deviation y⁰
+                 . y⁰-std
 
