@@ -793,15 +793,15 @@ define : a b c
 
 
 #+end_src 
-*** tests/shebang.w
+*** tests/hashbang.w
 #+begin_src wisp
 #!/usr/bin/wisp.py # !#
-; This tests shebang lines
+; This tests hashbang lines
 #+end_src 
-*** tests/shebang.scm
+*** tests/hashbang.scm
 #+begin_src scheme
 #!/usr/bin/wisp.py # !#
-; This tests shebang lines
+; This tests hashbang lines
 
 
 #+end_src 
