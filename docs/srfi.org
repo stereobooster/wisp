@@ -594,7 +594,7 @@ bar] barz {1 + [* 2 2]}
 mara {
 li
 +
-lo (mabba)
+lo - (mabba)
 }
 #+end_src 
 *** tests/syntax-strings-parens.scm
@@ -620,7 +620,7 @@ bar] barz {1 + [* 2 2]})
 (mara {
 li
 +
-lo (mabba)
+lo - (mabba)
 })
 #+end_src 
 *** tests/syntax-indent.w
@@ -778,7 +778,7 @@ define : \:
 *** tests/sublist.w
 #+begin_src wisp
 ; sublists allow to start single line function calls with a colon ( : ).
-;
+
 define : a b c
   let : : e . f
         . g
@@ -888,61 +888,6 @@ define : add-if-all-numbers lst
                           (loop (cdr lst)))))))))
 
 #+end_src 
-*** tests/range.w
-#+begin_src wisp
-import : rnrs
-
-define range
- case-lambda
-   : n ; one-argument syntax
-     range 0 n 1
-   : n0 n ; two-argument syntax
-     range n0 n 1
-   : n0 n s ; three-argument syntax
-     assert 
-         and 
-             for-all number? : list n0 n s
-             not : zero? s
-     let : : cmp : if (positive? s) >= <= 
-       let loop 
-           : i n0 
-             acc '()
-           if 
-             cmp i n 
-             reverse acc
-             loop (+ i s) (cons i acc)
-             
-display : apply string-append "" : map number->string : range 5
-newline
-#+end_src 
-*** tests/range.scm
-#+begin_src scheme
-(import (rnrs))
-
-(define range
- (case-lambda
-   ((n ); one-argument syntax
-     (range 0 n 1))
-   ((n0 n ); two-argument syntax
-     (range n0 n 1))
-   ((n0 n s ); three-argument syntax
-     (assert 
-         (and 
-             (for-all number? (list n0 n s))
-             (not (zero? s))))
-     (let ((cmp (if (positive? s) >= <= )))
-       (let loop 
-           ((i n0 )
-             (acc '()))
-           (if 
-             (cmp i n )
-             (reverse acc)
-             (loop (+ i s) (cons i acc))))))))
-             
-(display (apply string-append "" (map number->string (range 5))))
-(newline)
-
-#+end_src 
 *** tests/quotecolon.w
 #+begin_src wisp
 #!/home/arne/wisp/wisp-multiline.sh  
@@ -996,20 +941,6 @@ let hello
   (if (= who 5)
     (display who)
     (hello (+ 1 who))))
-
-
-#+end_src 
-*** tests/mtest.w
-#+begin_src wisp
-#!/home/arne/wisp/wisp-multiline.sh  !#
-
-display 1
-#+end_src 
-*** tests/mtest.scm
-#+begin_src scheme
-#!/home/arne/wisp/wisp-multiline.sh  !#
-
-(display 1)
 
 
 #+end_src 
@@ -1247,17 +1178,6 @@ concat "I want "
 
 
 #+end_src 
-*** tests/btest.w
-#+begin_src wisp
-display "b"
-newline
-#+end_src 
-*** tests/btest.scm
-#+begin_src scheme
-(display "b")
-(newline)
-#+end_src
-
 * Copyright
 
       Copyright (C) Arne Babenhauserheide (2013--2014). All Rights Reserved.
