@@ -94,13 +94,12 @@ x are parameters to be optimized, pos is another input which is not optimized. F
              x-pos : list-ec (: i len) : * ystretch {{i + 0.5} / {len + 1}}
            apply +
                  list-ec (: i len)
-                      *
-                         list-ref x i
-                         expt pos 2
-                         exp 
-                           - 
-                             / : expt {pos - (list-ref x-pos i)} 2
-                               . ystretch
+                      * : list-ref x i
+                          expt pos 2
+                          exp 
+                            - 
+                              / : expt {pos - (list-ref x-pos i)} 2
+                                . ystretch
 
 
 ;; We start with true observations which we will disturb later to get
