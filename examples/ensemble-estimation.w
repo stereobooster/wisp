@@ -77,14 +77,14 @@ define* : write-multiple . x
 
 ;; Start with the simple case: One variable and independent observations (R diagonal)
 ;; First define a truth
-define x^true '(0.5 0.6 0.7 0.1 0.7 0.9 0.8 0.4)
+define x^true : append-ec (: i 10) '(0.5 0.6 0.7 0.1 0.7 0.9 0.8 0.4)
 ;; And add an initial guess of the parameters
-define x^b '(1 1 1 1 1 1 1 1) ; initial guess
-define P : make-covariance-matrix-from-standard-deviations '(0.5 0.1 0.3 0.1 0.2 0.2 0.2 0.2)
+define x^b : append-ec (: i 10)  '(1 1 1 1 1 1 1 1) ; initial guess
+define P : make-covariance-matrix-from-standard-deviations : append-ec (: i 10) '(0.5 0.1 0.3 0.1 0.2 0.2 0.2 0.2)
 
 ;; Then generate observations
 define y⁰-num 1000
-define y⁰-pos-max 100
+define y⁰-pos-max 1000
 ;; At the positions where they are measured. Drawn randomly to avoid
 ;; giving an undue weight to later values.
 define y⁰-pos : list-ec (: i y⁰-num) : * (random:uniform) y⁰-pos-max
@@ -199,7 +199,7 @@ Limitations: y is a single value. R and P are diagonal.
 
 define : main args
     let*
-      : optimized : EnSRT H x^b P y⁰ R y⁰-pos 100
+      : optimized : EnSRT H x^b P y⁰ R y⁰-pos 300
         x-opt : list-ref optimized 0
         x-deviations : list-ref optimized 1
         ; std : sqrt : * {1 / {(length x-deviations) - 1}} : sum-ec (: i x-deviations) : expt i 2
