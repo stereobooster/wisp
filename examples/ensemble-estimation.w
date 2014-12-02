@@ -105,7 +105,7 @@ x are parameters to be optimized, pos is another input which is not optimized. F
                           exp 
                             - 
                               / : expt {pos - (list-ref x-pos i)} 2
-                                . ystretch
+                                . {ystretch * 3}
 
 
 ;; We start with true observations which we will disturb later to get
