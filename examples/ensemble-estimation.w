@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-exec guile -L ~/wisp --language=wisp -e '(@@ (examples ensemble-estimation) main)' -s "$0" "$@"
+exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples ensemble-estimation) main)' -s "$0" "$@"
 ; !#
 
 ;; Simple Ensemble Square Root Filter to estimate function parameters
