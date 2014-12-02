@@ -72,13 +72,6 @@ define* : write-multiple . x
         map : lambda (x) (write x) (newline)
             . x
 
-define : H x pos
-       . "Observation operator. It generates modelled observations from the input.
-
-x are parameters to be optimized, pos is another input which is not optimized. For plain functions it could be the position of the measurement on the x-axis. We currently assume absolute knowledge about the position.
-"
-       apply + : list-ec (: i (length x)) : * {i + 1} (list-ref x i) : expt pos 2
-
 ;; Start with the simple case: One variable and independent observations (R diagonal)
 ;; First define a truth
 define x^true '(0.5 0.6 0.7 0.1)
@@ -88,6 +81,24 @@ define y⁰-num 1000
 ;; At the positions where they are measured. Drawn randomly to avoid
 ;; giving an undue weight to later values.
 define y⁰-pos : list-ec (: i y⁰-num) : random y⁰-num
+
+;; We need an observation operator to generate observations from true values
+define : H x pos
+       . "Observation operator. It generates modelled observations from the input.
+
+x are parameters to be optimized, pos is another input which is not optimized. For plain functions it could be the position of the measurement on the x-axis. We currently assume absolute knowledge about the position.
+"
+       let*
+           : len : length x
+             ystretch y⁰-num
+             x-pos : list-ec (: i len) : * ystretch {{i + 0.5} / {len + 1}}
+           apply +
+                 list-ec (: i len)
+                      *
+                         list-ref x i
+                         expt pos 2
+                         exp : - {{pos - (list-ref x-pos i)} expt 2}
+
 
 ;; We start with true observations which we will disturb later to get
 ;; the equivalent of measured observations
