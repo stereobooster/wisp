@@ -77,7 +77,7 @@ define* : write-multiple . x
 
 ;; Start with the simple case: One variable and independent observations (R diagonal)
 ;; First define a truth
-define x^true : append-ec (: i 10) '(0.5 0.6 0.7 0.1 0.7 0.9 0.8 0.4)
+define x^true : append-ec (: i 10) '(0.5 0.6 7 0.1 0.7 0.9 0.8 0.4)
 ;; And add an initial guess of the parameters
 define x^b : append-ec (: i 10)  '(1 1 1 1 1 1 1 1) ; initial guess
 define P : make-covariance-matrix-from-standard-deviations : append-ec (: i 10) '(0.5 0.1 0.3 0.1 0.2 0.2 0.2 0.2)
