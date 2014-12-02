@@ -101,7 +101,7 @@ x are parameters to be optimized, pos is another input which is not optimized. F
            apply +
                  list-ec (: i len)
                       * : list-ref x i
-                          expt pos 2
+                          . pos
                           exp 
                             - 
                               / : expt {pos - (list-ref x-pos i)} 2
