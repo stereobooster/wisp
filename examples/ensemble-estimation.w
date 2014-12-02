@@ -84,9 +84,10 @@ define P : make-covariance-matrix-from-standard-deviations '(0.5 0.1 0.3 0.1 0.2
 
 ;; Then generate observations
 define y⁰-num 1000
+define y⁰-pos-max 100
 ;; At the positions where they are measured. Drawn randomly to avoid
 ;; giving an undue weight to later values.
-define y⁰-pos : list-ec (: i y⁰-num) : random y⁰-num
+define y⁰-pos : list-ec (: i y⁰-num) : random y⁰-pos-max
 
 ;; We need an observation operator to generate observations from true values
 define : H x pos
@@ -96,7 +97,7 @@ x are parameters to be optimized, pos is another input which is not optimized. F
 "
        let*
            : len : length x
-             ystretch y⁰-num
+             ystretch y⁰-pos-max
              x-pos : list-ec (: i len) : * ystretch {{i + 0.5} / {len + 1}}
            apply +
                  list-ec (: i len)
@@ -104,8 +105,9 @@ x are parameters to be optimized, pos is another input which is not optimized. F
                           . pos
                           exp 
                             - 
-                              / : expt {pos - (list-ref x-pos i)} 2
-                                . {ystretch * 3}
+                              expt 
+                                / {pos - (list-ref x-pos i)} {ystretch / 20}
+                                . 2
 
 
 ;; We start with true observations which we will disturb later to get
