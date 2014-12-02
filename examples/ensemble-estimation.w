@@ -80,7 +80,7 @@ define* : write-multiple . x
 define x^true '(0.5 0.6 0.7 0.1)
 
 ;; Then generate observations
-define y⁰-num 100
+define y⁰-num 1000
 ;; At the positions where they are measured. Drawn randomly to avoid
 ;; giving an undue weight to later values.
 define y⁰-pos : list-ec (: i y⁰-num) : random y⁰-num
