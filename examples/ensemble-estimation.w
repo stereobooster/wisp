@@ -87,7 +87,7 @@ define y⁰-num 1000
 define y⁰-pos-max 100
 ;; At the positions where they are measured. Drawn randomly to avoid
 ;; giving an undue weight to later values.
-define y⁰-pos : list-ec (: i y⁰-num) : random y⁰-pos-max
+define y⁰-pos : list-ec (: i y⁰-num) : * (random:uniform) y⁰-pos-max
 
 ;; We need an observation operator to generate observations from true values
 define : H x pos
