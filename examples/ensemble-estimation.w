@@ -219,10 +219,12 @@ define : main args
         format port "y0 = [float(i) for i in '~A'[1:-1].split(' ')]\n" y⁰
         format port "ypos = [float(i) for i in '~A'[1:-1].split(' ')]\n" y⁰-pos
         format port "yinit = [float(i) for i in '~A'[1:-1].split(' ')]\n" : list-ec (: i y⁰-pos) : H x^b i
+        format port "ytrue = [float(i) for i in '~A'[1:-1].split(' ')]\n" : list-ec (: i y⁰-pos) : H x^true i
         format port "yopt = [float(i) for i in '~A'[1:-1].split(' ')]\n" : list-ec (: i y⁰-pos) : H x-opt i
-        format port "pl.plot(*zip(*sorted(zip(ypos, yinit))), label='prior model')\n"
-        format port "pl.plot(*zip(*sorted(zip(ypos, yopt))), label='optimized model')\n"
-        format port "pl.plot(*zip(*sorted(zip(ypos, y0))), label='measurements')\n"
+        format port "pl.plot(*zip(*sorted(zip(ypos, yinit))), label='prior')\n"
+        format port "pl.plot(*zip(*sorted(zip(ypos, ytrue))), label='true')\n"
+        format port "pl.plot(*zip(*sorted(zip(ypos, yopt))), label='optimized')\n"
+        format port "pl.plot(*zip(*sorted(zip(ypos, y0))), marker='+', linewidth=0, label='measurements')\n"
         format port "pl.legend()\n"
         format port "pl.xlabel('position [arbitrary units]')\n"
         format port "pl.ylabel('value [arbitrary units]')\n"
