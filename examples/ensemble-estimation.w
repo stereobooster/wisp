@@ -77,10 +77,10 @@ define* : write-multiple . x
 
 ;; Start with the simple case: One variable and independent observations (R diagonal)
 ;; First define a truth
-define x^true '(0.5 0.6 0.7 0.1)
+define x^true '(0.5 0.6 0.7 0.1 0.7 0.9 0.8 0.4)
 ;; And add an initial guess of the parameters
-define x^b '(1 1 1 1) ; initial guess
-define P : make-covariance-matrix-from-standard-deviations '(0.5 0.1 0.3 0.1)
+define x^b '(1 1 1 1 1 1 1 1) ; initial guess
+define P : make-covariance-matrix-from-standard-deviations '(0.5 0.1 0.3 0.1 0.2 0.2 0.2 0.2)
 
 ;; Then generate observations
 define y⁰-num 1000
