@@ -33,6 +33,9 @@ exec guile -L ~/wisp --language=wisp -e '(@@ (examples ensemble-estimation) main
 
 define-module : examples ensemble-estimation 
 use-modules : srfi srfi-42 ; list-ec
+use-modules 
+  : ice-9 popen
+        . #:select : open-output-pipe close-pipe
 
 ; seed the random number generator
 set! *random-state* : random-state-from-platform
@@ -77,7 +80,7 @@ define* : write-multiple . x
 define x^true '(0.5 0.6 0.7 0.1)
 
 ;; Then generate observations
-define y⁰-num 1000
+define y⁰-num 100
 ;; At the positions where they are measured. Drawn randomly to avoid
 ;; giving an undue weight to later values.
 define y⁰-pos : list-ec (: i y⁰-num) : random y⁰-num
@@ -210,4 +213,20 @@ define : main args
                  mean y⁰
                  standard-deviation y⁰
                  . y⁰-std
-
+      ; now plot the result
+      let : : port : open-output-pipe "python -i"
+        format port "import pylab as pl\n"
+        format port "y0 = [float(i) for i in '~A'[1:-1].split(' ')]\n" y⁰
+        format port "ypos = [float(i) for i in '~A'[1:-1].split(' ')]\n" y⁰-pos
+        format port "yinit = [float(i) for i in '~A'[1:-1].split(' ')]\n" : list-ec (: i y⁰-pos) : H x^b i
+        format port "yopt = [float(i) for i in '~A'[1:-1].split(' ')]\n" : list-ec (: i y⁰-pos) : H x-opt i
+        format port "pl.plot(*zip(*sorted(zip(ypos, yinit))), label='prior model')\n"
+        format port "pl.plot(*zip(*sorted(zip(ypos, yopt))), label='optimized model')\n"
+        format port "pl.plot(*zip(*sorted(zip(ypos, y0))), label='measurements')\n"
+        format port "pl.legend()\n"
+        format port "pl.xlabel('position [arbitrary units]')\n"
+        format port "pl.ylabel('value [arbitrary units]')\n"
+        format port "pl.title('ensemble optimization results')\n"
+        format port "pl.show()\n"
+        format port "exit()\n"
+        close-pipe port
