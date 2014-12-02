@@ -214,7 +214,7 @@ define : main args
                  standard-deviation y⁰
                  . y⁰-std
       ; now plot the result
-      let : : port : open-output-pipe "python -i"
+      let : : port : open-output-pipe "python"
         format port "import pylab as pl\n"
         format port "y0 = [float(i) for i in '~A'[1:-1].split(' ')]\n" y⁰
         format port "ypos = [float(i) for i in '~A'[1:-1].split(' ')]\n" y⁰-pos
