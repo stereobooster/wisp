@@ -33,6 +33,9 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 
 define-module : examples ensemble-estimation 
 use-modules : srfi srfi-42 ; list-ec
+use-modules 
+  : ice-9 popen
+        . #:select : open-output-pipe close-pipe
 
 ; seed the random number generator
 set! *random-state* : random-state-from-platform
@@ -72,28 +75,46 @@ define* : write-multiple . x
         map : lambda (x) (write x) (newline)
             . x
 
+;; Start with the simple case: One variable and independent observations (R diagonal)
+;; First define a truth
+define x^true : append-ec (: i 10) '(0.5 0.6 7 0.1 0.7 0.9 0.8 0.4)
+;; And add an initial guess of the parameters
+define x^b : append-ec (: i 10)  '(1 1 1 1 1 1 1 1) ; initial guess
+define P : make-covariance-matrix-from-standard-deviations : append-ec (: i 10) '(0.5 0.1 0.3 0.1 0.2 0.2 0.2 0.2)
+
+;; Then generate observations
+define y⁰-num 1000
+define y⁰-pos-max 1000
+;; At the positions where they are measured. Drawn randomly to avoid
+;; giving an undue weight to later values.
+define y⁰-pos : list-ec (: i y⁰-num) : * (random:uniform) y⁰-pos-max
+
+;; We need an observation operator to generate observations from true values
 define : H x pos
        . "Observation operator. It generates modelled observations from the input.
 
 x are parameters to be optimized, pos is another input which is not optimized. For plain functions it could be the position of the measurement on the x-axis. We currently assume absolute knowledge about the position.
 "
-       apply + : list-ec (: i (length x)) : * {i + 1} (list-ref x i) : expt pos 2
+       let*
+           : len : length x
+             ystretch y⁰-pos-max
+             x-pos : list-ec (: i len) : * ystretch {{i + 0.5} / {len + 1}}
+           apply +
+                 list-ec (: i len)
+                      * : list-ref x i
+                          . pos
+                          exp 
+                            - 
+                              expt 
+                                / {pos - (list-ref x-pos i)} {ystretch / 20}
+                                . 2
 
-;; Start with the simple case: One variable and independent observations (R diagonal)
-;; First define a truth
-define x^true '(0.5 0.6 0.7 0.1)
-
-;; Then generate observations
-define y⁰-num 1000
-;; At the positions where they are measured. Drawn randomly to avoid
-;; giving an undue weight to later values.
-define y⁰-pos : list-ec (: i y⁰-num) : random y⁰-num
 
 ;; We start with true observations which we will disturb later to get
 ;; the equivalent of measured observations
 define y^true : list-ec (: i y⁰-pos) : H x^true i
 ;; now we disturb the observations with a fixed standard deviation. This assumes uncorrelated observations.
-define y⁰-std 10
+define y⁰-std 30
 define y⁰ : list-ec (: i y^true) : + i : * y⁰-std : random:normal
 ;; and define the covariance matrix. This assumes uncorrelated observations.
 define R : make-covariance-matrix-from-standard-deviations : list-ec (: i y⁰-num) y⁰-std
@@ -103,9 +124,6 @@ define R : make-covariance-matrix-from-standard-deviations : list-ec (: i y⁰-n
 ;; The actual observations
 ;; define y⁰ : list-ec (: i y⁰-num) : + y⁰-mean : * y⁰-std : random:normal
 
-;; And add an initial guess of the parameters
-define x^b '(1 1 1 1) ; initial guess
-define P : make-covariance-matrix-from-standard-deviations '(0.5 0.1 0.3 0.1)
 
 define : EnSRT H x P y R y-pos N
        . "Observation function H, parameters x,
@@ -197,4 +215,22 @@ define : main args
                  mean y⁰
                  standard-deviation y⁰
                  . y⁰-std
-
+      ; now plot the result
+      let : : port : open-output-pipe "python"
+        format port "import pylab as pl\n"
+        format port "y0 = [float(i) for i in '~A'[1:-1].split(' ')]\n" y⁰
+        format port "ypos = [float(i) for i in '~A'[1:-1].split(' ')]\n" y⁰-pos
+        format port "yinit = [float(i) for i in '~A'[1:-1].split(' ')]\n" : list-ec (: i y⁰-pos) : H x^b i
+        format port "ytrue = [float(i) for i in '~A'[1:-1].split(' ')]\n" : list-ec (: i y⁰-pos) : H x^true i
+        format port "yopt = [float(i) for i in '~A'[1:-1].split(' ')]\n" : list-ec (: i y⁰-pos) : H x-opt i
+        format port "pl.plot(*zip(*sorted(zip(ypos, yinit))), label='prior')\n"
+        format port "pl.plot(*zip(*sorted(zip(ypos, ytrue))), label='true')\n"
+        format port "pl.plot(*zip(*sorted(zip(ypos, yopt))), label='optimized')\n"
+        format port "pl.plot(*zip(*sorted(zip(ypos, y0))), marker='+', linewidth=0, label='measurements')\n"
+        format port "pl.legend()\n"
+        format port "pl.xlabel('position [arbitrary units]')\n"
+        format port "pl.ylabel('value [arbitrary units]')\n"
+        format port "pl.title('ensemble optimization results')\n"
+        format port "pl.show()\n"
+        format port "exit()\n"
+        close-pipe port
