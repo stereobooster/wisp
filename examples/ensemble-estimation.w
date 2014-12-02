@@ -97,7 +97,7 @@ x are parameters to be optimized, pos is another input which is not optimized. F
                       *
                          list-ref x i
                          expt pos 2
-                         exp : - {{pos - (list-ref x-pos i)} expt 2}
+                         exp : - {{{pos - (list-ref x-pos i)} expt 2} / ystretch}
 
 
 ;; We start with true observations which we will disturb later to get
