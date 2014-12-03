@@ -77,7 +77,7 @@ define-language wisp
   . #:compilers `((scheme . ,compile-scheme))
   . #:decompilers `((scheme . ,decompile-scheme))
   . #:evaluator : lambda (x module) : primitive-eval x
-  . #:printer write
+  . #:printer write ; TODO: backtransform to wisp? Use source-properties?
   . #:make-default-environment
   lambda :
     ;; Ideally we'd duplicate the whole module hierarchy so that `set!',
