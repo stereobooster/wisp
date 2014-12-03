@@ -55,12 +55,13 @@ define wisp-pending-sexps : list
 
 define : read-one-wisp-sexp port env
   define : wisp-scheme-read-chunk-env
-           if : eof-object? : peek-char port
+           cond 
+              : eof-object? : peek-char port
                 read-char port ; return eof: we’re done
-                begin
-                  set! wisp-pending-sexps
-                       append wisp-pending-sexps : wisp-scheme-read-chunk port
-                  try-pending
+              else
+                set! wisp-pending-sexps
+                     append wisp-pending-sexps : wisp-scheme-read-chunk port
+                try-pending
   define : try-pending
     if : null? wisp-pending-sexps
          wisp-scheme-read-chunk-env
