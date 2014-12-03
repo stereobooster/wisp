@@ -51,7 +51,7 @@ define wisp-pending-port : make-object-property
 ;   try-pending
 
 
-define wisp-pending-sexps '()
+define wisp-pending-sexps : list
 
 define : read-one-wisp-sexp port env
   define : wisp-scheme-read-chunk-env
