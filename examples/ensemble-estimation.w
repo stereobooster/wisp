@@ -84,8 +84,8 @@ define x^b : append-ec (: i (length x^seed))  '(1 1 1 1 1 1 1 1) ; initial guess
 define P : make-covariance-matrix-from-standard-deviations : append-ec (: i (length x^seed)) '(0.5 0.1 0.3 0.1 0.2 0.2 0.2 0.2)
 
 ;; Then generate observations
-define y⁰-num 1000
-define y⁰-pos-max 1000
+define y⁰-num 3000
+define y⁰-pos-max 100
 ;; At the positions where they are measured. Drawn randomly to avoid
 ;; giving an undue weight to later values.
 define y⁰-pos : list-ec (: i y⁰-num) : * (random:uniform) y⁰-pos-max
@@ -115,7 +115,7 @@ x are parameters to be optimized, pos is another input which is not optimized. F
 ;; the equivalent of measured observations
 define y^true : list-ec (: i y⁰-pos) : H x^true i
 ;; now we disturb the observations with a fixed standard deviation. This assumes uncorrelated observations.
-define y⁰-std 30
+define y⁰-std 50
 define y⁰ : list-ec (: i y^true) : + i : * y⁰-std : random:normal
 ;; and define the covariance matrix. This assumes uncorrelated observations.
 define R : make-covariance-matrix-from-standard-deviations : list-ec (: i y⁰-num) y⁰-std
