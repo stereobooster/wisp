@@ -200,7 +200,7 @@ Limitations: y is a single value. R and P are diagonal.
 
 define : main args
     let*
-      : optimized : EnSRT H x^b P y⁰ R y⁰-pos 300
+      : optimized : EnSRT H x^b P y⁰ R y⁰-pos 30
         x-opt : list-ref optimized 0
         x-deviations : list-ref optimized 1
         ; std : sqrt : * {1 / {(length x-deviations) - 1}} : sum-ec (: i x-deviations) : expt i 2
