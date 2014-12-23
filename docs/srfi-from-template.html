@@ -59,7 +59,7 @@ Wisp expressions can include any s-expressions and as such provide backwards com
 
 <H1>Issues</H1>
 
-<ul><li>wisp-scheme: Does not recognize the <code>. #!curly-infix</code> request for curly-infix or other reader syntax.</li>
+<ul>
 <li>wisp-scheme: REPL: sometimes the output of a command is only shown after typing the next non-empty line.</li></ul>
 
 <H1>Rationale</H1>
@@ -141,13 +141,6 @@ ____   <i>*</i> n : <i>factorial</i> {n - 1}
 <p>Using the period to continue the argument list is unusual compared to other languages and as such can lead to errors when trying to return a variable from a procedure and forgetting the period.</p>
 
 
-<h2>Footnotes</h2>
-
-<ul><li><a name="common-letters" href="#common-letters-reference">⁽¹⁾</a> The most common non-letter, non-math characters in prose are <code>.,":'_#?!;</code>, in the given order as derived from newspapers and other sources (for the ngram assembling scripts, see the <a href="http://bitbucket.org/ArneBab/evolve-keyboard-layout">evolve keyboard layout project</a>).</li>
-  <li><a name="period-concept" href="#period-concept-reference">⁽²⁾</a> Conceptually, continuing the argument list with a period uses syntax to mark the rare case of not calling a function as opposed to marking the common case of calling a function. To back the claim, that calling a function is actually the common case in scheme-code, grepping the the modules in the Guile source code shows over 27000 code-lines which start with a paren and only slightly above 10000 code-lines which start with a non-paren, non-comment character. Since wisp-syntax mostly follows the regular scheme indentation guidelines (as realized for example by emacs), the whitespace in front of lines does not need to change.</li>
-  <li><a name="typed-racket" href="#typed-racket-reference">⁽³⁾</a> Typed Racket uses calls of the form <code>(: x Number)</code> to declare types. These forms can still be used directly in parenthesized form, but in wisp-form the colon has to be replaced with <code>\:</code>. In most cases type-declarations are not needed in typed racket, since the type can be inferred. See <a href="http://docs.racket-lang.org/ts-guide/more.html?q=typed#%28part._when-annotations~3f%29">When do you need type annotations?</a></li>
-</ul>
-
 <h2>Related SRFIs</h2>
 <ul>
 <li>SRFI-49 (Indentation-sensitive syntax): superceded by this SRFI, 
@@ -160,6 +153,13 @@ ____   <i>*</i> n : <i>factorial</i> {n - 1}
 </li>
 </ul>
 
+
+<h2>Footnotes</h2>
+
+<ul><li><a name="common-letters" href="#common-letters-reference">⁽¹⁾</a> The most common non-letter, non-math characters in prose are <code>.,":'_#?!;</code>, in the given order as derived from newspapers and other sources (for the ngram assembling scripts, see the <a href="http://bitbucket.org/ArneBab/evolve-keyboard-layout">evolve keyboard layout project</a>).</li>
+  <li><a name="period-concept" href="#period-concept-reference">⁽²⁾</a> Conceptually, continuing the argument list with a period uses syntax to mark the rare case of not calling a function as opposed to marking the common case of calling a function. To back the claim, that calling a function is actually the common case in scheme-code, grepping the the modules in the Guile source code shows over 27000 code-lines which start with a paren and only slightly above 10000 code-lines which start with a non-paren, non-comment character. Since wisp-syntax mostly follows the regular scheme indentation guidelines (as realized for example by emacs), the whitespace in front of lines does not need to change.</li>
+  <li><a name="typed-racket" href="#typed-racket-reference">⁽³⁾</a> Typed Racket uses calls of the form <code>(: x Number)</code> to declare types. These forms can still be used directly in parenthesized form, but in wisp-form the colon has to be replaced with <code>\:</code>. In most cases type-declarations are not needed in typed racket, since the type can be inferred. See <a href="http://docs.racket-lang.org/ts-guide/more.html?q=typed#%28part._when-annotations~3f%29">When do you need type annotations?</a></li>
+</ul>
 
 <H1>Specification</H1>
 
@@ -267,9 +267,426 @@ _ <i>body</i>
   <li><code>:</code> for double parens</li>
   <li><code>_</code> to survive HTML</li></ul>
 
+
+<h3>More detailed: Wisp syntax rules</h3>
+
+
+<h4>Unindented line</h4>
+
+<p>
+<b>A line without indentation is a function call</b>, just as if it would start with a parenthesis.
+</p>
+
+
+
+<pre><i>display</i> "Hello World!"               ;      (display "Hello World!")
+</pre>
+
+
+
+
+
+<h4>Sibling line</h4>
+
+<p>
+<b>A line which is more indented than the previous line is a sibling to that line</b>: It opens a new parenthesis.
+</p>
+
+
+
+<pre>display                              ;    (display
+  string-append "Hello " "World!"    ;      (string-append "Hello " "World!"))
+</pre>
+
+
+
+
+
+<h4>Closing line</h4>
+
+<p>
+<b>A line which is not more indented than previous line(s) closes the parentheses of all previous lines which have higher or equal indentation</b>. You should only reduce the indentation to indentation levels which were already used by parent lines, else the behaviour is undefined.
+</p>
+
+
+
+<pre>display                              ;    (display
+  string-append "Hello " "World!"    ;      (string-append "Hello " "World!"))
+display "Hello Again!"               ;    (display "Hello Again!")
+</pre>
+
+
+
+
+
+<h4>Prefixed line</h4>
+
+<p>
+<b>To add any of ' , ` #' #, #` or #@, to the first parenthesis on a line, just prefix the line with that symbol</b> followed by at least one space. Implementations are free to add more prefix symbols.
+</p>
+
+
+
+<pre>' "Hello World!"                     ;      '("Hello World!")
+</pre>
+
+
+
+
+
+
+<h4>Continuing line</h4>
+
+<p>
+<b>A line whose first non-whitespace characters is a dot followed by a space (". ") does not open a new parenthesis: it is treated as simple continuation of the first less indented previous line</b>. In the first line this means that this line does not start with a parenthesis and does not end with a parenthesis, just as if you had directly written it in lisp without the leading ". ".
+</p>
+
+
+
+<pre>string-append "Hello"               ;    (string-append "Hello"
+  string-append " " "World"         ;      (string-append " " "World")
+  . "!"                             ;      "!")
+</pre>
+
+
+
+
+
+
+<h4>Empty indentation level</h4>
+
+<p>
+<b>A line which contains only whitespace and a colon (":") defines an indentation level at the indentation of the colon</b>. It opens a parenthesis which gets closed by the next line which has less or equal indentation. If you need to use a colon by itself. you can escape it as "\:".
+</p>
+
+
+
+<pre>let                                 ;    (let
+  :                                 ;      (
+    msg "Hello World!"              ;        (msg "Hello World!"))
+  display msg                       ;      (display msg))
+</pre>
+
+
+
+
+
+
+<h4>Inline Colon</h4>
+
+<p>
+<b>A colon sourrounded by whitespace (" : ") starts a parenthesis which gets closed at the end of the line</b>.
+</p>
+
+
+
+<pre>define : hello who                  ;    (define (hello who)
+  display                           ;      (display 
+    string-append "Hello " who "!"  ;        (string-append "Hello " who "!")))
+</pre>
+
+
+<p>
+If the colon starts a line which also contains other non-whitespace characters, it starts a parenthesis which gets closed at the end of the line <b>and</b> defines an indentation level at the position of the colon.
+</p>
+
+<p>
+If the colon is the last non-whitespace character on a line, it represents an empty pair of parentheses:
+</p>
+
+
+
+<pre>let :                               ;    (let ()
+    display "Hello"                 ;         (display "Hello"))
+</pre>
+
+
+
+
+
+<h4>Initial Underscores</h4>
+
+<p>
+<b>You can replace any number of consecutive initial spaces by underscores</b>, as long as at least one whitespace is left between the underscores and any following character. You can escape initial underscores by prefixing the first one with \ ("\___ a" → "(_ a)"), if you have to use them as function names.
+</p>
+
+
+
+<pre>define : hello who                  ;    (define (hello who)
+_ display                           ;      (display 
+___ string-append "Hello " who "!"  ;        (string-append "Hello " who "!")))
+</pre>
+
+
+
+
+
+<h4>Parens and Strings</h4>
+
+<p>
+<b>Linebreaks inside parentheses and strings are not considered linebreaks</b> for parsing indentation. To use parentheses at the beginning of a line without getting double parens, prefix the line with a period.
+</p>
+
+
+
+<pre>define : stringy s 
+         string-append s " reversed and capitalized:
+ " ; linebreaks in strings do not affect wisp parsing
+           . (string-capitalize ; linebreaks in parentheses are ignored.
+             (string-reverse s))
+           . "
+"
+</pre>
+
+
+<p>
+Effectively code in parentheses and strings is interpreted directly as Scheme. This way you can simply copy a thunk of scheme into wisp. The following is valid wisp:
+</p>
+
+
+
+<pre>define foo (+ 1
+  (* 2 3)) ; defines foo as 7
+</pre>
+
+
+
+
+
+
+<h3>Clarifications</h3>
+
+<ul>
+<li>Code-blocks end after 2 empty lines followed by a newline. Indented non-empty lines after 2 empty lines should be treated as error. A line is empty if it only contains whitespace. A line with a comment is never empty.
+</li>
+
+<li>Inside parentheses, wisp parsing is disabled. Consequently linebreaks inside parentheses are not considered linebreaks for wisp-parsing. For the parser everything which happens inside parentheses is treated as a black box.
+</li>
+
+<li>Square brackets and curly braces should be treated the same way as parentheses: They stop the indentation processing until they are closed.
+</li>
+
+<li>Likewise linebreaks inside strings are not considered linebreaks for wisp-parsing.
+</li>
+
+<li>A colon (:) at the beginning of a line adds an extra open parentheses that gets closed at end-of-line <b>and</b> defines an indentation level.
+</li>
+
+<li>using a quote to escape a symbol separated from it by whitespace is forbidden. This would make the meaning of quoted lines ambigous.
+</li>
+
+<li>Curly braces should be treated as curly-infix following SRFI-105. This makes most math look natural to newcomers.
+</li>
+
+<li>Neoteric expressions from SRFI-105 are not required because they create multiple ways to represent the same code. In wisp they add much less advantages than in sweet expressions from SRFI-110, because wisp can continue the arguments to a function after a function call (with the leading period) and the inline colon provides most of the benefits neoteric expressions give to sweet. However implementations providing wisp should give users the option to activate neoteric expressions as by SRFI-105 to allow experimentation and evolution (<a href="http://sourceforge.net/p/readable/mailman/message/33068104/">discussion</a>).
+</li>
+
+<li>It is possible to write code which is at the same time valid wisp and sweet. The readable mailinglist <a href="http://sourceforge.net/p/readable/mailman/message/33058992/">contains details</a>.
+</li>
+</ul>
+
+
+<h2>Syntax justification</h2>
+
+<p>
+<i>I do not like adding any unnecessary syntax element to lisp. So I want to show explicitely why the syntax elements are required.</i>
+</p>
+
+<small>
+<p>
+See also <a href="http://draketo.de/light/english/wisp-lisp-indentation-preprocessor#sec-4">http://draketo.de/light/english/wisp-lisp-indentation-preprocessor#sec-4</a>
+</p>
+</small>
+
+
+
+<h3> . (the dot)</h3>
+<p>
+To represent general code trees, we have to be able to represent continuation of the arguments of a function with an intermediate call to another (or the same) function.
+</p>
+
+<p>
+The dot at the beginning of the line as marker of the continuation of a variable list is a generalization of using the dot as identity function - which is an implementation detail in many lisps.
+</p>
+
+<blockquote>
+<p>
+<code>(. a)</code> is just <code>a</code>
+</p>
+</blockquote>
+
+<p>
+So for the single variable case, this would not even need additional parsing: wisp could just parse <code>. a</code> to <code>(. a)</code> and produce the correct result in most lisps. But forcing programmers to always use separate lines for each parameter would be very inconvenient, so the definition of the dot at the beginning of the line is extended to mean “take every element in this line as parameter to the parent function”. 
+</p>
+
+<blockquote>
+<p>
+<code>(. a)</code> → <code>a</code> is generalized to <code>(. a b c)</code> → <code>a b c</code>.
+</p>
+</blockquote>
+
+<p>
+At its core, this dot-rule means that we mark variables in the code instead of function calls. We do so, because variables at the beginning of a line are much rarer in Scheme than in other programming languages.
+</p>
+
+
+
+<h3> : (the colon)</h3>
+
+<p>
+For double parentheses and for some other cases we must have a way to mark indentation levels which do not contain code. Wisp uses the colon, because it is the most common non-alpha-numeric character in normal prose which is not already reserved as syntax by Scheme when it is surrounded by whitespace, and because it already gets used without sourrounding whitespace for marking keyword arguments to functions in Emacs Lisp and Common Lisp, so it does not add completely alien concepts.
+</p>
+
+<p>
+The inline function call via inline " : " is a limited generalization of using the colon to mark an indentation level: If we add a syntax-element, we should use it as widely as possible to justify adding syntax overhead.
+</p>
+
+<p>
+But if you need to use <code>:</code> as variable or function name, you can still do so by escaping it with a backslash (<code>\:</code>), so this does not forbid using the character.
+</p>
+
+<p>
+For simple cases, the colon could be replaced by clever whitespace parsing, but there are complex cases which make this impossible. The minimal example is a theoretical doublelet which does not require a body. The example uses a double let without action as example for the colon-syntax, even though that does nothing, because that makes it impossible to use later indentation to mark an intermediate indentation-level. Another reason why I would not use later indentation to define whether something earlier is a single or double indent is that this would call for subtle and really hard to find errors.
+</p>
+
+
+<pre>(doublelet
+  ((foo bar))
+  ((bla foo)))
+</pre>
+
+
+<p>
+The wisp version of this is
+</p>
+
+<pre>doublelet
+  :
+    foo bar
+  : ; &lt;- this empty backstep is the real issue
+    bla foo
+</pre>
+
+
+<p>
+or shorter with inline colon (which you can use only if you don’t need further indentation-syntax inside the assignment).
+</p>
+
+
+
+<pre>doublelet
+  : foo bar
+  : bla foo
+</pre>
+
+
+<p>
+The need to be able to represent arbitrary syntax trees which can contain expressions like this is the real reason, why the colon exists. The inline and start-of-line use is only a generalization of that principle (we add a syntax-element, so we should see how far we can push it to reduce the effective cost of introducing the additional syntax).
+</p>
+
+
+
+<h4>Clever whitespace-parsing which would not work</h4>
+
+<p>
+There are two alternative ways to tackle this issue: deferred level-definition and fixed-width indentation.
+</p>
+
+<p>
+Defining intermediate indentation-levels by later elements (deferred definition) would be a problem, because it would create code which is really hard to understand. An example is the following:
+</p>
+
+
+
+<pre>define (flubb)
+    nubb
+    hubb
+    subb
+   gam
+</pre>
+
+
+<p>
+would become
+</p>
+
+
+
+<pre>(define (flubb)
+   ((nubb))
+   ((hubb))
+   ((subb))
+  (gam))
+</pre>
+
+
+<p>
+while
+</p>
+
+
+
+<pre>define (flubb)
+    nubb
+    hubb
+    subb
+</pre>
+
+
+<p>
+would become
+</p>
+
+
+
+<pre>(define (flubb)
+   (nubb)
+   (hubb)
+   (subb))
+</pre>
+
+
+<p>
+Knowledge of later parts of the code would be necessary to understand the parts a programmer is working on at the moment. This would call for subtle errors which would be hard to track down, because the effect of a change in code would not be localized at the point where the change is done but could propagate backwards.
+</p>
+
+<p>
+Fixed indentation width (alternative option to inferring it from later lines) would make it really hard to write readable code. Stuff like this would not be possible:
+</p>
+
+
+
+<pre>when
+    equal? wrong
+           isright? stuff
+    fixstuff
+</pre>
+
+
+
+
+
+<h3> _ (the underscore)</h3>
+
+<p>
+In Python the whitespace hostile html already presents problems with sharing code - for example in email list archives and forums. But Python-programmers can mostly infer the indentation by looking at the previous line: If that ends with a colon, the next line must be more indented (there is nothing to clearly mark reduced indentation, though). In wisp we do not have this support, so we need a way to survive in the hostile environment of todays web.
+</p>
+
+<p>
+The underscore is commonly used to denote a space in URLs, where spaces are inconvenient, but it is rarely used in Scheme (where the dash ("-") is mostly used instead), so it seems like a a natural choice.
+</p>
+
+<p>
+You can still use underscores anywhere but at the beginning of the line, and even at the beginning of the line you simply need to escape it by prefixing the first underscore with a backslash ("\____").
+</p>
+
+
+
 <H1>Implementation</H1>
 
 ??? explanation of how it meets the reference implementation requirement, and the code, if possible
+
+<!--TODO: Link to implementation and HTML with only the testsuite.-->
 
 <A HREF="srfi minus ???-reference.scm">Source for the reference implementation.</A>
 
