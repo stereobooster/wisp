@@ -1204,7 +1204,7 @@ concat "I want "
 
 [fn:3] This special syntax for double parens cannot be replaced by clever whitespace parsing, because it is required for representing two consecutive forms which start with double parentheses. The only pure-whitespace alternative would be fixed-width indentation levels.
 
-[fn:4] I used a double let without action as example for the colon-syntax, even though that does nothing, because that makes it impossible to use later indentation to mark an intermediate indentation-level. Another reason why I would not use later indentation to define whether something earlier is a single or double indent is that this would call for subtle and really hard to find errors:
+[fn:4] I used a double let without action as example for the colon-syntax, even though that does nothing, because that makes it impossible to use later indentation to mark an intermediate indentation-level. Another reason why I would not use later indentation to define whether something earlier is a single or double indent is that this would call for subtle and really hard to find errors.
 
 [fn:5] To run the tests in the wisp testsuite with a separately built GNU Guile, you can use any given guile interpreter by adjusting the following command: =PATH=~/guile-2.0.11/meta:${PATH} ./runtests.sh=
 
