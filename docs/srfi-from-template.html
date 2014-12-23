@@ -1,9 +1,9 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html>
   <head>
     <title>SRFI ?: wisp: simpler indentation-sensitive scheme</title>
-  </head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
   <body>
 
 <H1>Title</H1>
@@ -64,7 +64,7 @@ Wisp expressions can include any s-expressions and as such provide backwards com
 
 <H1>Rationale</H1>
 
-<p>A big strength of Scheme and other lisp-like languages is their minimalistic syntax. By using only the most common characters like the period, the comma, the quote and quasiquote, the hash, the semicolon and the parens for the syntax (<code>.,&quot;'`#;()</code>), they are very close to natural language.<a href="#common-letters" name="common-letters-reference">⁽¹⁾</a> Along with the minimal list-structure of the code, this gives these languages a timeless elegance.</p>
+<p>A big strength of Scheme and other lisp-like languages is their minimalistic syntax. By using only the most common characters like the period, the comma, the quote and quasiquote, the hash, the semicolon and the parens for the syntax (<code>.,"'`#;()</code><!--"-->), they are very close to natural language.<a href="#common-letters" name="common-letters-reference">⁽¹⁾</a> Along with the minimal list-structure of the code, this gives these languages a timeless elegance.</p>
 
 <p>But as SRFI-110 explains very thoroughly (which we need not repeat here), the parentheses at the beginning of lines hurt readability and scare away newcomers. Additionally using indentation to mark the structure of the code follows naturally from the observation that most programmers use indentation, with many programmers letting their editor indent code automatically to fit the structure. Indentation is an important way how programmers understand code and using it directly to define the structure avoids errors due to mismatches between indentation and actual meaning.</p>
 
@@ -161,7 +161,7 @@ ____   <i>*</i> n : <i>factorial</i> {n - 1}
 
 <h2>Footnotes</h2>
 
-<ul><li><a name="common-letters" href="#common-letters-reference">⁽¹⁾</a> The most common non-letter, non-math characters in prose are <code>.,&quot;:'_#?!;</code>, in the given order as derived from newspapers and other sources (for the ngram assembling scripts, see the <a href="http://bitbucket.org/ArneBab/evolve-keyboard-layout">evolve keyboard layout project</a>).</li>
+<ul><li><a name="common-letters" href="#common-letters-reference">⁽¹⁾</a> The most common non-letter, non-math characters in prose are <code>.,":'_#?!;</code><!--"-->, in the given order as derived from newspapers and other sources (for the ngram assembling scripts, see the <a href="http://bitbucket.org/ArneBab/evolve-keyboard-layout">evolve keyboard layout project</a>).</li>
   <li><a name="period-concept" href="#period-concept-reference">⁽²⁾</a> Conceptually, continuing the argument list with a period uses syntax to mark the rare case of not calling a function as opposed to marking the common case of calling a function. To back the claim, that calling a function is actually the common case in scheme-code, grepping the the modules in the Guile source code shows over 27000 code-lines which start with a paren and only slightly above 10000 code-lines which start with a non-paren, non-comment character. Since wisp-syntax mostly follows the regular scheme indentation guidelines (as realized for example by emacs), the whitespace in front of lines does not need to change.</li>
   <li><a name="typed-racket" href="#typed-racket-reference">⁽³⁾</a> Typed Racket uses calls of the form <code>(: x Number)</code> to declare types. These forms can still be used directly in parenthesized form, but in wisp-form the colon has to be replaced with <code>\:</code>. In most cases type-declarations are not needed in typed racket, since the type can be inferred. See <a href="http://docs.racket-lang.org/ts-guide/more.html?q=typed#%28part._when-annotations~3f%29">When do you need type annotations?</a></li>
 </ul>
@@ -495,11 +495,11 @@ Effectively code in parentheses and strings is interpreted directly as Scheme. T
 <i>I do not like adding any unnecessary syntax element to lisp. So I want to show explicitely why the syntax elements are required.</i>
 </p>
 
-<small>
 <p>
+<small>
 See also <a href="http://draketo.de/light/english/wisp-lisp-indentation-preprocessor#sec-4">http://draketo.de/light/english/wisp-lisp-indentation-preprocessor#sec-4</a>
-</p>
 </small>
+</p>
 
 
 
@@ -695,12 +695,11 @@ You can still use underscores anywhere but at the beginning of the line, and eve
 
 <p>The wisp preprocessor implementation can be found in the <a href="http://draketo.de/proj/wisp">wisp code repository</a>. Both implementations are explicitly licensed to allow inclusion in an SRFI.</p>
 
-
-<!--TODO: Link to implementation as plain Scheme fil and HTML with only the testsuite.-->
+<p>The reference implementation linked below generates a syntax tree from wisp which can be executed. It is written in indentation-based wisp-syntax and converted with the preprocessor from the code repository (wisp-guile.w) to parenthesized scheme syntax.</p>
 
 <ul>
-  <li><A HREF="srfi minus ???-reference.scm">Source for the reference implementation.</A></li>
-  <li><A HREF="srfi minus ???-testsuite.html">Basic Testsuite for wisp implementations.</A> <br />(a more exhaustive testsuite is available in the <a href="http://draketo.de/proj/wisp">wisp code repository</a>)</li>
+  <li><A HREF="http://draketo.de/proj/wisp/srfi-reference.scm">Source for the reference implementation.</A></li>
+  <li><A HREF="http://draketo.de/proj/wisp/srfi-testsuite.html">Basic Testsuite for wisp implementations.</A> <br>(a more exhaustive testsuite is available in the <a href="http://draketo.de/proj/wisp">wisp code repository</a>)</li>
 </ul>
 
 <H1>Copyright</H1>
