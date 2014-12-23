@@ -104,14 +104,22 @@ But as SRFI-110 explains very thoroughly (which we need not repeat here), the pa
 
 As a solution to this, SRFI-49 and SRFI-110 provide a way to write whitespace sensitive scheme, but both have their share of issues.
 
-As noted in SRFI-110, there are a number of implementation-problems in SRFI-49, as well as specification shortcomings like choosing the name “group” for the construct which is necessary to represent double parentheses. In addition to the problems named in SRFI-110, SRFI-49 is not able to continue the arguments to a function on one line, if a prior argument was a function call. The example code in the abstract would have to be written in SRFI-49 as follows:
+As noted in SRFI-110, there are a number of implementation-problems in SRFI-49, as well as specification shortcomings like choosing the name “group” for the construct which is necessary to represent double parentheses. In addition to the problems named in SRFI-110, SRFI-49 is not able to continue the arguments to a function on one line, if a prior argument was a function call. The following example shows the difference between wisp and SRFI-49 for a very simple code snippet:
 
-#+BEGIN_SRC scheme
+#+html: <table><tr><th>wisp</th><th>SRFI-49</th></tr><tr><td>
+#+BEGIN_SRC wisp
+  ,* 5
+    + 4 3
+    . 2 1
+#+END_SRC
+#+html: </td><td>
+#+BEGIN_SRC wisp
   ,* 5
     + 4 3
     2
     1
 #+END_SRC
+#+html: </td></tr></table>
 
 SRFI-110 improves a lot over the implementation of SRFI-49. It resolves the group-naming and reduces the need to continue the argument-list by introducing 3 different grouping syntaxes (=$=, =\\= and =<* *>=). These additional syntax-elements however hurt readability for newcomers (obviously the authors of SRFI-110 disagree with this assertion. Their view is discussed in SRFI-110 in the section about wisp). The additional syntax elements lead to structures like the following (taken from examples from the readable project):
 #+BEGIN_SRC scheme
