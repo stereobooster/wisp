@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>SRFI: wisp: simpler indentation-sensitive scheme</title>
-<!-- 2014-12-21 So 20:59 -->
+<!-- 2014-12-23 Di 17:17 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="Arne Babenhauserheide" />
@@ -159,18 +159,18 @@ Wisp expressions can include any s-expressions and as such provide backwards com
 <div class="org-src-container">
 
 <pre class="src src-wisp"><span style="color: #483d8b;">define</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">hello</span> who
-<span style="color: #0000ff;">  format</span> <span style="color: #008b8b;">#t</span> <span style="color: #8b2252;">"~A ~A!\n"</span>
-<span style="color: #a020f0;">          . </span><span style="color: #8b2252;">"Hello"</span> who
-<span style="color: #0000ff;">hello</span>       <span style="color: #8b2252;">"Wisp"</span>
+<span style="color: #0000ff;">  format</span> <span style="color: #008b8b;">#t</span> <span style="color: #C33;">"~A ~A!\n"</span>
+<span style="color: #a020f0;">          . </span><span style="color: #C33;">"Hello"</span> who
+<span style="color: #0000ff;">hello</span>       <span style="color: #C33;">"Wisp"</span>
 </pre>
 </div>
 </td><td>
 <div class="org-src-container">
 
 <pre class="src src-scheme">(<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">hello</span> who)
-  (format #t <span style="color: #8b2252;">"~A ~A!\n"</span>
-             <span style="color: #8b2252;">"Hello"</span> who))
-(hello       <span style="color: #8b2252;">"S-exp"</span>)
+  (format #t <span style="color: #C33;">"~A ~A!\n"</span>
+             <span style="color: #C33;">"Hello"</span> who))
+(hello       <span style="color: #C33;">"S-exp"</span>)
 </pre>
 </div>
 </td></tr></table>
@@ -273,17 +273,27 @@ As a solution to this, SRFI-49 and SRFI-110 provide a way to write whitespace se
 </p>
 
 <p>
-As noted in SRFI-110, there are a number of implementation-problems in SRFI-49, as well as specification shortcomings like choosing the name “group” for the construct which is necessary to represent double parentheses. In addition to the problems named in SRFI-110, SRFI-49 is not able to continue the arguments to a function on one line, if a prior argument was a function call. The example code in the abstract would have to be written in SRFI-49 as follows:
+As noted in SRFI-110, there are a number of implementation-problems in SRFI-49, as well as specification shortcomings like choosing the name “group” for the construct which is necessary to represent double parentheses. In addition to the problems named in SRFI-110, SRFI-49 is not able to continue the arguments to a function on one line, if a prior argument was a function call. The following example shows the difference between wisp and SRFI-49 for a very simple code snippet:
 </p>
 
+<table><tr><th>wisp</th><th>SRFI-49</th></tr><tr><td>
 <div class="org-src-container">
 
-<pre class="src src-scheme">* 5
-  + 4 3
-  2
-  1
+<pre class="src src-wisp"><span style="color: #0000ff;">*</span> <span style="color: #008b8b;">5</span>
+<span style="color: #0000ff;">  +</span> <span style="color: #008b8b;">4</span> <span style="color: #008b8b;">3</span>
+<span style="color: #a020f0;">  . </span><span style="color: #008b8b;">2</span> <span style="color: #008b8b;">1</span>
 </pre>
 </div>
+</td><td>
+<div class="org-src-container">
+
+<pre class="src src-wisp"><span style="color: #0000ff;">*</span> <span style="color: #008b8b;">5</span>
+<span style="color: #0000ff;">  +</span> <span style="color: #008b8b;">4</span> <span style="color: #008b8b;">3</span>
+<span style="color: #0000ff;">  2</span>
+<span style="color: #0000ff;">  1</span>
+</pre>
+</div>
+</td></tr></table>
 
 <p>
 SRFI-110 improves a lot over the implementation of SRFI-49. It resolves the group-naming and reduces the need to continue the argument-list by introducing 3 different grouping syntaxes (<code>$</code>, <code>\\</code> and <code>&lt;* *&gt;</code>). These additional syntax-elements however hurt readability for newcomers (obviously the authors of SRFI-110 disagree with this assertion. Their view is discussed in SRFI-110 in the section about wisp). The additional syntax elements lead to structures like the following (taken from examples from the readable project):
@@ -565,7 +575,7 @@ The syntax shown here is the minimal syntax required for the goal of wisp: inden
 
 <div class="org-src-container">
 
-<pre class="src src-wisp"><span style="color: #0000ff;">display</span> <span style="color: #8b2252;">"Hello World!"</span>      <span style="color: #b22222;">;      </span><span style="color: #b22222;">(display "Hello World!")</span>
+<pre class="src src-wisp"><span style="color: #0000ff;">display</span> <span style="color: #C33;">"Hello World!"</span>      <span style="color: #898887;">;      </span><span style="color: #898887;">(display "Hello World!")</span>
 </pre>
 </div>
 </div>
@@ -580,8 +590,8 @@ The syntax shown here is the minimal syntax required for the goal of wisp: inden
 
 <div class="org-src-container">
 
-<pre class="src src-wisp"><span style="color: #0000ff;">display</span>                              <span style="color: #b22222;">;    </span><span style="color: #b22222;">(display</span>
-<span style="color: #0000ff;">  string-append</span> <span style="color: #8b2252;">"Hello "</span> <span style="color: #8b2252;">"World!"</span>    <span style="color: #b22222;">;      </span><span style="color: #b22222;">(string-append "Hello " "World!"))</span>
+<pre class="src src-wisp"><span style="color: #0000ff;">display</span>                              <span style="color: #898887;">;    </span><span style="color: #898887;">(display</span>
+<span style="color: #0000ff;">  string-append</span> <span style="color: #C33;">"Hello "</span> <span style="color: #C33;">"World!"</span>    <span style="color: #898887;">;      </span><span style="color: #898887;">(string-append "Hello " "World!"))</span>
 </pre>
 </div>
 </div>
@@ -596,9 +606,9 @@ The syntax shown here is the minimal syntax required for the goal of wisp: inden
 
 <div class="org-src-container">
 
-<pre class="src src-wisp"><span style="color: #0000ff;">display</span>                              <span style="color: #b22222;">;    </span><span style="color: #b22222;">(display</span>
-<span style="color: #0000ff;">  string-append</span> <span style="color: #8b2252;">"Hello "</span> <span style="color: #8b2252;">"World!"</span>    <span style="color: #b22222;">;      </span><span style="color: #b22222;">(string-append "Hello " "World!"))</span>
-<span style="color: #0000ff;">display</span> <span style="color: #8b2252;">"Hello Again!"</span>               <span style="color: #b22222;">;    </span><span style="color: #b22222;">(display "Hello Again!")</span>
+<pre class="src src-wisp"><span style="color: #0000ff;">display</span>                              <span style="color: #898887;">;    </span><span style="color: #898887;">(display</span>
+<span style="color: #0000ff;">  string-append</span> <span style="color: #C33;">"Hello "</span> <span style="color: #C33;">"World!"</span>    <span style="color: #898887;">;      </span><span style="color: #898887;">(string-append "Hello " "World!"))</span>
+<span style="color: #0000ff;">display</span> <span style="color: #C33;">"Hello Again!"</span>               <span style="color: #898887;">;    </span><span style="color: #898887;">(display "Hello Again!")</span>
 </pre>
 </div>
 </div>
@@ -613,7 +623,7 @@ The syntax shown here is the minimal syntax required for the goal of wisp: inden
 
 <div class="org-src-container">
 
-<pre class="src src-wisp"><span style="color: #0000ff;">'</span> <span style="color: #8b2252;">"Hello World!"</span>      <span style="color: #b22222;">;      </span><span style="color: #b22222;">'("Hello World!")</span>
+<pre class="src src-wisp"><span style="color: #0000ff;">'</span> <span style="color: #C33;">"Hello World!"</span>      <span style="color: #898887;">;      </span><span style="color: #898887;">'("Hello World!")</span>
 </pre>
 </div>
 </div>
@@ -629,9 +639,9 @@ The syntax shown here is the minimal syntax required for the goal of wisp: inden
 
 <div class="org-src-container">
 
-<pre class="src src-wisp"><span style="color: #0000ff;">string-append</span> <span style="color: #8b2252;">"Hello"</span>        <span style="color: #b22222;">;    </span><span style="color: #b22222;">(string-append "Hello"</span>
-<span style="color: #0000ff;">  string-append</span> <span style="color: #8b2252;">" "</span> <span style="color: #8b2252;">"World"</span>  <span style="color: #b22222;">;      </span><span style="color: #b22222;">(string-append " " "World")</span>
-<span style="color: #a020f0;">  . </span><span style="color: #8b2252;">"!"</span>                      <span style="color: #b22222;">;      </span><span style="color: #b22222;">"!")</span>
+<pre class="src src-wisp"><span style="color: #0000ff;">string-append</span> <span style="color: #C33;">"Hello"</span>        <span style="color: #898887;">;    </span><span style="color: #898887;">(string-append "Hello"</span>
+<span style="color: #0000ff;">  string-append</span> <span style="color: #C33;">" "</span> <span style="color: #C33;">"World"</span>  <span style="color: #898887;">;      </span><span style="color: #898887;">(string-append " " "World")</span>
+<span style="color: #a020f0;">  . </span><span style="color: #C33;">"!"</span>                      <span style="color: #898887;">;      </span><span style="color: #898887;">"!")</span>
 </pre>
 </div>
 </div>
@@ -647,10 +657,10 @@ The syntax shown here is the minimal syntax required for the goal of wisp: inden
 
 <div class="org-src-container">
 
-<pre class="src src-wisp"><span style="color: #483d8b;">let</span>                       <span style="color: #b22222;">;    </span><span style="color: #b22222;">(let</span>
-<span style="color: #a020f0;">  : </span>                      <span style="color: #b22222;">;      </span><span style="color: #b22222;">(</span>
-<span style="color: #0000ff;">    msg</span> <span style="color: #8b2252;">"Hello World!"</span>    <span style="color: #b22222;">;        </span><span style="color: #b22222;">(msg "Hello World!"))</span>
-<span style="color: #0000ff;">  display</span> msg             <span style="color: #b22222;">;      </span><span style="color: #b22222;">(display msg))</span>
+<pre class="src src-wisp"><span style="color: #483d8b;">let</span>                       <span style="color: #898887;">;    </span><span style="color: #898887;">(let</span>
+<span style="color: #a020f0;">  : </span>                      <span style="color: #898887;">;      </span><span style="color: #898887;">(</span>
+<span style="color: #0000ff;">    msg</span> <span style="color: #C33;">"Hello World!"</span>    <span style="color: #898887;">;        </span><span style="color: #898887;">(msg "Hello World!"))</span>
+<span style="color: #0000ff;">  display</span> msg             <span style="color: #898887;">;      </span><span style="color: #898887;">(display msg))</span>
 </pre>
 </div>
 </div>
@@ -666,9 +676,9 @@ The syntax shown here is the minimal syntax required for the goal of wisp: inden
 
 <div class="org-src-container">
 
-<pre class="src src-wisp"><span style="color: #483d8b;">define</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">hello</span> who                    <span style="color: #b22222;">;    </span><span style="color: #b22222;">(define (hello who)</span>
-<span style="color: #0000ff;">  display</span>                             <span style="color: #b22222;">;      </span><span style="color: #b22222;">(display </span>
-<span style="color: #0000ff;">    string-append</span> <span style="color: #8b2252;">"Hello "</span> who <span style="color: #8b2252;">"!"</span>    <span style="color: #b22222;">;        </span><span style="color: #b22222;">(string-append "Hello " who "!")))</span>
+<pre class="src src-wisp"><span style="color: #483d8b;">define</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">hello</span> who                    <span style="color: #898887;">;    </span><span style="color: #898887;">(define (hello who)</span>
+<span style="color: #0000ff;">  display</span>                             <span style="color: #898887;">;      </span><span style="color: #898887;">(display </span>
+<span style="color: #0000ff;">    string-append</span> <span style="color: #C33;">"Hello "</span> who <span style="color: #C33;">"!"</span>    <span style="color: #898887;">;        </span><span style="color: #898887;">(string-append "Hello " who "!")))</span>
 </pre>
 </div>
 
@@ -682,8 +692,8 @@ If the colon is the last non-whitespace character on a line, it represents an em
 
 <div class="org-src-container">
 
-<pre class="src src-wisp"><span style="color: #483d8b;">let</span><span style="color: #a020f0;"> : </span>                <span style="color: #b22222;">;    </span><span style="color: #b22222;">(let ()</span>
-<span style="color: #0000ff;">    display</span> <span style="color: #8b2252;">"Hello"</span>   <span style="color: #b22222;">;         </span><span style="color: #b22222;">(display "Hello"))</span>
+<pre class="src src-wisp"><span style="color: #483d8b;">let</span><span style="color: #a020f0;"> : </span>                <span style="color: #898887;">;    </span><span style="color: #898887;">(let ()</span>
+<span style="color: #0000ff;">    display</span> <span style="color: #C33;">"Hello"</span>   <span style="color: #898887;">;         </span><span style="color: #898887;">(display "Hello"))</span>
 </pre>
 </div>
 </div>
@@ -698,9 +708,9 @@ If the colon is the last non-whitespace character on a line, it represents an em
 
 <div class="org-src-container">
 
-<pre class="src src-wisp"><span style="color: #483d8b;">define</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">hello</span> who                    <span style="color: #b22222;">;    </span><span style="color: #b22222;">(define (hello who)</span>
-<span style="color: #0000ff;">_ display</span>                             <span style="color: #b22222;">;      </span><span style="color: #b22222;">(display </span>
-<span style="color: #0000ff;">___ string-append</span> <span style="color: #8b2252;">"Hello "</span> who <span style="color: #8b2252;">"!"</span>    <span style="color: #b22222;">;        </span><span style="color: #b22222;">(string-append "Hello " who "!")))</span>
+<pre class="src src-wisp"><span style="color: #483d8b;">define</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">hello</span> who                    <span style="color: #898887;">;    </span><span style="color: #898887;">(define (hello who)</span>
+<span style="color: #0000ff;">_ display</span>                             <span style="color: #898887;">;      </span><span style="color: #898887;">(display </span>
+<span style="color: #0000ff;">___ string-append</span> <span style="color: #C33;">"Hello "</span> who <span style="color: #C33;">"!"</span>    <span style="color: #898887;">;        </span><span style="color: #898887;">(string-append "Hello " who "!")))</span>
 </pre>
 </div>
 </div>
@@ -716,14 +726,10 @@ If the colon is the last non-whitespace character on a line, it represents an em
 <div class="org-src-container">
 
 <pre class="src src-wisp"><span style="color: #483d8b;">define</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">stringy</span> s 
-<span style="color: #0000ff;">         string-append</span> s <span style="color: #8b2252;">"can be varied as follows:</span>
-<span style="color: #8b2252;"> "</span> <span style="color: #b22222;">; </span><span style="color: #b22222;">linebreak in string does not affect wisp parsing</span>
-<span style="color: #0000ff;">           string-capitalize</span> s
-<span style="color: #0000ff;">           string-reverse</span> s
-<span style="color: #a020f0;">           . </span>(<span style="color: #0000ff;">string-capitalize</span> <span style="color: #b22222;">; </span><span style="color: #b22222;">linebreaks in parentheses are ignored.</span>
+<span style="color: #0000ff;">         string-append</span> s <span style="color: #C33;">" reversed and capitalized:</span>
+<span style="color: #C33;"> "</span> <span style="color: #898887;">; </span><span style="color: #898887;">linebreaks in strings do not affect wisp parsing</span>
+<span style="color: #a020f0;">           . </span>(<span style="color: #0000ff;">string-capitalize</span> <span style="color: #898887;">; </span><span style="color: #898887;">same for linebreaks in parentheses</span>
 <span style="color: #0000ff;">             (string-reverse</span> s))
-<span style="color: #a020f0;">           . </span><span style="color: #8b2252;">"</span>
-<span style="color: #8b2252;">"</span>
 </pre>
 </div>
 
@@ -734,7 +740,7 @@ Effectively code in parentheses and strings is interpreted directly as Scheme. T
 <div class="org-src-container">
 
 <pre class="src src-wisp"><span style="color: #483d8b;">define</span> foo (<span style="color: #0000ff;">+</span> <span style="color: #008b8b;">1</span>
-<span style="color: #0000ff;">  (*</span> <span style="color: #008b8b;">2</span> <span style="color: #008b8b;">3</span>)) <span style="color: #b22222;">; </span><span style="color: #b22222;">defines foo as 7</span>
+<span style="color: #0000ff;">  (*</span> <span style="color: #008b8b;">2</span> <span style="color: #008b8b;">3</span>)) <span style="color: #898887;">; </span><span style="color: #898887;">defines foo as 7</span>
 </pre>
 </div>
 </div>
@@ -860,7 +866,7 @@ The wisp version of this is
 <pre class="src src-wisp"><span style="color: #0000ff;">doublelet</span>
 <span style="color: #a020f0;">  :</span>
 <span style="color: #0000ff;">    foo</span> bar
-<span style="color: #a020f0;">  : </span><span style="color: #b22222;">; </span><span style="color: #b22222;">&lt;- this empty backstep is the real issue</span>
+<span style="color: #a020f0;">  : </span><span style="color: #898887;">; </span><span style="color: #898887;">&lt;- this empty backstep is the real issue</span>
 <span style="color: #0000ff;">    bla</span> foo
 </pre>
 </div>
@@ -1042,7 +1048,7 @@ This test-suite is also available in the <a href="http://draketo.de/proj/wisp">w
 <span style="color: #0000ff;">__</span><span style="color: #a020f0;">  . </span>i
 
 <span style="color: #483d8b;">define</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">_</span>
-<span style="color: #0000ff;">_  display</span> <span style="color: #8b2252;">"hello\n"</span>
+<span style="color: #0000ff;">_  display</span> <span style="color: #C33;">"hello\n"</span>
 
 <span style="color: #0000ff;">\_</span>
 </pre>
@@ -1061,7 +1067,7 @@ This test-suite is also available in the <a href="http://draketo.de/proj/wisp">w
     i))
 
 (<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">_</span>)
-   (display <span style="color: #8b2252;">"hello\n"</span>))
+   (display <span style="color: #C33;">"hello\n"</span>))
 
 (_)
 </pre>
@@ -1073,16 +1079,16 @@ This test-suite is also available in the <a href="http://draketo.de/proj/wisp">w
 <div class="outline-text-4" id="text-6-2-3">
 <div class="org-src-container">
 
-<pre class="src src-wisp"><span style="color: #b22222;">; </span><span style="color: #b22222;">Test linebreaks in strings and brackets</span>
+<pre class="src src-wisp"><span style="color: #898887;">; </span><span style="color: #898887;">Test linebreaks in strings and brackets</span>
 
-<span style="color: #a020f0;">. </span><span style="color: #8b2252;">"flubbub</span>
+<span style="color: #a020f0;">. </span><span style="color: #C33;">"flubbub</span>
 
-<span style="color: #8b2252;">flabbab"</span>
+<span style="color: #C33;">flabbab"</span>
 
 hrug (<span style="color: #0000ff;">nadda</span>
-<span style="color: #0000ff;">madda</span> gadda <span style="color: #8b2252;">"shoktom</span>
-<span style="color: #8b2252;"> mee"</span>  <span style="color: #8b2252;">" sep  </span>
-<span style="color: #8b2252;">ka"</span>
+<span style="color: #0000ff;">madda</span> gadda <span style="color: #C33;">"shoktom</span>
+<span style="color: #C33;"> mee"</span>  <span style="color: #C33;">" sep  </span>
+<span style="color: #C33;">ka"</span>
 <span style="color: #0000ff;">  hadda)</span>
 <span style="color: #0000ff;">    gom</span>
 
@@ -1105,16 +1111,16 @@ hrug (<span style="color: #0000ff;">nadda</span>
 <div class="outline-text-4" id="text-6-2-4">
 <div class="org-src-container">
 
-<pre class="src src-scheme"><span style="color: #b22222;">; </span><span style="color: #b22222;">Test linebreaks in strings and brackets</span>
+<pre class="src src-scheme"><span style="color: #898887;">; </span><span style="color: #898887;">Test linebreaks in strings and brackets</span>
 
-<span style="color: #8b2252;">"flubbub</span>
+<span style="color: #C33;">"flubbub</span>
 
-<span style="color: #8b2252;">flabbab"</span>
+<span style="color: #C33;">flabbab"</span>
 
 (hrug (nadda
-madda gadda <span style="color: #8b2252;">"shoktom</span>
-<span style="color: #8b2252;"> mee"</span>  <span style="color: #8b2252;">" sep  </span>
-<span style="color: #8b2252;">ka"</span>
+madda gadda <span style="color: #C33;">"shoktom</span>
+<span style="color: #C33;"> mee"</span>  <span style="color: #C33;">" sep  </span>
+<span style="color: #C33;">ka"</span>
   hadda)
     (gom))
 
@@ -1139,7 +1145,7 @@ lo - (mabba)
 
 <pre class="src src-wisp"><span style="color: #483d8b;">define</span> 
 <span style="color: #0000ff;">  hello</span> who
-<span style="color: #0000ff;">  format</span> <span style="color: #008b8b;">#t</span> <span style="color: #8b2252;">"Hello ~A\n"</span> who
+<span style="color: #0000ff;">  format</span> <span style="color: #008b8b;">#t</span> <span style="color: #C33;">"Hello ~A\n"</span> who
 
 <span style="color: #483d8b;">define</span>
     <span style="color: #483d8b;">let</span>
@@ -1147,7 +1153,7 @@ lo - (mabba)
 <span style="color: #0000ff;">        a</span> <span style="color: #008b8b;">1</span>
 <span style="color: #0000ff;">        b</span> <span style="color: #008b8b;">2</span>
 <span style="color: #0000ff;">        c</span> <span style="color: #008b8b;">3</span>
-<span style="color: #0000ff;">      format</span> <span style="color: #008b8b;">#t</span> <span style="color: #8b2252;">"a: ~A, b: ~A, c: ~A"</span>
+<span style="color: #0000ff;">      format</span> <span style="color: #008b8b;">#t</span> <span style="color: #C33;">"a: ~A, b: ~A, c: ~A"</span>
 <span style="color: #0000ff;">                   +</span> a <span style="color: #008b8b;">2</span>
 <span style="color: #a020f0;">                   . </span>       b      c
 </pre>
@@ -1161,7 +1167,7 @@ lo - (mabba)
 
 <pre class="src src-scheme">(<span style="color: #a020f0;">define</span> 
   (hello who)
-  (format #t <span style="color: #8b2252;">"Hello ~A\n"</span> who))
+  (format #t <span style="color: #C33;">"Hello ~A\n"</span> who))
 
 (<span style="color: #a020f0;">define</span>
     (<span style="color: #a020f0;">let</span>
@@ -1169,7 +1175,7 @@ lo - (mabba)
         (a 1)
         (b 2)
         (c 3))
-      (format #t <span style="color: #8b2252;">"a: ~A, b: ~A, c: ~A"</span>
+      (format #t <span style="color: #C33;">"a: ~A, b: ~A, c: ~A"</span>
                    (+ a 2)
                           b      c)))
 </pre>
@@ -1200,11 +1206,11 @@ lo - (mabba)
 <div class="org-src-container">
 
 <pre class="src src-wisp"><span style="color: #483d8b;">define</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">foo</span>
-<span style="color: #a020f0;">  . </span><span style="color: #8b2252;">"bar"</span>
+<span style="color: #a020f0;">  . </span><span style="color: #C33;">"bar"</span>
 
 <span style="color: #483d8b;">define</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">bar</span>
 <span style="color: #0000ff;">  '</span> <span style="color: #008b8b;">1</span>
-<span style="color: #a020f0;">    . . </span><span style="color: #008b8b;">2</span> <span style="color: #b22222;">; </span><span style="color: #b22222;">pair</span>
+<span style="color: #a020f0;">    . . </span><span style="color: #008b8b;">2</span> <span style="color: #898887;">; </span><span style="color: #898887;">pair</span>
 
 <span style="color: #0000ff;">display</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">foo</span>
 <span style="color: #0000ff;">newline</span>
@@ -1220,11 +1226,11 @@ lo - (mabba)
 <div class="org-src-container">
 
 <pre class="src src-scheme">(<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">foo</span>)
-  <span style="color: #8b2252;">"bar"</span>)
+  <span style="color: #C33;">"bar"</span>)
 
 (<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">bar</span>)
   '(1
-    . 2 ))<span style="color: #b22222;">; </span><span style="color: #b22222;">pair</span>
+    . 2 ))<span style="color: #898887;">; </span><span style="color: #898887;">pair</span>
 
 (display (foo))
 (newline)
@@ -1247,24 +1253,24 @@ lo - (mabba)
 <span style="color: #a020f0;">    :</span>
 <span style="color: #a020f0;">      :</span>
 <span style="color: #a020f0;">        . </span>c <span style="color: #008b8b;">3</span>
-<span style="color: #0000ff;">    format</span> <span style="color: #008b8b;">#t</span> <span style="color: #8b2252;">"a: ~A, b: ~A, c: ~A"</span>
+<span style="color: #0000ff;">    format</span> <span style="color: #008b8b;">#t</span> <span style="color: #C33;">"a: ~A, b: ~A, c: ~A"</span>
 <span style="color: #a020f0;">              . </span>   a      b      c
 
 <span style="color: #a020f0;">: </span>a
 
 <span style="color: #483d8b;">define</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">hello</span>
-<span style="color: #0000ff;">  display</span> <span style="color: #8b2252;">"hello\n"</span>
+<span style="color: #0000ff;">  display</span> <span style="color: #C33;">"hello\n"</span>
 
 <span style="color: #483d8b;">let</span>
 <span style="color: #a020f0;">  : </span><span style="color: #0000ff;">a</span> <span style="color: #008b8b;">1</span>
 <span style="color: #0000ff;">    b</span> <span style="color: #008b8b;">2</span>
-<span style="color: #0000ff;">  format</span> <span style="color: #008b8b;">#t</span> <span style="color: #8b2252;">"a: ~A, b: ~A"</span>
+<span style="color: #0000ff;">  format</span> <span style="color: #008b8b;">#t</span> <span style="color: #C33;">"a: ~A, b: ~A"</span>
 <span style="color: #a020f0;">            . </span>   a      b
 
 <span style="color: #483d8b;">let</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">:</span> a ' :
 
 <span style="color: #483d8b;">let</span> 
-<span style="color: #a020f0;">  : </span>   <span style="color: #b22222;">; </span><span style="color: #b22222;">foo</span>
+<span style="color: #a020f0;">  : </span>   <span style="color: #898887;">; </span><span style="color: #898887;">foo</span>
 <span style="color: #0000ff;">    a</span>
       '
 
@@ -1292,24 +1298,24 @@ lo - (mabba)
     (
       (
         c 3))
-    (format #t <span style="color: #8b2252;">"a: ~A, b: ~A, c: ~A"</span>
+    (format #t <span style="color: #C33;">"a: ~A, b: ~A, c: ~A"</span>
                  a      b      c)))
 
 ((a))
 
 (<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">hello</span>)
-  (display <span style="color: #8b2252;">"hello\n"</span>))
+  (display <span style="color: #C33;">"hello\n"</span>))
 
 (<span style="color: #a020f0;">let</span>
   ((a 1)
     (b 2))
-  (format #t <span style="color: #8b2252;">"a: ~A, b: ~A"</span>
+  (format #t <span style="color: #C33;">"a: ~A, b: ~A"</span>
                a      b))
 
 (<span style="color: #a020f0;">let</span> ((a '())))
 
 (<span style="color: #a020f0;">let</span> 
-  (    <span style="color: #b22222;">; </span><span style="color: #b22222;">foo</span>
+  (    <span style="color: #898887;">; </span><span style="color: #898887;">foo</span>
     (a
       '())))
 
@@ -1329,7 +1335,7 @@ lo - (mabba)
 <div class="outline-text-4" id="text-6-2-13">
 <div class="org-src-container">
 
-<pre class="src src-wisp"><span style="color: #b22222;">; </span><span style="color: #b22222;">sublists allow to start single line function calls with a colon ( : ).</span>
+<pre class="src src-wisp"><span style="color: #898887;">; </span><span style="color: #898887;">sublists allow to start single line function calls with a colon ( : ).</span>
 
 <span style="color: #483d8b;">define</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">a</span> b c
   <span style="color: #483d8b;">let</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">:</span> e<span style="color: #a020f0;"> . </span>f
@@ -1343,7 +1349,7 @@ lo - (mabba)
 <div class="outline-text-4" id="text-6-2-14">
 <div class="org-src-container">
 
-<pre class="src src-scheme"><span style="color: #b22222;">; </span><span style="color: #b22222;">sublists allow to start single line function calls with a colon ( : ).</span>
+<pre class="src src-scheme"><span style="color: #898887;">; </span><span style="color: #898887;">sublists allow to start single line function calls with a colon ( : ).</span>
 
 (<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">a</span> b c)
   (<span style="color: #a020f0;">let</span> ((e . f))
@@ -1357,8 +1363,8 @@ lo - (mabba)
 <div class="outline-text-4" id="text-6-2-15">
 <div class="org-src-container">
 
-<pre class="src src-wisp"><span style="color: #b22222;">#!/usr/bin/wisp.py # !#</span>
-<span style="color: #b22222;">; </span><span style="color: #b22222;">This tests hashbang lines</span>
+<pre class="src src-wisp"><span style="color: #898887;">#!/usr/bin/wisp.py # !#</span>
+<span style="color: #898887;">; </span><span style="color: #898887;">This tests hashbang lines</span>
 </pre>
 </div>
 </div>
@@ -1369,7 +1375,7 @@ lo - (mabba)
 <div class="org-src-container">
 
 <pre class="src src-scheme">#!/usr/bin/wisp.py # !#
-<span style="color: #b22222;">; </span><span style="color: #b22222;">This tests hashbang lines</span>
+<span style="color: #898887;">; </span><span style="color: #898887;">This tests hashbang lines</span>
 </pre>
 </div>
 </div>
@@ -1473,10 +1479,10 @@ lo - (mabba)
 <div class="outline-text-4" id="text-6-2-19">
 <div class="org-src-container">
 
-<pre class="src src-wisp"><span style="color: #b22222;">#!/home/arne/wisp/wisp-multiline.sh  </span>
-<span style="color: #b22222;">; </span><span style="color: #b22222;">!#</span>
-<span style="color: #483d8b;">define</span> a <span style="color: #008b8b;">1</span> <span style="color: #b22222;">; </span><span style="color: #b22222;">test whether ' : correctly gets turned into '(</span>
-<span style="color: #b22222;">; </span><span style="color: #b22222;">and whether brackets in commments are treated correctly.</span>
+<pre class="src src-wisp"><span style="color: #898887;">#!/home/arne/wisp/wisp-multiline.sh  </span>
+<span style="color: #898887;">; </span><span style="color: #898887;">!#</span>
+<span style="color: #483d8b;">define</span> a <span style="color: #008b8b;">1</span> <span style="color: #898887;">; </span><span style="color: #898887;">test whether ' : correctly gets turned into '(</span>
+<span style="color: #898887;">; </span><span style="color: #898887;">and whether brackets in commments are treated correctly.</span>
 
 <span style="color: #483d8b;">define</span> a '<span style="color: #a020f0;"> : </span><span style="color: #0000ff;">1</span> <span style="color: #008b8b;">2</span> <span style="color: #008b8b;">3</span>
 
@@ -1493,9 +1499,9 @@ lo - (mabba)
 <div class="org-src-container">
 
 <pre class="src src-scheme">#!/home/arne/wisp/wisp-multiline.sh  
-<span style="color: #b22222;">; </span><span style="color: #b22222;">!#</span>
-(<span style="color: #a020f0;">define</span> <span style="color: #0000ff;">a</span> 1 )<span style="color: #b22222;">; </span><span style="color: #b22222;">test whether ' : correctly gets turned into '(</span>
-<span style="color: #b22222;">; </span><span style="color: #b22222;">and whether brackets in commments are treated correctly.</span>
+<span style="color: #898887;">; </span><span style="color: #898887;">!#</span>
+(<span style="color: #a020f0;">define</span> <span style="color: #0000ff;">a</span> 1 )<span style="color: #898887;">; </span><span style="color: #898887;">test whether ' : correctly gets turned into '(</span>
+<span style="color: #898887;">; </span><span style="color: #898887;">and whether brackets in commments are treated correctly.</span>
 
 (<span style="color: #a020f0;">define</span> <span style="color: #0000ff;">a</span> '(1 2 3))
 
@@ -1511,8 +1517,8 @@ lo - (mabba)
 <div class="outline-text-4" id="text-6-2-21">
 <div class="org-src-container">
 
-<pre class="src src-wisp"><span style="color: #b22222;">#!/home/arne/wisp/wisp-multiline.sh  </span>
-<span style="color: #b22222;">; </span><span style="color: #b22222;">!#</span>
+<pre class="src src-wisp"><span style="color: #898887;">#!/home/arne/wisp/wisp-multiline.sh  </span>
+<span style="color: #898887;">; </span><span style="color: #898887;">!#</span>
 <span style="color: #483d8b;">define</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">hello</span> who
 <span style="color: #0000ff;">  display</span> who
 
@@ -1531,7 +1537,7 @@ lo - (mabba)
 <div class="org-src-container">
 
 <pre class="src src-scheme">#!/home/arne/wisp/wisp-multiline.sh  
-<span style="color: #b22222;">; </span><span style="color: #b22222;">!#</span>
+<span style="color: #898887;">; </span><span style="color: #898887;">!#</span>
 (<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">hello</span> who)
   (display who))
 
@@ -1549,7 +1555,7 @@ lo - (mabba)
 <div class="outline-text-4" id="text-6-2-23">
 <div class="org-src-container">
 
-<pre class="src src-wisp"><span style="color: #b22222;">; </span><span style="color: #b22222;">Test using a . as first parameter on a line by prefixing it with a second .</span>
+<pre class="src src-wisp"><span style="color: #898887;">; </span><span style="color: #898887;">Test using a . as first parameter on a line by prefixing it with a second .</span>
 <span style="color: #483d8b;">define</span>
 <span style="color: #0000ff;">  a</span> i
 <span style="color: #a020f0;">    . . </span>b
@@ -1560,7 +1566,7 @@ lo - (mabba)
 <span style="color: #0000ff;">    apply</span> a ( <span style="color: #0000ff;">+</span> i <span style="color: #008b8b;">1</span> ) b
 
 
-<span style="color: #0000ff;">a</span> <span style="color: #008b8b;">0</span> <span style="color: #8b2252;">"123"</span> <span style="color: #8b2252;">"345"</span> <span style="color: #8b2252;">"567"</span>
+<span style="color: #0000ff;">a</span> <span style="color: #008b8b;">0</span> <span style="color: #C33;">"123"</span> <span style="color: #C33;">"345"</span> <span style="color: #C33;">"567"</span>
 </pre>
 </div>
 </div>
@@ -1570,7 +1576,7 @@ lo - (mabba)
 <div class="outline-text-4" id="text-6-2-24">
 <div class="org-src-container">
 
-<pre class="src src-scheme"><span style="color: #b22222;">; </span><span style="color: #b22222;">Test using a . as first parameter on a line by prefixing it with a second .</span>
+<pre class="src src-scheme"><span style="color: #898887;">; </span><span style="color: #898887;">Test using a . as first parameter on a line by prefixing it with a second .</span>
 (<span style="color: #a020f0;">define</span>
   (a i
     . b)
@@ -1581,7 +1587,7 @@ lo - (mabba)
     (apply a ( + i 1 ) b)))
 
 
-(a 0 <span style="color: #8b2252;">"123"</span> <span style="color: #8b2252;">"345"</span> <span style="color: #8b2252;">"567"</span>)
+(a 0 <span style="color: #C33;">"123"</span> <span style="color: #C33;">"345"</span> <span style="color: #C33;">"567"</span>)
 </pre>
 </div>
 </div>
@@ -1591,9 +1597,9 @@ lo - (mabba)
 <div class="outline-text-4" id="text-6-2-25">
 <div class="org-src-container">
 
-<pre class="src src-wisp"><span style="color: #b22222;">;; </span><span style="color: #b22222;">short version</span>
-<span style="color: #b22222;">; </span><span style="color: #b22222;">note: once you use one inline colon, all the following forms on that</span>
-<span style="color: #b22222;">; </span><span style="color: #b22222;">line will get closed at the end of the line</span>
+<pre class="src src-wisp"><span style="color: #898887;">;; </span><span style="color: #898887;">short version</span>
+<span style="color: #898887;">; </span><span style="color: #898887;">note: once you use one inline colon, all the following forms on that</span>
+<span style="color: #898887;">; </span><span style="color: #898887;">line will get closed at the end of the line</span>
 
 <span style="color: #483d8b;">define</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">factorial</span> n
   <span style="color: #483d8b;">if</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">zero?</span> n
@@ -1603,7 +1609,7 @@ lo - (mabba)
 <span style="color: #0000ff;">display</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">factorial</span> <span style="color: #008b8b;">5</span> 
 
 
-<span style="color: #b22222;">;; </span><span style="color: #b22222;">more vertical space, less colons</span>
+<span style="color: #898887;">;; </span><span style="color: #898887;">more vertical space, less colons</span>
 <span style="color: #483d8b;">define</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">factorial</span> n
   <span style="color: #483d8b;">if</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">zero?</span> n
 <span style="color: #a020f0;">    . </span><span style="color: #008b8b;">1</span>
@@ -1621,9 +1627,9 @@ lo - (mabba)
 <div class="outline-text-4" id="text-6-2-26">
 <div class="org-src-container">
 
-<pre class="src src-scheme"><span style="color: #b22222;">;; </span><span style="color: #b22222;">short version</span>
-<span style="color: #b22222;">; </span><span style="color: #b22222;">note: once you use one inline colon, all the following forms on that</span>
-<span style="color: #b22222;">; </span><span style="color: #b22222;">line will get closed at the end of the line</span>
+<pre class="src src-scheme"><span style="color: #898887;">;; </span><span style="color: #898887;">short version</span>
+<span style="color: #898887;">; </span><span style="color: #898887;">note: once you use one inline colon, all the following forms on that</span>
+<span style="color: #898887;">; </span><span style="color: #898887;">line will get closed at the end of the line</span>
 
 (<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">factorial</span> n)
   (<span style="color: #a020f0;">if</span> (zero? n)
@@ -1633,7 +1639,7 @@ lo - (mabba)
 (display (factorial 5 ))
 
 
-<span style="color: #b22222;">;; </span><span style="color: #b22222;">more vertical space, less colons</span>
+<span style="color: #898887;">;; </span><span style="color: #898887;">more vertical space, less colons</span>
 (<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">factorial</span> n)
   (<span style="color: #a020f0;">if</span> (zero? n)
     1
@@ -1654,28 +1660,28 @@ lo - (mabba)
 <pre class="src src-wisp"><span style="color: #483d8b;">define</span> (<span style="color: #0000ff;">a</span> b c)
   <span style="color: #483d8b;">let</span>
 <span style="color: #a020f0;">    : </span>
-<span style="color: #0000ff;">      d</span> <span style="color: #8b2252;">"i am a string</span>
-<span style="color: #8b2252;">do not break me!"</span>
+<span style="color: #0000ff;">      d</span> <span style="color: #C33;">"i am a string</span>
+<span style="color: #C33;">do not break me!"</span>
 <span style="color: #a020f0;">      : </span>
-  <span style="color: #b22222;">; </span><span style="color: #b22222;">comment: 0</span>
+  <span style="color: #898887;">; </span><span style="color: #898887;">comment: 0</span>
         f
-<span style="color: #b22222;">; </span><span style="color: #b22222;">comment : 1</span>
-<span style="color: #0000ff;">        `</span> g <span style="color: #b22222;">; </span><span style="color: #b22222;">comment " : " 2</span>
+<span style="color: #898887;">; </span><span style="color: #898887;">comment : 1</span>
+<span style="color: #0000ff;">        `</span> g <span style="color: #898887;">; </span><span style="color: #898887;">comment " : " 2</span>
 <span style="color: #a020f0;">      : </span>
 <span style="color: #0000ff;">        h</span> (<span style="color: #0000ff;">I</span> am in brackets:
-<span style="color: #0000ff;">           do</span> <span style="color: #483d8b;">not</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">change</span> <span style="color: #8b2252;">"me"</span>)
+<span style="color: #0000ff;">           do</span> <span style="color: #483d8b;">not</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">change</span> <span style="color: #C33;">"me"</span>)
 <span style="color: #a020f0;">        . </span>i
 <span style="color: #0000ff;">  ,</span><span style="color: #008b8b;"> 'j</span> k
 
 <span style="color: #a020f0;">  . </span>l
 
-<span style="color: #b22222;">; </span><span style="color: #b22222;">comment</span>
+<span style="color: #898887;">; </span><span style="color: #898887;">comment</span>
 
 <span style="color: #0000ff;">  a</span> c
 
 <span style="color: #483d8b;">define</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">b</span> :n o
-<span style="color: #a020f0;">  . </span><span style="color: #8b2252;">"second defun : with a docstring!"</span>
-<span style="color: #0000ff;">  message</span> <span style="color: #8b2252;">"I am here"</span>
+<span style="color: #a020f0;">  . </span><span style="color: #C33;">"second defun : with a docstring!"</span>
+<span style="color: #0000ff;">  message</span> <span style="color: #C33;">"I am here"</span>
 <span style="color: #a020f0;">  . </span>t
 
 <span style="color: #483d8b;">define</span><span style="color: #a020f0;"> : </span><span style="color: #0000ff;">c</span> e f
@@ -1721,28 +1727,28 @@ lo - (mabba)
 <pre class="src src-scheme">(<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">a</span> b c)
   (<span style="color: #a020f0;">let</span>
     (
-      (d <span style="color: #8b2252;">"i am a string</span>
-<span style="color: #8b2252;">do not break me!"</span>)
+      (d <span style="color: #C33;">"i am a string</span>
+<span style="color: #C33;">do not break me!"</span>)
       (
-  <span style="color: #b22222;">; </span><span style="color: #b22222;">comment: 0</span>
+  <span style="color: #898887;">; </span><span style="color: #898887;">comment: 0</span>
         (f)
-<span style="color: #b22222;">; </span><span style="color: #b22222;">comment : 1</span>
-        `(g ))<span style="color: #b22222;">; </span><span style="color: #b22222;">comment " : " 2</span>
+<span style="color: #898887;">; </span><span style="color: #898887;">comment : 1</span>
+        `(g ))<span style="color: #898887;">; </span><span style="color: #898887;">comment " : " 2</span>
       (
         (h (I am in brackets:
-           do not : change <span style="color: #8b2252;">"me"</span>))
+           do not : change <span style="color: #C33;">"me"</span>))
         i)))
   ,('j k)
 
   l
 
-<span style="color: #b22222;">; </span><span style="color: #b22222;">comment</span>
+<span style="color: #898887;">; </span><span style="color: #898887;">comment</span>
 
   (a c))
 
 (<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">b</span> <span style="color: #483d8b;">:n</span> o)
-  <span style="color: #8b2252;">"second defun : with a docstring!"</span>
-  (message <span style="color: #8b2252;">"I am here"</span>)
+  <span style="color: #C33;">"second defun : with a docstring!"</span>
+  (message <span style="color: #C33;">"I am here"</span>)
   t)
 
 (<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">c</span> e f)
@@ -1789,9 +1795,9 @@ a
 <span style="color: #a020f0;">  . </span>f g h
 <span style="color: #a020f0;">  . </span>i j k
 
-<span style="color: #0000ff;">concat</span> <span style="color: #8b2252;">"I want "</span> 
+<span style="color: #0000ff;">concat</span> <span style="color: #C33;">"I want "</span> 
 <span style="color: #0000ff;">    getwish</span> from me
-<span style="color: #a020f0;">    . </span><span style="color: #8b2252;">" - "</span> username
+<span style="color: #a020f0;">    . </span><span style="color: #C33;">" - "</span> username
 </pre>
 </div>
 </div>
@@ -1805,9 +1811,9 @@ a
   f g h
   i j k)
 
-(concat <span style="color: #8b2252;">"I want "</span> 
+(concat <span style="color: #C33;">"I want "</span> 
     (getwish from me)
-    <span style="color: #8b2252;">" - "</span> username)
+    <span style="color: #C33;">" - "</span> username)
 </pre>
 </div>
 </div>
@@ -1859,7 +1865,7 @@ This special syntax for double parens cannot be replaced by clever whitespace pa
 </p></div>
 
 <div class="footdef"><sup><a id="fn.6" name="fn.6" class="footnum" href="#fnr.6">6</a></sup> <p class="footpara">
-I used a double let without action as example for the colon-syntax, even though that does nothing, because that makes it impossible to use later indentation to mark an intermediate indentation-level. Another reason why I would not use later indentation to define whether something earlier is a single or double indent is that this would call for subtle and really hard to find errors:
+The example uses a double let without action as example for the colon-syntax, even though that does nothing, because that makes it impossible to use later indentation to mark an intermediate indentation-level. Another reason why I would not use later indentation to define whether something earlier is a single or double indent is that this would call for subtle and really hard to find errors.
 </p></div>
 
 <div class="footdef"><sup><a id="fn.7" name="fn.7" class="footnum" href="#fnr.7">7</a></sup> <p class="footpara">
@@ -1871,8 +1877,8 @@ To run the tests in the wisp testsuite with a separately built GNU Guile, you ca
 </div></div>
 <div id="postamble" class="status">
 <p class="author">Author: Arne Babenhauserheide</p>
-<p class="date">Created: 2014-12-21 So 20:59</p>
-<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.3.1 (<a href="http://orgmode.org">Org</a> mode 8.2.6)</p>
+<p class="date">Created: 2014-12-23 Di 17:17</p>
+<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.4.1 (<a href="http://orgmode.org">Org</a> mode 8.2.6)</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
