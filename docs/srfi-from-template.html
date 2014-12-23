@@ -315,9 +315,9 @@ _ <i>body</i>
 
 
 
-<pre>display                             ;    (display
-  string-append "Hello " "World!"   ;      (string-append "Hello " "World!"))
-display "Hello Again!"              ;    (display "Hello Again!")
+<pre><i>display</i>                             ;    (<i>display</i>
+  <i>string-append</i> "Hello " "World!"   ;      (<i>string-append</i> "Hello " "World!"))
+<i>display</i> "Hello Again!"              ;    (<i>display</i> "Hello Again!")
 </pre>
 
 
@@ -348,8 +348,8 @@ display "Hello Again!"              ;    (display "Hello Again!")
 
 
 
-<pre>string-append "Hello"               ;    (string-append "Hello"
-  string-append " " "World"         ;      (string-append " " "World")
+<pre><i>string-append</i> "Hello"               ;    (<i>string-append</i> "Hello"
+  <i>string-append</i> " " "World"         ;      (<i>string-append</i> " " "World")
   . "!"                             ;      "!")
 </pre>
 
@@ -366,10 +366,10 @@ display "Hello Again!"              ;    (display "Hello Again!")
 
 
 
-<pre>let                                 ;    (let
+<pre><b>let</b>                                 ;    (<b>let</b>
   :                                 ;      (
-    msg "Hello World!"              ;        (msg "Hello World!"))
-  display msg                       ;      (display msg))
+    <i>msg</i> "Hello World!"              ;        (<i>msg</i> "Hello World!"))
+  <i>display</i> msg                       ;      (<i>display</i> msg))
 </pre>
 
 
@@ -385,9 +385,9 @@ display "Hello Again!"              ;    (display "Hello Again!")
 
 
 
-<pre>define : hello who                  ;    (define (hello who)
-  display                           ;      (display 
-    string-append "Hello " who "!"  ;        (string-append "Hello " who "!")))
+<pre><b>define</b> : <i>hello</i> who                  ;    (<b>define</b> (<i>hello</i> who)
+  <i>display                          </i> ;      (<i>display</i> 
+    <i>string-append</i> "Hello " who "!"  ;        (<i>string-append</i> "Hello " who "!")))
 </pre>
 
 
@@ -401,8 +401,8 @@ If the colon is the last non-whitespace character on a line, it represents an em
 
 
 
-<pre>let :                               ;    (let ()
-    display "Hello"                 ;         (display "Hello"))
+<pre><b>let</b> :                               ;    (<b>let</b> ()
+    <i>display</i> "Hello"                 ;         (<i>display</i> "Hello"))
 </pre>
 
 
@@ -417,9 +417,9 @@ If the colon is the last non-whitespace character on a line, it represents an em
 
 
 
-<pre>define : hello who                  ;    (define (hello who)
-_ display                           ;      (display 
-___ string-append "Hello " who "!"  ;        (string-append "Hello " who "!")))
+<pre><b>define</b> : <i>hello</i> who                  ;    (<b>define</b> (<i>hello</i> who)
+_ <i>display</i>                           ;      (<i>display</i> 
+___ <i>string-append</i> "Hello " who "!"  ;        (<i>string-append</i> "Hello " who "!")))
 </pre>
 
 
@@ -434,11 +434,11 @@ ___ string-append "Hello " who "!"  ;        (string-append "Hello " who "!")))
 
 
 
-<pre>define : stringy s 
-         string-append s " reversed and capitalized:
+<pre><b>define</b> : <i>stringy</i> s 
+         <i>string-append</i> s " reversed and capitalized:
  " ; linebreaks in strings do not affect wisp parsing
-           . (string-capitalize ; same for linebreaks in parentheses
-             (string-reverse s))
+           . (<i>string-capitalize</i> ; same for linebreaks in parentheses
+             (<i>string-reverse</i> s))
 </pre>
 
 
@@ -448,8 +448,8 @@ Effectively code in parentheses and strings is interpreted directly as Scheme. T
 
 
 
-<pre>define foo (+ 1
-  (* 2 3)) ; defines foo as 7
+<pre><b>define</b> foo (<i>+</i> 1
+  (<i>*</i> 2 3)) ; defines foo as 7
 </pre>
 
 
@@ -553,7 +553,7 @@ For simple cases, the colon could be replaced by clever whitespace parsing, but 
 </p>
 
 
-<pre>(doublelet
+<pre>(<i>doublelet</i>
   ((foo bar))
   ((bla foo)))
 </pre>
@@ -563,7 +563,7 @@ For simple cases, the colon could be replaced by clever whitespace parsing, but 
 The wisp version of this is
 </p>
 
-<pre>doublelet
+<pre><i>doublelet</i>
   :
     foo bar
   : ; &lt;- this empty backstep is the real issue
@@ -577,7 +577,7 @@ or shorter with inline colon (which you can use only if you don’t need further
 
 
 
-<pre>doublelet
+<pre><i>doublelet</i>
   : foo bar
   : bla foo
 </pre>
@@ -601,7 +601,7 @@ Defining intermediate indentation-levels by later elements (deferred definition)
 
 
 
-<pre>define (flubb)
+<pre><b>define</b> (<i>flubb</i>)
     nubb
     hubb
     subb
@@ -615,7 +615,7 @@ would become
 
 
 
-<pre>(define (flubb)
+<pre>(<b>define</b> (<i>flubb</i>)
    ((nubb))
    ((hubb))
    ((subb))
@@ -629,7 +629,7 @@ while
 
 
 
-<pre>define (flubb)
+<pre><b>define</b> (<i>flubb</i>)
     nubb
     hubb
     subb
@@ -642,7 +642,7 @@ would become
 
 
 
-<pre>(define (flubb)
+<pre>(<b>define</b> (<i>flubb</i>)
    (nubb)
    (hubb)
    (subb))
@@ -659,10 +659,10 @@ Fixed indentation width (alternative option to inferring it from later lines) wo
 
 
 
-<pre>when
-    equal? wrong
-           isright? stuff
-    fixstuff
+<pre><b>when</b>
+    <i>equal?</i> wrong
+           <i>isright?</i> stuff
+    <i>fixstuff</i>
 </pre>
 
 
