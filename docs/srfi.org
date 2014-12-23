@@ -366,10 +366,8 @@ If the colon is the last non-whitespace character on a line, it represents an em
 
 #+BEGIN_SRC wisp
 define : stringy s 
-         string-append s "can be varied as follows:
+         string-append s " reversed and capitalized:
  " ; linebreak in string does not affect wisp parsing
-           string-capitalize s
-           string-reverse s
            . (string-capitalize ; linebreaks in parentheses are ignored.
              (string-reverse s))
            . "
