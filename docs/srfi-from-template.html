@@ -682,9 +682,16 @@ You can still use underscores anywhere but at the beginning of the line, and eve
 
 <H1>Implementation</H1>
 
-??? explanation of how it meets the reference implementation requirement, and the code, if possible
+<p>The reference implementation realizes a specialized parser for Scheme. It uses GNU Guile and can also be used at the REPL.</p>
 
-<!--TODO: Link to implementation and HTML with only the testsuite.-->
+<p>The wisp code also contains a general wisp-preprocessor which can be used for any lisp-like language and can used as an external program which gets called on reading. It does not actually have to understand the code itself.</p>
+
+<p>To allow for easy re-implementation, the chapter after the implementation itself contains a test-suite with commonly used wisp constructs and parenthesized counterparts.</p>
+
+<p>The wisp preprocessor implementation can be found in the <a href="http://draketo.de/proj/wisp">wisp code repository</a>. Both implementations are explicitly licensed to allow inclusion in an SRFI.</p>
+
+
+<!--TODO: Link to implementation as plain Scheme fil and HTML with only the testsuite.-->
 
 <A HREF="srfi minus ???-reference.scm">Source for the reference implementation.</A>
 
