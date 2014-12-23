@@ -3,7 +3,7 @@ exec guile -L . --language=wisp -s "$0" "$@"
 ; !#
 
 ;; Scheme-only implementation of a wisp-preprocessor which output a
-;; scheme Tree IL to feed to a scheme interpreter instead of a
+;; scheme code tree to feed to a scheme interpreter instead of a
 ;; preprocessed file.
 
 ;; Plan:
