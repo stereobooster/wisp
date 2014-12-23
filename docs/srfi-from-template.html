@@ -91,20 +91,23 @@ Wisp expressions can include any s-expressions and as such provide backwards com
 
 <p>SRFI-110 improves a lot over the implementation of SRFI-49. It resolves the group-naming and reduces the need to continue the argument-list by introducing 3 different grouping syntaxes (<code>$</code>, <code>\\</code> and <code><* *></code>). These additional syntax-elements however hurt readability for newcomers (obviously the authors of SRFI-110 disagree with this assertion. Their view is discussed in SRFI-110 in the section about wisp). The additional syntax elements lead to structures like the following (taken from examples from the readable project):</p>
 
-<pre>
-<i>myfunction</i>
-  x: \\ original-x
-  y: \\ <i>calculate-y</i> original-y
-</pre>
 
+<table><tr><th>SRFI-110 / readable</th></tr><tr><td>
 <pre>
-<i>a</i> b $ <i>c</i> d e $ <i>f</i> g
+    <i>myfunction</i>
+      x: \\ original-x
+      y: \\ <i>calculate-y</i> original-y
 </pre>
-
+</td></tr><tr><td>
 <pre>
-let <* <i>x</i> <i>getx</i>() \\ <i>y</i> <i>gety</i>() *>
-! {{x * x} + {y * y}}
+    <i>a</i> b $ <i>c</i> d e $ <i>f</i> g
 </pre>
+</td></tr><tr><td>
+<pre>
+    let <* <i>x</i> <i>getx</i>() \\ <i>y</i> <i>gety</i>() *>
+    ! {{x * x} + {y * y}}
+</pre>
+</td></tr></table>
 
 <p>This is not only hard to read, but also makes it harder to work with the code, because the programmer has to learn these additional syntax elements and keep them in mind before being able to understand the code.</p>
 
