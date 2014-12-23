@@ -432,7 +432,7 @@ ___ string-append "Hello " who "!"  ;        (string-append "Hello " who "!")))
 <pre>define : stringy s 
          string-append s " reversed and capitalized:
  " ; linebreaks in strings do not affect wisp parsing
-           . (string-capitalize ; linebreaks in parentheses are ignored.
+           . (string-capitalize ; same for linebreaks in parentheses
              (string-reverse s))
 </pre>
 
