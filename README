@@ -43,12 +43,14 @@ Usage
 Wisp and curly infix (SRFI-105)
 -------------------------------
 
-Wisp treats braces "{}" the same as parentheses "()" and square brackets "[]", so you can use it with curly infix ([SRFI-105](http://srfi.schemers.org/srfi-105/srfi-105.html)) to get more customary math expressions. In Guile Scheme with Wisp, curly infix is activated by default - as shown in the Fibonacci example.
+Wisp treats braces "{}" the same as parentheses "()" and square brackets "[]", so you can use it with curly infix ([SRFI-105](http://srfi.schemers.org/srfi-105/srfi-105.html)) to get more customary math expressions. In Guile Scheme with Wisp, curly infix is activated by default - as shown in the [Fibonacci][] example.
 
 If you want to use a curly-infix expression starting a line, you have to prefix it with a dot:
 
     . {1 + 1}
     ; = 2
+
+[Fibonacci]: #fibonacci "Generation of the fibonacci sequence in wisp and s-expressions"
 
 Notes
 -----
