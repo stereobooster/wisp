@@ -7,7 +7,7 @@ Wisp: Whitespace to Lisp
 <a name="fibonacci"></a>
     define : fibonacci n                 (define (fibonacci n)
         let rek : (i 0) (u 1) (v 1)          (let rek ((i 0) (u 1) (v 1))
-            if {i >= {n - 2}}          ⇒          (if (>= i (- n 2))
+             if : >= i {n - 2}         ⇒          (if (>= i (- n 2))
                 . v                                    v
                 rek {i + 1} v {u + v}                 (rek (+ i 1) v (+ u v)))))
 
