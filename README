@@ -5,6 +5,7 @@ Wisp: Whitespace to Lisp
       display "Hello World"     ⇒        (display "Hello World"))
 
 <a name="fibonacci"></a>
+
     define : fibonacci n                 (define (fibonacci n)
         let rek : (i 0) (u 1) (v 1)          (let rek ((i 0) (u 1) (v 1))
              if : >= i {n - 2}         ⇒          (if (>= i (- n 2))
