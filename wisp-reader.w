@@ -65,15 +65,9 @@ define : read-one-wisp-sexp port env
   define : try-pending
     if : null? wisp-pending-sexps
          wisp-scheme-read-chunk-env
-         let 
-            : sexp : car wisp-pending-sexps
-              pending wisp-pending-sexps
-            set! wisp-pending-sexps : list
-            cond 
-               : null? : cdr pending
-                 . sexp
-               else
-                 append '(begin) pending
+         let : : sexp : car wisp-pending-sexps
+            set! wisp-pending-sexps : cdr wisp-pending-sexps
+            . sexp
   try-pending
 
 define-language wisp
