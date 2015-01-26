@@ -15,7 +15,7 @@ define : list-product-sums list-of-numbers
        map (lambda (x) (apply + x))
            list-ec (: i list-of-numbers)
                map (lambda (x) (* i x))
-                   list-ec (: j list-of-numbers) (if (= i j) 0 j)
+                   cons (- i) list-of-numbers
 
 
 define : main . args
