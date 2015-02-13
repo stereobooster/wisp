@@ -87,6 +87,7 @@ define : evolve-remove evalstring
 
 
 define : evolution initialstring steps
+       ; TODO: use a population with survivors.
        let loop : (step 0) (string initialstring)
            let : : action : random 4
                if : >= step steps
@@ -108,3 +109,4 @@ define : run
        newline
 
 
+run
