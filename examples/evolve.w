@@ -106,8 +106,12 @@ define : evolution initialstring steps
 define : run 
        ; firstoff, seed the random number generator!
        set! *random-state* : random-state-from-platform
-       display : evolution "+ 123 (- 2 1)" 1000
-       newline
+       let 
+         : opt : evolution "+ 123 (- 2 1)" 1000
+         write opt
+         newline
+         write : mutate-eval opt
+         newline
 
 
 run
