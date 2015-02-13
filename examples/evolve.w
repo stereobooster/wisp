@@ -5,9 +5,10 @@
 
 ; NOTE: This only works after preprocessing to scheme.
 
+; run via PATH=../guile-2.0.11/meta:$PATH ./wisp-multiline.sh examples/evolve.w 
+
 ; Get the eval string which allows for selecting the language.
 use-modules : ice-9 eval-string
-
 
 define evalsyntax "0123456789+-*/ ()"
 
@@ -105,3 +106,5 @@ define : run
        set! *random-state* : random-state-from-platform
        display : evolution "+ 1 (- 2 1)" 1000
        newline
+
+
