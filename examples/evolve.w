@@ -10,7 +10,7 @@
 ; Get the eval string which allows for selecting the language.
 use-modules : ice-9 eval-string
 
-define evalsyntax "0123456789+-*/ ()"
+define evalsyntax "0123456789+-*/: ()"
 
 define : mutate-replace evalstring
        let 
@@ -51,7 +51,7 @@ define : mutate-remove evalstring
 
 define : mutate-eval evalstring
        eval-string : string-append "(" evalstring ")"
-                   . #:lang 'scheme
+                   . #:lang 'scheme ; TODO: use wisp
 
 
 define : better mutated original
@@ -105,7 +105,7 @@ define : evolution initialstring steps
 define : run 
        ; firstoff, seed the random number generator!
        set! *random-state* : random-state-from-platform
-       display : evolution "+ 1 (- 2 1)" 1000
+       display : evolution "+ 123 (- 2 1)" 1000
        newline
 
 
