@@ -13,10 +13,22 @@ use-modules : ice-9 eval-string
 
 define evalsyntax "0123456789+-*/: ()"
 
+
+define : paired-char? char
+       or (equal? #\) char) (equal? #\( char)
+
+
 define : mutate-replace evalstring
-       let 
+       let*
            : eval-index : random : string-length evalstring
              replace-index : random : string-length evalsyntax
+             remove-char : string-ref evalstring eval-index
+             insert-char : string-ref evalsyntax replace-index
+             ; double step, if mutating a paired character
+             evalstring 
+                 if : not : or (paired-char? insert-char) (paired-char? remove-char)
+                    . evalstring 
+                    mutate-replace evalstring
            string-replace evalstring evalsyntax eval-index : + eval-index 1
                                           . replace-index : + replace-index 1
 
@@ -30,25 +42,40 @@ define : mutate-permutate evalstring
 
 
 define : mutate-insert evalstring
-       let 
+       let* 
            : eval-index : random : string-length evalstring
              insert-index : random : string-length evalsyntax
+             insert-char : string-ref evalsyntax insert-index
+             ; double step, if mutating a paired character
+             evalstring 
+                 if : not : paired-char? insert-char
+                    . evalstring 
+                    mutate-insert evalstring
            string-append 
                substring evalstring 0 eval-index
-               string : string-ref evalsyntax insert-index
+               string insert-char
                substring evalstring eval-index
 
+
+define : mutate-remove-by-index evalstring index
+               string-append 
+                   substring evalstring 0 index
+                   substring evalstring : + index 1
+       
 
 define : mutate-remove evalstring
        if : <= 1 : string-length evalstring
           ; cannot remove from a 0 string
           . evalstring
-          let 
+          let* 
                : eval-index : random : - (string-length evalstring) 1
-               string-append 
-                   substring evalstring 0 eval-index
-                   substring evalstring : + eval-index 1
-
+                 eval-char : string-ref evalstring eval-index
+                 ; double step, if mutating a paired character
+                 evalstring 
+                     if : not : paired-char? eval-char
+                        . evalstring 
+                        mutate-remove evalstring
+               mutate-remove-by-index evalstring eval-index
 
 define : mutate-eval evalstring
        eval-string : string-append "(" evalstring ")"
