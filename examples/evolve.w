@@ -114,21 +114,28 @@ define : evolve-remove evalstring
        evolve-step evalstring mutate-remove
 
 
+define : evolution-step string 
+       let : : action : random 4
+           cond 
+             : = action 0
+               evolve-replace string
+             : = action 1
+               evolve-permutate string
+             : = action 2
+               evolve-insert string
+             : = action 3
+               evolve-remove string
+
+
 define : evolution initialstring steps
        ; TODO: use a population with survivors.
        let loop : (step 0) (string initialstring)
-           let : : action : random 4
-               if : >= step steps
-                  . string
-                  cond 
-                    : = action 0
-                      loop (+ step 1) (evolve-replace string)
-                    : = action 1
-                      loop (+ step 1) (evolve-permutate string)
-                    : = action 2
-                      loop (+ step 1) (evolve-insert string)
-                    : = action 3
-                      loop (+ step 1) (evolve-remove string)
+           if : >= step steps
+              . string
+              loop 
+                  1+ step
+                  evolution-step string
+
                     
 define : run 
        ; firstoff, seed the random number generator!
