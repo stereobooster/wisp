@@ -3,6 +3,8 @@
 
 ; One thousand monkeys: A small experiment on a complete evolutionary algorithm.
 
+; TODO: genetic with mutate+combinate, population which keeps the best and directed whch only keeps improvements
+
 ; NOTE: This only works after preprocessing to scheme.
 
 ; run via 
@@ -127,8 +129,12 @@ define : evolution-step string
                evolve-remove string
 
 
+define : evolution-population initialstring steps population-size
+       . "a population with 50% survivors."
+       . initialstring
+
 define : evolution initialstring steps
-       ; TODO: use a population with survivors.
+       ; TODO: use 
        let loop : (step 0) (string initialstring)
            if : >= step steps
               . string
