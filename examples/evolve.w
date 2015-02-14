@@ -1,7 +1,7 @@
 #!/home/arne/wisp/wisp-multiline.sh 
 ; !#
 
-; A small experiment on a complete evolutionary algorithm.
+; One thousand monkeys: A small experiment on a complete evolutionary algorithm.
 
 ; NOTE: This only works after preprocessing to scheme.
 
