@@ -3,7 +3,7 @@
 
 ; One thousand monkeys: A small experiment on a complete evolutionary algorithm.
 
-; TODO: genetic with mutate+combinate, population which keeps the best and directed whch only keeps improvements
+; TODO: genetic with mutate+combinate, population which keeps the best and directed which only keeps improvements
 
 ; NOTE: This only works after preprocessing to scheme.
 
