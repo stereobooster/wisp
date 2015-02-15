@@ -1,4 +1,5 @@
-#!/home/arne/wisp/wisp-multiline.sh 
+#!/usr/bin/env sh
+exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples evolve) main)' -s "$0" "$@"
 ; !#
 
 ; One thousand monkeys: A small experiment on a complete evolutionary algorithm.
@@ -10,6 +11,7 @@
 ; run via 
 ; PATH=../guile-2.0.11/meta:$PATH GUILE_LOAD_PATH=. ./wisp-multiline.sh examples/evolve.w 
 
+define-module : examples evolve
 ; Get the eval string which allows for selecting the language.
 use-modules : ice-9 eval-string
 
@@ -154,4 +156,7 @@ define : run
          newline
 
 
-run
+define : main
+       display "foo"
+       newline 
+       run
