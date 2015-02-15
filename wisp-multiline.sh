@@ -41,7 +41,7 @@ else
 fi
 
 PROGNAME=`basename $0`
-ARGS=`getopt --name "$PN" --long help,lisp:,verbose,version,output:,wisp:interactive --options hl:vo:w:i -- "$@"`
+ARGS=`getopt --name "$PROGNAME" --long help,lisp:,verbose,version,output:,wisp:interactive --options hl:vo:w:i -- "$@"`
 if [ $? -ne 0 ]; then
   exit 1
 fi

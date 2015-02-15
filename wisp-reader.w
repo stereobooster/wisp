@@ -10,10 +10,14 @@
 
 ; adapted from spec.scm: https://gitorious.org/nacre/guile-sweet/source/ae306867e371cb4b56e00bb60a50d9a0b8353109:sweet/spec.scm
 define-module : language wisp spec
-  . #:use-module : wisp
+;   . #:use-module : wisp
+  . #:use-module : wisp-scheme
   . #:use-module : system base compile
   . #:use-module : system base language
   . #:export : wisp
+
+; Set locale to something which supports unicode. Required to avoid using fluids.
+setlocale LC_ALL ""
 
 ;;;
 ;;; Language definition
@@ -28,29 +32,52 @@ define : decompile-scheme x e opts
 define wisp-pending-port : make-object-property
 
 ; Code thanks to Mark Weaver
+; define : read-one-wisp-sexp port env
+;   define : read-wisp-chunk
+;     if : eof-object? : peek-char port
+;       read-char port ; return eof: we’re done
+;       let : : s : wisp2lisp : wisp-chunkreader port
+;         set! : wisp-pending-port port
+;                open-input-string s
+;         try-pending
+;   define : try-pending
+;     let : : pending-port : wisp-pending-port port
+;       if pending-port
+;           let : : x : read pending-port
+;              if : eof-object? x
+;                 read-wisp-chunk
+;                 . x
+;           read-wisp-chunk
+;   try-pending
+
+
+define wisp-pending-sexps : list
+
 define : read-one-wisp-sexp port env
-  define : read-wisp-chunk
-    let : : s : wisp2lisp : wisp-chunkreader port
-       set! : wisp-pending-port port
-              open-input-string s
-       try-pending
+  define : wisp-scheme-read-chunk-env
+           cond 
+              : eof-object? : peek-char port
+                read-char port ; return eof: we’re done
+              else
+                set! wisp-pending-sexps
+                     append wisp-pending-sexps : wisp-scheme-read-chunk port
+                try-pending
   define : try-pending
-    let : : pending-port : wisp-pending-port port
-      if pending-port
-          let : : x : read pending-port
-             if : eof-object? x
-                read-wisp-chunk
-                . x
-          read-wisp-chunk
+    if : null? wisp-pending-sexps
+         wisp-scheme-read-chunk-env
+         let : : sexp : car wisp-pending-sexps
+            set! wisp-pending-sexps : cdr wisp-pending-sexps
+            . sexp
   try-pending
 
 define-language wisp
   . #:title "Wisp Scheme Syntax THIS IS EXPERIMENTAL, USE AT YOUR OWN RISK"
-  . #:reader read-one-wisp-sexp
-  . #:compilers `((scheme . ,compile-scheme)) ; I do not touch quasiquotes yet.
+  ; . #:reader read-one-wisp-sexp
+  . #:reader : lambda (port env) : let ((x (read-one-wisp-sexp port env))) x
+  . #:compilers `((scheme . ,compile-scheme))
   . #:decompilers `((scheme . ,decompile-scheme))
   . #:evaluator : lambda (x module) : primitive-eval x
-  . #:printer write
+  . #:printer write ; TODO: backtransform to wisp? Use source-properties?
   . #:make-default-environment
   lambda :
     ;; Ideally we'd duplicate the whole module hierarchy so that `set!',

@@ -8,12 +8,13 @@
 
 ; we need to be able to replace end-of-line characters in brackets and strings
 
-;; nostringandbracketbreaks INPORT
-;; 
-;; Replace linebreaks within brackets and strings in the INPORT by the
-;; placeholders \LINE_BREAK_N and \LINE_BREAK_R. Also identify
-;; real comments as ;\REALCOMMENTHERE
-;; 
+;; TODO: Check whether I can offload the string processing to the
+;; read-function. That’s a source of endless complications. Required:
+;; A kind of unrolling step which appends the string-representation of
+;; the read strings back into the code. I would have to process a list
+;; of strings instead of one big string. Or rather, each line would be
+;; a list of strings.
+
 ;; bootstrap via python3 wisp.py wisp-guile.w > 1 && guile 1 wisp-guile.w > 2 && guile 2 wisp-guile.w > 3 && diff 2 3
 ;; 
 ;; -Author: Arne Babenhauserheide

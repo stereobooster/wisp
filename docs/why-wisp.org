@@ -155,7 +155,7 @@ myfunction
 
 /This breaks elegance 1/
 
-/Also the problems of SRFI-49 are preserved/
+/The problems of SRFI-49 are preserved, but their impact reduced./
 
 * Summary: Why wisp?
 
@@ -184,7 +184,7 @@ becomes
 (newline)
 #+END_SRC
 
-* Wisp syntax 2/4: Continue Argument list
+* Wisp syntax 2/4: Continue Arguments
 
 ** The dot
 
