@@ -1,9 +1,9 @@
-<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html>
   <head>
     <title>SRFI ?: wisp: simpler indentation-sensitive scheme</title>
-  </head>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
   <body>
 
 <H1>Title</H1>
@@ -32,7 +32,7 @@ This SRFI describes a simple syntax which allows making scheme easier to read fo
 </p>
 
 <p>
-Different from its precedessors, wisp only uses the absolute minimum of additional syntax-elements which are required for writing and exchanging arbitrary code-structures. As syntax elements it only uses a colon surrounded by whitespace, the period followed by whitespace as first code-character on the line and optional underscores followed by whitespace at the beginning of the line.
+Different from its predecessors, wisp only uses the absolute minimum of additional syntax-elements which are required for writing and exchanging arbitrary code-structures. As syntax elements it only uses a colon surrounded by whitespace, the period followed by whitespace as first code-character on the line and optional underscores followed by whitespace at the beginning of the line.
 </p>
 
 <p>
@@ -64,7 +64,7 @@ Wisp expressions can include any s-expressions and as such provide backwards com
 
 <H1>Rationale</H1>
 
-<p>A big strength of Scheme and other lisp-like languages is their minimalistic syntax. By using only the most common characters like the period, the comma, the quote and quasiquote, the hash, the semicolon and the parens for the syntax (<code>.,&quot;'`#;()</code>), they are very close to natural language.<a href="#common-letters" name="common-letters-reference">⁽¹⁾</a> Along with the minimal list-structure of the code, this gives these languages a timeless elegance.</p>
+<p>A big strength of Scheme and other lisp-like languages is their minimalistic syntax. By using only the most common characters like the period, the comma, the quote and quasiquote, the hash, the semicolon and the parens for the syntax (<code>.,"'`#;()</code><!--"-->), they are very close to natural language.<a href="#common-letters" name="common-letters-reference">⁽¹⁾</a> Along with the minimal list-structure of the code, this gives these languages a timeless elegance.</p>
 
 <p>But as SRFI-110 explains very thoroughly (which we need not repeat here), the parentheses at the beginning of lines hurt readability and scare away newcomers. Additionally using indentation to mark the structure of the code follows naturally from the observation that most programmers use indentation, with many programmers letting their editor indent code automatically to fit the structure. Indentation is an important way how programmers understand code and using it directly to define the structure avoids errors due to mismatches between indentation and actual meaning.</p>
 
@@ -89,7 +89,7 @@ Wisp expressions can include any s-expressions and as such provide backwards com
 
 <p>Here wisp uses the leading period to mark a line as continuing the argument list.<a href="#period-concept" name="period-concept-reference">⁽²⁾</a></p>
 
-<p>SRFI-110 improves a lot over the implementation of SRFI-49. It resolves the group-naming and reduces the need to continue the argument-list by introducing 3 different grouping syntaxes (<code>$</code>, <code>\\</code> and <code><* *></code>). These additional syntax-elements however hurt readability for newcomers (obviously the authors of SRFI-110 disagree with this assertion. Their view is discussed in SRFI-110 in the section about wisp). The additional syntax elements lead to structures like the following (taken from examples from the readable project):</p>
+<p>SRFI-110 improves a lot over the implementation of SRFI-49. It resolves the group-naming and reduces the need to continue the argument-list by introducing 3 different grouping syntax forms (<code>$</code>, <code>\\</code> and <code><* *></code>). These additional syntax-elements however hurt readability for newcomers (obviously the authors of SRFI-110 disagree with this assertion. Their view is discussed in SRFI-110 in the section about wisp). The additional syntax elements lead to structures like the following (taken from examples from the readable project):</p>
 
 
 <table><tr><th>SRFI-110 / readable</th></tr><tr><td>
@@ -111,7 +111,7 @@ Wisp expressions can include any s-expressions and as such provide backwards com
 
 <p>This is not only hard to read, but also makes it harder to work with the code, because the programmer has to learn these additional syntax elements and keep them in mind before being able to understand the code.</p>
 
-<p>Like SRFI-49 SRFI-110 also cannot continue the argument-list without resorting to single-element lines, though it reduces this problem by the above grouping syntaxes and advertising the use of neoteric expressions from SRFI-105.</p>
+<p>Like SRFI-49 SRFI-110 also cannot continue the argument-list without resorting to single-element lines, though it reduces this problem by the above grouping syntax forms and advertising the use of neoteric expressions from SRFI-105.</p>
 
 <h2>Wisp example</h2>
 
@@ -148,7 +148,7 @@ ____   <i>*</i> n : <i>factorial</i> {n - 1}
 
 <h2>Related SRFIs</h2>
 <ul>
-<li>SRFI-49 (Indentation-sensitive syntax): superceded by this SRFI, 
+<li>SRFI-49 (Indentation-sensitive syntax): superseded by this SRFI, 
 </li>
 <li>SRFI-110 (Sweet-expressions (t-expressions)): alternative to this SRFI,
 </li>
@@ -161,8 +161,8 @@ ____   <i>*</i> n : <i>factorial</i> {n - 1}
 
 <h2>Footnotes</h2>
 
-<ul><li><a name="common-letters" href="#common-letters-reference">⁽¹⁾</a> The most common non-letter, non-math characters in prose are <code>.,":'_#?!;</code>, in the given order as derived from newspapers and other sources (for the ngram assembling scripts, see the <a href="http://bitbucket.org/ArneBab/evolve-keyboard-layout">evolve keyboard layout project</a>).</li>
-  <li><a name="period-concept" href="#period-concept-reference">⁽²⁾</a> Conceptually, continuing the argument list with a period uses syntax to mark the rare case of not calling a function as opposed to marking the common case of calling a function. To back the claim, that calling a function is actually the common case in scheme-code, grepping the the modules in the Guile source code shows over 27000 code-lines which start with a paren and only slightly above 10000 code-lines which start with a non-paren, non-comment character. Since wisp-syntax mostly follows the regular scheme indentation guidelines (as realized for example by emacs), the whitespace in front of lines does not need to change.</li>
+<ul><li><a name="common-letters" href="#common-letters-reference">⁽¹⁾</a> The most common non-letter, non-math characters in prose are <code>.,":'_#?!;</code><!--"-->, in the given order as derived from newspapers and other sources (for the ngram assembling scripts, see the <a href="http://bitbucket.org/ArneBab/evolve-keyboard-layout">evolve keyboard layout project</a>).</li>
+  <li><a name="period-concept" href="#period-concept-reference">⁽²⁾</a> Conceptually, continuing the argument list with a period uses syntax to mark the rare case of not calling a function as opposed to marking the common case of calling a function. To back the claim, that calling a function is actually the common case in scheme-code, grepping the the modules in the Guile source code shows over 27000 code-lines which start with a paren and only slightly above 10000 code-lines which start with a non-paren, non-comment character. Since wisp-syntax mostly follows the regular scheme indentation guidelines (as realized for example by Emacs), the whitespace in front of lines does not need to change.</li>
   <li><a name="typed-racket" href="#typed-racket-reference">⁽³⁾</a> Typed Racket uses calls of the form <code>(: x Number)</code> to declare types. These forms can still be used directly in parenthesized form, but in wisp-form the colon has to be replaced with <code>\:</code>. In most cases type-declarations are not needed in typed racket, since the type can be inferred. See <a href="http://docs.racket-lang.org/ts-guide/more.html?q=typed#%28part._when-annotations~3f%29">When do you need type annotations?</a></li>
 </ul>
 
@@ -238,7 +238,7 @@ ____   <i>*</i> n : <i>factorial</i> {n - 1}
   (<i>body</i>))
 </pre>
 
-<p><i>requirement: represent code with two adjadent blocks in double-parentheses.</i></p>
+<p><i>requirement: represent code with two adjacent blocks in double-parentheses.</i></p>
 
 <h3>Wisp syntax 4/4: Resilient Indentation</h3>
 
@@ -302,10 +302,6 @@ _ <i>body</i>
 </pre>
 
 
-<!--TODO: add syntax highlighting.-->
-
-
-
 
 <h4>Closing line</h4>
 
@@ -315,9 +311,9 @@ _ <i>body</i>
 
 
 
-<pre>display                             ;    (display
-  string-append "Hello " "World!"   ;      (string-append "Hello " "World!"))
-display "Hello Again!"              ;    (display "Hello Again!")
+<pre><i>display</i>                             ;    (<i>display</i>
+  <i>string-append</i> "Hello " "World!"   ;      (<i>string-append</i> "Hello " "World!"))
+<i>display</i> "Hello Again!"              ;    (<i>display</i> "Hello Again!")
 </pre>
 
 
@@ -348,8 +344,8 @@ display "Hello Again!"              ;    (display "Hello Again!")
 
 
 
-<pre>string-append "Hello"               ;    (string-append "Hello"
-  string-append " " "World"         ;      (string-append " " "World")
+<pre><i>string-append</i> "Hello"               ;    (<i>string-append</i> "Hello"
+  <i>string-append</i> " " "World"         ;      (<i>string-append</i> " " "World")
   . "!"                             ;      "!")
 </pre>
 
@@ -366,10 +362,10 @@ display "Hello Again!"              ;    (display "Hello Again!")
 
 
 
-<pre>let                                 ;    (let
+<pre><b>let</b>                                 ;    (<b>let</b>
   :                                 ;      (
-    msg "Hello World!"              ;        (msg "Hello World!"))
-  display msg                       ;      (display msg))
+    <i>msg</i> "Hello World!"              ;        (<i>msg</i> "Hello World!"))
+  <i>display</i> msg                       ;      (<i>display</i> msg))
 </pre>
 
 
@@ -380,14 +376,14 @@ display "Hello Again!"              ;    (display "Hello Again!")
 <h4>Inline Colon</h4>
 
 <p>
-<b>A colon sourrounded by whitespace (" : ") starts a parenthesis which gets closed at the end of the line</b>.
+<b>A colon surrounded by whitespace (" : ") starts a parenthesis which gets closed at the end of the line</b>.
 </p>
 
 
 
-<pre>define : hello who                  ;    (define (hello who)
-  display                           ;      (display 
-    string-append "Hello " who "!"  ;        (string-append "Hello " who "!")))
+<pre><b>define</b> : <i>hello</i> who                  ;    (<b>define</b> (<i>hello</i> who)
+  <i>display                          </i> ;      (<i>display</i> 
+    <i>string-append</i> "Hello " who "!"  ;        (<i>string-append</i> "Hello " who "!")))
 </pre>
 
 
@@ -401,8 +397,8 @@ If the colon is the last non-whitespace character on a line, it represents an em
 
 
 
-<pre>let :                               ;    (let ()
-    display "Hello"                 ;         (display "Hello"))
+<pre><b>let</b> :                               ;    (<b>let</b> ()
+    <i>display</i> "Hello"                 ;         (<i>display</i> "Hello"))
 </pre>
 
 
@@ -417,9 +413,9 @@ If the colon is the last non-whitespace character on a line, it represents an em
 
 
 
-<pre>define : hello who                  ;    (define (hello who)
-_ display                           ;      (display 
-___ string-append "Hello " who "!"  ;        (string-append "Hello " who "!")))
+<pre><b>define</b> : <i>hello</i> who                  ;    (<b>define</b> (<i>hello</i> who)
+_ <i>display</i>                           ;      (<i>display</i> 
+___ <i>string-append</i> "Hello " who "!"  ;        (<i>string-append</i> "Hello " who "!")))
 </pre>
 
 
@@ -434,11 +430,11 @@ ___ string-append "Hello " who "!"  ;        (string-append "Hello " who "!")))
 
 
 
-<pre>define : stringy s 
-         string-append s " reversed and capitalized:
+<pre><b>define</b> : <i>stringy</i> s 
+         <i>string-append</i> s " reversed and capitalized:
  " ; linebreaks in strings do not affect wisp parsing
-           . (string-capitalize ; same for linebreaks in parentheses
-             (string-reverse s))
+           . (<i>string-capitalize</i> ; same for linebreaks in parentheses
+             (<i>string-reverse</i> s))
 </pre>
 
 
@@ -448,8 +444,8 @@ Effectively code in parentheses and strings is interpreted directly as Scheme. T
 
 
 
-<pre>define foo (+ 1
-  (* 2 3)) ; defines foo as 7
+<pre><b>define</b> foo (<i>+</i> 1
+  (<i>*</i> 2 3)) ; defines foo as 7
 </pre>
 
 
@@ -475,7 +471,7 @@ Effectively code in parentheses and strings is interpreted directly as Scheme. T
 <li>A colon (:) at the beginning of a line adds an extra open parentheses that gets closed at end-of-line <b>and</b> defines an indentation level.
 </li>
 
-<li>using a quote to escape a symbol separated from it by whitespace is forbidden. This would make the meaning of quoted lines ambigous.
+<li>Using a quote to escape a symbol separated from it by whitespace is forbidden. This would make the meaning of quoted lines ambiguous.
 </li>
 
 <li>Curly braces should be treated as curly-infix following SRFI-105. This makes most math look natural to newcomers.
@@ -484,22 +480,25 @@ Effectively code in parentheses and strings is interpreted directly as Scheme. T
 <li>Neoteric expressions from SRFI-105 are not required because they create multiple ways to represent the same code. In wisp they add much less advantages than in sweet expressions from SRFI-110, because wisp can continue the arguments to a function after a function call (with the leading period) and the inline colon provides most of the benefits neoteric expressions give to sweet. However implementations providing wisp should give users the option to activate neoteric expressions as by SRFI-105 to allow experimentation and evolution (<a href="http://sourceforge.net/p/readable/mailman/message/33068104/">discussion</a>).
 </li>
 
-<li>It is possible to write code which is at the same time valid wisp and sweet. The readable mailinglist <a href="http://sourceforge.net/p/readable/mailman/message/33058992/">contains details</a>.
+<li>It is possible to write code which is at the same time valid wisp and sweet. The readable mailing list <a href="http://sourceforge.net/p/readable/mailman/message/33058992/">contains details</a>.
 </li>
+
+<li>The suggested suffix for files using wisp-syntax is <code>.w</code>.
+
 </ul>
 
 
 <h2>Syntax justification</h2>
 
 <p>
-<i>I do not like adding any unnecessary syntax element to lisp. So I want to show explicitely why the syntax elements are required.</i>
+<i>I do not like adding any unnecessary syntax element to lisp. So I want to show explicitly why the syntax elements are required.</i>
 </p>
 
-<small>
 <p>
+<small>
 See also <a href="http://draketo.de/light/english/wisp-lisp-indentation-preprocessor#sec-4">http://draketo.de/light/english/wisp-lisp-indentation-preprocessor#sec-4</a>
-</p>
 </small>
+</p>
 
 
 
@@ -537,7 +536,7 @@ At its core, this dot-rule means that we mark variables in the code instead of f
 <h3> : (the colon)</h3>
 
 <p>
-For double parentheses and for some other cases we must have a way to mark indentation levels which do not contain code. Wisp uses the colon, because it is the most common non-alpha-numeric character in normal prose which is not already reserved as syntax by Scheme when it is surrounded by whitespace, and because it already gets used without sourrounding whitespace for marking keyword arguments to functions in Emacs Lisp and Common Lisp, so it does not add completely alien concepts.
+For double parentheses and for some other cases we must have a way to mark indentation levels which do not contain code. Wisp uses the colon, because it is the most common non-alpha-numeric character in normal prose which is not already reserved as syntax by Scheme when it is surrounded by whitespace, and because it already gets used without surrounding whitespace for marking keyword arguments to functions in Emacs Lisp and Common Lisp, so it does not add completely alien concepts.
 </p>
 
 <p>
@@ -553,7 +552,7 @@ For simple cases, the colon could be replaced by clever whitespace parsing, but 
 </p>
 
 
-<pre>(doublelet
+<pre>(<i>doublelet</i>
   ((foo bar))
   ((bla foo)))
 </pre>
@@ -563,10 +562,10 @@ For simple cases, the colon could be replaced by clever whitespace parsing, but 
 The wisp version of this is
 </p>
 
-<pre>doublelet
+<pre><i>doublelet</i>
   :
     foo bar
-  : ; &lt;- this empty backstep is the real issue
+  : ; &lt;- this empty back step is the real issue
     bla foo
 </pre>
 
@@ -577,7 +576,7 @@ or shorter with inline colon (which you can use only if you don’t need further
 
 
 
-<pre>doublelet
+<pre><i>doublelet</i>
   : foo bar
   : bla foo
 </pre>
@@ -601,7 +600,7 @@ Defining intermediate indentation-levels by later elements (deferred definition)
 
 
 
-<pre>define (flubb)
+<pre><b>define</b> (<i>flubb</i>)
     nubb
     hubb
     subb
@@ -615,7 +614,7 @@ would become
 
 
 
-<pre>(define (flubb)
+<pre>(<b>define</b> (<i>flubb</i>)
    ((nubb))
    ((hubb))
    ((subb))
@@ -629,7 +628,7 @@ while
 
 
 
-<pre>define (flubb)
+<pre><b>define</b> (<i>flubb</i>)
     nubb
     hubb
     subb
@@ -642,7 +641,7 @@ would become
 
 
 
-<pre>(define (flubb)
+<pre>(<b>define</b> (<i>flubb</i>)
    (nubb)
    (hubb)
    (subb))
@@ -659,10 +658,10 @@ Fixed indentation width (alternative option to inferring it from later lines) wo
 
 
 
-<pre>when
-    equal? wrong
-           isright? stuff
-    fixstuff
+<pre><b>when</b>
+    <i>equal?</i> wrong
+           <i>isright?</i> stuff
+    <i>fixstuff</i>
 </pre>
 
 
@@ -672,7 +671,7 @@ Fixed indentation width (alternative option to inferring it from later lines) wo
 <h3> _ (the underscore)</h3>
 
 <p>
-In Python the whitespace hostile html already presents problems with sharing code - for example in email list archives and forums. But Python-programmers can mostly infer the indentation by looking at the previous line: If that ends with a colon, the next line must be more indented (there is nothing to clearly mark reduced indentation, though). In wisp we do not have this support, so we need a way to survive in the hostile environment of todays web.
+In Python the whitespace hostile html already presents problems with sharing code - for example in email list archives and forums. But Python-programmers can mostly infer the indentation by looking at the previous line: If that ends with a colon, the next line must be more indented (there is nothing to clearly mark reduced indentation, though). In wisp we do not have this support, so we need a way to survive in the hostile environment of today's web.
 </p>
 
 <p>
@@ -687,7 +686,7 @@ You can still use underscores anywhere but at the beginning of the line, and eve
 
 <H1>Implementation</H1>
 
-<p>The reference implementation realizes a specialized parser for Scheme. It uses GNU Guile and can also be used at the REPL.</p>
+<p>The reference implementation realizes a specialized parser for Scheme. It uses <a href="https://gnu.org/s/guile" title="GNU Guile: The GNU extension language">GNU Guile</a> and can also be used at the REPL.</p>
 
 <p>The wisp code also contains a general wisp-preprocessor which can be used for any lisp-like language and can used as an external program which gets called on reading. It does not actually have to understand the code itself.</p>
 
@@ -695,16 +694,15 @@ You can still use underscores anywhere but at the beginning of the line, and eve
 
 <p>The wisp preprocessor implementation can be found in the <a href="http://draketo.de/proj/wisp">wisp code repository</a>. Both implementations are explicitly licensed to allow inclusion in an SRFI.</p>
 
-
-<!--TODO: Link to implementation as plain Scheme fil and HTML with only the testsuite.-->
+<p>The reference implementation linked below generates a syntax tree from wisp which can be executed. It is written in indentation-based wisp-syntax and converted with the preprocessor from the code repository (wisp-guile.w) to parenthesized scheme syntax.</p>
 
 <ul>
-  <li><A HREF="srfi minus ???-reference.scm">Source for the reference implementation.</A></li>
-  <li><A HREF="srfi minus ???-testsuite.html">Basic Testsuite for wisp implementations.</A> <br />(a more exhaustive testsuite is available in the <a href="http://draketo.de/proj/wisp">wisp code repository</a>)</li>
+  <li><A HREF="http://draketo.de/proj/wisp/srfi-reference.scm">Source for the reference implementation</A>.</li>
+  <li><A HREF="http://draketo.de/proj/wisp/srfi-testsuite.html">Basic Testsuite for wisp implementations</A>. <br>(a more exhaustive testsuite is available in the <a href="http://draketo.de/proj/wisp">wisp code repository</a>)</li>
 </ul>
 
 <H1>Copyright</H1>
-Copyright (C) ??? (199?). All Rights Reserved. 
+Copyright (C) Arne Babenhauserheide (2014). All Rights Reserved. 
 <p>
 Permission is hereby granted, free of charge, to any person obtaining a
 copy of this software and associated documentation files (the "Software"),

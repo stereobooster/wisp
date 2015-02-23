@@ -4,17 +4,20 @@ Wisp: Whitespace to Lisp
     define : hello                    (define (hello)
       display "Hello World"     ⇒        (display "Hello World"))
 
+<a name="fibonacci"></a>
 
     define : fibonacci n                 (define (fibonacci n)
         let rek : (i 0) (u 1) (v 1)          (let rek ((i 0) (u 1) (v 1))
-            if : >= i : - n 2          ⇒          (if (>= i (- n 2))
+             if : >= i {n - 2}         ⇒          (if (>= i (- n 2))
                 . v                                    v
-                rek (+ i 1) v (+ u v)                 (rek (+ i 1) v (+ u v)))))
+                rek {i + 1} v {u + v}                 (rek (+ i 1) v (+ u v)))))
 
 
-Wisp turns indentation based syntax into Lisp. The conversion is homoiconic[^h], generic[^g], and backwards-compatible[^b]. It is inspired by [project readable][], but tries to keep itself simple (and stupid: just a preprocessor). More information on the [wisp-website][] and code in the [wisp-repository][].
+Wisp turns indentation based syntax into Lisp. The conversion is homoiconic[^h], generic[^g], and backwards-compatible[^b]. It is inspired by [project readable][], but tries to keep itself simple (and stupid: just add parens for indentation). More information is available on the [wisp-website][], and code in the [wisp-repository][].
 
 For a short presentation, see [Why Wisp?](why-wisp.html)
+
+Note that this is full-fledged scheme, with all its capabilities like hygienic macros (programmable syntax!) and full tail recursion.
 
 [wisp-website]: http://draketo.de/light/english/wisp-lisp-indentation-preprocessor "wisp: Whitespace to Lisp: An indentation to parentheses preprocessor to get more readable Lisp"
 [wisp-repository]: http://draketo.de/proj/wisp "Mercurial Repository for Wisp: Whitespace to Lisp"
@@ -40,23 +43,14 @@ Usage
 Wisp and curly infix (SRFI-105)
 -------------------------------
 
-Wisp treats braces "{}" the same as parentheses "()" and square brackets "[]", so you can use it with curly infix ([SRFI-105](http://srfi.schemers.org/srfi-105/srfi-105.html)) to get more customary math expressions. In Guile Scheme with Wisp you can activate curly infix using the following line `. #!curly-infix ` (with a final space!)
-
-<a name="fibonacci"></a>By combining curly-infix and wisp, the well-known Fibonacci sequence can be defined as follows:
-
-    . #!curly-infix 
-    define : fibonacci n
-        let rek : (i 0) (u 1) (v 1)
-            if {i >= {n - 2}}
-                . v
-                rek {i + 1} v {u + v}
-
-Note that this is full-fledged scheme, with all its capabilities like hygienic macros (programmable syntax!) and full tail recursion.
+Wisp treats braces "{}" the same as parentheses "()" and square brackets "[]", so you can use it with curly infix ([SRFI-105](http://srfi.schemers.org/srfi-105/srfi-105.html)) to get more customary math expressions. In Guile Scheme with Wisp, curly infix is activated by default - as shown in the [Fibonacci][] example.
 
 If you want to use a curly-infix expression starting a line, you have to prefix it with a dot:
 
     . {1 + 1}
     ; = 2
+
+[Fibonacci]: #fibonacci "Generation of the fibonacci sequence in wisp and s-expressions"
 
 Notes
 -----
