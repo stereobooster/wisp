@@ -45,15 +45,15 @@ Wisp expressions can include any s-expressions and as such provide backwards com
 
 <table><tr><th>wisp</th><th>s-exp</th></tr><tr><td>
 <pre><b>define</b> : <i>hello</i> who   
-  <i>format</i> #t "~A ~A!\n"    
-          . "Hello" who   
-<i>hello</i>       "Wisp"        
+         <i>format</i> #t "Hello ~A!\n"  
+                        . who   
+<i>hello</i> "Wisp"        
 </pre>
 </td><td>
 <pre>(<b>define</b> (<i>hello</i> who)
-  (<i>format</i> #t "~A ~A!\n"
-             "Hello" who))
-(<i>hello</i>       "S-exp")
+        (<i>format</i> #t "Hello ~A!\n"
+                          who))
+(<i>hello</i> "S-exp")
 </pre>
 </td></tr></table>
 
