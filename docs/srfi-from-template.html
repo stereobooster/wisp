@@ -503,6 +503,8 @@ Effectively code in parentheses and strings is interpreted directly as Scheme. T
 
 <li>The suggested suffix for files using wisp-syntax is <code>.w</code>.
 
+<li>To represent tail notation like <code>(define (foo . args))</code>, either avoid a linebreak before the dot as in <code>define : foo . args</a> or use a double dot to start the line: <code>. . args</code>. The first dot mark the line as continuation, the second is enters the code.</li>
+  
 </ul>
 
 
