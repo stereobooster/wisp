@@ -28,7 +28,7 @@ wisp: simpler indentation-sensitive scheme
 <H1>Abstract</H1>
 
 <p>
-This SRFI describes a simple syntax which allows making scheme easier to read for newcomers while keeping the simplicity, generality and elegance of s-expressions. Similar to SRFI-110, SRFI-49 and Python it uses indentation to group expressions. Like SRFI-110 wisp is general and homoiconic. 
+This SRFI describes a simple syntax which allows making scheme easier to read for newcomers while keeping the simplicity, generality and elegance of s-expressions. Similar to <a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a>, <a href="http://srfi.schemers.org/srfi-49/srfi-49.html">SRFI 49</a> and Python it uses indentation to group expressions. Like <a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a> wisp is general and homoiconic. 
 </p>
 
 <p>
@@ -36,7 +36,7 @@ Different from its predecessors, wisp only uses the absolute minimum of addition
 </p>
 
 <p>
-It resolves a limitation of SRFI-110 and SRFI-49, both of which force the programmer to use a single argument per line if the arguments to a function need to be continued after a function-call.
+It resolves a limitation of <a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a> and <a href="http://srfi.schemers.org/srfi-49/srfi-49.html">SRFI 49</a>, both of which force the programmer to use a single argument per line if the arguments to a procedure need to be continued after a procedure-call.
 </p>
 
 <p>
@@ -66,13 +66,13 @@ Wisp expressions can include any s-expressions and as such provide backwards com
 
 <p>A big strength of Scheme and other lisp-like languages is their minimalistic syntax. By using only the most common characters like the period, the comma, the quote and quasiquote, the hash, the semicolon and the parens for the syntax (<code>.,"'`#;()</code><!--"-->), they are very close to natural language.<a href="#common-letters" name="common-letters-reference">⁽¹⁾</a> Along with the minimal list-structure of the code, this gives these languages a timeless elegance.</p>
 
-<p>But as SRFI-110 explains very thoroughly (which we need not repeat here), the parentheses at the beginning of lines hurt readability and scare away newcomers. Additionally using indentation to mark the structure of the code follows naturally from the observation that most programmers use indentation, with many programmers letting their editor indent code automatically to fit the structure. Indentation is an important way how programmers understand code and using it directly to define the structure avoids errors due to mismatches between indentation and actual meaning.</p>
+<p>But as <a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a> explains very thoroughly (which we need not repeat here), the parentheses at the beginning of lines hurt readability and scare away newcomers. Additionally using indentation to mark the structure of the code follows naturally from the observation that most programmers use indentation, with many programmers letting their editor indent code automatically to fit the structure. Indentation is an important way how programmers understand code and using it directly to define the structure avoids errors due to mismatches between indentation and actual meaning.</p>
 
-<p>As a solution to this, SRFI-49 and SRFI-110 provide a way to write whitespace sensitive scheme, but both have their share of issues.</p>
+<p>As a solution to this, <a href="http://srfi.schemers.org/srfi-49/srfi-49.html">SRFI 49</a> and <a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a> provide a way to write whitespace sensitive scheme, but both have their share of issues.</p>
 
-<p>As noted in SRFI-110, there are a number of implementation-problems in SRFI-49, as well as specification shortcomings like choosing the name “group” for the construct which is necessary to represent double parentheses. In addition to the problems named in SRFI-110, SRFI-49 is not able to continue the arguments to a function on one line, if a prior argument was a function call. The following example shows the difference between wisp and SRFI-49 for a very simple code snippet:</p>
+<p>As noted in <a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a>, there are a number of implementation-problems in <a href="http://srfi.schemers.org/srfi-49/srfi-49.html">SRFI 49</a>, as well as specification shortcomings like choosing the name “group” for the construct which is necessary to represent double parentheses. In addition to the problems named in <a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a>, <a href="http://srfi.schemers.org/srfi-49/srfi-49.html">SRFI 49</a> is not able to continue the arguments to a procedure on one line, if a prior argument was a procedure call. The following example shows the difference between wisp and <a href="http://srfi.schemers.org/srfi-49/srfi-49.html">SRFI 49</a> for a very simple code snippet:</p>
 
-<table><tr><th>wisp</th><th>SRFI-49</th></tr><tr><td>
+<table><tr><th>wisp</th><th><a href="http://srfi.schemers.org/srfi-49/srfi-49.html">SRFI 49</a></th></tr><tr><td>
 <pre>
     <i>*</i> 5      
       <i>+</i> 4 3  
@@ -89,12 +89,12 @@ Wisp expressions can include any s-expressions and as such provide backwards com
 
 <p>Here wisp uses the leading period to mark a line as continuing the argument list.<a href="#period-concept" name="period-concept-reference">⁽²⁾</a></p>
 
-<p>SRFI-110 improves a lot over the implementation of SRFI-49. It resolves the group-naming and reduces the need to continue the argument-list by introducing 3 different grouping syntax forms (<code>$</code>, <code>\\</code> and <code><* *></code>). These additional syntax-elements however hurt readability for newcomers (obviously the authors of SRFI-110 disagree with this assertion. Their view is discussed in SRFI-110 in the section about wisp). The additional syntax elements lead to structures like the following (taken from examples from the readable project):</p>
+<p><a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a> improves a lot over <a href="http://srfi.schemers.org/srfi-49/srfi-49.html">SRFI 49</a>. It resolves the group-naming and reduces the need to continue the argument-list by introducing 3 different grouping syntax forms (<code>$</code>, <code>\\</code> and <code><* *></code>). These additional syntax-elements however hurt readability for newcomers (obviously the authors of <a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a> disagree with this assertion. Their view is discussed in <a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a> in the section about wisp). The additional syntax elements lead to structures like the following (taken from examples from the readable project):</p>
 
 
-<table><tr><th>SRFI-110 / readable</th></tr><tr><td>
+<table><tr><th><a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a> / readable</th></tr><tr><td>
 <pre>
-    <i>myfunction</i>
+    <i>myprocedure</i>
       x: \\ original-x
       y: \\ <i>calculate-y</i> original-y
 </pre>
@@ -111,11 +111,11 @@ Wisp expressions can include any s-expressions and as such provide backwards com
 
 <p>This is not only hard to read, but also makes it harder to work with the code, because the programmer has to learn these additional syntax elements and keep them in mind before being able to understand the code.</p>
 
-<p>Like SRFI-49 SRFI-110 also cannot continue the argument-list without resorting to single-element lines, though it reduces this problem by the above grouping syntax forms and advertising the use of neoteric expressions from SRFI-105.</p>
+<p>Like <a href="http://srfi.schemers.org/srfi-49/srfi-49.html">SRFI 49</a> <a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a> also cannot continue the argument-list without resorting to single-element lines, though it reduces this problem by the above grouping syntax forms and advertising the use of neoteric expressions from <a href="http://srfi.schemers.org/srfi-105/srfi-105.html">SRFI 105</a>.</p>
 
 <h2>Wisp example</h2>
 
-Since an example speaks more than a hundred explanations, the following shows wisp exploiting all its features - including curly-infix from SRFI-105:
+Since an example speaks more than a hundred explanations, the following shows wisp exploiting all its features - including curly-infix from <a href="http://srfi.schemers.org/srfi-105/srfi-105.html">SRFI 105</a>:
 
 <blockquote>
 <pre>
@@ -131,30 +131,30 @@ ____   <i>*</i> n : <i>factorial</i> {n - 1}
 
 <h2>Advantages of Wisp</h2>
 
-<p>Wisp draws on the strength of SRFI-110 but avoids its complexities. It was conceived and improved in the discussions within the readable-project which preceded SRFI-110 and there is a comparison between readable in wisp in SRFI-110.</p>
+<p>Wisp draws on the strength of <a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a> but avoids its complexities. It was conceived and improved in the discussions within the readable-project which preceded <a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a> and there is a comparison between readable in wisp in <a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a>.</p>
 
-<p>Like SRFI-110, wisp is general and homoiconic and interacts nicely with SRFI-105 (neoteric expressions and curly infix). Like SRFI-110, the expressions are the same in the REPL and in code-files. Like SRFI-110, wisp has been used for implementing multiple smaller programs, though the biggest program in wisp is still its implementations (written in wisp and bootstrapped via a simpler wisp preprocessor).</p>
+<p>Like <a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a>, wisp is general and homoiconic and interacts nicely with <a href="http://srfi.schemers.org/srfi-105/srfi-105.html">SRFI 105</a> (neoteric expressions and curly infix). Like <a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a>, the expressions are the same in the REPL and in code-files. Like <a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a>, wisp has been used for implementing multiple smaller programs, though the biggest program in wisp is still its implementations (written in wisp and bootstrapped via a simpler wisp preprocessor).</p>
 
-<p>But unlike SRFI-110, wisp only uses the minimum of additional syntax-elements which are necessary to support arbitrary code-structures with indentation-sensitive code which is intended to be shared over the internet. To realize these syntax-elements, it generalizes existing syntax and draws on the most common non-letter non-math characters in prose. This allows keeping the actual representation of the code elegant and inviting to newcomers.</p>
+<p>But unlike <a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a>, wisp only uses the minimum of additional syntax-elements which are necessary to support arbitrary code-structures with indentation-sensitive code which is intended to be shared over the internet. To realize these syntax-elements, it generalizes existing syntax and draws on the most common non-letter non-math characters in prose. This allows keeping the actual representation of the code elegant and inviting to newcomers.</p>
 
 <p>Wisp expressions are not as sweet as <a href="http://readable.sf.net">readable</a>, but they KISS.</p>
 
 <h2>Disadvantages of Wisp</h2>
 
-<p>Using the colon as syntax element keeps the code very close to written prose, but it can interfere with type definitions as for example used in Typed Racket.<a href="#typed-racket" name="typed-racket-reference">⁽³⁾</a> This can be mitigated in let- and lambda-forms by using the parenthesized form. When doing so, wisp avoids the double-paren for type-declarations and as such makes them easier to catch by eye. For function definitions (the only <code>define</code> call where type declarations are needed in typed-racket), a <code>declare</code> macro directly before the <code>define</code> should work well.</p>
+<p>Using the colon as syntax element keeps the code very close to written prose, but it can interfere with type definitions as for example used in Typed Racket.<a href="#typed-racket" name="typed-racket-reference">⁽³⁾</a> This can be mitigated in let- and lambda-forms by using the parenthesized form. When doing so, wisp avoids the double-paren for type-declarations and as such makes them easier to catch by eye. For procedure definitions (the only <code>define</code> call where type declarations are needed in typed-racket), a <code>declare</code> macro directly before the <code>define</code> should work well.</p>
 
 <p>Using the period to continue the argument list is unusual compared to other languages and as such can lead to errors when trying to return a variable from a procedure and forgetting the period.</p>
 
 
 <h2>Related SRFIs</h2>
 <ul>
-<li>SRFI-49 (Indentation-sensitive syntax): superseded by this SRFI, 
+<li><a href="http://srfi.schemers.org/srfi-49/srfi-49.html">SRFI 49</a> (Indentation-sensitive syntax): superseded by this SRFI, 
 </li>
-<li>SRFI-110 (Sweet-expressions (t-expressions)): alternative to this SRFI,
+<li><a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a> (Sweet-expressions (t-expressions)): alternative to this SRFI,
 </li>
-<li>SRFI-105 (neoteric expressions and curly infix): supported in this SRFI by treating curly braces like brackets and parentheses. Curly infix is required by the implementation and the testsuite.
+<li><a href="http://srfi.schemers.org/srfi-105/srfi-105.html">SRFI 105</a> (neoteric expressions and curly infix): supported in this SRFI by treating curly braces like brackets and parentheses. Curly infix is required by the implementation and the testsuite.
 </li>
-<li>SRFI-30 (Nested Multi-line comments): complex interaction. Should be avoided at the beginning of lines, because it can make the indentation hard to distinguish for humans. SRFI-110 includes them, so there might be value in adding them. The wisp reference implementation does not treat them specially, though, which might create arbitrary complications.
+<li><a href="http://srfi.schemers.org/srfi-30/srfi-30.html">SRFI 30</a> (Nested Multi-line comments): complex interaction. Should be avoided at the beginning of lines, because it can make the indentation hard to distinguish for humans. <a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a> includes them, so there might be value in adding them. The wisp reference implementation does not treat them specially, though, which might create arbitrary complications.
 </li>
 </ul>
 
@@ -162,7 +162,7 @@ ____   <i>*</i> n : <i>factorial</i> {n - 1}
 <h2>Footnotes</h2>
 
 <ul><li><a name="common-letters" href="#common-letters-reference">⁽¹⁾</a> The most common non-letter, non-math characters in prose are <code>.,":'_#?!;</code><!--"-->, in the given order as derived from newspapers and other sources (for the ngram assembling scripts, see the <a href="http://bitbucket.org/ArneBab/evolve-keyboard-layout">evolve keyboard layout project</a>).</li>
-  <li><a name="period-concept" href="#period-concept-reference">⁽²⁾</a> Conceptually, continuing the argument list with a period uses syntax to mark the rare case of not calling a function as opposed to marking the common case of calling a function. To back the claim, that calling a function is actually the common case in scheme-code, grepping the the modules in the Guile source code shows over 27000 code-lines which start with a paren and only slightly above 10000 code-lines which start with a non-paren, non-comment character. Since wisp-syntax mostly follows the regular scheme indentation guidelines (as realized for example by Emacs), the whitespace in front of lines does not need to change.</li>
+  <li><a name="period-concept" href="#period-concept-reference">⁽²⁾</a> Conceptually, continuing the argument list with a period uses syntax to mark the rare case of not calling a procedure as opposed to marking the common case of calling a procedure. To back the claim, that calling a procedure is actually the common case in scheme-code, grepping the the modules in the Guile source code shows over 27000 code-lines which start with a paren and only slightly above 10000 code-lines which start with a non-paren, non-comment character. Since wisp-syntax mostly follows the regular scheme indentation guidelines (as realized for example by Emacs), the whitespace in front of lines does not need to change.</li>
   <li><a name="typed-racket" href="#typed-racket-reference">⁽³⁾</a> Typed Racket uses calls of the form <code>(: x Number)</code> to declare types. These forms can still be used directly in parenthesized form, but in wisp-form the colon has to be replaced with <code>\:</code>. In most cases type-declarations are not needed in typed racket, since the type can be inferred. See <a href="http://docs.racket-lang.org/ts-guide/more.html?q=typed#%28part._when-annotations~3f%29">When do you need type annotations?</a></li>
 </ul>
 
@@ -174,7 +174,7 @@ ____   <i>*</i> n : <i>factorial</i> {n - 1}
 
 <p>The basics of wisp syntax can be defined in 4 rules, each of which emerges directly from a requirement:</p>
 
-<h3>Wisp syntax 1/4: function calls</h3>
+<h3>Wisp syntax 1/4: procedure calls</h3>
 
 <p>Indentation:</p>
 
@@ -192,7 +192,7 @@ ____   <i>*</i> n : <i>factorial</i> {n - 1}
 (<i>newline</i>)
 </pre>
 
-<p><i>requirement: call functions without parenthesis.</i></p>
+<p><i>requirement: call procedure without parenthesis.</i></p>
 
 <h3>Wisp syntax 2/4: Continue Argument list</h3>
 
@@ -212,9 +212,9 @@ ____   <i>*</i> n : <i>factorial</i> {n - 1}
   2 1)
 </pre>
 
-<p>This also works with just one argument after the period. To start a line without a function call, you have to prefix it with a period followed by whitespace.</p>
+<p>This also works with just one argument after the period. To start a line without a procedure call, you have to prefix it with a period followed by whitespace.</p>
 
-<p><i>requirement: continue the argument list of a function after an intermediate call to another function.</i></p>
+<p><i>requirement: continue the argument list of a procedure after an intermediate call to another procedure.</i></p>
 
 <h3>Wisp syntax 3/4: Double Parens</h3>
 
@@ -279,7 +279,7 @@ _ <i>body</i>
 <h4>Unindented line</h4>
 
 <p>
-<b>A line without indentation is a function call</b>, just as if it would start with a parenthesis.
+<b>A line without indentation is a procedure call</b>, just as if it would start with a parenthesis.
 </p>
 
 
@@ -408,7 +408,7 @@ If the colon is the last non-whitespace character on a line, it represents an em
 <h4>Initial Underscores</h4>
 
 <p>
-<b>You can replace any number of consecutive initial spaces by underscores</b>, as long as at least one whitespace is left between the underscores and any following character. You can escape initial underscores by prefixing the first one with \ ("\___ a" → "(_ a)"), if you have to use them as function names.
+<b>You can replace any number of consecutive initial spaces by underscores</b>, as long as at least one whitespace is left between the underscores and any following character. You can escape initial underscores by prefixing the first one with \ ("\___ a" → "(_ a)"), if you have to use them as procedure names.
 </p>
 
 
@@ -474,10 +474,10 @@ Effectively code in parentheses and strings is interpreted directly as Scheme. T
 <li>Using a quote to escape a symbol separated from it by whitespace is forbidden. This would make the meaning of quoted lines ambiguous.
 </li>
 
-<li>Curly braces should be treated as curly-infix following SRFI-105. This makes most math look natural to newcomers.
+<li>Curly braces should be treated as curly-infix following <a href="http://srfi.schemers.org/srfi-105/srfi-105.html">SRFI 105</a>. This makes most math look natural to newcomers.
 </li>
 
-<li>Neoteric expressions from SRFI-105 are not required because they create multiple ways to represent the same code. In wisp they add much less advantages than in sweet expressions from SRFI-110, because wisp can continue the arguments to a function after a function call (with the leading period) and the inline colon provides most of the benefits neoteric expressions give to sweet. However implementations providing wisp should give users the option to activate neoteric expressions as by SRFI-105 to allow experimentation and evolution (<a href="http://sourceforge.net/p/readable/mailman/message/33068104/">discussion</a>).
+<li>Neoteric expressions from <a href="http://srfi.schemers.org/srfi-105/srfi-105.html">SRFI 105</a> are not required because they create multiple ways to represent the same code. In wisp they add much less advantages than in sweet expressions from <a href="http://srfi.schemers.org/srfi-110/srfi-110.html">SRFI 110</a>, because wisp can continue the arguments to a procedure after a procedure call (with the leading period) and the inline colon provides most of the benefits neoteric expressions give to sweet. However implementations providing wisp should give users the option to activate neoteric expressions as by <a href="http://srfi.schemers.org/srfi-105/srfi-105.html">SRFI 105</a> to allow experimentation and evolution (<a href="http://sourceforge.net/p/readable/mailman/message/33068104/">discussion</a>).
 </li>
 
 <li>It is possible to write code which is at the same time valid wisp and sweet. The readable mailing list <a href="http://sourceforge.net/p/readable/mailman/message/33058992/">contains details</a>.
@@ -504,11 +504,11 @@ See also <a href="http://draketo.de/light/english/wisp-lisp-indentation-preproce
 
 <h3> . (the dot)</h3>
 <p>
-To represent general code trees, we have to be able to represent continuation of the arguments of a function with an intermediate call to another (or the same) function.
+To represent general code trees, we have to be able to represent continuation of the arguments of a procedure with an intermediate call to another (or the same) procedure.
 </p>
 
 <p>
-The dot at the beginning of the line as marker of the continuation of a variable list is a generalization of using the dot as identity function - which is an implementation detail in many lisps.
+The dot at the beginning of the line as marker of the continuation of a variable list is a generalization of using the dot as identity procedure - which is an implementation detail in many lisps.
 </p>
 
 <blockquote>
@@ -518,7 +518,7 @@ The dot at the beginning of the line as marker of the continuation of a variable
 </blockquote>
 
 <p>
-So for the single variable case, this would not even need additional parsing: wisp could just parse <code>. a</code> to <code>(. a)</code> and produce the correct result in most lisps. But forcing programmers to always use separate lines for each parameter would be very inconvenient, so the definition of the dot at the beginning of the line is extended to mean “take every element in this line as parameter to the parent function”. 
+So for the single variable case, this would not even need additional parsing: wisp could just parse <code>. a</code> to <code>(. a)</code> and produce the correct result in most lisps. But forcing programmers to always use separate lines for each parameter would be very inconvenient, so the definition of the dot at the beginning of the line is extended to mean “take every element in this line as parameter to the parent procedure”. 
 </p>
 
 <blockquote>
@@ -528,7 +528,7 @@ So for the single variable case, this would not even need additional parsing: wi
 </blockquote>
 
 <p>
-At its core, this dot-rule means that we mark variables in the code instead of function calls. We do so, because variables at the beginning of a line are much rarer in Scheme than in other programming languages.
+At its core, this dot-rule means that we mark variables in the code instead of procedure calls. We do so, because variables at the beginning of a line are much rarer in Scheme than in other programming languages.
 </p>
 
 
@@ -536,15 +536,15 @@ At its core, this dot-rule means that we mark variables in the code instead of f
 <h3> : (the colon)</h3>
 
 <p>
-For double parentheses and for some other cases we must have a way to mark indentation levels which do not contain code. Wisp uses the colon, because it is the most common non-alpha-numeric character in normal prose which is not already reserved as syntax by Scheme when it is surrounded by whitespace, and because it already gets used without surrounding whitespace for marking keyword arguments to functions in Emacs Lisp and Common Lisp, so it does not add completely alien concepts.
+For double parentheses and for some other cases we must have a way to mark indentation levels which do not contain code. Wisp uses the colon, because it is the most common non-alpha-numeric character in normal prose which is not already reserved as syntax by Scheme when it is surrounded by whitespace, and because it already gets used without surrounding whitespace for marking keyword arguments to procedures in Emacs Lisp and Common Lisp, so it does not add completely alien concepts.
 </p>
 
 <p>
-The inline function call via inline " : " is a limited generalization of using the colon to mark an indentation level: If we add a syntax-element, we should use it as widely as possible to justify adding syntax overhead.
+The inline procedure call via inline " : " is a limited generalization of using the colon to mark an indentation level: If we add a syntax-element, we should use it as widely as possible to justify adding syntax overhead.
 </p>
 
 <p>
-But if you need to use <code>:</code> as variable or function name, you can still do so by escaping it with a backslash (<code>\:</code>), so this does not forbid using the character.
+But if you need to use <code>:</code> as variable or procedure name, you can still do so by escaping it with a backslash (<code>\:</code>), so this does not forbid using the character.
 </p>
 
 <p>
