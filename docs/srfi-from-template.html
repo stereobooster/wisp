@@ -504,7 +504,11 @@ Effectively code in parentheses and strings is interpreted directly as Scheme. T
 <li>The suggested suffix for files using wisp-syntax is <code>.w</code>.
 
 <li>To represent tail notation like <code>(define (foo . args))</code>, either avoid a linebreak before the dot as in <code>define : foo . args</code> or use a double dot to start the line: <code>. . args</code>. The first dot mark the line as continuation, the second is enters the code.</li>
-  
+
+<li>A dot as symbol at the end of a line is reserved for potential future use. It should be a syntax error if the next non-empty line starts with non-zero indentation. A lone dot at the end of a line calls for hard to catch errors.</li>
+
+<li>A dot as only symbol in a line has no useful meaning: the line is by definition empty. As such, a dot as only symbol on a line is also reserved for future use and should be treated as a syntax error to avoid locking out future possibilities.</li>
+
 </ul>
 
 
