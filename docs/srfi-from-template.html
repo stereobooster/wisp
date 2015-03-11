@@ -1,7 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
 <html>
   <head>
-    <title>SRFI ?: wisp: simpler indentation-sensitive scheme</title>
+    <title>SRFI 119: wisp: simpler indentation-sensitive scheme</title>
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   </head>
   <body>
@@ -12,10 +12,28 @@ wisp: simpler indentation-sensitive scheme
 
 <H1>Author</H1>
 
-<ul>
-<li>Arne Babenhauserheide
-</li>
+Arne Babenhauserheide
+
+<H1>Status</H1>
+
+<p>
+This SRFI is currently in ``draft'' status.
+To see an explanation of
+each status that a SRFI can hold, see <a
+href="http://srfi.schemers.org/srfi-process.html">here</a>.
+
+To provide input on this SRFI, please
+<a href="mailto:srfi minus 119 at srfi dot schemers dot org">mail to
+<code>&lt;srfi minus 119 at srfi dot schemers dot org&gt;</code></a>.  See
+<a href="../srfi-list-subscribe.html">instructions here</a> to
+subscribe to the list.  You can access previous messages via
+<a href="mail-archive/maillist.html">the archive of the mailing list</a>.
+</p><ul>
+    <li>Received: <a
+    href="http://srfi.schemers.org/cgi-bin/viewcvs.cgi/*checkout*/srfi/srfi-119/srfi-119.html?rev=1.1">2015/01/25</a></li>
+      <li>Draft: 2015/02/03-2015/04/03</li>
 </ul>
+
 
 <h3>Acknowledgments</h3>
 <ul>
@@ -485,6 +503,8 @@ Effectively code in parentheses and strings is interpreted directly as Scheme. T
 
 <li>The suggested suffix for files using wisp-syntax is <code>.w</code>.
 
+<li>To represent tail notation like <code>(define (foo . args))</code>, either avoid a linebreak before the dot as in <code>define : foo . args</a> or use a double dot to start the line: <code>. . args</code>. The first dot mark the line as continuation, the second is enters the code.</li>
+  
 </ul>
 
 
@@ -723,10 +743,10 @@ FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
 DEALINGS IN THE SOFTWARE.
 
     <hr>
-    <address>Editor: <a href="mailto:srfi-editors at srfi dot schemers dot org">Dave Mason</a></address>
+    <address>Editor: <a href="mailto:srfi-editors at srfi dot schemers dot org">Michael Sperber</a></address>
 <!-- Created: Tue Sep 29 19:20:08 EDT 1998 -->
 <!-- hhmts start -->
-Last modified: Sun Jan 28 14:21:14 MET 2007
+Last modified: Tue Feb  3 16:49:26 MET 2015
 <!-- hhmts end -->
   </body>
 </html>
