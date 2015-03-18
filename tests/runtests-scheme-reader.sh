@@ -17,13 +17,11 @@ fi
 failed=0
 cd ${builddir}
 for i in ${srcdir}/tests/*.w; do
-    d=$(guile -L . --language=wisp ${srcdir}/testrunner.w "${i}" "${srcdir}/tests/$(basename "${i}" .w).scm")
-    if test $? -eq 0; then
+    if guile -L . --language=wisp ${srcdir}/testrunner.w "${i}" "${srcdir}/tests/$(basename "${i}" .w).scm" | grep -q "have equivalent content"; then
         continue
-    else
-        echo test "$i" failed. Diff: "$d"
-        failed=$((failed + 1))
     fi
+    echo test "$i" failed. Diff: $(guile -L . --language=wisp ${srcdir}/testrunner.w "${i}" "${srcdir}/tests/$(basename "${i}" .w).scm")
+    failed=$((failed + 1))
 done
 cd - >/dev/null # undo dir change
 # if test $failed -eq 0; then echo "Tests succeeded"; 
