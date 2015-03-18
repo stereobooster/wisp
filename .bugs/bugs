@@ -12,6 +12,7 @@ wisp: handle general paren prefixes like quote, quasiquote, etc. | owner:, open:
 throw an exception when reducing indentation to an unknown indentation level. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:424186bd85f186b7279c5c59e2bd42f847284719, time:1376003568.91
 wisp-in-wisp: only parses the first 272 lines, for some reason. | owner:, open:False, id:4cb6c556d7136609e2da9ab3fc045a39847f1ef3, time:1377014682.98
 adjust runtests.sh to use testrunner.w                       | owner:, open:False, id:4d4e76343fe09f0ec72a3e5eb0077bd16e12f9d5, time:1415127234.43
+wisp-scheme: REPL: sometimes the output of a command is only shown after typing the next non-empty line. | owner:, open:False, id:56d2f81e9c89accb0b0bc668ddc8feed3b60e9b2, time:1416584789.23
 implement wisp in wisp                                       | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:6299306916706410702029289bf32edab1e7f17c, time:1367113341.49
 support other types of brackets, like square brackets.       | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:6749f3abcb9455eac9271efd8265797bce114239, time:1389134151.98
 linebreaks in parens still break                             | owner:, open:False, id:6797987c7834a53358fb4ebbd8b9b36c2c4a8f01, time:1379004764.14
@@ -19,7 +20,9 @@ wisp-guile.w does not yet remove the leading . which signifies a continuation. |
 inline ' : should be '(                                      | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:72d534a8b23b4cb168017f1bb7d8816f0ea170c4, time:1366497335.26
 failing test tests/shebang.w                                 | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:74a851f83af8996465a7b24d8453161beb0f0fd5, time:1379106761.57
 non-nested multiline comments with #! !#. Requires restructuring. | owner:, open:False, id:7a57614fa920b2ddad002d044b144d0bb7c34f84, time:1389364108.01
+wisp-scheme: interpret , : as ,() similar to : ,             | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:85e150dcb10c49d8f51db525e07d24e83bdba0f1, time:1416432201.21
 wisp-guile: support nested multi-line comments with #| ... |#: multiline comments (srfi-30). Requires restructuring. | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:8cf6202873d4454f57813dd17cf60432059f7c62, time:1389569421.6
+wisp-scheme: Does not recognize the . #!curly-infix request for curly-infix or other reader syntax. | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:91f27adb7d4e378e034b3408b6e4616f707f9587, time:1418162368.88
 wisp-guile: the repl does not require 3 returns when you use a single char as function, or rather only does so every second time | owner:, open:True, id:9cedd0bdbf4a3b17add4bfe86ad5a23e500cfc6c, time:1379064870.78
 wisp-guile.w breaks on ";" and complex brackets with bracket char literals. See wisp-guile.w::91 | owner:, open:False, id:9d8b6f87fa5365733fc8655614dbf2a9ba5bd054, time:1377533321.27
 wisp-scheme: treat quote quasiquote syntax quasisyntax and so on similar to the dot. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:9e587f38115099c0825c13a2159605e5f560aeec, time:1413623986.49

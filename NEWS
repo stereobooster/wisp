@@ -1,3 +1,18 @@
+wisp 0.8.2 (2015-03-18):
+- resolve REPL delayed output bug.
+- forbid dot at the end of a line and as only symbol in a line to reserve them for future use.
+- generalized the shell-call to guile: It gets the parentdir from $0.
+- note curly braces, neoteric expressions and dual-wisp-sweet syntax.
+- added tests: sxml, self-referencial function, curly-infix.
+- new example: beautiful factorial.
+- new example: ensemble estimation with ensemble square root filter. Uses python driven by an output-pipe as a plotting tool.
+- SRFI 119 in draft.
+
+wisp 0.8.1 (2014-11-19):
+- srfi: polish implementation notes.
+- add the requirements to the syntax-examples.
+- wisp-scheme.w works completely again.
+
 wisp 0.8.0 (2014-11-03):
 - the testsuite is defined in terms of the code-tree, not in terms of
   the readable file. Implemented in testrunner.w
