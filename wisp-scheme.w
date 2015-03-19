@@ -537,8 +537,16 @@ define : wisp-replace-paren-quotation-repr code
                         list : list 'quote : map wisp-replace-paren-quotation-repr b
              : 'REPR-UNQUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
                 list 'unquote : map wisp-replace-paren-quotation-repr a
+             : a ... 'REPR-UNQUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd b 
+                append
+                        map wisp-replace-paren-quotation-repr a
+                        list : list 'unquote : map wisp-replace-paren-quotation-repr b
              : 'REPR-QUASIQUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
                 list 'quasiquote : map wisp-replace-paren-quotation-repr a
+             : a ... 'REPR-QUASIQUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd b ; this is the quoted empty list 
+                append
+                        map wisp-replace-paren-quotation-repr a
+                        list : list 'quasiquote : map wisp-replace-paren-quotation-repr b
              : 'REPR-UNQUOTESPLICING-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
                 list 'unquote-splicing : map wisp-replace-paren-quotation-repr a
              : 'REPR-SYNTAX-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
