@@ -70,7 +70,9 @@ define : read-one-wisp-sexp port env
               pending wisp-pending-sexps
             set! wisp-pending-sexps : list ; : cdr wisp-pending-sexps
             ; write : cons 'begin pending
-            cons 'begin pending
+            if : = 1 : length pending
+                 car pending
+                 cons 'begin pending
   try-pending
 
 define-language wisp
