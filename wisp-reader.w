@@ -76,7 +76,7 @@ define : read-one-wisp-sexp port env
   try-pending
 
 define-language wisp
-  . #:title "Wisp Scheme Syntax THIS IS EXPERIMENTAL, USE AT YOUR OWN RISK"
+  . #:title "Wisp Scheme Syntax. See SRFI-119 for details. THIS IS EXPERIMENTAL, USE AT YOUR OWN RISK."
   ; . #:reader read-one-wisp-sexp
   . #:reader : lambda (port env) : let ((x (read-one-wisp-sexp port env))) x
   . #:compilers `((scheme . ,compile-scheme))
