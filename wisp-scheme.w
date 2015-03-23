@@ -383,7 +383,7 @@ define : line-finalize line
                 set-source-properties! l : source-properties line
          . l
 
-define : wisp-with-source-properties-from source target
+define : wisp-add-source-properties-from source target
        . "Copy the source properties from source into the target and return the target."
        catch #t
            lambda ()
@@ -392,44 +392,21 @@ define : wisp-with-source-properties-from source target
                . #f
        . target
 
-define : wisp-propagate-source-properties-outwards code
-       . "Propagate source properties from the car to the outside list."
-       let loop
-         : processed '()
-           unprocessed code
-         cond
-           : and (null? processed) : or (not (pair? unprocessed)) (not (list? unprocessed))
-             . unprocessed
-           : null? unprocessed
-             . processed
-           else
-             let : : line : wisp-propagate-source-properties-outwards : car unprocessed
-                 when : and (pair? line) : null? : source-properties line
-                     wisp-with-source-properties-from (car line) line
-                     ; write : source-properties line
-                     ; write line
-                     ; newline
-               loop
-                 append processed : wisp-with-source-properties-from line : list line
-                 cdr unprocessed
-
 define : wisp-propagate-source-properties code
        . "Propagate the source properties from the sourrounding list into every part of the code."
        let loop
          : processed '()
            unprocessed code
          cond
-           : and (null? processed) : or (not (pair? unprocessed)) (not (list? unprocessed))
+           : and (null? processed) (not (pair? unprocessed)) (not (list? unprocessed))
              . unprocessed
            : null? unprocessed
              . processed
            else
              let : : line : car unprocessed
-               when : not : null? : source-properties unprocessed
-                   wisp-with-source-properties-from unprocessed line
-                   ; write : source-properties line
-                   ; write line
-                   ; newline
+               if : null? : source-properties unprocessed
+                   wisp-add-source-properties-from line unprocessed
+                   wisp-add-source-properties-from unprocessed line
                loop
                  append processed : list : wisp-propagate-source-properties line
                  cdr unprocessed
@@ -521,7 +498,7 @@ define : wisp-scheme-indentation-to-parens lines
                                append processed 
                                  if : line-continues? current-line
                                       . line
-                                      wisp-with-source-properties-from line : list line
+                                      wisp-add-source-properties-from line : list line
                                cdr unprocessed ; recursion here
                                . indentation-levels
                            : < current-line-indentation next-line-indentation
