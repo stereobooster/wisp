@@ -43,7 +43,11 @@ define : line-real-indent line
                . indent
 
 define : line-code line
-         cdr line
+         let : : code : cdr line
+             ; propagate source properties
+             when : not : null? code
+                    set-source-properties! code : source-properties line
+             . code
 
 ; literal values I need
 define readcolon 
@@ -111,9 +115,15 @@ define : wisp-read port
              : or (< prefix-maxlen (length peeked)) (eof-object? (peek-char port)) (equal? #\space (peek-char port)) (equal? #\newline (peek-char port)) 
                if repr-symbol ; found a special symbol, return it.
                   ; TODO: Somehow store source-properties. The commented-out code below does not work.
-                  ; set-source-property! symbol-or-symbols filename : port-filename port
-                  ; set-source-property! symbol-or-symbols line : 1+ : port-line port
-                  ; set-source-property! symbol-or-symbols column : port-column port
+                  ; catch #t
+                  ;     lambda ()
+                  ;         write : source-properties symbol-or-symbols
+                  ;         set-source-property! symbol-or-symbols 'filename : port-filename port
+                  ;         set-source-property! symbol-or-symbols 'line : 1+ : port-line port
+                  ;         set-source-property! symbol-or-symbols 'column : port-column port
+                  ;         write : source-properties symbol-or-symbols
+                  ;     lambda : key . arguments
+                  ;         . #f
                   . repr-symbol
                   let unpeek
                     : remaining peeked
@@ -262,6 +272,10 @@ define : wisp-scheme-read-chunk-lines port
                          if : not : line-empty? parsedline
                             . 0 
                             1+ emptylines
+                     when : not : = 0 : length parsedline
+                         ; set the source properties to parsedline so we can try to add them later.
+                         set-source-property! parsedline 'filename : port-filename port
+                         set-source-property! parsedline 'line : port-line port
                      ; TODO: If the line is empty. Either do it here and do not add it, just
                      ; increment the empty line counter, or strip it later. Replace indent
                      ; -1 by indent 0 afterwards.
@@ -357,12 +371,68 @@ define : line-strip-lone-colon line
            . line
 
 define : line-finalize line
-         . "Process all wisp-specific information in a line and strip it"
-         line-code-replace-inline-colons 
-           line-strip-indentation-marker
-             line-strip-lone-colon
-               line-strip-continuation line
+       . "Process all wisp-specific information in a line and strip it"
+       let
+         :
+           l
+             line-code-replace-inline-colons 
+               line-strip-indentation-marker
+                 line-strip-lone-colon
+                   line-strip-continuation line
+         when : not : null? : source-properties line
+                set-source-properties! l : source-properties line
+         . l
 
+define : wisp-with-source-properties-from source target
+       . "Copy the source properties from source into the target and return the target."
+       catch #t
+           lambda ()
+               set-source-properties! target : source-properties source
+           lambda : key . arguments
+               . #f
+       . target
+
+define : wisp-propagate-source-properties-outwards code
+       . "Propagate source properties from the car to the outside list."
+       let loop
+         : processed '()
+           unprocessed code
+         cond
+           : and (null? processed) : or (not (pair? unprocessed)) (not (list? unprocessed))
+             . unprocessed
+           : null? unprocessed
+             . processed
+           else
+             let : : line : wisp-propagate-source-properties-outwards : car unprocessed
+                 when : and (pair? line) : null? : source-properties line
+                     wisp-with-source-properties-from (car line) line
+                     ; write : source-properties line
+                     ; write line
+                     ; newline
+               loop
+                 append processed : wisp-with-source-properties-from line : list line
+                 cdr unprocessed
+
+define : wisp-propagate-source-properties code
+       . "Propagate the source properties from the sourrounding list into every part of the code."
+       let loop
+         : processed '()
+           unprocessed code
+         cond
+           : and (null? processed) : or (not (pair? unprocessed)) (not (list? unprocessed))
+             . unprocessed
+           : null? unprocessed
+             . processed
+           else
+             let : : line : car unprocessed
+               when : not : null? : source-properties unprocessed
+                   wisp-with-source-properties-from unprocessed line
+                   ; write : source-properties line
+                   ; write line
+                   ; newline
+               loop
+                 append processed : list : wisp-propagate-source-properties line
+                 cdr unprocessed
 
 define : wisp-scheme-indentation-to-parens lines
          . "Add parentheses to lines and remove the indentation markers"
@@ -451,7 +521,7 @@ define : wisp-scheme-indentation-to-parens lines
                                append processed 
                                  if : line-continues? current-line
                                       . line
-                                      list line
+                                      wisp-with-source-properties-from line : list line
                                cdr unprocessed ; recursion here
                                . indentation-levels
                            : < current-line-indentation next-line-indentation
@@ -625,7 +695,6 @@ Match is awesome!"
                a
                  . a
 
-
 define : wisp-scheme-read-chunk port
          . "Read and parse one chunk of wisp-code"
          let : :  lines : wisp-scheme-read-chunk-lines port
@@ -633,7 +702,8 @@ define : wisp-scheme-read-chunk port
                 wisp-replace-empty-eof
                   wisp-unescape-underscore-and-colon
                     wisp-replace-paren-quotation-repr
-                      wisp-scheme-indentation-to-parens lines
+                      wisp-propagate-source-properties
+                        wisp-scheme-indentation-to-parens lines
 
 define : wisp-scheme-read-all port
          . "Read all chunks from the given port"

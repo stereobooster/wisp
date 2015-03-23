@@ -2,7 +2,7 @@
 ; !#
 
 define-module : examples d6
-   . #:export : roll check 
+   . #:export : roll check
 
 ; basic d6 rules, implemented in guile
 
