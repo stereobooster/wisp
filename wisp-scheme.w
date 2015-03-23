@@ -110,7 +110,7 @@ define : wisp-read port
            cond
              : or (< prefix-maxlen (length peeked)) (eof-object? (peek-char port)) (equal? #\space (peek-char port)) (equal? #\newline (peek-char port)) 
                if repr-symbol ; found a special symbol, return it.
-                  ; TODO: Somehow store source-properties. 
+                  ; TODO: Somehow store source-properties. The commented-out code below does not work.
                   ; set-source-property! symbol-or-symbols filename : port-filename port
                   ; set-source-property! symbol-or-symbols line : 1+ : port-line port
                   ; set-source-property! symbol-or-symbols column : port-column port
