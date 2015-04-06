@@ -39,3 +39,4 @@ breaks on empty files                                        | owner:Arne Babenh
 wisp-scheme: breaks on lines with only underscores. These should be treated as empty lines. | owner:, open:False, id:e464b5ce49deb14a80f67d50c6d70043ca9bde25, time:1415124488.16
 quote as only char in a line gets parenthized instead of becoming a paren-prefix. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:eb7468387e90bb5d13f5a5d81c6f4a704f2ca0fb, time:1390326369.6
 in the REPL output can be delayed by one line: Appears only when submitting the next command. | owner:, open:False, id:f1e42bbd4c17a2dec886c26d9c14e770bcff66d2, time:1415972414.48
+wisp-scheme: parser problem with dotted pair: use-modules : (ice-9 popen) #:select ((open-input-pipe . oip)) | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:ff078cba853c1a2fdbd41cf0228ad7920a642c0d, time:1428358435.75
