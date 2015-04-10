@@ -1,4 +1,5 @@
 testsuite: to pass, the tree-il has to match, not the emitted string. This allows for reader-only implementations. | owner:, open:False, id:00b74a730bbf076e73166e817ca7b0a273b376d4, time:1408224636.42
+wisp-scheme: backtraces should show the wisp source.         | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:0475df81a594a52d171a1b811752ca64e5a71df5, time:1426792099.58
 wisp-scheme: unescape \_ and \:                              | owner:, open:False, id:086f61a06e16f1ef56e9917453bbd55b5879d15d, time:1415121255.99
 fails when I add stuff at the end of end of example.w        | owner:, open:False, id:08c68e1ce0c9798184c01806d2661a3220bff3cd, time:1363789693.79
 wisp-mode in quoted lists only the first item is colorized as data, but all words up to the last paren should be colorized. | owner:, open:True, id:1675ca3f894ed8470fa292149a476a2fa0d17140, time:1397196957.45
@@ -6,10 +7,12 @@ add a testsuite for wisp parsers.                            | owner:, open:Fals
 wisp-mode: export wisp to html fails in org-mode: font-lock-fontify-keywords-region: Invalid regexp | owner:, open:False, id:1e46d8c05580c961c37a32d36c987a5dd1d34943, time:1389371020.39
 an empty line with : should start with double parens         | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:2e188ddf44d36e4605030d3c58607ebfa97d189e, time:1390328674.43
 wisp-in-wisp: remove the leading . for continuation lines after inferring the brackets. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:2e42e5b64622f0cc383eb8acc3d510912e925bf0, time:1377476687.79
+interpret ` , : correctly.                                   | owner:, open:True, id:2feb5f048b55274c1bc7c8168c8cb358c0c8dd1d, time:1426777900.6
 '() gives REPR-QUOTE-...                                     | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:30c42de75c137f483245898e2a62af1e65cf19a6, time:1415060388.34
 multiple escaped initial underscores must be unescaped.      | owner:, open:True, id:314e45488da4c7c8298c4c64ece03359918d057b, time:1415959749.14
 wisp: handle general paren prefixes like quote, quasiquote, etc. | owner:, open:False, id:323ff94b5be635742619467e1cb44f4c0d96f63f, time:1379047798.47
 throw an exception when reducing indentation to an unknown indentation level. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:424186bd85f186b7279c5c59e2bd42f847284719, time:1376003568.91
+LANG=C breaks bootstrap: python encoding error: it uses ascii. | owner:, open:True, id:43c7461bfb6f35a90ff3f4497c8232e2457ce1c7, time:1427819877.7
 wisp-in-wisp: only parses the first 272 lines, for some reason. | owner:, open:False, id:4cb6c556d7136609e2da9ab3fc045a39847f1ef3, time:1377014682.98
 adjust runtests.sh to use testrunner.w                       | owner:, open:False, id:4d4e76343fe09f0ec72a3e5eb0077bd16e12f9d5, time:1415127234.43
 wisp-scheme: REPL: sometimes the output of a command is only shown after typing the next non-empty line. | owner:, open:False, id:56d2f81e9c89accb0b0bc668ddc8feed3b60e9b2, time:1416584789.23
@@ -20,7 +23,7 @@ wisp-guile.w does not yet remove the leading . which signifies a continuation. |
 inline ' : should be '(                                      | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:72d534a8b23b4cb168017f1bb7d8816f0ea170c4, time:1366497335.26
 failing test tests/shebang.w                                 | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:74a851f83af8996465a7b24d8453161beb0f0fd5, time:1379106761.57
 non-nested multiline comments with #! !#. Requires restructuring. | owner:, open:False, id:7a57614fa920b2ddad002d044b144d0bb7c34f84, time:1389364108.01
-wisp-scheme: interpret , : as ,() similar to : ,             | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:85e150dcb10c49d8f51db525e07d24e83bdba0f1, time:1416432201.21
+wisp-scheme: interpret , : as ,() similar to : ,             | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:85e150dcb10c49d8f51db525e07d24e83bdba0f1, time:1416432201.21
 wisp-guile: support nested multi-line comments with #| ... |#: multiline comments (srfi-30). Requires restructuring. | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:8cf6202873d4454f57813dd17cf60432059f7c62, time:1389569421.6
 wisp-scheme: Does not recognize the . #!curly-infix request for curly-infix or other reader syntax. | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:91f27adb7d4e378e034b3408b6e4616f707f9587, time:1418162368.88
 wisp-guile: the repl does not require 3 returns when you use a single char as function, or rather only does so every second time | owner:, open:True, id:9cedd0bdbf4a3b17add4bfe86ad5a23e500cfc6c, time:1379064870.78
@@ -36,4 +39,5 @@ comments containing a closing parenthesis can break the parser. | owner:, open:F
 breaks on empty files                                        | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:e40fa7a93eb2c497dca1af7eed22ad5ed5cfbe7f, time:1390325470.91
 wisp-scheme: breaks on lines with only underscores. These should be treated as empty lines. | owner:, open:False, id:e464b5ce49deb14a80f67d50c6d70043ca9bde25, time:1415124488.16
 quote as only char in a line gets parenthized instead of becoming a paren-prefix. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:eb7468387e90bb5d13f5a5d81c6f4a704f2ca0fb, time:1390326369.6
-in the REPL output can be delayed by one line: Appears only when submitting the next command. | owner:, open:True, id:f1e42bbd4c17a2dec886c26d9c14e770bcff66d2, time:1415972414.48
+in the REPL output can be delayed by one line: Appears only when submitting the next command. | owner:, open:False, id:f1e42bbd4c17a2dec886c26d9c14e770bcff66d2, time:1415972414.48
+wisp-scheme: parser problem with dotted pair: use-modules : (ice-9 popen) #:select ((open-input-pipe . oip)) | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:ff078cba853c1a2fdbd41cf0228ad7920a642c0d, time:1428358435.75

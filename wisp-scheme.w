@@ -43,7 +43,11 @@ define : line-real-indent line
                . indent
 
 define : line-code line
-         cdr line
+         let : : code : cdr line
+             ; propagate source properties
+             when : not : null? code
+                    set-source-properties! code : source-properties line
+             . code
 
 ; literal values I need
 define readcolon 
@@ -110,6 +114,16 @@ define : wisp-read port
            cond
              : or (< prefix-maxlen (length peeked)) (eof-object? (peek-char port)) (equal? #\space (peek-char port)) (equal? #\newline (peek-char port)) 
                if repr-symbol ; found a special symbol, return it.
+                  ; TODO: Somehow store source-properties. The commented-out code below does not work.
+                  ; catch #t
+                  ;     lambda ()
+                  ;         write : source-properties symbol-or-symbols
+                  ;         set-source-property! symbol-or-symbols 'filename : port-filename port
+                  ;         set-source-property! symbol-or-symbols 'line : 1+ : port-line port
+                  ;         set-source-property! symbol-or-symbols 'column : port-column port
+                  ;         write : source-properties symbol-or-symbols
+                  ;     lambda : key . arguments
+                  ;         . #f
                   . repr-symbol
                   let unpeek
                     : remaining peeked
@@ -258,6 +272,10 @@ define : wisp-scheme-read-chunk-lines port
                          if : not : line-empty? parsedline
                             . 0 
                             1+ emptylines
+                     when : not : = 0 : length parsedline
+                         ; set the source properties to parsedline so we can try to add them later.
+                         set-source-property! parsedline 'filename : port-filename port
+                         set-source-property! parsedline 'line : port-line port
                      ; TODO: If the line is empty. Either do it here and do not add it, just
                      ; increment the empty line counter, or strip it later. Replace indent
                      ; -1 by indent 0 afterwards.
@@ -353,12 +371,53 @@ define : line-strip-lone-colon line
            . line
 
 define : line-finalize line
-         . "Process all wisp-specific information in a line and strip it"
-         line-code-replace-inline-colons 
-           line-strip-indentation-marker
-             line-strip-lone-colon
-               line-strip-continuation line
+       . "Process all wisp-specific information in a line and strip it"
+       let
+         :
+           l
+             line-code-replace-inline-colons 
+               line-strip-indentation-marker
+                 line-strip-lone-colon
+                   line-strip-continuation line
+         when : not : null? : source-properties line
+                catch #t
+                  lambda ()
+                    set-source-properties! l : source-properties line
+                  lambda : key . arguments
+                    . #f
+         . l
 
+define : wisp-add-source-properties-from source target
+       . "Copy the source properties from source into the target and return the target."
+       catch #t
+           lambda ()
+               set-source-properties! target : source-properties source
+           lambda : key . arguments
+               . #f
+       . target
+
+define : wisp-propagate-source-properties code
+       . "Propagate the source properties from the sourrounding list into every part of the code."
+       let loop
+         : processed '()
+           unprocessed code
+         cond
+           : and (null? processed) (not (pair? unprocessed)) (not (list? unprocessed))
+             . unprocessed
+           : and (pair? unprocessed) (not (list? unprocessed))
+             cons
+               wisp-propagate-source-properties (car unprocessed)
+               wisp-propagate-source-properties (cdr unprocessed)
+           : null? unprocessed
+             . processed
+           else
+             let : : line : car unprocessed
+               if : null? : source-properties unprocessed
+                   wisp-add-source-properties-from line unprocessed
+                   wisp-add-source-properties-from unprocessed line
+               loop
+                 append processed : list : wisp-propagate-source-properties line
+                 cdr unprocessed
 
 define : wisp-scheme-indentation-to-parens lines
          . "Add parentheses to lines and remove the indentation markers"
@@ -447,7 +506,7 @@ define : wisp-scheme-indentation-to-parens lines
                                append processed 
                                  if : line-continues? current-line
                                       . line
-                                      list line
+                                      wisp-add-source-properties-from line : list line
                                cdr unprocessed ; recursion here
                                . indentation-levels
                            : < current-line-indentation next-line-indentation
@@ -537,8 +596,16 @@ define : wisp-replace-paren-quotation-repr code
                         list : list 'quote : map wisp-replace-paren-quotation-repr b
              : 'REPR-UNQUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
                 list 'unquote : map wisp-replace-paren-quotation-repr a
+             : a ... 'REPR-UNQUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd b 
+                append
+                        map wisp-replace-paren-quotation-repr a
+                        list : list 'unquote : map wisp-replace-paren-quotation-repr b
              : 'REPR-QUASIQUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
                 list 'quasiquote : map wisp-replace-paren-quotation-repr a
+             : a ... 'REPR-QUASIQUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd b ; this is the quoted empty list 
+                append
+                        map wisp-replace-paren-quotation-repr a
+                        list : list 'quasiquote : map wisp-replace-paren-quotation-repr b
              : 'REPR-UNQUOTESPLICING-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
                 list 'unquote-splicing : map wisp-replace-paren-quotation-repr a
              : 'REPR-SYNTAX-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
@@ -613,7 +680,6 @@ Match is awesome!"
                a
                  . a
 
-
 define : wisp-scheme-read-chunk port
          . "Read and parse one chunk of wisp-code"
          let : :  lines : wisp-scheme-read-chunk-lines port
@@ -621,7 +687,8 @@ define : wisp-scheme-read-chunk port
                 wisp-replace-empty-eof
                   wisp-unescape-underscore-and-colon
                     wisp-replace-paren-quotation-repr
-                      wisp-scheme-indentation-to-parens lines
+                      wisp-propagate-source-properties
+                        wisp-scheme-indentation-to-parens lines
 
 define : wisp-scheme-read-all port
          . "Read all chunks from the given port"

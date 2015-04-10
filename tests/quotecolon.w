@@ -8,3 +8,5 @@ define a ' : 1 2 3
 define
   a b
   c
+
+define a : quasiquote , : + 2 2

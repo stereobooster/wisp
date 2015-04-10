@@ -2,7 +2,7 @@
 ; !#
 
 define-module : examples d6
-   . #:export : roll check 
+   . #:export : roll check
 
 ; basic d6 rules, implemented in guile
 
@@ -23,3 +23,5 @@ define : check skill target effect-threshold
 display : check 12 9 3
 newline
 display : roll
+
+

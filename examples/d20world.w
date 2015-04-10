@@ -17,6 +17,9 @@ define-module : examples d20world
               . #:export : world neighbors d20-as-text d20-diffuse
 
 use-modules : ice-9 format
+use-modules 
+  : ice-9 popen
+        . #:select : open-output-pipe close-pipe
 
 define world : make-vector 20 0
 define neighbors : make-vector 20
@@ -211,6 +214,7 @@ define : latlon2cellidx lat lon
 
 display : d20-as-text world
 newline
+
 format #t "Diffuse ~A\n" 0.01
 d20-diffuse world neighbors 0.01
 display : d20-as-text world
@@ -282,3 +286,52 @@ let loop : : steps 1000
         loop : 1- steps
 display : d20-as-text world
 newline
+
+; now plot the result
+let : : port : open-output-pipe "python"
+  format port "from mpl_toolkits.mplot3d import Axes3D, art3d
+import numpy as np
+import scipy as sp
+from matplotlib import cm
+import matplotlib.pyplot as plt
+from scipy.spatial import Delaunay
+
+def Icosahedron():
+    h = 0.5*(1+np.sqrt(5))
+    p1 = np.array([[0,1,h],[0,1,-h],[0,-1,h],[0,-1,-h]])
+    p2 = p1[:,[1,2,0]]
+    p3 = p1[:,[2,0,1]]
+    return np.vstack((p1,p2,p3))
+
+Ico = Icosahedron()
+tri = Delaunay(Ico)
+CH = tri.convex_hull
+points = tri.points
+
+fig = plt.figure(figsize=(4.0,4.0))
+ax = fig.add_subplot(111, projection='3d')
+
+print points
+for i in range(points.shape[0]):
+    neighbors = tri.neighbors[i,:]
+    for n in range(points.shape[0]):
+        pts = []
+        for u in range(points.shape[0]):
+            pt = np.zeros((3,3))
+            pt[0,:] = points[(i),:]
+            pt[1,:] = points[(n),:]
+            pt[2,:] = points[(u),:]
+            # print pt
+            pt *= 0.5
+            pt += 0.5
+            pts.append(pt)
+        tr = art3d.Poly3DCollection(pts)
+        tr.set_color([(0.9*i)/points.shape[0]] + [(0.9*n)/points.shape[0]]*3)
+        ax.add_collection3d(tr)
+# ax.plot_surface(x, y, z, color='g')
+
+plt.show()
+
+exit()\n"
+  close-pipe port
+
