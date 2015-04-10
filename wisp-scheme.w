@@ -411,7 +411,7 @@ define : wisp-propagate-source-properties code
                if : null? : source-properties unprocessed
                    wisp-add-source-properties-from line unprocessed
                    wisp-add-source-properties-from unprocessed line
-               loop
+               loop ; FIXME: this breaks pairs.
                  append processed : list : wisp-propagate-source-properties line
                  cdr unprocessed
 
