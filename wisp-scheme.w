@@ -405,8 +405,9 @@ define : wisp-propagate-source-properties code
            : and (null? processed) (not (pair? unprocessed)) (not (list? unprocessed))
              . unprocessed
            : and (pair? unprocessed) (not (list? unprocessed))
-             . (wisp-propagate-source-properties (car unprocessed))
-               . . (wisp-propagate-source-properties (cdr unprocessed))
+             cons
+               wisp-propagate-source-properties (car unprocessed)
+               wisp-propagate-source-properties (cdr unprocessed)
            : null? unprocessed
              . processed
            else
@@ -414,7 +415,7 @@ define : wisp-propagate-source-properties code
                if : null? : source-properties unprocessed
                    wisp-add-source-properties-from line unprocessed
                    wisp-add-source-properties-from unprocessed line
-               loop ; FIXME: this breaks pairs.
+               loop
                  append processed : list : wisp-propagate-source-properties line
                  cdr unprocessed
 
