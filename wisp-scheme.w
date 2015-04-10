@@ -380,7 +380,11 @@ define : line-finalize line
                  line-strip-lone-colon
                    line-strip-continuation line
          when : not : null? : source-properties line
-                set-source-properties! l : source-properties line
+                catch #t
+                  lambda ()
+                    set-source-properties! l : source-properties line
+                  lambda : key . arguments
+                    . #f
          . l
 
 define : wisp-add-source-properties-from source target
