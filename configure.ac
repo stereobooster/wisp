@@ -1,7 +1,7 @@
 dnl run `autoreconf -i` to generate a configure script. 
 dnl Then run ./configure to generate a Makefile.
 dnl Finally run make to generate the project.
-AC_INIT([wisp], [0.8.2],
+AC_INIT([wisp], [0.8.3],
         [arne_bab@web.de])
 # Check for programs I need for my build
 AC_CANONICAL_TARGET
