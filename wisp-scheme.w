@@ -404,6 +404,9 @@ define : wisp-propagate-source-properties code
          cond
            : and (null? processed) (not (pair? unprocessed)) (not (list? unprocessed))
              . unprocessed
+           : and (pair? unprocessed) (not (list? unprocessed))
+             . (wisp-propagate-source-properties (car unprocessed))
+               . . (wisp-propagate-source-properties (cdr unprocessed))
            : null? unprocessed
              . processed
            else
