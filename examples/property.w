@@ -9,18 +9,15 @@ define-module : examples property
 ; FIXME: this does not work when called from guile, but it works when
 ; first translating it to scheme and then calling the scheme file.
 
+; The following works:
+
+; guile ../wisp.scm property.w > property.scm; guile -e '(@@ (examples property) main)' -s property.scm 
+
 define y 5
 define-syntax z
-  make-variable-transformer
-   lambda : x
-     syntax-case x : set!
-       : set! var val
-         quasisyntax : set! y : + 1 val
-       : var arg ...
-         quasisyntax : y arg ...
-       var : identifier? #'var
-         quasisyntax y
-
+  identifier-syntax : var y
+                    : set! var val
+                      set! y : + 1 val
 
 define : main args
          write args
