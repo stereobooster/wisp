@@ -17,8 +17,7 @@ define base60numbers
        append
          map cons (string->list base60letters) : iota : string-length base60letters
          quote
-           : 
-             #\l . 1 ; typo lowercase l to 1
+           : #\l . 1 ; typo lowercase l to 1
              #\I . 1 ; typo capital I to 1
              #\O . 0 ; typo capital O to 0
 
@@ -26,15 +25,24 @@ define : integer->sxg num
          if : equal? 0 num
             . "0"
             let loop
-               : s '()
-                 n num
-               if : equal? n 0
-                    list->string : reverse s
-                    loop
-                      cons 
-                        string-ref base60letters (remainder n 60)
-                        . s
-                      quotient n 60
+              : s '()
+                n num
+              if : equal? n 0
+                 list->string s
+                 loop
+                   cons (string-ref base60letters (remainder n 60)) s
+                   quotient n 60
+
+define : sxg->number string
+         let loop
+           : n 0
+             s string
+           if : equal? "" s
+              . n
+              loop
+                + : assoc-ref base60numbers : string-ref s 0
+                  * n 60
+                string-drop s 1
 
 define : main args
-       display : integer->sxg 61
+       display : sxg->number : integer->sxg 60
