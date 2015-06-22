@@ -22,30 +22,44 @@ define base60numbers
              #\I . 1 ; typo capital I to 1
              #\O . 0 ; typo capital O to 0
 
-define : integer->sxg num
+define : positive-integer->sxg num
        . "Convert a positive integer to Tanteks new base 60."
        if : equal? 0 num
           . "0"
           let loop
-            : s '()
-              n num
-            if : equal? n 0
-               list->string s
-               loop
-                 cons (string-ref base60letters (remainder n 60)) s
-                 quotient n 60
+              : s '()
+                n num
+              if : equal? n 0
+                 list->string s
+                 loop
+                   cons (string-ref base60letters (remainder n 60)) s
+                   quotient n 60
 
-define : sxg->integer string
-       . "Convert a new base 60 string into a positive integer."
+define : positive-sxg->integer string
+       . "Convert a positive new base 60 string into a positive integer."
        let loop
          : n 0
            s string
-         if : equal? "" s
-            . n
-            loop
-              + : assoc-ref base60numbers : string-ref s 0
-                * n 60
-              string-drop s 1
+         cond 
+           : equal? "" s
+             . n
+           else
+             loop
+               + : assoc-ref base60numbers : string-ref s 0
+                 * n 60
+               string-drop s 1
+
+define : integer->sxg num
+       . "Convert an integer to Tanteks new base 60."
+       if : >= num 0
+          positive-integer->sxg num
+          string-append "-" : positive-integer->sxg : - num
+
+define : sxg->integer str
+       . "Convert a new base 60 string into an integer."
+       if : and (>= (string-length str) 1) (equal? #\- (string-ref str 0))
+          - : positive-sxg->integer : string-drop str 1
+          positive-sxg->integer str
 
 define : date->sxg year month day hour minute second
        . "Convert a date into new base 60 format:
@@ -65,20 +79,23 @@ define : sxg->date str
          "
        let* 
          : centeridx : string-rindex str #\- ; rindex because the year could be negative
+           getstr : lambda (s di) : string : string-ref str : + centeridx di
            year : substring/read-only str 0 : - centeridx 2
-           month : string : string-ref str : - centeridx 2
-           day : string : string-ref str : - centeridx 1
-           hour : string : string-ref str : + centeridx 1
-           minute : string : string-ref str : + centeridx 2
-           second : string : string-ref str : + centeridx 3
+           month : getstr str -2
+           day : getstr str -1
+           hour : getstr str 1
+           minute : getstr str 2
+           second : getstr str 3
          map sxg->integer 
            list year month day hour minute second
 
 define : main args
+       let
+         : help : lambda () : format #t "usage: ~A [integer | -d string | --datetime | --datetime year month day hour minute second | --help]\n" : list-ref args 0
          cond
            : or (= 1 (length args)) (member "--help" args)
-             format #t "usage: ~A [integer | -d string | --datetime | --datetime year month day hour minute second | --help]\n" : list-ref args 0
-           : and (= 7 (length args)) : equal? "--datetime" : list-ref args 1
+             help
+           : and (= 8 (length args)) : equal? "--datetime" : list-ref args 1
              format #t "~A\n" : apply date->sxg : map string->number : drop args 2
            : and (= 2 (length args)) : equal? "--datetime" : list-ref args 1
              let : : tm : localtime : current-time
@@ -89,4 +106,5 @@ define : main args
              format #t "~A\n" : sxg->integer : list-ref args 2
            : = 2 : length args
              format #t "~A\n" : integer->sxg : string->number : list-ref args 1
-
+           else
+             help
