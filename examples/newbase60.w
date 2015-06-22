@@ -23,27 +23,29 @@ define base60numbers
              #\O . 0 ; typo capital O to 0
 
 define : integer->sxg num
-         if : equal? 0 num
-            . "0"
-            let loop
-              : s '()
-                n num
-              if : equal? n 0
-                 list->string s
-                 loop
-                   cons (string-ref base60letters (remainder n 60)) s
-                   quotient n 60
+       . "Convert a positive integer to Tanteks new base 60."
+       if : equal? 0 num
+          . "0"
+          let loop
+            : s '()
+              n num
+            if : equal? n 0
+               list->string s
+               loop
+                 cons (string-ref base60letters (remainder n 60)) s
+                 quotient n 60
 
 define : sxg->integer string
-         let loop
-           : n 0
-             s string
-           if : equal? "" s
-              . n
-              loop
-                + : assoc-ref base60numbers : string-ref s 0
-                  * n 60
-                string-drop s 1
+       . "Convert a new base 60 string into a positive integer."
+       let loop
+         : n 0
+           s string
+         if : equal? "" s
+            . n
+            loop
+              + : assoc-ref base60numbers : string-ref s 0
+                * n 60
+              string-drop s 1
 
 define : main args
          display : sxg->integer : integer->sxg 60
