@@ -5,12 +5,13 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ;; Encoding and decoding numbers in New Base 60 as defined by Tantek:
 ;; http://tantek.pbworks.com/NewBase60
 
-;; Based on the very elegant implementation from kevin marks:
+;; Based on the very elegant implementation from Kevin Marks licensed under CC0:
 ;; https://github.com/indieweb/newBase60py/blob/master/newbase60.py
 
 define-module : examples newbase60
-              . #:export : main
+              . #:export : integer->sxg sxg->integer
               . #:use-module : srfi srfi-1
+;               . #:use-module : ice-9 match
 
 define base60letters "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ_abcdefghijkmnopqrstuvwxyz"
 define base60numbers
@@ -33,7 +34,7 @@ define : integer->sxg num
                    cons (string-ref base60letters (remainder n 60)) s
                    quotient n 60
 
-define : sxg->number string
+define : sxg->integer string
          let loop
            : n 0
              s string
@@ -45,4 +46,5 @@ define : sxg->number string
                 string-drop s 1
 
 define : main args
-       display : sxg->number : integer->sxg 60
+         display : sxg->integer : integer->sxg 60
+
