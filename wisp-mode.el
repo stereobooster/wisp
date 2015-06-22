@@ -49,6 +49,7 @@
 ; use this mode automatically
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.w\\'" . wisp-mode))
+;;;###autoload
 (add-hook 'wisp-mode-hook
           (lambda ()
             (electric-indent-local-mode -1)))
