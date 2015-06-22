@@ -11,7 +11,6 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 define-module : examples newbase60
               . #:export : integer->sxg sxg->integer
               . #:use-module : srfi srfi-1
-;               . #:use-module : ice-9 match
 
 define base60letters "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ_abcdefghijkmnopqrstuvwxyz"
 define base60numbers
