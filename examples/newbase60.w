@@ -77,17 +77,18 @@ define : sxg->date str
        . "Convert a new base 60 date into a list:
           YYMD-hms -> (year month day hour minute second)
          "
-       let* 
+       let*
          : centeridx : string-rindex str #\- ; rindex because the year could be negative
            getstr : lambda (s di) : string : string-ref str : + centeridx di
-           year : substring/read-only str 0 : - centeridx 2
-           month : getstr str -2
-           day : getstr str -1
-           hour : getstr str 1
-           minute : getstr str 2
-           second : getstr str 3
-         map sxg->integer 
-           list year month day hour minute second
+         let
+           : year : substring/read-only str 0 : - centeridx 2
+             month : getstr str -2
+             day : getstr str -1
+             hour : getstr str 1
+             minute : getstr str 2
+             second : getstr str 3
+           map sxg->integer 
+             list year month day hour minute second
 
 define : main args
        let
