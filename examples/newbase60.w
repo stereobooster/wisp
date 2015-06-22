@@ -48,5 +48,11 @@ define : sxg->integer string
               string-drop s 1
 
 define : main args
-         display : sxg->integer : integer->sxg 62
+         cond
+           : or (= 1 (length args)) (member "--help" args)
+             format #t "usage: ~A [-d string | integer | --help]\n" : list-ref args 0
+           : and (= 3 (length args)) : equal? "-d" : list-ref args 1
+             format #t "~A\n" : sxg->integer : list-ref args 2
+           : = 2 : length args
+             format #t "~A\n" : integer->sxg : string->number : list-ref args 1
 
