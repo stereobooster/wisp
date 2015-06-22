@@ -59,6 +59,20 @@ define : date->sxg year month day hour minute second
              map integer->sxg
                  list hour minute second
 
+define : sxg->date str
+       . "Convert a new base 60 date into a list:
+          YYMD-hms -> (year month day hour minute second)
+         "
+       let* 
+         : centeridx : string-rindex str #\- ; rindex because the year could be negative
+           year : substring/read-only str 0 : - centeridx 2
+           month : string : string-ref str : - centeridx 2
+           day : string : string-ref str : - centeridx 1
+           hour : string : string-ref str : + centeridx 1
+           minute : string : string-ref str : + centeridx 2
+           second : string : string-ref str : + centeridx 3
+         map sxg->integer 
+           list year month day hour minute second
 
 define : main args
          cond
@@ -69,6 +83,8 @@ define : main args
            : and (= 2 (length args)) : equal? "--datetime" : list-ref args 1
              let : : tm : localtime : current-time
                format #t "~A\n" : apply date->sxg : list (+ 1900 (tm:year tm)) (+ 1 (tm:mon tm)) (tm:mday tm) (tm:hour tm) (tm:min tm) (tm:sec tm)
+           : and (= 3 (length args)) : equal? "--decode-datetime" : list-ref args 1
+             format #t "~A\n" : sxg->date : list-ref args 2
            : and (= 3 (length args)) : equal? "-d" : list-ref args 1
              format #t "~A\n" : sxg->integer : list-ref args 2
            : = 2 : length args
