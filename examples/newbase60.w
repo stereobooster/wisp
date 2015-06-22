@@ -48,5 +48,5 @@ define : sxg->integer string
               string-drop s 1
 
 define : main args
-         display : sxg->integer : integer->sxg 60
+         display : sxg->integer : integer->sxg 62
 
