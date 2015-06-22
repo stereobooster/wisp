@@ -49,6 +49,9 @@
 ; use this mode automatically
 ;;;###autoload
 (add-to-list 'auto-mode-alist '("\\.w\\'" . wisp-mode))
+(add-hook 'wisp-mode-hook
+          (lambda ()
+            (electric-indent-local-mode -1)))
 
 ; see http://www.emacswiki.org/emacs/DerivedMode
 
