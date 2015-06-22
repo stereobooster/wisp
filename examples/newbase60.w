@@ -60,6 +60,38 @@ define : sxg->integer str
           - : positive-sxg->integer : string-drop str 1
           positive-sxg->integer str
 
+define : date->sxgepochdays year month day hour minute second
+       let 
+         : tm : gmtime 0 ; initialize 
+         set-tm:year tm : - year 1900
+         set-tm:mon tm month
+         set-tm:mday tm day
+         set-tm:hour tm hour
+         set-tm:min tm minute
+         set-tm:sec tm second
+         let* 
+           : epochseconds : car : mktime tm "+0" ; 0: UTC
+             epochdays : quotient epochseconds : * 24 60 60
+           integer->sxg epochdays
+
+define : yeardays->sxgepochdays year yeardays
+       let 
+         : tm : car : strptime "%Y %j" : string-join : map number->string : list year yeardays
+         let* 
+           : epochseconds : car : mktime tm "+0" ; 0: UTC
+             epochdays : quotient epochseconds : * 24 60 60
+           integer->sxg epochdays
+
+define : sxgepochdays->yearday str
+       . "Turn sexagesimal days since epoch into year (YYYY) and day of year (DDD)."
+       let*
+         : epochdays : sxg->integer str
+           epochseconds : * epochdays 24 60 60
+           tm : gmtime epochseconds
+           year : + 1900 : tm:year tm
+           yeardays : tm:yday tm
+         list year (+ yeardays 1)
+
 define : date->sxg year month day hour minute second
        . "Convert a date into new base 60 format:
           yyyymmdd hhmmss -> YYMD-hms (can extend till 3599)
@@ -97,11 +129,17 @@ define : main args
              help
            : and (= 8 (length args)) : equal? "--datetime" : list-ref args 1
              format #t "~A\n" : apply date->sxg : map string->number : drop args 2
+           : and (= 8 (length args)) : equal? "--sxgepochdays" : list-ref args 1
+             format #t "~A\n" : apply date->sxgepochdays : map string->number : drop args 2
+           : and (= 4 (length args)) : equal? "--sxgepochdays-from-yearday" : list-ref args 1
+             format #t "~A\n" : apply yeardays->sxgepochdays : map string->number : drop args 2
            : and (= 2 (length args)) : equal? "--datetime" : list-ref args 1
              let : : tm : localtime : current-time
                format #t "~A\n" : apply date->sxg : list (+ 1900 (tm:year tm)) (+ 1 (tm:mon tm)) (tm:mday tm) (tm:hour tm) (tm:min tm) (tm:sec tm)
            : and (= 3 (length args)) : equal? "--decode-datetime" : list-ref args 1
              format #t "~A\n" : sxg->date : list-ref args 2
+           : and (= 3 (length args)) : equal? "--decode-sxgepochdays" : list-ref args 1
+             format #t "~A\n" : sxgepochdays->yearday : list-ref args 2
            : and (= 3 (length args)) : equal? "-d" : list-ref args 1
              format #t "~A\n" : sxg->integer : list-ref args 2
            : = 2 : length args
