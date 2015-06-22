@@ -47,10 +47,28 @@ define : sxg->integer string
                 * n 60
               string-drop s 1
 
+define : date->sxg year month day hour minute second
+       . "Convert a date into new base 60 format:
+          yyyymmdd hhmmss -> YYMD-hms (can extend till 3599)
+         "
+       format #f "~A-~A" 
+           apply string-append
+             map integer->sxg
+                 list year month day
+           apply string-append 
+             map integer->sxg
+                 list hour minute second
+
+
 define : main args
          cond
            : or (= 1 (length args)) (member "--help" args)
              format #t "usage: ~A [-d string | integer | --help]\n" : list-ref args 0
+           : and (= 7 (length args)) : equal? "--datetime" : list-ref args 1
+             format #t "~A\n" : apply date->sxg : map string->number : drop args 2
+           : and (= 2 (length args)) : equal? "--datetime" : list-ref args 1
+             let : : tm : localtime : current-time
+               format #t "~A\n" : apply date->sxg : list (+ 1900 (tm:year tm)) (+ 1 (tm:mon tm)) (tm:mday tm) (tm:hour tm) (tm:min tm) (tm:sec tm)
            : and (= 3 (length args)) : equal? "-d" : list-ref args 1
              format #t "~A\n" : sxg->integer : list-ref args 2
            : = 2 : length args
