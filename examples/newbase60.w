@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# -*- scheme -*-
+# -*- wisp -*-
 exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples newbase60) main)' -s "$0" "$@"
 ; !#
 
