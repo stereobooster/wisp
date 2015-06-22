@@ -63,7 +63,7 @@ define : date->sxg year month day hour minute second
 define : main args
          cond
            : or (= 1 (length args)) (member "--help" args)
-             format #t "usage: ~A [-d string | integer | --help]\n" : list-ref args 0
+             format #t "usage: ~A [integer | -d string | --datetime | --datetime year month day hour minute second | --help]\n" : list-ref args 0
            : and (= 7 (length args)) : equal? "--datetime" : list-ref args 1
              format #t "~A\n" : apply date->sxg : map string->number : drop args 2
            : and (= 2 (length args)) : equal? "--datetime" : list-ref args 1
