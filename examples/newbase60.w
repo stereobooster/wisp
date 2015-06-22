@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+# -*- scheme -*-
 exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples newbase60) main)' -s "$0" "$@"
 ; !#
 
@@ -9,7 +10,7 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ;; https://github.com/indieweb/newBase60py/blob/master/newbase60.py
 
 define-module : examples newbase60
-              . #:export : integer->sxg sxg->integer
+              . #:export : integer->sxg sxg->integer date->sxg sxg->date date->sxgepochdays sxgepochdays->yeardays yeardays->sxgepochdays
               . #:use-module : srfi srfi-1
 
 define base60letters "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ_abcdefghijkmnopqrstuvwxyz"
@@ -82,7 +83,7 @@ define : yeardays->sxgepochdays year yeardays
              epochdays : quotient epochseconds : * 24 60 60
            integer->sxg epochdays
 
-define : sxgepochdays->yearday str
+define : sxgepochdays->yeardays str
        . "Turn sexagesimal days since epoch into year (YYYY) and day of year (DDD)."
        let*
          : epochdays : sxg->integer str
@@ -139,7 +140,7 @@ define : main args
            : and (= 3 (length args)) : equal? "--decode-datetime" : list-ref args 1
              format #t "~A\n" : sxg->date : list-ref args 2
            : and (= 3 (length args)) : equal? "--decode-sxgepochdays" : list-ref args 1
-             format #t "~A\n" : sxgepochdays->yearday : list-ref args 2
+             format #t "~A\n" : sxgepochdays->yeardays : list-ref args 2
            : and (= 3 (length args)) : equal? "-d" : list-ref args 1
              format #t "~A\n" : sxg->integer : list-ref args 2
            : = 2 : length args
