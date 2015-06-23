@@ -211,19 +211,19 @@ define : wisp-scheme-read-chunk-lines port
              currentsymbols '()
              emptylines 0
            cond
-            : <= 2 emptylines ; the chunk end has to be checked
+            : >= emptylines 2 ; the chunk end has to be checked
                               ; before we look for new chars in the
                               ; port to make execution in the REPL
                               ; after two empty lines work
                               ; (otherwise it shows one more line).
              . indent-and-symbols
-            : and inindent (zero? currentindent) (not (null? indent-and-symbols)) (not inunderscoreindent) (not (or (equal? #\space (peek-char port)) (equal? #\newline (peek-char port))))
-             . indent-and-symbols ; top-level form ends chunk
             else
              let : : next-char : peek-char port
                cond
                  : eof-object? next-char
                    append indent-and-symbols : list : append (list currentindent) currentsymbols
+                 : and inindent (zero? currentindent) (not incomment) (not (null? indent-and-symbols)) (not inunderscoreindent) (not (or (equal? #\space next-char) (equal? #\newline next-char) (equal? (string-ref ";" 0) next-char)))
+                  append indent-and-symbols ; top-level form ends chunk
                  : and inindent : equal? #\space next-char
                    read-char port ; remove char
                    loop

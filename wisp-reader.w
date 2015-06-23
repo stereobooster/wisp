@@ -32,7 +32,12 @@ define : read-one-wisp-sexp port env
             : eof-object? : peek-char port
               read-char port ; return eof: we’re done
             else
-              car : wisp-scheme-read-chunk port
+              let : : chunk : wisp-scheme-read-chunk port
+                cond
+                  : not : null? chunk
+                    car chunk
+                  else
+                    . #f
 
 define-language wisp
   . #:title "Wisp Scheme Syntax. See SRFI-119 for details. THIS IS EXPERIMENTAL, USE AT YOUR OWN RISK"
