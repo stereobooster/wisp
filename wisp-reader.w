@@ -28,27 +28,11 @@ setlocale LC_ALL ""
 define wisp-pending-sexps : list
 
 define : read-one-wisp-sexp port env
-  define : wisp-scheme-read-chunk-env
-           cond 
-              : eof-object? : peek-char port
-                read-char port ; return eof: we’re done
-              else
-                set! wisp-pending-sexps
-                     append wisp-pending-sexps : wisp-scheme-read-chunk port
-                try-pending
-  define : try-pending
-    if : null? wisp-pending-sexps
-         wisp-scheme-read-chunk-env
-         let
-            : sexp : car wisp-pending-sexps
-              pending wisp-pending-sexps
-            set! wisp-pending-sexps : list ; : cdr wisp-pending-sexps
-            ; write pending
-            if : = 1 : length pending
-                 car pending
-                 cons 'begin pending
-  try-pending
-
+         cond
+            : eof-object? : peek-char port
+              read-char port ; return eof: we’re done
+            else
+              car : wisp-scheme-read-chunk port
 
 define-language wisp
   . #:title "Wisp Scheme Syntax. See SRFI-119 for details. THIS IS EXPERIMENTAL, USE AT YOUR OWN RISK"
