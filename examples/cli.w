@@ -14,5 +14,3 @@ define : main args
              display args
          newline
 
-main '("foo")
-
