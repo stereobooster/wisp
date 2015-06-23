@@ -1,3 +1,7 @@
+wisp 0.8.3 (2015-04-10):
+- add partial source-properties support: show line numbers in backtraces.
+- d20world: start of experiement to plot the results.
+
 wisp 0.8.2 (2015-03-18):
 - resolve REPL delayed output bug.
 - forbid dot at the end of a line and as only symbol in a line to reserve them for future use.
