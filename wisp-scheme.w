@@ -210,12 +210,16 @@ define : wisp-scheme-read-chunk-lines port
              currentindent 0
              currentsymbols '()
              emptylines 0
-           if : <= 2 emptylines ; the chunk end has to be checked
-                                ; before we look for new chars in the
-                                ; port to make execution in the REPL
-                                ; after two empty lines work
-                                ; (otherwise it shows one more line).
+           cond
+            : <= 2 emptylines ; the chunk end has to be checked
+                              ; before we look for new chars in the
+                              ; port to make execution in the REPL
+                              ; after two empty lines work
+                              ; (otherwise it shows one more line).
              . indent-and-symbols
+            : and inindent (zero? currentindent) (not (null? indent-and-symbols)) (not inunderscoreindent) (not (or (equal? #\space (peek-char port)) (equal? #\newline (peek-char port))))
+             . indent-and-symbols ; top-level form ends chunk
+            else
              let : : next-char : peek-char port
                cond
                  : eof-object? next-char
