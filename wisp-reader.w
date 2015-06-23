@@ -42,7 +42,7 @@ define : read-one-wisp-sexp port env
 define-language wisp
   . #:title "Wisp Scheme Syntax. See SRFI-119 for details. THIS IS EXPERIMENTAL, USE AT YOUR OWN RISK"
   ; . #:reader read-one-wisp-sexp
-  . #:reader : lambda (port env) : let ((x (read-one-wisp-sexp port env))) (write x)(newline) x
+  . #:reader : lambda (port env) : let ((x (read-one-wisp-sexp port env))) x
   . #:compilers `((tree-il . ,compile-tree-il))
   . #:decompilers `((tree-il . ,decompile-tree-il))
   . #:evaluator : lambda (x module) : primitive-eval x
