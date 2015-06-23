@@ -1,4 +1,5 @@
 #!/bin/bash
+# -*- wisp -*-
 exec guile -L . --language=wisp -s "$0" "$@"
 ; !#
 
