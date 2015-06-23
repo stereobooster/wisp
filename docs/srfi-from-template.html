@@ -32,6 +32,8 @@ subscribe to the list.  You can access previous messages via
     <li>Received: <a
     href="http://srfi.schemers.org/cgi-bin/viewcvs.cgi/*checkout*/srfi/srfi-119/srfi-119.html?rev=1.1">2015/01/25</a></li>
       <li>Draft: 2015/02/03-2015/04/03</li>
+    <li>Revised: <a
+    href="http://srfi.schemers.org/cgi-bin/viewcvs.cgi/*checkout*/srfi/srfi-119/srfi-119.html?rev=1.2">2015/03/12</a></li>
 </ul>
 
 
@@ -61,24 +63,30 @@ It resolves a limitation of <a href="http://srfi.schemers.org/srfi-110/srfi-110.
 Wisp expressions can include any s-expressions and as such provide backwards compatibility.
 </p>
 
+<blockquote>
 <table><tr><th>wisp</th><th>s-exp</th></tr><tr><td>
-<pre><b>define</b> : <i>hello</i> who   
-         <i>format</i> #t "Hello ~A!\n"  
-                        . who   
-<i>hello</i> "Wisp"        
+<pre>
+<b>define</b> : <i>factorial</i> n
+__  <b>if</b> : <i>zero?</i> n
+____   . 1
+____   <i>*</i> n : <i>factorial</i> (- n 1)
+
+<i>display</i> : <i>factorial</i> 5 
+<i>newline</i>
 </pre>
+</blockqote>
 </td><td>
-<pre>(<b>define</b> (<i>hello</i> who)
-        (<i>format</i> #t "Hello ~A!\n"
-                          who))
-(<i>hello</i> "S-exp")
+<pre>
+(<b>define</b> (<i>factorial</i> n)
+    (<b>if</b> (<i>zero?</i> n)
+       1
+       (<i>*</i> n (<i>factorial</i> (- n 1)))))
+
+(<i>display</i> (<i>factorial</i> 5))
+(<i>newline</i>)
 </pre>
 </td></tr></table>
-
-<H1>Issues</H1>
-
-<ul>
-<li>wisp-scheme: REPL: sometimes the output of a command is only shown after typing the next non-empty line.</li></ul>
+</blockquote>
 
 <H1>Rationale</H1>
 
@@ -133,7 +141,7 @@ Wisp expressions can include any s-expressions and as such provide backwards com
 
 <h2>Wisp example</h2>
 
-Since an example speaks more than a hundred explanations, the following shows wisp exploiting all its features - including curly-infix from <a href="http://srfi.schemers.org/srfi-105/srfi-105.html">SRFI 105</a>:
+Since an example speaks more than a hundred explanations, the following shows wisp exploiting all its features - including compatibility with curly-infix from <a href="http://srfi.schemers.org/srfi-105/srfi-105.html">SRFI 105</a>:
 
 <blockquote>
 <pre>
@@ -750,7 +758,7 @@ DEALINGS IN THE SOFTWARE.
     <address>Editor: <a href="mailto:srfi-editors at srfi dot schemers dot org">Michael Sperber</a></address>
 <!-- Created: Tue Sep 29 19:20:08 EDT 1998 -->
 <!-- hhmts start -->
-Last modified: Tue Mar 11 21:25:26 MET 2015
+Last modified: Thu Mar 12 08:52:43 MET 2015
 <!-- hhmts end -->
   </body>
 </html>

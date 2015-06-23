@@ -1,4 +1,5 @@
 #!/bin/bash
+# -*- wisp -*-
 exec guile -L . --language=wisp -s "$0" "$@"
 ; !#
 
@@ -209,16 +210,20 @@ define : wisp-scheme-read-chunk-lines port
              currentindent 0
              currentsymbols '()
              emptylines 0
-           if : <= 2 emptylines ; the chunk end has to be checked
-                                ; before we look for new chars in the
-                                ; port to make execution in the REPL
-                                ; after two empty lines work
-                                ; (otherwise it shows one more line).
+           cond
+            : >= emptylines 2 ; the chunk end has to be checked
+                              ; before we look for new chars in the
+                              ; port to make execution in the REPL
+                              ; after two empty lines work
+                              ; (otherwise it shows one more line).
              . indent-and-symbols
+            else
              let : : next-char : peek-char port
                cond
                  : eof-object? next-char
                    append indent-and-symbols : list : append (list currentindent) currentsymbols
+                 : and inindent (zero? currentindent) (not incomment) (not (null? indent-and-symbols)) (not inunderscoreindent) (not (or (equal? #\space next-char) (equal? #\newline next-char) (equal? (string-ref ";" 0) next-char)))
+                  append indent-and-symbols ; top-level form ends chunk
                  : and inindent : equal? #\space next-char
                    read-char port ; remove char
                    loop
