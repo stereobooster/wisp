@@ -9,6 +9,8 @@ define-module : examples cli
 define : main args
          match args
            : prog ; just the program name, empty call
+             display : car args
+           else
              display args
          newline
 
