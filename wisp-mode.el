@@ -3,7 +3,7 @@
 ;; Copyright (C) 2013  Arne Babenhauserheide <arne_bab@web.de>
 
 ;; Author: Arne Babenhauserheide <arne_bab@web.de>
-;; Version: 0.2
+;; Version: 0.2.1
 ;; Keywords: languages, lisp
 
 ;; This program is free software; you can redistribute it and/or
@@ -37,6 +37,7 @@
 ;; 
 ;; ChangeLog:
 ;; 
+;;  - 0.2.1: Disable electric-indent-local-mode in wisp-mode buffers.
 ;;  - 0.2: Fixed the regular expressions. Now org-mode HTML export works with wisp-code.
 ;; 
 ;;; Code:
