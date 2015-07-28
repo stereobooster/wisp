@@ -1,9 +1,14 @@
-#!/home/arne/wisp/wisp-multiline.sh 
+#!/usr/bin/env sh
+# -*- wisp -*-
+exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples evolve) main)' -s "$0" "$@"
 ; !#
 
 ; A small experiment on a complete evolutionary algorithm.
 
 ; NOTE: This only works after preprocessing to scheme.
+
+define-module : examples evolve
+              . #:export : main
 
 ; Get the eval string which allows for selecting the language.
 use-modules : ice-9 eval-string
@@ -100,7 +105,7 @@ define : evolution initialstring steps
                     : = action 3
                       loop (+ step 1) (evolve-remove string)
                     
-define : run 
+define : main args
        ; firstoff, seed the random number generator!
        set! *random-state* : random-state-from-platform
        display : evolution "+ 1 (- 2 1)" 1000
