@@ -3,4 +3,4 @@
          (libraries
           (scm -> "newbase60"))
          (programs
-          (("newbase60.scm") -> "newbase60")))
+          ("newbase60.scm")))
