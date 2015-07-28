@@ -371,6 +371,12 @@ define : line-code-replace-inline-colons line
              : null? unprocessed
                ; format #t "inline-colons processed line: ~A\n" processed
                . processed
+             ; replace : . with nothing
+             : and (<= 2 (length unprocessed)) (equal? readcolon (car unprocessed)) (equal? repr-dot (car (cdr unprocessed)))
+               loop
+                 append processed
+                   loop '() (cdr (cdr unprocessed))
+                 . '()
              : equal? readcolon : car unprocessed
                loop
                  ; FIXME: This should turn unprocessed into a list. 
