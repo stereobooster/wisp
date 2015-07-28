@@ -1,3 +1,8 @@
+wisp 0.8.5 (2015-07-28):
+- wisp-scheme.w now parses : . to nothing. The colon adds parens, the
+  dot removes them. This provides compatibility to the older parser.
+- wisp is now SRFI-119: http://srfi.schemers.org/srfi-119/srfi-119.html
+
 wisp 0.8.4 (2015-06-23):
 - no longer wrap wisp blocks into begin. Fixes missing macro
   definitions when executed as file.
