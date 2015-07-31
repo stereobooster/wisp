@@ -1,3 +1,39 @@
+wisp 0.8.5 (2015-07-28):
+- wisp-scheme.w now parses : . to nothing. The colon adds parens, the
+  dot removes them. This provides compatibility to the older parser.
+- wisp is now SRFI-119: http://srfi.schemers.org/srfi-119/srfi-119.html
+
+wisp 0.8.4 (2015-06-23):
+- no longer wrap wisp blocks into begin. Fixes missing macro
+  definitions when executed as file.
+- any top-level form ends a wisp block. Required to avoid wrapping in
+  begin. In the REPL code is now executed when entering the first line
+  of the next top-level form.
+- new examples: newbase60 and cli.
+- known issue: To execute a procedure with shell-indirection, you have
+  to define a module.
+- wisp-mode: disable electric-indent-mode which reindented lines
+  wrongly when pressing enter.
+
+wisp 0.8.3 (2015-04-10):
+- add partial source-properties support: show line numbers in backtraces.
+- d20world: start of experiement to plot the results.
+
+wisp 0.8.2 (2015-03-18):
+- resolve REPL delayed output bug.
+- forbid dot at the end of a line and as only symbol in a line to reserve them for future use.
+- generalized the shell-call to guile: It gets the parentdir from $0.
+- note curly braces, neoteric expressions and dual-wisp-sweet syntax.
+- added tests: sxml, self-referencial function, curly-infix.
+- new example: beautiful factorial.
+- new example: ensemble estimation with ensemble square root filter. Uses python driven by an output-pipe as a plotting tool.
+- SRFI 119 in draft.
+
+wisp 0.8.1 (2014-11-19):
+- srfi: polish implementation notes.
+- add the requirements to the syntax-examples.
+- wisp-scheme.w works completely again.
+
 wisp 0.8.0 (2014-11-03):
 - the testsuite is defined in terms of the code-tree, not in terms of
   the readable file. Implemented in testrunner.w

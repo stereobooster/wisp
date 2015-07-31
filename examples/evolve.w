@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+# -*- wisp -*-
 exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples evolve) main)' -s "$0" "$@"
 ; !#
 
@@ -8,10 +9,9 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 
 ; NOTE: This only works after preprocessing to scheme.
 
-; run via 
-; PATH=../guile-2.0.11/meta:$PATH GUILE_LOAD_PATH=. ./wisp-multiline.sh examples/evolve.w 
-
 define-module : examples evolve
+              . #:export : main
+
 ; Get the eval string which allows for selecting the language.
 use-modules : ice-9 eval-string
 
@@ -145,7 +145,7 @@ define : evolution initialstring steps
                   evolution-step string
 
                     
-define : run 
+define : main args
        ; firstoff, seed the random number generator!
        set! *random-state* : random-state-from-platform
        let 

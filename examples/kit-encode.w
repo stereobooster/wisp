@@ -1,6 +1,10 @@
-#!./wisp-multiline.sh
+#!/usr/bin/env sh
+# -*- wisp -*-
+exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples kit-encode) main)' -s "$0" "$@"
 ; !#
 
+define-module : examples kit-encode
+              . #:export : main kittify kittifylarge unkittify kittyfile kittytextfile unkittyfile unkittytextfile
 use-modules 
   srfi srfi-1
   rnrs io ports
@@ -257,55 +261,52 @@ define : unkittytextfile filepath
 ; displaywithnewline : kittyfile ".hg/store/00changelog.i"
 ; displaywithnewline : unkittytextfile "1.kit"
 
-; Now for the ultimate Kittyfication
-
-displaywithnewline "
-     === TEXT MODE ==="
-
-displaywithnewline : kittify : map shiftbytedownfortext : bytevector->u8-list : string->utf8 "Karlsruhe Institut für Technologie (KIT)"
-
-displaywithnewline : utf8->string : u8-list->bytevector : map shiftbyteupfortext : unkittify "
-     A.Y  .p.i    .q.p .s.e .b.3i.8.
-      k.q  .r.  f.r.   s.r. 3i.c.2A.
- 23.p   .3 i.K.b._     .e.k   .m.i
-    .m.d .f .b.3i.3    r.A.   8.K.
-3s..    .... .  ....   ....   ....
-..............    .... ....   ....
-Karlsruher Institut fuer Technologie
-"
-
-
-displaywithnewline "
-
-     === BINARY MODE ==="
-
-displaywithnewline : kittify : bytevector->u8-list : string->utf8 "Karlsruhe Institut für Technologie (KIT)"
-
-displaywithnewline : utf8->string : u8-list->bytevector : unkittify "
-     1F.  1c.1    u.1o .1v. 1u.1x.1j
-      .1g  .Y.  1D.1   q.1v .1w.1k.1
- w.1x   .1 w.Y.1h.     3F.3   8.1u
-    .Y.1 Q. 1g.1e.1    j.1q   .1r.
-1o.1    r.1i .  1k.1   g.Y.   f.1F
-.1D.1Q.g......    .... ....   ....
-Karlsruher Institut fuer Technologie
-"
-
-
-displaywithnewline "
-
-     === KIT, IMK, RemoteC ==="
-
-displaywithnewline : kittify : map shiftbytedownfortext : bytevector->u8-list : string->utf8 "Karlsruhe Institut für Technologie (KIT), IMK-ASF, RemoteC"
-
-
-displaywithnewline "
-
-     === kittifyscript ==="
-
-displaywithnewline : kittytextfile "examples/kit-encode.w"
-
-
-
+define : main args
+  . "The ultimate Kittyfication"
+  displaywithnewline "
+       === TEXT MODE ==="
+  
+  displaywithnewline : kittify : map shiftbytedownfortext : bytevector->u8-list : string->utf8 "Karlsruhe Institut für Technologie (KIT)"
+  
+  displaywithnewline : utf8->string : u8-list->bytevector : map shiftbyteupfortext : unkittify "
+       A.Y  .p.i    .q.p .s.e .b.3i.8.
+        k.q  .r.  f.r.   s.r. 3i.c.2A.
+   23.p   .3 i.K.b._     .e.k   .m.i
+      .m.d .f .b.3i.3    r.A.   8.K.
+  3s..    .... .  ....   ....   ....
+  ..............    .... ....   ....
+  Karlsruher Institut fuer Technologie
+  "
+    
+  displaywithnewline "
+  
+       === BINARY MODE ==="
+  
+  displaywithnewline : kittify : bytevector->u8-list : string->utf8 "Karlsruhe Institut für Technologie (KIT)"
+  
+  displaywithnewline : utf8->string : u8-list->bytevector : unkittify "
+       1F.  1c.1    u.1o .1v. 1u.1x.1j
+        .1g  .Y.  1D.1   q.1v .1w.1k.1
+   w.1x   .1 w.Y.1h.     3F.3   8.1u
+      .Y.1 Q. 1g.1e.1    j.1q   .1r.
+  1o.1    r.1i .  1k.1   g.Y.   f.1F
+  .1D.1Q.g......    .... ....   ....
+  Karlsruher Institut fuer Technologie
+  "
+  
+  displaywithnewline "
+  
+       === KIT, IMK, RemoteC ==="
+  
+  displaywithnewline : kittify : map shiftbytedownfortext : bytevector->u8-list : string->utf8 "Karlsruhe Institut für Technologie (KIT), IMK-ASF, RemoteC"
+  
+  displaywithnewline "
+  
+       === kittifyscript ==="
+  
+  displaywithnewline : kittytextfile "examples/kit-encode.w"
+  
+  
+  
 ; TODO: Final step: Add commandline handling which allows to write into files and set the text flag and so on.
 ; ./kit-encode [-e|--encode|-d|--decode] [--text] [--template file] [--killstring "stringtoremove" (mutliple times)] [-o|--output file] [file|-]

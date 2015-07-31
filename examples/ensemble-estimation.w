@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+# -*- wisp -*-
 exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples ensemble-estimation) main)' -s "$0" "$@"
 ; !#
 
