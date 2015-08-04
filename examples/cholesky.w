@@ -20,6 +20,8 @@ define : matrrix-set! X u v val
 define : cholesky! a
   . "Modifies the square matirx a to contain its cholesky decomposition.
 
+sets a to g with a = ggT,
+
 a is represented as list of lists."
   let : : n : length a
     loop : : for i : up-from 1 : to n
