@@ -39,14 +39,14 @@ define : hoist-in-loop cps entry body-labels succs preds effects
          loop-vars 
              match header-cont
                    : $ $kargs names vars
-                     list->intset vars
+                       list->intset vars
          loop-effects
              persistent-intmap
                        intset-fold
                         lambda : label loop-effects
                            let 
                              : 
-                               abel*
+                               label*
                                  if : eqv? label entry
                                       . header-label
                                       . label
@@ -57,7 +57,7 @@ define : hoist-in-loop cps entry body-labels succs preds effects
          pre-header-cont 
              match header-cont
                : $ $kargs names vars term
-                 let : : vars* : map (lambda (_) (fresh-var)) vars
+                   let : : vars* : map (lambda (_) (fresh-var)) vars
                      build-cont
                       $kargs names vars*
                         $continue header-label #f
