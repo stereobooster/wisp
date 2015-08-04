@@ -47,4 +47,4 @@ a is represented as list of lists."
 
 
 define : main args
-         display : cholesky! '((1 2)(3 4))
+         display : cholesky! '((1 2)(2 4))
