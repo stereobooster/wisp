@@ -27,7 +27,7 @@ a is represented as list of lists."
     loop : : for i : up-from 1 : to n
       loop : : for j : up-from 1 : to i
         let : : sum : matrix-ref a i j
-          when (>= j 1)
+          when : >= j 1
             loop : : for k : up-from 1 : to {j - 1}
               set! sum : - sum : * (matrix-ref a i k) (matrix-ref a j k)
           cond
