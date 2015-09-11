@@ -224,6 +224,14 @@ define : indent-reduce-to-level indentation-levels level
 
 
 define : wisp-scheme-read-chunk-lines port
+         define : ends-with-period indent-and-symbols
+                . "Check whether indent-and-symbols ends with a period, indicating the end of a chunk."
+                equal? repr-dot
+                       take-right
+                         take-right
+                           take-right indent-and-symbols 1
+                           . 1
+                         . 1
          let loop
            : indent-and-symbols : list ; '((5 "(foobar)" "\"yobble\"")(3 "#t"))
              inindent #t
@@ -239,6 +247,10 @@ define : wisp-scheme-read-chunk-lines port
                               ; after two empty lines work
                               ; (otherwise it shows one more line).
              . indent-and-symbols
+            : and (equal? '() currentsymbols) : ends-with-period indent-and-symbols
+              ; the line ends with a period. This is forbidden in SRFI-119.
+              ; use it to end the line in the REPL without hitting return thrice.
+              . indent-and-symbols
             else
              let : : next-char : peek-char port
                cond
