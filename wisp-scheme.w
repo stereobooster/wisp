@@ -222,34 +222,14 @@ define : indent-reduce-to-level indentation-levels level
            lambda : x ; get the levels
                     car : cdr x
 
-define : chunk-ends-with-period currentsymbols port
+define : chunk-ends-with-period currentsymbols next-char
        . "Check whether indent-and-symbols ends with a period, indicating the end of a chunk."
-       define : ref-last li
-                list-ref li : - (length li) 1
-       define : drop-last li
-                drop-right li 1
        and : not : null? currentsymbols
-             equal? #\newline : peek-char port
+             equal? #\newline next-char
              equal? repr-dot
-                    ref-last currentsymbols
-
-define : indent-and-lines-drop-last-symbol indent-and-symbols
-       . "Check whether indent-and-symbols ends with a period, indicating the end of a chunk."
-       define : drop-last li
-                drop-right li 1
-       define : ref-last li
-                list-ref li : - (length li) 1
-       define : set-last! li val
-                list-set! li : - (length li) 1
-                  . val
-       when : not : null? indent-and-symbols
-              set-last! indent-and-symbols
-                drop-last : ref-last indent-and-symbols
-       . indent-and-symbols
+                    list-ref currentsymbols (- (length currentsymbols) 1)
 
 define : wisp-scheme-read-chunk-lines port
-         define : finalize indent-and-symbols currentindent currentsymbols
-                  append indent-and-symbols : list : append (list currentindent) currentsymbols
          let loop
            : indent-and-symbols : list ; '((5 "(foobar)" "\"yobble\"")(3 "#t"))
              inindent #t
@@ -265,18 +245,18 @@ define : wisp-scheme-read-chunk-lines port
                               ; after two empty lines work
                               ; (otherwise it shows one more line).
              . indent-and-symbols
-            : chunk-ends-with-period currentsymbols port
-              ; the line ends with a period. This is forbidden in SRFI-119.
-              ; use it to end the line in the REPL without hitting return thrice.
-              indent-and-lines-drop-last-symbol
-                finalize indent-and-symbols currentindent currentsymbols
             else
              let : : next-char : peek-char port
                cond
                  : eof-object? next-char
-                   finalize indent-and-symbols currentindent currentsymbols
+                   append indent-and-symbols : list : append (list currentindent) currentsymbols
                  : and inindent (zero? currentindent) (not incomment) (not (null? indent-and-symbols)) (not inunderscoreindent) (not (or (equal? #\space next-char) (equal? #\newline next-char) (equal? (string-ref ";" 0) next-char)))
                   append indent-and-symbols ; top-level form ends chunk
+                 : chunk-ends-with-period currentsymbols next-char
+                   ; the line ends with a period. This is forbidden in
+                   ; SRFI-119. Use it to end the line in the REPL without
+                   ; showing continuation dots (...).
+                   append indent-and-symbols : list : append (list currentindent) (drop-right currentsymbols 1)
                  : and inindent : equal? #\space next-char
                    read-char port ; remove char
                    loop
