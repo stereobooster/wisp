@@ -1,3 +1,14 @@
+wisp 0.8.6 (2015-09-12):
+- wisp-scheme.w allows ending a chunk with a trailing period.  This
+  syntax is reserved for future use in SRFI-119, so you should not
+  rely on this in production code.  It is mainly intended as REPL
+  feature to avoid visual clutter while running single lines, like
+  quick calculations.
+- new examples: cholesky decomposition, symmetric matrix, closure,
+  hoist-in-loop (cps transformation transcoded to wisp).
+- updated examples: evolve.w
+- clearer bootstrap output
+
 wisp 0.8.5 (2015-07-28):
 - wisp-scheme.w now parses : . to nothing. The colon adds parens, the
   dot removes them. This provides compatibility to the older parser.
