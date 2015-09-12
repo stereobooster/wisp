@@ -8,6 +8,9 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 define-module : examples say
               . #:export : main
 
+; TODO: rewrite for syntax-case with recursion into sub-lists.
+;       Goal: say Yes, this works ,(red 1 2) .
+
 define-syntax-rule : say a ...
   format #t "~A\n" 
     string-join 
