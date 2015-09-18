@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Bootstrap wisp-guile with wisp.py
 if [[ x"$1" == x"" ]]; then 
