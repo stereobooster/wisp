@@ -1,3 +1,10 @@
+wisp 0.8.7 (2015-09-19):
+- distribute wisp.scm in the tarball to allow bootstrapping purely
+  from Guile (without Python).
+- new example: say.w (companion to
+  http://draketo.de/english/wisp/shakespeare )
+- always use /usr/bin/env bash as hashbang for shell scripts.
+
 wisp 0.8.6 (2015-09-12):
 - wisp-scheme.w allows ending a chunk with a trailing period.  This
   syntax is reserved for future use in SRFI-119, so you should not
