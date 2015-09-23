@@ -24,7 +24,7 @@ catch #t
         setlocale LC_ALL ""
       lambda : key . parameters
         format (current-error-port)
-          . "setlocale did not work: ~A: ~A. Locales not set up. Use explicit US English locale."
+          . "setlocale LC_ALL \"\" failed: ~A: ~A.\n(Locales not set up. Using explicit US English locale)\n"
           .                         key parameters
         setlocale LC_ALL "en_US.UTF-8"
 
