@@ -22,14 +22,16 @@ define-module : language wisp spec
 catch #t
       lambda :
         setlocale LC_ALL ""
+        throw 'fake-locale-error "FOOO"
       lambda : key . parameters
-        format (current-error-port)
-            string-join
-                list "Warning: setlocale LC_ALL \"\" failed with ~A: ~A"
-                   . "locales not set up. Using explicit US English locale.\n"
-                .  "\n         "
-            . key parameters
-        setlocale LC_ALL "en_US.UTF-8"
+        let : : locale-fallback "en_US.UTF-8"
+          format (current-error-port)
+              string-join
+                  list "Warning: setlocale LC_ALL \"\" failed with ~A: ~A"
+                     . "using explicit ~A locale. Please setup your locale.\n"
+                  .  "\n         "
+              . key parameters locale-fallback
+          setlocale LC_ALL locale-fallback
 
 ;;;
 ;;; Language definition
