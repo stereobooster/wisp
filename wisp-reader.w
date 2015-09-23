@@ -25,9 +25,9 @@ catch #t
       lambda : key . parameters
         format (current-error-port)
             string-join
-                list "Error: setlocale LC_ALL \"\" failed: ~A: ~A"
+                list "Warning: setlocale LC_ALL \"\" failed with ~A: ~A"
                    . "locales not set up. Using explicit US English locale.\n"
-                . "\n       "
+                .  "\n         "
             . key parameters
         setlocale LC_ALL "en_US.UTF-8"
 
