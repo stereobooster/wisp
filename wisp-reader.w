@@ -22,7 +22,6 @@ define-module : language wisp spec
 catch #t
       lambda :
         setlocale LC_ALL ""
-        throw 'fake-locale-error "FOOO"
       lambda : key . parameters
         let : : locale-fallback "en_US.UTF-8"
           format (current-error-port)
