@@ -28,19 +28,3 @@ if [[ ! x"${diff}" == x"success" ]]; then
 fi
 # put all output into stderr via 1>&2 and prefix it with ;;; to make it possible to kill it alongside the auto-compile output from guile with one sed.
 echo ";;;" "successfully bootstrapped wisp.scm" 1>&2
-mkdir -p language/wisp
-
-echo ";;;" preparing the reader: wisp at the REPL 1>&2
-
-echo ";;;" parsing wisp-scheme.w with the parser for the REPL 1>&2
-${guile} wisp.scm ${srcdir}/wisp-scheme.w 2>/dev/null > wisp-scheme.scm \
-    && echo ";;;" ...precompiling the parser... 1>&2 \
-    && ${guile} -s wisp-scheme.scm 2>/dev/null \
-    && echo ";;;" ...succeeded 1>&2 \
-
-echo ";;;"  parsing the spec file... 1>&2
-${guile} wisp.scm ${srcdir}/wisp-reader.w 2>/dev/null > language/wisp/spec.scm \
-    && echo ";;;" ...precompiling the spec file... 1>&2 \
-    && ${guile} -L . -s language/wisp/spec.scm \
-    && echo ";;;" ...succeeded 1>&2 \
-    && echo ";;;" to use wisp at the REPL, run '`'${guile} -L . --language=wisp'`' 1>&2
