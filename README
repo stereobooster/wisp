@@ -19,7 +19,7 @@ For a short presentation, see [Why Wisp?](why-wisp.html)
 
 Note that this is full-fledged scheme, with all its capabilities like hygienic macros (programmable syntax!) and full tail recursion.
 
-[wisp-website]: http://draketo.de/light/english/wisp-lisp-indentation-preprocessor "wisp: Whitespace to Lisp: An indentation to parentheses preprocessor to get more readable Lisp"
+[wisp-website]: http://draketo.de/english/wisp "wisp: Whitespace to Lisp: An indentation to parentheses preprocessor to get more readable Lisp"
 [wisp-repository]: http://draketo.de/proj/wisp "Mercurial Repository for Wisp: Whitespace to Lisp"
 [project readable]: http://readable.sourceforge.net/ "Readable Lisp S-expressions Project"
 
@@ -55,13 +55,13 @@ If you want to use a curly-infix expression starting a line, you have to prefix 
 Notes
 -----
 
-Standardization: A [SRFI](srfi.html)[^srfi][^ess] is in the works.
+Standardization: Wisp is standardized as [SRFI 119](http://srfi.schemers.org/srfi-119/)[^srfi][^ess].
 
 [^srfi]: SRFI is the abbreviation of Scheme Request for Implementation. It is the official schemisch way of suggesting new features. SRFIs are maintained at [srfi.schemers.org/](http://srfi.schemers.org/).
 
 [^ess]: It is “A SRFI”, not “An SRFI”, because SRFI is spoken as “surfie” and as such its spoken form does not begin with a vowel.
 
-Copyright: 2013--2014 Arne Babenhauserheide
+Copyright: 2013--2015 Arne Babenhauserheide
 
 License: GPLv3 or later
 

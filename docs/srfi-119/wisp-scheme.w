@@ -222,12 +222,6 @@ define : indent-reduce-to-level indentation-levels level
            lambda : x ; get the levels
                     car : cdr x
 
-define : chunk-ends-with-period currentsymbols next-char
-       . "Check whether indent-and-symbols ends with a period, indicating the end of a chunk."
-       and : not : null? currentsymbols
-             equal? #\newline next-char
-             equal? repr-dot
-                    list-ref currentsymbols (- (length currentsymbols) 1)
 
 define : wisp-scheme-read-chunk-lines port
          let loop
@@ -252,11 +246,6 @@ define : wisp-scheme-read-chunk-lines port
                    append indent-and-symbols : list : append (list currentindent) currentsymbols
                  : and inindent (zero? currentindent) (not incomment) (not (null? indent-and-symbols)) (not inunderscoreindent) (not (or (equal? #\space next-char) (equal? #\newline next-char) (equal? (string-ref ";" 0) next-char)))
                   append indent-and-symbols ; top-level form ends chunk
-                 : chunk-ends-with-period currentsymbols next-char
-                   ; the line ends with a period. This is forbidden in
-                   ; SRFI-119. Use it to end the line in the REPL without
-                   ; showing continuation dots (...).
-                   append indent-and-symbols : list : append (list currentindent) (drop-right currentsymbols 1)
                  : and inindent : equal? #\space next-char
                    read-char port ; remove char
                    loop
@@ -382,12 +371,6 @@ define : line-code-replace-inline-colons line
              : null? unprocessed
                ; format #t "inline-colons processed line: ~A\n" processed
                . processed
-             ; replace : . with nothing
-             : and (<= 2 (length unprocessed)) (equal? readcolon (car unprocessed)) (equal? repr-dot (car (cdr unprocessed)))
-               loop
-                 append processed
-                   loop '() (cdr (cdr unprocessed))
-                 . '()
              : equal? readcolon : car unprocessed
                loop
                  ; FIXME: This should turn unprocessed into a list. 

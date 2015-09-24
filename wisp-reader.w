@@ -19,7 +19,18 @@ define-module : language wisp spec
   . #:export : wisp
 
 ; Set locale to something which supports unicode. Required to avoid using fluids.
-setlocale LC_ALL ""
+catch #t
+      lambda :
+        setlocale LC_ALL ""
+      lambda : key . parameters
+        let : : locale-fallback "en_US.UTF-8"
+          format (current-error-port)
+              string-join
+                  list "Warning: setlocale LC_ALL \"\" failed with ~A: ~A"
+                     . "using explicit ~A locale. Please setup your locale.\n"
+                  .  "\n         "
+              . key parameters locale-fallback
+          setlocale LC_ALL locale-fallback
 
 ;;;
 ;;; Language definition

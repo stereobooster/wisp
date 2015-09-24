@@ -1,0 +1,22 @@
+SRFI-119 supporting files
+=========================
+
+
+Bootstrap wisp using Python 3
+-----------------------------
+
+    sh bootstrap.sh
+
+This creates wisp-preprocessor.scm (the version in the tarball is called wisp-guile.scm to avoid overwriting it)
+and wisp-parser.scm (the version in the tarball is called wisp-scheme.scm)
+
+
+Description
+-----------
+
+wisp-preprocessor.scm reads files in wisp-syntax and outputs generic scheme.
+
+    usage: guile wisp-preprocessor.scm <wisp-file> > <scheme-file>
+
+wisp-parser.scm provides procedures for reading s-expressions from wisp-files.
+
