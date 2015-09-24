@@ -1,6 +1,6 @@
-wisp = wisp.scm wisp-scheme.scm language/wisp/spec.scm
+wisp = wisp-scheme.scm language/wisp/spec.scm
 wisp_SOURCES = wisp-guile.w wisp-reader.w wisp-scheme.w
-EXTRA_DIST = $(wisp_SOURCES) $(wisp_DATA) bootstrap.sh wisp.py examples tests wisp-repl-guile.sh testrunner.w wisp.scm
+EXTRA_DIST = $(wisp_SOURCES) $(wisp_DATA) bootstrap.sh bootstrap-reader.sh examples tests wisp-repl-guile.sh testrunner.w wisp.py wisp.scm
 CLEANFILES = ${wisp} ChangeLog
 DISTCLEANFILES = ${CLEANFILES} @abs_top_builddir@/1 @abs_top_builddir@/2 @abs_top_builddir@/syntaxtests.sh @abs_top_builddir@/syntaxtestsreader.sh
 # don't spout out lots of stuff at each distcheck. Disable for debugging.
@@ -16,7 +16,10 @@ ChangeLog :
 ${wisp} : input.in.intermediate
 
 .INTERMEDIATE: input.in.intermediate
-input.in.intermediate: ${wisp_SOURCES}
+input.in.intermediate: ${wisp_SOURCES} wisp.scm
+	@abs_top_srcdir@/bootstrap-reader.sh @abs_top_srcdir@ @guile@ wisp.scm 2>&1 | sed "s/^;;;.*//" 2>&1 | grep . 1>&2 ; test ! $$? -eq 0 # it worked if grep does not find anything
+
+wisp.scm: wisp-guile.w wisp.py
 	@abs_top_srcdir@/bootstrap.sh @abs_top_srcdir@ @guile@ @python3@ 2>&1 | sed "s/^;;;.*//" 2>&1 | grep . 1>&2 ; test ! $$? -eq 0 # it worked if grep does not find anything
 
 .PHONY: syntaxtests.sh
