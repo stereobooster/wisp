@@ -19,7 +19,7 @@ For a short presentation, see [Why Wisp?](why-wisp.html)
 
 Note that this is full-fledged scheme, with all its capabilities like hygienic macros (programmable syntax!) and full tail recursion.
 
-[wisp-website]: http://draketo.de/light/english/wisp-lisp-indentation-preprocessor "wisp: Whitespace to Lisp: An indentation to parentheses preprocessor to get more readable Lisp"
+[wisp-website]: http://draketo.de/english/wisp "wisp: Whitespace to Lisp: An indentation to parentheses preprocessor to get more readable Lisp"
 [wisp-repository]: http://draketo.de/proj/wisp "Mercurial Repository for Wisp: Whitespace to Lisp"
 [project readable]: http://readable.sourceforge.net/ "Readable Lisp S-expressions Project"
 
