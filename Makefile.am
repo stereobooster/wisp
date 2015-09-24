@@ -17,7 +17,7 @@ ${wisp} : input.in.intermediate
 
 .INTERMEDIATE: input.in.intermediate
 input.in.intermediate: ${wisp_SOURCES} wisp.scm
-	@abs_top_srcdir@/bootstrap-reader.sh @abs_top_srcdir@ @guile@ wisp.scm 2>&1 | sed "s/^;;;.*//" 2>&1 | grep . 1>&2 ; test ! $$? -eq 0 # it worked if grep does not find anything
+	@abs_top_srcdir@/bootstrap-reader.sh @abs_top_srcdir@ @abs_top_builddir@ @guile@ wisp.scm 2>&1 | sed "s/^;;;.*//" 2>&1 | grep . 1>&2 ; test ! $$? -eq 0 # it worked if grep does not find anything
 
 wisp.scm: wisp-guile.w wisp.py
 	@abs_top_srcdir@/bootstrap.sh @abs_top_srcdir@ @guile@ @python3@ 2>&1 | sed "s/^;;;.*//" 2>&1 | grep . 1>&2 ; test ! $$? -eq 0 # it worked if grep does not find anything
@@ -29,7 +29,7 @@ syntaxtests.sh : wisp.scm tests/runtests-scheme-preprocessor.sh
 	chmod +x @abs_top_builddir@/$@
 
 .PHONY: syntaxtestsreader.sh
-syntaxtestsreader.sh : wisp.scm tests/runtests-scheme-reader.sh
+syntaxtestsreader.sh : ${wisp} wisp.scm tests/runtests-scheme-reader.sh
 	echo '#!/bin/bash' > @abs_top_builddir@/$@
 	echo @abs_top_srcdir@/tests/runtests-scheme-reader.sh @abs_top_srcdir@ @abs_top_builddir@ >> @abs_top_builddir@/$@
 	chmod +x @abs_top_builddir@/$@

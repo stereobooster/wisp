@@ -19,7 +19,7 @@ cd ${srcdir}/tests
 for i in *.w; do
     # skip strangecomments
     if test x"${i}" = x"strangecomments.w"; then continue; fi
-    d=$(guile ${builddir}/wisp.scm "$i" > ${builddir}/testtempfoo.scm; diff -wuB ${builddir}/testtempfoo.scm "$(basename "$i" .w)".scm; rm ${builddir}/testtempfoo.scm)
+    d=$(guile ${srcdir}/wisp.scm "$i" > ${builddir}/testtempfoo.scm; diff -wuB ${builddir}/testtempfoo.scm "$(basename "$i" .w)".scm; rm ${builddir}/testtempfoo.scm)
     if test x"$d" = x""; then
         continue
     else
