@@ -1,3 +1,6 @@
+(use-modules (srfi srfi-1))
+
+
 (define-syntax fast-sum
   (syntax-rules (iota)
     ((fast-sum (iota count start))
