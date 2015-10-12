@@ -23,4 +23,5 @@ AS_IF([test "x$python3" = "xno"],
 AM_INIT_AUTOMAKE([gnu])
 AM_MAINTAINER_MODE([enable])
 AC_CONFIG_FILES([Makefile])
+
 AC_OUTPUT
