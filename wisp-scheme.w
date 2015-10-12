@@ -7,15 +7,8 @@ exec guile -L . --language=wisp -s "$0" "$@"
 ;; scheme code tree to feed to a scheme interpreter instead of a
 ;; preprocessed file.
 
-;; Plan:
-;; read reads the first expression from a string. It ignores comments,
-;; so we have to treat these specially. Our wisp-reader only needs to
-;; worry about whitespace.
-;; 
-;; So we can skip all the string and bracket linebreak escaping and
-;; directly create a list of codelines with indentation. For this we
-;; then simply reuse the appropriate function from the generic wisp
-;; preprocessor.
+;; Limitations:
+;; - only unescapes up to 6 leading underscores at line start (\______)
 
 ;; Copyright (C) Arne Babenhauserheide (2014--2015). All Rights Reserved.
 
@@ -613,6 +606,16 @@ define : wisp-unescape-underscore-and-colon code
                map wisp-unescape-underscore-and-colon a
              '\_
                . '_
+             '\__
+               . '__
+             '\___
+               . '___
+             '\____
+               . '____
+             '\_____
+               . '_____
+             '\______
+               . '______
              '\:
                . ':
              a
