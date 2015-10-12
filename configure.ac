@@ -5,10 +5,12 @@ AC_INIT([wisp], [0.9.0],
         [arne_bab@web.de])
 # Check for programs I need for my build
 AC_CANONICAL_TARGET
-AC_ARG_VAR([guile], [How to call GNU Guile 2.0.x.])
-AC_CHECK_TARGET_TOOL([guile], [guile-2.0], [no])
-AS_IF([test "x$guile" = "xno"],
-      [AC_MSG_ERROR([cannot find GNU Guile 2.0 or later.])])
+
+# search for Guile using the guile m4 files.
+# see https://www.gnu.org/software/guile/manual/html_node/Autoconf-Macros.html
+# This provides @GUILE@ to Makefile.am
+GUILE_PROGS([2.0.11])
+
 AC_ARG_VAR([python3], [How to call Python 3.])
 AC_CHECK_TARGET_TOOL([python3], [python3], [no])
 AS_IF([test "x$python3" = "xno"],
