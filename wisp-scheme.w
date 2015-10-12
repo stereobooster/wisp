@@ -9,6 +9,8 @@ exec guile -L . --language=wisp -s "$0" "$@"
 
 ;; Limitations:
 ;; - only unescapes up to 6 leading underscores at line start (\______)
+;; - in some cases the source line information is missing in backtraces.
+;;   check for set-source-property!
 
 ;; Copyright (C) Arne Babenhauserheide (2014--2015). All Rights Reserved.
 
