@@ -643,6 +643,8 @@ define : wisp-replace-paren-quotation-repr code
                 append
                         map wisp-replace-paren-quotation-repr a
                         list : list 'quote : map wisp-replace-paren-quotation-repr b
+             : 'REPR-QUASIQUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd 'REPR-UNQUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
+                list 'quasiquote : list 'unquote : map wisp-replace-paren-quotation-repr a
              : 'REPR-UNQUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
                 list 'unquote : map wisp-replace-paren-quotation-repr a
              : a ... 'REPR-UNQUOTE-e749c73d-c826-47e2-a798-c16c13cb89dd b 

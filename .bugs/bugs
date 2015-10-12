@@ -8,7 +8,7 @@ wisp-mode: export wisp to html fails in org-mode: font-lock-fontify-keywords-reg
 wisp-scheme: commans like ,expand do not work due to stray leading space | owner:, open:True, id:20df756e6c7f61885857c2a67a7111884294f9aa, time:1444645835.87
 an empty line with : should start with double parens         | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:2e188ddf44d36e4605030d3c58607ebfa97d189e, time:1390328674.43
 wisp-in-wisp: remove the leading . for continuation lines after inferring the brackets. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:2e42e5b64622f0cc383eb8acc3d510912e925bf0, time:1377476687.79
-interpret ` , : correctly.                                   | owner:, open:True, id:2feb5f048b55274c1bc7c8168c8cb358c0c8dd1d, time:1426777900.6
+interpret ` , : correctly.                                   | owner:, open:False, id:2feb5f048b55274c1bc7c8168c8cb358c0c8dd1d, time:1426777900.6
 '() gives REPR-QUOTE-...                                     | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:30c42de75c137f483245898e2a62af1e65cf19a6, time:1415060388.34
 multiple escaped initial underscores must be unescaped.      | owner:, open:False, id:314e45488da4c7c8298c4c64ece03359918d057b, time:1415959749.14
 wisp: handle general paren prefixes like quote, quasiquote, etc. | owner:, open:False, id:323ff94b5be635742619467e1cb44f4c0d96f63f, time:1379047798.47
