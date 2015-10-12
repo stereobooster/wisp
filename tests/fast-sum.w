@@ -1,5 +1,7 @@
 use-modules : srfi srfi-1
 
+; only for the nice test
+. #!curly-infix
 
 define-syntax fast-sum
   syntax-rules : iota
