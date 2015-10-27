@@ -1,0 +1,31 @@
+#!/bin/sh
+guile -L . --language=wisp << EOF
+
+display "Hello World!\n" .
+
+define : hello
+  display "Hello World!"
+  newline .
+
+hello .
+
+define-syntax-rule : hello who
+  format #t "Hello ~A!\n" (symbol->string 'who)
+
+
+hello World .
+
+define-syntax-rule : welcome-to what
+  format #t "Welcome to ~A!\n" : symbol->string 'what .
+
+welcome-to Wisp .
+
+define-syntax-rule : welcome-to . what
+  format #t "Welcome to ~A!\n"
+    string-join : map symbol->string 'what .
+
+welcome-to syntax like Python with the simplicity and power of Lisp .
+
+display 'http://draketo.de/english/wisp
+newline
+EOF
