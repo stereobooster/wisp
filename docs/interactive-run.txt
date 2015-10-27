@@ -28,4 +28,5 @@ welcome-to syntax like Python with the simplicity and power of Lisp .
 
 display 'http://draketo.de/english/wisp
 newline
+
 EOF
