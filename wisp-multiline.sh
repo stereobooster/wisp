@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # wisp-multiline.sh --- run multiline wisp code
 
 # Copyright (C) 2013 Arne Babenhauserheide <arne_bab@web.de>

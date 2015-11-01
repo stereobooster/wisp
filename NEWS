@@ -1,3 +1,8 @@
+wisp ():
+- new example: say.w (companion to
+  http://draketo.de/english/wisp/shakespeare )
+- always use /usr/bin/env bash as hashbang for shell scripts.
+
 wisp 0.9.0 (2015-09-24):
 - actually distribute wisp.scm
 - wisp now starts from wisp.scm. To bootstrap a release from Python, 
