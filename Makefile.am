@@ -24,13 +24,13 @@ wisp.scm: wisp-guile.w wisp.py
 
 .PHONY: syntaxtests.sh
 syntaxtests.sh : wisp.scm tests/runtests-scheme-preprocessor.sh
-	echo '#!/bin/bash' > @abs_top_builddir@/$@
+	echo '#!/usr/bin/env bash' > @abs_top_builddir@/$@
 	echo @abs_top_srcdir@/tests/runtests-scheme-preprocessor.sh @abs_top_srcdir@ @abs_top_builddir@ >> @abs_top_builddir@/$@
 	chmod +x @abs_top_builddir@/$@
 
 .PHONY: syntaxtestsreader.sh
 syntaxtestsreader.sh : ${wisp} wisp.scm tests/runtests-scheme-reader.sh
-	echo '#!/bin/bash' > @abs_top_builddir@/$@
+	echo '#!/usr/bin/env bash' > @abs_top_builddir@/$@
 	echo @abs_top_srcdir@/tests/runtests-scheme-reader.sh @abs_top_srcdir@ @abs_top_builddir@ >> @abs_top_builddir@/$@
 	chmod +x @abs_top_builddir@/$@
 

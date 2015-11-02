@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # if the spec file does not exist yet, run the build chain
 if test ! -f language/wisp/spec.scm; then
