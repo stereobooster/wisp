@@ -1,6 +1,4 @@
-#!/usr/bin/env sh
-# -*- wisp -*-
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -s "$0" "$@"  
+#!/home/arne/wisp/wisp-multiline.sh 
 ; !#
 
 ;; Fibonacci Functions
