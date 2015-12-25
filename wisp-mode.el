@@ -3,7 +3,7 @@
 ;; Copyright (C) 2013  Arne Babenhauserheide <arne_bab@web.de>
 
 ;; Author: Arne Babenhauserheide <arne_bab@web.de>
-;; Version: 0.2.1
+;; Version: 0.2.2
 ;; Keywords: languages, lisp
 
 ;; This program is free software; you can redistribute it and/or
@@ -28,8 +28,9 @@
 ;; 
 ;; For details on wisp, see 
 ;; http://draketo.de/light/english/wisp-lisp-indentation-preprocessor
-;; 
-;; If you came here looking for wisp the lisp-to-javascript compiler[1], have a look at wispjs-mode[2].
+;;
+;; If you came here looking for wisp the lisp-to-javascript
+;; compiler[1], have a look at wispjs-mode[2].
 ;; 
 ;; [1]: http://jeditoolkit.com/try-wisp
 ;; 
@@ -70,7 +71,7 @@
 ; note: for easy testing: emacs -Q wisp-mode.el -e eval-buffer wisp-guile.w -e delete-other-windows
 
 
-(defvar wisp-builtin '("define" "define-syntax" "syntax-rules" "defun" "let*" "let" "setq" "set!" "set" "if" "when" "while" "set!" "and" "or" "not" "char=?"))
+(defvar wisp-builtin '("define" "define-syntax" "syntax-rules" "syntax-case" "define-syntax-rule" "defun" "let*" "let" "setq" "set!" "set" "if" "when" "while" "set!" "and" "or" "not" "char=?"))
 
 ; TODO: Add special treatment for defun foo : bar baz ⇒ foo = function, bar and baz not.
 ; TODO: Add highlighting for `, , and other macro-identifiers.
@@ -107,6 +108,41 @@
      (" : \\| \\. " . font-lock-keyword-face) ; leading : or .
      ))
   "Default highlighting expressions for wisp mode.")
+
+(defun wisp-indent-current-line (&optional unindented-ok)
+  "Sets the indentation of the current line. Derived from
+indent-relative."
+  (interactive "P")
+  (let ((start-column (current-column))
+        indent)
+    (save-excursion
+      (beginning-of-line)
+      (if (re-search-backward "^[^\n]" nil t)
+          (let ((end (save-excursion (forward-line 1) (point))))
+            (move-to-column start-column)
+            ; TODO: If the previous line is less indented by exactly 4
+            ; characters, de-dent to previous-line minus 4. If the
+            ; previous line is more indented, indent to the
+            ; indentation of the previous line. If both lines are
+            ; equally indented, indent to either the previous line
+            ; plus 4, or to the first occurence of a colon, if that’s
+            ; less.
+            (if (or
+                 (= (current-column) (- 4 start-column))
+                 (and (< (current-column) start-column) (looking-at ":")))
+                (backward-char 1))
+            (or (looking-at "[ \t]")
+                unindented-ok
+                (skip-chars-forward "^ \t" end))
+            (skip-chars-forward " \t" end)
+            (or (= (point) end) (setq indent (current-column))))))
+    (if indent
+        (let ((opoint (point-marker)))
+          (indent-to indent 0)
+          (if (> opoint (point))
+              (goto-char opoint))
+          (move-marker opoint nil))
+      (tab-to-tab-stop))))
 
 ; use this mode automatically
 ;;;###autoload
