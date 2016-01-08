@@ -1,4 +1,6 @@
-#!/home/arne/wisp/wisp-multiline.sh 
+#!/usr/bin/env sh
+# -*- wisp -*-
+exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples d6) main)' -s "$0" "$@"
 ; !#
 
 define-module : examples d6
@@ -33,8 +35,8 @@ define : check skill target effect-threshold
             floor/ {result - target} effect-threshold
             . #f
 
-display : check 12 9 3
-newline
-display : roll
-newline
-
+define : main args
+         display : check 12 9 3
+         newline
+         newline
+         display : roll
