@@ -127,10 +127,10 @@ indent-relative."
             ; equally indented, indent to either the previous line
             ; plus 4, or to the first occurence of a colon, if that’s
             ; less.
-            (if (or
-                 (= (current-column) (- 4 start-column))
-                 (and (< (current-column) start-column) (looking-at ":")))
-                (backward-char 1))
+            (cond
+             ((= (current-column) (- start-column 4))
+              (setq indent (- (current-column) 4))))
+             
             (or (looking-at "[ \t]")
                 unindented-ok
                 (skip-chars-forward "^ \t" end))
