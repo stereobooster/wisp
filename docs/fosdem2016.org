@@ -9,7 +9,7 @@
 
 * Wisp
 
-#+latex: \vspace{1cm}
+#+latex: \vspace{1.3cm}
 
 **                                                                :B_columns:
     :PROPERTIES:
@@ -31,6 +31,55 @@ ____   * n : factorial {n - 1}
    :BEAMER_env: ignoreheading
    :END:
 
-#+latex: \vspace{1.7cm}
+#+latex: \vspace{1.5cm}
 
 I love the syntax of Python, but crave the simplicity and power of Lisp.
+
+* Why wisp?
+
+
+
+** 
+   :PROPERTIES:
+   :BEAMER_act: <2-2>
+   :END:
+
+\centering
+\Large
+
+\pounds Hello World!\textyen
+
+** 
+   :PROPERTIES:
+   :BEAMER_act: <3-4>
+   :END:
+
+\centering
+\Large
+
+Hello World!
+
+** 
+   :PROPERTIES:
+   :BEAMER_act: <1-1>
+   :END:
+
+\centering
+\Large
+
+(Hello World!)
+
+** Notes                                                            :B_quote:
+   :PROPERTIES:
+   :BEAMER_act: <4-4>
+   :BEAMER_env: quote
+   :END:
+
+- The first and last letter are important for word recognition¹
+
+- 70% of the lines in the Guile scheme source start with a paren \Rightarrow noise
+
+\footnotesize
+
+¹: Though not all-important. See \\ http://www.mrc-cbu.cam.ac.uk/people/matt.davis/cmabridge/
+ 
