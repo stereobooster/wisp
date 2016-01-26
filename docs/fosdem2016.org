@@ -81,5 +81,24 @@ Hello World!
 
 \footnotesize
 
-¹: Though not all-important. See \\ http://www.mrc-cbu.cam.ac.uk/people/matt.davis/cmabridge/
+¹: Though not all-important. See \\ [[http://www.mrc-cbu.cam.ac.uk/people/matt.davis/cmabridge/][www.mrc-cbu.cam.ac.uk/people/matt.davis/cmabridge/]]
  
+* The most common letters: a strength of Lisp and Scheme
+
+** =.,":'_#?!;=
+
+/The most common non-letter, non-math characters in prose/
+
+** =()=
+
+/The most common paired characters/
+
+(From letter distributions in newspapers¹)
+
+**                                                          :B_ignoreheading:
+   :PROPERTIES:
+   :BEAMER_env: ignoreheading
+   :END:
+
+\footnotesize
+¹: See [[https://bitbucket.org/ArneBab/evolve-keyboard-layout/src/tip/1-gramme.arne.txt][bitbucket.org/ArneBab/evolve-keyboard-layout/src/tip/1-gramme.arne.txt]]
