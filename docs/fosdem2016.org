@@ -17,13 +17,13 @@
     :END:
 ***                                                                   :BMCOL:
    :PROPERTIES:
-   :BEAMER_col: 0.5
+   :BEAMER_col: 0.45
    :END:
-#+BEGIN_SRC wisp
+#+BEGIN_SRC wisp 
 define : factorial n
-__  if : zero? n
-____   . 1
-____   * n : factorial {n - 1}
+    if : zero? n
+       . 1
+       * n : factorial {n - 1}
 #+END_SRC
 
 **                                                          :B_ignoreheading:
@@ -47,7 +47,7 @@ I love the syntax of Python, but crave the simplicity and power of Lisp.
 \centering
 \Large
 
-\pounds Hello World!\textyen
+\textyen Hello World!\pounds
 
 ** 
    :PROPERTIES:
@@ -85,20 +85,71 @@ Hello World!
  
 * The most common letters: a strength of Lisp and Scheme
 
-** =.,":'_#?!;=
+** 
 
-/The most common non-letter, non-math characters in prose/
-
-** =()=
-
-/The most common paired characters/
-
-(From letter distributions in newspapers¹)
+\centering
+\Huge
+=.,":'_#?!;=
 
 **                                                          :B_ignoreheading:
    :PROPERTIES:
    :BEAMER_env: ignoreheading
    :END:
 
+\centering
+/The most common non-letter, non-math characters in prose¹/
+
+\vspace{0.3cm}
+
+** 
+
+\centering
+\Huge
+=()=
+
+**                                                          :B_ignoreheading:
+   :PROPERTIES:
+   :BEAMER_env: ignoreheading
+   :END:
+
+\centering
+/The most common paired characters¹/
+
+**                                                          :B_ignoreheading:
+   :PROPERTIES:
+   :BEAMER_env: ignoreheading
+   :END:
+
+
+\vspace{0.5cm}
+
+\raggedright
 \footnotesize
-¹: See [[https://bitbucket.org/ArneBab/evolve-keyboard-layout/src/tip/1-gramme.arne.txt][bitbucket.org/ArneBab/evolve-keyboard-layout/src/tip/1-gramme.arne.txt]]
+¹: From letter distributions in newspapers, see: \\ [[https://bitbucket.org/ArneBab/evolve-keyboard-layout/src/tip/1-gramme.arne.txt][bitbucket.org/ArneBab/evolve-keyboard-layout/src/tip/1-gramme.arne.txt]]
+
+* Wisp
+
+**                                                                    :BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.48
+   :END:
+
+#+BEGIN_SRC wisp 
+define : factorial n
+    if : zero? n
+       . 1
+       * n : factorial {n - 1}
+#+END_SRC
+
+
+**                                                                    :BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.48
+   :END:
+
+#+BEGIN_SRC wisp
+(define (factorial n)
+    (if (zero? n)
+      1
+      (* n (factorial {n - 1}))))
+#+END_SRC
