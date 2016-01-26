@@ -1,0 +1,36 @@
+#+title: 
+# ^ no title page, but title on the slides
+#+LATEX: \title{wisp}
+
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [presentation]
+#+BEAMER_THEME: Boadilla
+#+options: toc:nil
+
+* Wisp
+
+#+latex: \vspace{1cm}
+
+**                                                                :B_columns:
+    :PROPERTIES:
+    :BEAMER_env: columns
+    :END:
+***                                                                   :BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.5
+   :END:
+#+BEGIN_SRC wisp
+define : factorial n
+__  if : zero? n
+____   . 1
+____   * n : factorial {n - 1}
+#+END_SRC
+
+**                                                          :B_ignoreheading:
+   :PROPERTIES:
+   :BEAMER_env: ignoreheading
+   :END:
+
+#+latex: \vspace{1.7cm}
+
+I love the syntax of Python, but crave the simplicity and power of Lisp.
