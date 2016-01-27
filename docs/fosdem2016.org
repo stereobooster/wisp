@@ -17,8 +17,9 @@
     :END:
 ***                                                                   :BMCOL:
    :PROPERTIES:
-   :BEAMER_col: 0.45
+   :BEAMER_col: 0.42
    :END:
+
 #+BEGIN_SRC wisp 
 define : factorial n
     if : zero? n
@@ -26,14 +27,18 @@ define : factorial n
        * n : factorial {n - 1}
 #+END_SRC
 
-**                                                          :B_ignoreheading:
+**                                                                  :B_quote:
    :PROPERTIES:
-   :BEAMER_env: ignoreheading
+   :BEAMER_env: quote
    :END:
 
-#+latex: \vspace{1.5cm}
+#+latex: \vspace{1.3cm}
 
-I love the syntax of Python, but crave the simplicity and power of Lisp.
+\begin{center}
+I love the syntax of Python, \\
+but crave the simplicity and power of Lisp.
+\end{center}
+
 
 * Why wisp?
 
@@ -128,8 +133,11 @@ Hello World!
 ¹: From letter distributions in newspapers, see: \\ [[https://bitbucket.org/ArneBab/evolve-keyboard-layout/src/tip/1-gramme.arne.txt][bitbucket.org/ArneBab/evolve-keyboard-layout/src/tip/1-gramme.arne.txt]]
 
 * Wisp
-
-**                                                                    :BMCOL:
+**                                                                :B_columns:
+   :PROPERTIES:
+   :BEAMER_env: columns
+   :END:
+***                                                                   :BMCOL:
    :PROPERTIES:
    :BEAMER_col: 0.48
    :END:
@@ -142,7 +150,7 @@ define : factorial n
 #+END_SRC
 
 
-**                                                                    :BMCOL:
+***                                                                   :BMCOL:
    :PROPERTIES:
    :BEAMER_col: 0.48
    :END:
@@ -153,3 +161,38 @@ define : factorial n
       1
       (* n (factorial {n - 1}))))
 #+END_SRC
+
+**                                                          :B_ignoreheading:
+   :PROPERTIES:
+   :BEAMER_env: ignoreheading
+   :END:
+
+\vspace{1cm}
+
+\footnotesize
+Many more examples in “From Python to Guile Scheme”: \\ [[http://draketo.de/py2guile][draketo.de/py2guile]] \rightarrow [[http://draketo.de/proj/py2guile/py2guile.pdf][draketo.de/proj/py2guile/py2guile.pdf]]
+
+* Applications?
+
+* Why try wisp?
+
+- Plan B: 
+
+* Thank you
+
+** Thank you!
+
+**                                                                  :B_quote:
+   :PROPERTIES:
+   :BEAMER_env: quote
+   :END:
+
+»ArneBab's alternate sexp syntax is best I've seen; pythonesque, hides parens but keeps power« — Christopher Webber
+
+** Try wisp
+
+[[http://draketo.de/english/wisp][draketo.de/english/wisp]]
+
+# Local Variables:
+# org-latex-minted-options: (("linenos" "false") ("frame" "lines") ("framesep" "6pt") ("fontsize" "\\footnotesize"))
+# End:
