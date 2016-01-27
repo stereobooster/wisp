@@ -7,7 +7,7 @@
 #+BEAMER_THEME: Boadilla
 #+options: toc:nil
 
-* Wisp
+* Wisp - SRFI-119
 
 #+latex: \vspace{1.3cm}
 
@@ -40,7 +40,7 @@ but crave the simplicity and power of Lisp.
 \end{center}
 
 
-* Why wisp?
+* Why Wisp?
 
 
 
@@ -80,15 +80,17 @@ Hello World!
    :BEAMER_env: quote
    :END:
 
-- The first and last letter are important for word recognition¹
+- The first and last letter are important for word recognition.¹
 
-- 70% of the lines in the Guile scheme source start with a paren \Rightarrow noise
+- Over 70% of the codelines in the Guile scheme source start with a paren \Rightarrow ceremony.
+
+- Many people avoid Lisp-like languages because of the parens.
 
 \footnotesize
 
 ¹: Though not all-important. See \\ [[http://www.mrc-cbu.cam.ac.uk/people/matt.davis/cmabridge/][www.mrc-cbu.cam.ac.uk/people/matt.davis/cmabridge/]]
  
-* The most common letters: a strength of Lisp and Scheme
+* The most common letters: Lisp and Scheme are awesome
 
 ** 
 
@@ -132,7 +134,7 @@ Hello World!
 \footnotesize
 ¹: From letter distributions in newspapers, see: \\ [[https://bitbucket.org/ArneBab/evolve-keyboard-layout/src/tip/1-gramme.arne.txt][bitbucket.org/ArneBab/evolve-keyboard-layout/src/tip/1-gramme.arne.txt]]
 
-* Wisp
+* Wisp in a nutshell
 **                                                                :B_columns:
    :PROPERTIES:
    :BEAMER_env: columns
@@ -176,30 +178,132 @@ define : factorial n
 
 \footnotesize
 
-- Wisp uses the minimal syntax required to represent arbitrary structures: \\ Syntax justification: [[http://draketo.de/english/wisp#sec-4][draketo.de/english/wisp#sec-4]]
+- indent as with parens, dot-prefix, inline-:, and use SRFI-105.
 
-- Many more examples in “From Python to Guile Scheme”: \\ [[http://draketo.de/py2guile][draketo.de/py2guile]] \rightarrow [[http://draketo.de/proj/py2guile/py2guile.pdf][draketo.de/proj/py2guile/py2guile.pdf]]
+- Wisp uses the minimal syntax required to represent arbitrary structure: \\ Syntax justification: [[http://draketo.de/english/wisp#sec-4][draketo.de/english/wisp#sec-4]]
+
+- Many more examples in “From Python to Guile Scheme”: \\ info: [[http://draketo.de/py2guile][draketo.de/py2guile]] \\ download: [[http://draketo.de/proj/py2guile/py2guile.pdf][draketo.de/proj/py2guile/py2guile.pdf]]
+
+* Implementation
+
+** REPL and reader (language wisp spec)                       :B_block:BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.57
+   :BEAMER_env: block
+   :END:
+
+#+BEGIN_SRC wisp
+  define-language wisp
+    . #:title "Wisp Scheme Syntax.."
+    . #:reader read-one-wisp-sexp
+    . #:compilers `(
+        (tree-il . ,compile-tree-il))
+    . #:decompilers `(
+        (tree-il . ,decompile-tree-il))
+    . #:evaluator (lambda (x module) 
+                     primitive-eval x)
+    . #:printer write
+    . #:make-default-environment
+    lambda :
+      let : : m : make-fresh-user-module
+        module-define! m 'current-reader 
+                          make-fluid
+        module-set! m 'format simple-format
+        . m
+#+END_SRC
+
+** Preprocessor (wisp.scm)                                    :B_block:BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.39
+   :BEAMER_env: block
+   :END:
+
+#+BEGIN_SRC sh
+guile wisp.scm tests/hello.w
+#+END_SRC
+
+#+BEGIN_SRC scheme
+(define (hello who)
+  (format #t "~A ~A!\n"
+          "Hello" who))
+(hello "Wisp")
+#+END_SRC
+
+\footnotesize
+(Plan B: You can always go back)
+
 
 * Applications?
+**                                                                    :BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.50
+   :END:
 
-* Why try wisp?
+*** Example: User Scripts
 
-- Plan B: 
+#+BEGIN_SRC wisp
+Enter : First_Witch
+        Second_Witch
+        Third_Witch
 
-* Thank you
+First_Witch
+  When shall we three meet again
+  In thunder, lightning, or in rain?
+#+END_SRC
 
-** Thank you!
+***                                                         :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+
+This prints
+
+***                                                                 :B_block:
+   :PROPERTIES:
+   :BEAMER_env: block
+   :END:
+\footnotesize
+#+BEGIN_EXAMPLE
+First Witch
+  When shall we three meet again
+  In thunder, lightning, or in rain?
+#+END_EXAMPLE
+
+***                                                         :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+
+\footnotesize
+- [[http://draketo.de/english/wisp/shakespeare][draketo.de/english/wisp/shakespeare]]
+- Templates, executable pseudocode, REPL-interaction, ...
+
+* Thank you!
 
 **                                                                  :B_quote:
    :PROPERTIES:
    :BEAMER_env: quote
    :END:
 
-»ArneBab's alternate sexp syntax is best I've seen; pythonesque, hides parens but keeps power« — Christopher Webber
+»ArneBab's alternate sexp syntax is best I've seen; pythonesque, hides parens but keeps power« — Christopher Webber \\ \rightarrow [[http://dustycloud.org/blog/wisp-lisp-alternative/][dustycloud.org/blog/wisp-lisp-alternative/]]
 
-** Try wisp
+\vspace{0.35cm}
 
-[[http://draketo.de/english/wisp][draketo.de/english/wisp]]
+** Try Wisp
+
+#+BEGIN_SRC sh
+guix package -i guile guile-wisp
+guile --language=wisp
+#+END_SRC
+
+#+BEGIN_SRC sh
+wget https://bitbucket.org/ArneBab/wisp/downloads/wisp-0.9.0.tar.gz;
+tar xf wisp-0.9.0.tar.gz ; cd wisp-0.9.0/;
+./configure; make check;
+examples/newbase60.w 123
+#+END_SRC
+
+- [[http://draketo.de/english/wisp][http://draketo.de/english/wisp]]
 
 # Local Variables:
 # org-latex-minted-options: (("linenos" "false") ("frame" "lines") ("framesep" "6pt") ("fontsize" "\\footnotesize"))
