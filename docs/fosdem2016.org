@@ -137,10 +137,14 @@ Hello World!
    :PROPERTIES:
    :BEAMER_env: columns
    :END:
+
+
+
 ***                                                                   :BMCOL:
    :PROPERTIES:
    :BEAMER_col: 0.48
    :END:
+\vspace{0.5cm}
 
 #+BEGIN_SRC wisp 
 define : factorial n
@@ -154,6 +158,7 @@ define : factorial n
    :PROPERTIES:
    :BEAMER_col: 0.48
    :END:
+\vspace{0.5cm}
 
 #+BEGIN_SRC wisp
 (define (factorial n)
@@ -170,7 +175,10 @@ define : factorial n
 \vspace{1cm}
 
 \footnotesize
-Many more examples in “From Python to Guile Scheme”: \\ [[http://draketo.de/py2guile][draketo.de/py2guile]] \rightarrow [[http://draketo.de/proj/py2guile/py2guile.pdf][draketo.de/proj/py2guile/py2guile.pdf]]
+
+- Wisp uses the minimal syntax required to represent arbitrary structures: \\ Syntax justification: [[http://draketo.de/english/wisp#sec-4][draketo.de/english/wisp#sec-4]]
+
+- Many more examples in “From Python to Guile Scheme”: \\ [[http://draketo.de/py2guile][draketo.de/py2guile]] \rightarrow [[http://draketo.de/proj/py2guile/py2guile.pdf][draketo.de/proj/py2guile/py2guile.pdf]]
 
 * Applications?
 
