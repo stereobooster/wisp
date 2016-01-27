@@ -7,7 +7,7 @@
 #+BEAMER_THEME: Boadilla
 #+options: toc:nil
 
-#+latex: \renewcommand{\inserttotalframenumber}{9}
+#+latex: \renewcommand{\inserttotalframenumber}{10}
 
 
 * Wisp - SRFI-119
@@ -189,6 +189,7 @@ define : factorial n
 
 - Many more examples in “From Python to Guile Scheme”: \\ info: [[http://draketo.de/py2guile][draketo.de/py2guile]] \\ download: [[http://draketo.de/proj/py2guile/py2guile.pdf][draketo.de/proj/py2guile/py2guile.pdf]]
 
+
 * Implementation
 
 ** REPL and Reader (language wisp spec)                       :B_block:BMCOL:
@@ -312,19 +313,23 @@ define : main args
    :BEAMER_env: quote
    :END:
 
+\vspace{1cm}
+
 »ArneBab's alternate sexp syntax is best I've seen; pythonesque, hides parens but keeps power« — Christopher Webber \\ \rightarrow [[http://dustycloud.org/blog/wisp-lisp-alternative/][dustycloud.org/blog/wisp-lisp-alternative/]]
 
+\vspace{1cm}
 
-**                                                          :B_ignoreheading:
+**                                                                  :B_block:
    :PROPERTIES:
-   :BEAMER_env: ignoreheading
+   :BEAMER_env: block
    :END:
 
-- Wisp is implemented in Wisp
+- Wisp is implemented in Wisp (850 lines, implementations)
+- Examples: 4 lines (factorial) to 330 lines (advection on icosaheder).
 
-* Thank you!
+* Try Wisp
 
-** Try Wisp
+** Install
 
 #+BEGIN_SRC sh
 guix package -i guile guile-wisp
@@ -340,6 +345,21 @@ examples/newbase60.w 123
 
 - [[http://draketo.de/english/wisp][http://draketo.de/english/wisp]]
 
+** Emacs mode for syntax highlighting
+
+- M-x package-install [RET] *wisp-mode* [RET]
+- https://marmalade-repo.org/packages/wisp-mode
+
+
+* Thank you!
+
+***                                               :B_alertblock:BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.032
+    :BEAMER_env: alertblock
+    :END:
+
+$\ddot \smile$
 
 * Appendix                                                       :B_appendix:
   :PROPERTIES:
@@ -402,6 +422,31 @@ myfunction
 #+END_SRC
 
 - most common letters?
+
+* Keep parens where they help readability
+
+
+**                                                                    :BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.45
+   :END:
+
+
+#+BEGIN_SRC wisp
+cond 
+  : and (null? l) (zero? a)
+    . '()
+  else
+    cons a l
+#+END_SRC
+
+
+#+BEGIN_SRC wisp
+map 
+  lambda (x) (+ x 1)
+  list 1 2 3
+#+END_SRC
+
 
 # Local Variables:
 # org-latex-minted-options: (("linenos" "false") ("frame" "lines") ("framesep" "6pt") ("fontsize" "\\footnotesize"))
