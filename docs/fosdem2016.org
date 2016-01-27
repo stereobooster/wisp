@@ -230,6 +230,7 @@ guile wisp.scm tests/hello.w
 
 #+BEGIN_SRC scheme
 (define (hello who)
+  ;; include the newline
   (format #t "~A ~A!\n"
           "Hello" who))
 (hello "Wisp")
