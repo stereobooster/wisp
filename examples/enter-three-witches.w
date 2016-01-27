@@ -21,6 +21,7 @@ define-syntax Enter
                        quote : (c :::) d :::
                  . "\n  "
           : _ c d :::
+            ;; allow for modifier keywords after the name
             begin
               format #t "~A:\n" : symbol->string 'c
               name d :::
@@ -30,12 +31,6 @@ define-syntax Enter
   : _ b ...
     begin 
 
-; define-syntax-rule : First_Witch a ...
-;   format #t "~A\n" 
-;     string-join 
-;       map : lambda (x) (string-join (map symbol->string x))
-;             quote : a ...
-;       . "\n"
 
 define : main args
   Enter : First_Witch
