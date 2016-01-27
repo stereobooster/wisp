@@ -7,6 +7,9 @@
 #+BEAMER_THEME: Boadilla
 #+options: toc:nil
 
+#+latex: \renewcommand{\inserttotalframenumber}{9}
+
+
 * Wisp - SRFI-119
 
 #+latex: \vspace{1.3cm}
@@ -84,12 +87,14 @@ Hello World!
 
 - Over 70% of the codelines in the Guile scheme source start with a paren \Rightarrow ceremony.
 
-- Many people avoid Lisp-like languages because of the parens.
+- Many people avoid Lisp-like languages because of the parens.² 
 
 \footnotesize
 
 ¹: Though not all-important. See \\ [[http://www.mrc-cbu.cam.ac.uk/people/matt.davis/cmabridge/][www.mrc-cbu.cam.ac.uk/people/matt.davis/cmabridge/]]
- 
+
+²: Also see [[http://srfi.schemers.org/srfi-110/srfi-110.html#cant-improve][srfi.schemers.org/srfi-110/srfi-110.html#cant-improve]]
+
 * The most common letters: Lisp and Scheme are awesome
 
 ** 
@@ -186,7 +191,7 @@ define : factorial n
 
 * Implementation
 
-** REPL and reader (language wisp spec)                       :B_block:BMCOL:
+** REPL and Reader (language wisp spec)                       :B_block:BMCOL:
    :PROPERTIES:
    :BEAMER_col: 0.57
    :BEAMER_env: block
@@ -256,7 +261,7 @@ First_Witch
     :BEAMER_env: ignoreheading
     :END:
 
-This prints
+This displays
 
 ***                                                                 :B_block:
    :PROPERTIES:
@@ -276,9 +281,31 @@ First Witch
 
 \footnotesize
 - [[http://draketo.de/english/wisp/shakespeare][draketo.de/english/wisp/shakespeare]]
-- Templates, executable pseudocode, REPL-interaction, ...
+- Templates, executable pseudocode, REPL-interaction, configuration, ...
 
-* Thank you!
+* Solutions
+
+** Run examples/newbase60.w as script
+
+#+BEGIN_SRC wisp
+#!/usr/bin/env sh
+# -*- wisp -*-
+exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp \
+           -e '(@@ (examples newbase60) main)' \
+           -s "$0" "$@"
+; !#
+define-module : examples newbase60
+
+define : main args
+  ...
+#+END_SRC
+
+** Use Wisp code from parenthesized Scheme
+
+- precompile: =guile --language=wisp module=
+- then just import as usual: =(use-modules (...))=
+
+* Experience
 
 **                                                                  :B_quote:
    :PROPERTIES:
@@ -287,7 +314,15 @@ First Witch
 
 »ArneBab's alternate sexp syntax is best I've seen; pythonesque, hides parens but keeps power« — Christopher Webber \\ \rightarrow [[http://dustycloud.org/blog/wisp-lisp-alternative/][dustycloud.org/blog/wisp-lisp-alternative/]]
 
-\vspace{0.35cm}
+
+**                                                          :B_ignoreheading:
+   :PROPERTIES:
+   :BEAMER_env: ignoreheading
+   :END:
+
+- Wisp is implemented in Wisp
+
+* Thank you!
 
 ** Try Wisp
 
@@ -304,6 +339,69 @@ examples/newbase60.w 123
 #+END_SRC
 
 - [[http://draketo.de/english/wisp][http://draketo.de/english/wisp]]
+
+
+* Appendix                                                       :B_appendix:
+  :PROPERTIES:
+  :BEAMER_env: appendix
+  :END:
+
+* Why not SRFI-110 or SRFI-49?
+
+** SRFI-49                                                            :BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.45
+   :END:
+
+*** SRFI-49                                                         :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+
+#+BEGIN_SRC wisp
+  + 5
+    * 4 3
+    2
+    1
+    0
+#+END_SRC
+
+- Cannot continue the argument list
+
+*** Wisp                                                            :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+
+#+BEGIN_SRC wisp
+  + 5
+    * 4 3
+    . 2 1 0
+
+#+END_SRC
+
+** SRFI-110                                                   :B_block:BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.45
+   :BEAMER_env: block
+   :END:
+
+#+BEGIN_SRC wisp
+myfunction 
+  x: \\ original-x
+  y: \\ calculate-y original-y
+#+END_SRC
+
+#+BEGIN_SRC wisp
+  a b $ c d e $ f g
+#+END_SRC
+
+#+BEGIN_SRC wisp
+  let <* x getx() \\ y gety() *>
+  ! {{x * x} + {y * y}}
+#+END_SRC
+
+- most common letters?
 
 # Local Variables:
 # org-latex-minted-options: (("linenos" "false") ("frame" "lines") ("framesep" "6pt") ("fontsize" "\\footnotesize"))
