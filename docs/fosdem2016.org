@@ -324,7 +324,7 @@ define : main args
    :BEAMER_env: block
    :END:
 
-- Wisp is implemented in Wisp (850 lines, implementations)
+- Wisp is implemented in Wisp (850 lines, implementations).
 - Examples: 4 lines (factorial) to 330 lines (advection on icosaheder).
 
 * Try Wisp
