@@ -9,7 +9,12 @@ AC_CANONICAL_TARGET
 # search for Guile using the guile m4 files.
 # see https://www.gnu.org/software/guile/manual/html_node/Autoconf-Macros.html
 # This provides @GUILE@ to Makefile.am
-GUILE_PROGS([2.0.11])
+PKG_CHECK_MODULES(GUILE, guile-2.0 >= 2.0.11)
+GUILE_PROGS
+GUILE_SITE_DIR
+
+dnl set installation prefix for languge files to Guile location
+AC_PREFIX_PROGRAM([guile])
 
 AC_ARG_VAR([python3], [How to call Python 3.])
 AC_CHECK_TARGET_TOOL([python3], [python3], [no])
