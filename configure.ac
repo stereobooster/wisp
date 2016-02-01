@@ -13,7 +13,7 @@ PKG_CHECK_MODULES(GUILE, guile-2.0 >= 2.0.11)
 GUILE_PROGS
 GUILE_SITE_DIR
 
-dnl set installation prefix for languge files to Guile location
+dnl set installation prefix for language file to Guile location
 AC_PREFIX_PROGRAM([guile])
 
 AC_ARG_VAR([python3], [How to call Python 3.])
