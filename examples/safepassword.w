@@ -15,6 +15,11 @@ import
     srfi srfi-42
 
 
+;; newbase60 without yz_: 57 letters, each 5.78 bits of entropy.
+define qwertysafeletters "0123456789ABCDEFGHJKLMNPQRSTUVWXabcdefghijkmnopqrstuvwx"
+;; delimiters: 2.32 bits of entropy per delimiter.
+define delimiters ",.!?-"
+
 define random-source : make-random-source
 random-source-randomize! random-source
 
@@ -32,7 +37,9 @@ define : randomletter letters
 define : flatten e
     cond 
        : pair? e
-         ` ,@(flatten (car e)) ,@(flatten (cdr e))
+         ` 
+           ,@ flatten : car e 
+           ,@ flatten : cdr e
        : null? e
          list
        else 
@@ -40,12 +47,6 @@ define : flatten e
 
 
 define : password/srfi-42 length
-      let
-       : qwertysafeletters "0123456789ABCDEFGHJKLMNPQRSTUVWXabcdefghijkmnopqrstuvwx"
-         ;; that’s newbase60 without yz_
-         ;; means 5.78 bits of entropy per letter.
-         delimiters ",.!?-"
-         ;; that’s 2.32 bits of entropy per delimiter
        list->string
          append-ec (: i (iota length 1))
            cons : randomletter qwertysafeletters
@@ -56,12 +57,6 @@ define : password/srfi-42 length
 
 
 define : password/map length
-      let
-       : qwertysafeletters "0123456789ABCDEFGHJKLMNPQRSTUVWXabcdefghijkmnopqrstuvwx"
-         ;; that’s newbase60 without yz_
-         ;; means 5.78 bits of entropy per letter.
-         delimiters ",.!?-"
-         ;; that’s 2.32 bits of entropy per delimiter
        list->string
          flatten
            map
@@ -76,12 +71,6 @@ define : password/map length
 
 
 define : password length
-      let
-       : qwertysafeletters "0123456789ABCDEFGHJKLMNPQRSTUVWXabcdefghijkmnopqrstuvwx"
-         ;; that’s newbase60 without yz_
-         ;; means 5.78 bits of entropy per letter.
-         delimiters ",.!?-"
-         ;; that’s 2.32 bits of entropy per delimiter
        let fill
          : letters '()
            remaining length
