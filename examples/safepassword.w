@@ -28,9 +28,9 @@ define : password length
       let
        : quertysafeletters "0123456789ABCDEFGHJKLMNPQRSTUVWXabcdefghijkmnopqrstuvwx"
          ;; that’s newbase60 without yz_
-         ;; means 5.78 bits entropy per letter.
-         delimiters ",.!?-+"
-         ;; that’s 2.5 bits entropy per delimiter
+         ;; means 5.78 bits of entropy per letter.
+         delimiters ",.!?-"
+         ;; that’s 2.32 bits of entropy per delimiter
        let fill
          : letters '()
            remaining length
