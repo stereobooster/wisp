@@ -3,7 +3,7 @@
 exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples securepassword) main)' -s "$0" "$@"
 ; !#
 
-;; Create safe passwords, usable on US and German keyboards without problems
+;; Create secure passwords, usable on US and German keyboards without problems
 
 define-module : examples securepassword
               . #:export : password
