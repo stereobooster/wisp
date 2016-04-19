@@ -5,6 +5,18 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 
 ;; Create secure passwords, usable on US and German keyboards without problems
 
+;; As of 2011, a single device can do 2,800,000,000 guesses per second.
+;; According to a recovery company which sells crackers at 1.5k$, as of
+;; 2016 a zip-file can be attacked with 100,000 guesses per second.
+
+;; A password with 8 letters and 2 delimiters (length 8, entropy 50)
+;; would on average withstand the strong attack for 2.5 days, the weak
+;; until 2032, assuming doubling of processing power every two years.
+
+;; A password with 12 letters and 3 delimiters (length 12, entropy 75)
+;; should withstand the strong attack until 2049, assuming doubling of
+;; processing power every two years, the weak until 2082.
+
 define-module : examples securepassword
               . #:export : password
 
@@ -15,10 +27,10 @@ import
     srfi srfi-42
 
 
-;; newbase60 without yz_: 57 letters, each 5.78 bits of entropy.
+;; newbase60 without yz_: 55 letters, 5.78 bits of entropy per letter.
 define qwertysafeletters "0123456789ABCDEFGHJKLMNPQRSTUVWXabcdefghijkmnopqrstuvwx"
-;; delimiters: 2.32 bits of entropy per delimiter.
-define delimiters ",.!?-"
+;; delimiters: 2 bits of entropy per delimiter.
+define delimiters ",.!-"
 
 define random-source : make-random-source
 random-source-randomize! random-source
