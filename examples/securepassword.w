@@ -103,7 +103,7 @@ define : main args
          len
            if : <= 2 : length args
               string->number : second args
-              . 16
+              . 8
        let 
          : idx (if (> 3 (length args)) 1 (string->number (third args)))
          cond
