@@ -20,6 +20,19 @@ AC_ARG_VAR([python3], [How to call Python 3.])
 AC_CHECK_TARGET_TOOL([python3], [python3], [no])
 AS_IF([test "x$python3" = "xno"],
       [AC_MSG_WARN([cannot find Python 3 which is required for development bootstrapping.])])
+
+# Is this a normal install, or a "make distcheck"?  We need to disable
+# the tests in a "make distcheck" that won't work.
+# FIXME: automake should honor DESTDIR set by make distcheck
+is_make_distcheck=no
+AS_CASE([$prefix],
+  [*/_inst],
+    [AC_MSG_NOTICE([[Prefix ends in /_inst; this is a 'make distcheck'.]])
+     is_make_distcheck=yes])
+AM_CONDITIONAL([IS_MAKE_DISTCHECK], [test "x$is_make_distcheck" = x"yes"])
+AC_MSG_CHECKING([final decision IS_MAKE_DISTCHECK (running "make distcheck"?)])
+AM_COND_IF([IS_MAKE_DISTCHECK], [AC_MSG_RESULT([yes])], [AC_MSG_RESULT([no])]) 
+
 # Run automake
 # Use GNU style. Note that ChangeLog is created on every commit 
 # by a commit hook in .hg/hgrc
