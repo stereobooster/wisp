@@ -1,9 +1,11 @@
 ;;; wisp-mode.el --- Tools for wisp: the Whitespace-to-Lisp preprocessor
 
-;; Copyright (C) 2013  Arne Babenhauserheide <arne_bab@web.de>
+;; Copyright (C) 2013--2016  Arne Babenhauserheide <arne_bab@web.de>
+;; Copyright (C) 2015--2016  Kevin W. van Rooijen — indentation and tools
+;;               from https://github.com/kwrooijen/indy/blob/master/indy.el
 
 ;; Author: Arne Babenhauserheide <arne_bab@web.de>
-;; Version: 0.2.2
+;; Version: 0.2.3
 ;; Keywords: languages, lisp
 
 ;; This program is free software; you can redistribute it and/or
@@ -108,6 +110,57 @@
      (" : \\| \\. " . font-lock-keyword-face) ; leading : or .
      ))
   "Default highlighting expressions for wisp mode.")
+(defun wisp--prev-indent ()
+  "Get the amount of indentation spaces if the previous line."
+  (save-excursion
+    (previous-line 1)
+    (while (wisp--line-empty?)
+      (previous-line 1))
+    (back-to-indentation)
+    (current-column)))
+
+(defun wisp--line-empty? ()
+  "Check if the current line is empty."
+  (string-match "^\s*$" (wisp--get-current-line)))
+
+(defun wisp--get-current-line ()
+  "Get the current line as a string."
+  (buffer-substring-no-properties (point-at-bol) (point-at-eol)))
+
+(defun wisp--current-indent ()
+  "Get the amount of indentation spaces if the current line."
+  (save-excursion
+    (back-to-indentation)
+    (current-column)))
+
+(defun indy--fix-num (num)
+  "Make sure NUM is a valid number for calculating indentation."
+  (cond
+   ((not num) 0)
+   ((< num 0) 0)
+   (t num)))
+
+(defun wisp--indent (num)
+  "Indent the current line by the amount of provided in NUM."
+  (unless (equal (wisp--current-indent) num)
+    (let* ((num (max num 0))
+           (ccn (+ (current-column) (- num (wisp--current-indent)))))
+      (indent-line-to num)
+      (move-to-column (indy--fix-num ccn)))))
+
+;;;###autoload
+(defun wisp--tab ()
+  "Cycle through indentations depending on the previous line."
+  (interactive)
+  (let* ((curr (wisp--current-indent))
+         (prev (wisp--prev-indent))
+         (width (cond
+             ((< curr (- prev tab-width)) (- prev tab-width))
+             ((< curr prev) prev)
+             ((equal curr prev) (+ prev tab-width))
+             (t  0))))
+    (wisp--indent width)))
+
 
 (defun wisp-indent-current-line (&optional unindented-ok)
   "Sets the indentation of the current line. Derived from
@@ -119,6 +172,7 @@ indent-relative."
       (beginning-of-line)
       (if (re-search-backward "^[^\n]" nil t)
           (let ((end (save-excursion (forward-line 1) (point))))
+  (setq tab-width 4)
             (move-to-column start-column)
             ; TODO: If the previous line is less indented by exactly 4
             ; characters, de-dent to previous-line minus 4. If the
@@ -159,7 +213,7 @@ indent-relative."
   (set (make-local-variable 'parse-sexp-ignore-comments) t)
   (set (make-local-variable 'font-lock-defaults) wisp-font-lock-keywords)
   (set (make-local-variable 'mode-require-final-newline) t)
-  (local-set-key (kbd "<tab>") 'indent-relative))
+  (local-set-key (kbd "<tab>") 'wisp--tab))
 
                         
 
