@@ -37,21 +37,26 @@ import
     ice-9 optargs
 
 
-define* : yearstillcrackable entropy #:key (guesses/second 100000)
+define* : yearstillcrackable entropy #:key (guesses/second 100000) (number-of-devices 1)
        . "Estimate of the years it will take until the password is crackable"
        let 
         : seconds/day : * 60 60 24
           days/year 365.25
         ` 
+             in-one-second
+               , * 2
+                  / 
+                    log : / (expt 2 entropy) (* guesses/second number-of-devices)
+                    log 2
              in-one-day
                , * 2
                   / 
-                    log : / (expt 2 entropy) (* seconds/day guesses/second)
+                    log : / (expt 2 entropy) (* seconds/day guesses/second number-of-devices)
                     log 2
              in-one-year 
                , * 2
                   / 
-                    log : / (expt 2 entropy) (* days/year seconds/day guesses/second)
+                    log : / (expt 2 entropy) (* days/year seconds/day guesses/second number-of-devices)
                     log 2
 
 
@@ -142,3 +147,4 @@ define : main args
            : = idx 3
              display : password/srfi-42 len
          newline
+
