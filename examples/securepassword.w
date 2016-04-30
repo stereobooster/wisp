@@ -6,25 +6,58 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ;; Create secure passwords, usable on US and German keyboards without problems
 
 ;; As of 2011, a single device can do 2,800,000,000 guesses per second.
+;; Today this should be 10 billion guesses per second.
 ;; According to a recovery company which sells crackers at 1.5k$, as of
 ;; 2016 a zip-file can be attacked with 100,000 guesses per second.
 
 ;; A password with 8 letters and 2 delimiters (length 8, entropy 50)
 ;; would on average withstand the strong attack for 2.5 days, the weak
-;; until 2032, assuming doubling of processing power every two years.
+;; until 2032 (when it would be cracked in one year), assuming
+;; doubling of processing power every two years. Cracking it in one
+;; day would be possible in 2049.
 
 ;; A password with 12 letters and 3 delimiters (length 12, entropy 75)
-;; should withstand the strong attack until 2049, assuming doubling of
-;; processing power every two years, the weak until 2082.
+;; should withstand the strong attack until 2069 (then it would be
+;; cracked in one year), assuming doubling of processing power every
+;; two years, the weak until 2099.
+
+;; For every factor of 1000 (i.e. 1024 computers), the time to get a
+;; solution is reduced by 20 years.  Using every existing cell phone,
+;; the 12 letter key would be cracked by the method with 100,000
+;; guesses per second in 2039. Facebook could do that with Javascript.
 
 define-module : examples securepassword
-              . #:export : password
+              . #:export : password yearstillcrackable
 
 import
     only (srfi srfi-27) random-source-make-integers
       . make-random-source random-source-randomize!
     only (srfi srfi-1) second third iota
     srfi srfi-42
+    ice-9 optargs
+
+
+define* : yearstillcrackable entropy #:key (guesses/second 100000) (number-of-devices 1)
+       . "Estimate of the years it will take until the password is crackable"
+       let 
+        : seconds/day : * 60 60 24
+          days/year 365.25
+        ` 
+             in-one-second
+               , * 2
+                  / 
+                    log : / (expt 2 entropy) (* guesses/second number-of-devices)
+                    log 2
+             in-one-day
+               , * 2
+                  / 
+                    log : / (expt 2 entropy) (* seconds/day guesses/second number-of-devices)
+                    log 2
+             in-one-year 
+               , * 2
+                  / 
+                    log : / (expt 2 entropy) (* days/year seconds/day guesses/second number-of-devices)
+                    log 2
 
 
 ;; newbase60 without yz_: 55 letters, 5.78 bits of entropy per letter.
@@ -114,3 +147,4 @@ define : main args
            : = idx 3
              display : password/srfi-42 len
          newline
+

@@ -35,3 +35,18 @@ syntaxtestsreader.sh : ${WISP} wisp.scm tests/runtests-scheme-reader.sh
 	chmod +x @abs_top_builddir@/$@
 
 TESTS=syntaxtests.sh syntaxtestsreader.sh
+
+# The installchecks won't work in a "make distcheck", because
+# they won't be installed in the final location used by the tools.
+# FIXME: automake should honor DESTDIR set by make distcheck
+if IS_MAKE_DISTCHECK
+install-siteDATA:
+	echo "Running 'make distcheck'; local installchecks disabled."
+install-langDATA:
+	echo "Running 'make distcheck'; local installchecks disabled."
+uninstall-siteDATA:
+	echo "Running 'make distcheck'; local installchecks disabled."
+uninstall-langDATA:
+	echo "Running 'make distcheck'; local installchecks disabled."
+else !IS_MAKE_DISTCHECK
+endif !IS_MAKE_DISTCHECK
