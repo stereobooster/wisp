@@ -5,13 +5,13 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 
 ;; A cleaner way to implement this might be using dynamic-wind.
 
+;; FIXME: This might not be continuation-safe and might break if the
+;; code in the with block uses dynamic-wind. Check whether it’s safe
+;; and fix it if not.
+
 define-module : examples with
 
 import : oop goops
-
-; import : ice-9 rdelim
-; with (open-file "with.w") as port
-;      display : read-line port
 
 define : enter thing
        . thing
@@ -31,6 +31,7 @@ define-syntax with
            . res
 
 define-method : exit (thing <port>)
+              . "Ensure that a port is always closed at the end of the with-block."
                 close-port thing
 
 define : main args
