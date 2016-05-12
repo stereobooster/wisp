@@ -32,7 +32,7 @@ define-syntax with
 
 define-method : exit (thing <port>)
               . "Ensure that a port is always closed at the end of the with-block."
-                close-port thing
+              close-port thing
 
 define : main args
          with (open-file "with.w" "r") as port
