@@ -212,7 +212,7 @@ define : latlonsixthslabidx latfromtop lonfrac
             side-deg : * 180 : / 1 length-top-to-bottom-at-lon0
           ; in one sixth of the icosaeder, there are 6 reachable
           ; fields. I am indexing them from top to bottom.
-          format #t "latfromtop: ~a, lonfrac: ~a, height-deg/3: ~a, side-deg: ~a\n" latfromtop lonfrac (/ height-deg 3) side-deg
+          ; format #t "latfromtop: ~a, lonfrac: ~a, height-deg/3: ~a, side-deg: ~a\n" latfromtop lonfrac (/ height-deg 3) side-deg
           cond
             : < latfromtop : / height-deg 3
               . 0
@@ -350,50 +350,77 @@ define : main args
        display : d20-as-text world
        newline
        
-       ; now plot the result
-       let : : port : open-output-pipe "python"
-         format port "from mpl_toolkits.mplot3d import Axes3D, art3d
-import numpy as np
-import scipy as sp
-from matplotlib import cm
-import matplotlib.pyplot as plt
-from scipy.spatial import Delaunay
-
-def Icosahedron():
-    h = 0.5*(1+np.sqrt(5))
-    p1 = np.array([[0,1,h],[0,1,-h],[0,-1,h],[0,-1,-h]])
-    p2 = p1[:,[1,2,0]]
-    p3 = p1[:,[2,0,1]]
-    return np.vstack((p1,p2,p3))
-
-Ico = Icosahedron()
-tri = Delaunay(Ico)
-CH = tri.convex_hull
-points = tri.points
-
-fig = plt.figure(figsize=(4.0,4.0))
-ax = fig.add_subplot(111, projection='3d')
-
-print points
-for i in range(points.shape[0]):
-    neighbors = tri.neighbors[i,:]
-    for n in range(points.shape[0]):
-        pts = []
-        for u in range(points.shape[0]):
-            pt = np.zeros((3,3))
-            pt[0,:] = points[(i),:]
-            pt[1,:] = points[(n),:]
-            pt[2,:] = points[(u),:]
-            # print pt
-            pt *= 0.5
-            pt += 0.5
-            pts.append(pt)
-        tr = art3d.Poly3DCollection(pts)
-        tr.set_color([(0.9*i)/points.shape[0]] + [(0.9*n)/points.shape[0]]*3)
-        ax.add_collection3d(tr)
-# ax.plot_surface(x, y, z, color='g')
-
-plt.show()
-
-exit()\n"
-         close-pipe port
+       display
+         let loop 
+           : lon 360
+             lat 90
+             map '()
+             zone '()
+           cond
+             : and (= lat -90) (= lon 0)
+               cons : cons (vector-ref world (latlon2cellidx lat lon)) zone 
+                 . map
+             : = lon 0
+               loop
+                 . 360
+                 - lat 1
+                 cons : cons (vector-ref world (latlon2cellidx lat lon)) zone 
+                   . map
+                 . '()
+             else
+               loop
+                 - lon 1
+                 . lat
+                 . map
+                 cons : vector-ref world : latlon2cellidx lat lon
+                   . zone
+       newline
+         
+       
+;        ; now plot the result
+;        let : : port : open-output-pipe "python"
+;          format port "from mpl_toolkits.mplot3d import Axes3D, art3d
+; import numpy as np
+; import scipy as sp
+; from matplotlib import cm
+; import matplotlib.pyplot as plt
+; from scipy.spatial import Delaunay
+; 
+; def Icosahedron():
+;     h = 0.5*(1+np.sqrt(5))
+;     p1 = np.array([[0,1,h],[0,1,-h],[0,-1,h],[0,-1,-h]])
+;     p2 = p1[:,[1,2,0]]
+;     p3 = p1[:,[2,0,1]]
+;     return np.vstack((p1,p2,p3))
+; 
+; Ico = Icosahedron()
+; tri = Delaunay(Ico)
+; CH = tri.convex_hull
+; points = tri.points
+; 
+; fig = plt.figure(figsize=(4.0,4.0))
+; ax = fig.add_subplot(111, projection='3d')
+; 
+; print points
+; for i in range(points.shape[0]):
+;     neighbors = tri.neighbors[i,:]
+;     for n in range(points.shape[0]):
+;         pts = []
+;         for u in range(points.shape[0]):
+;             pt = np.zeros((3,3))
+;             pt[0,:] = points[(i),:]
+;             pt[1,:] = points[(n),:]
+;             pt[2,:] = points[(u),:]
+;             # print pt
+;             pt *= 0.5
+;             pt += 0.5
+;             pts.append(pt)
+;         tr = art3d.Poly3DCollection(pts)
+;         tr.set_color([(0.9*i)/points.shape[0]] + [(0.9*n)/points.shape[0]]*3)
+;         ax.add_collection3d(tr)
+; # ax.plot_surface(x, y, z, color='g')
+; 
+; plt.show()
+; 
+; exit()\n"
+;          close-pipe port
