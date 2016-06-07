@@ -1,4 +1,6 @@
-#!/home/arne/wisp/wisp-multiline.sh 
+#!/usr/bin/env sh
+# -*- wisp -*-
+exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples d20world) main)' -s "$0" "$@"
 ; !#
 
 ; A world projected on a d20 (20-sided die, ikosaeder)
@@ -212,84 +214,86 @@ define : latlon2cellidx lat lon
             . #t
 
 
-display : d20-as-text world
-newline
-
-format #t "Diffuse ~A\n" 0.01
-d20-diffuse world neighbors 0.01
-display : d20-as-text world
-newline
-format #t "Advect ~A\n" 0.1
-d20-advect world advection-directions 0.1
-display : d20-as-text world
-newline
-format #t "Diffuse ~A\n" 0.1
-d20-diffuse world neighbors 0.1
-display : d20-as-text world
-newline
-format #t "Diffuse: ~A*(~A)\n" 100 0.1
-let loop : : steps 100
-    cond
-      : = 0 steps
-        . world
-      else
-        d20-diffuse world neighbors 0.1
-        loop : 1- steps
-display : d20-as-text world
-newline
-let 
-  : number 20
-    val 1
-  format #t "disturb: ~A to ~A\n" number val
-  vector-set! world (1- number) val
-  display : d20-as-text world
-  newline
-format #t "Diffuse ~A\n" 0.1
-d20-diffuse world neighbors 0.1
-display : d20-as-text world
-newline
-
-format #t "Advect: ~A*(~A)\n" 1000 0.001
-let loop : : steps 1000
-    cond
-      : = 0 steps
-        . world
-      else
-        d20-advect world advection-directions 0.001
-        display : d20-as-text world
-        d20-cursor-up-text world
-        loop : 1- steps
-display : d20-as-text world
-newline
-format #t "Diffuse: ~A*(~A)\n" 1000 0.004
-let loop : : steps 1000
-    cond
-      : = 0 steps
-        . world
-      else
-        d20-diffuse world neighbors 0.004
-        display : d20-as-text world
-        d20-cursor-up-text world
-        loop : 1- steps
-display : d20-as-text world
-newline
-format #t "Diffuse+Advect: ~A*(~A+~A)\n" 1000 0.002 0.001
-let loop : : steps 1000
-    cond
-      : = 0 steps
-        . world
-      else
-        d20-diffuse world neighbors 0.002
-        d20-advect world advection-directions 0.001
-        display : d20-as-text world
-        d20-cursor-up-text world
-        loop : 1- steps
-display : d20-as-text world
-newline
-
-; now plot the result
-let : : port : open-output-pipe "python"
-  format port "from mpl_toolkits.mplot3d import Axes3D, art3d
+define : main args
+       . "Test the code"
+       display : d20-as-text world
+       newline
+       
+       format #t "Diffuse ~A\n" 0.01
+       d20-diffuse world neighbors 0.01
+       display : d20-as-text world
+       newline
+       format #t "Advect ~A\n" 0.1
+       d20-advect world advection-directions 0.1
+       display : d20-as-text world
+       newline
+       format #t "Diffuse ~A\n" 0.1
+       d20-diffuse world neighbors 0.1
+       display : d20-as-text world
+       newline
+       format #t "Diffuse: ~A*(~A)\n" 100 0.1
+       let loop : : steps 100
+           cond
+             : = 0 steps
+               . world
+             else
+               d20-diffuse world neighbors 0.1
+               loop : 1- steps
+       display : d20-as-text world
+       newline
+       let 
+         : number 20
+           val 1
+         format #t "disturb: ~A to ~A\n" number val
+         vector-set! world (1- number) val
+         display : d20-as-text world
+         newline
+       format #t "Diffuse ~A\n" 0.1
+       d20-diffuse world neighbors 0.1
+       display : d20-as-text world
+       newline
+       
+       format #t "Advect: ~A*(~A)\n" 1000 0.001
+       let loop : : steps 1000
+           cond
+             : = 0 steps
+               . world
+             else
+               d20-advect world advection-directions 0.001
+               display : d20-as-text world
+               d20-cursor-up-text world
+               loop : 1- steps
+       display : d20-as-text world
+       newline
+       format #t "Diffuse: ~A*(~A)\n" 1000 0.004
+       let loop : : steps 1000
+           cond
+             : = 0 steps
+               . world
+             else
+               d20-diffuse world neighbors 0.004
+               display : d20-as-text world
+               d20-cursor-up-text world
+               loop : 1- steps
+       display : d20-as-text world
+       newline
+       format #t "Diffuse+Advect: ~A*(~A+~A)\n" 1000 0.002 0.001
+       let loop : : steps 1000
+           cond
+             : = 0 steps
+               . world
+             else
+               d20-diffuse world neighbors 0.002
+               d20-advect world advection-directions 0.001
+               display : d20-as-text world
+               d20-cursor-up-text world
+               loop : 1- steps
+       display : d20-as-text world
+       newline
+       
+       ; now plot the result
+       let : : port : open-output-pipe "python"
+         format port "from mpl_toolkits.mplot3d import Axes3D, art3d
 import numpy as np
 import scipy as sp
 from matplotlib import cm
@@ -333,5 +337,4 @@ for i in range(points.shape[0]):
 plt.show()
 
 exit()\n"
-  close-pipe port
-
+         close-pipe port
