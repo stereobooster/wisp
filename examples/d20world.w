@@ -19,6 +19,7 @@ define-module : examples d20world
               . #:export : world neighbors d20-as-text d20-diffuse
 
 use-modules : ice-9 format
+use-modules : srfi srfi-1
 use-modules 
   : ice-9 popen
         . #:select : open-output-pipe close-pipe
@@ -190,46 +191,89 @@ define : d20-advect world advection-directions A
                  loop : cdr neighbors-to-advect
 
 
-define φ : * (/ 1 2) : 1+ : sqrt 5
-
-define : latlon2cellidx lat lon 
-        . "Convert a position given as latitude and longitude into the correct cell index."
-        ; cell 1 (index 0) is on top, cell 20 at the bottom. The right
-        ; border of cell 2 is situated at longitude 0. With that, the
-        ; left corner of cell 19 is at longitude 180. Top and bottom
-        ; are point-symmetric. We can cleanly divide the upper part of
-        ; the icosaeder into 3 regions by longitude. Let's do that.
-        let*
-            : upper : > lat 0
-              ; we start by switching to a symmetric longitude
-              slon : if upper lon : + lon 180
-              ; the sector number is defined by the uppermost triangle
-              ; in it.
-              sector : if (< slon 120) 4 (if (< slon 270) 3 2)
-              ; we start by calculating the fraction inside the sector
-              lonsectorfraction : modulo slon 120
-              ; we can further subdivide the sector by longitude into two subsectors
-              subsec : if (< lonsectorfraction 60) 0 1
-              subseclon : if (= subsec 0) lonsectorfraction (- 120 lonsectorfraction)
-              ; TODO find some more symmetry or start nontrivial geometry.
-            . #t
+define d20numbers '(1 14 10 6
+                    19 18 4 8 9 16
+                    2 3 17 13 12 5
+                    11 15 7 20)
 
 define : cellidx->dienumber idx
-      let
-       : numbers '(1 14 10 6
-                   19 18 4 8 9 16
-                   2 3 17 13 12 5
-                   11 15 7 20)
-       list-ref numbers (- idx 1)
+       list-ref d20numbers idx
+
+define : dienumber->cellidx number
+       list-index (λ(x)(= x number)) d20numbers
+
+
+define : latlonsixthslabidx latfromtop lonfrac
+       . "calculate the index in a sixth longitude slab of the icosaeder"
+       let*
+          : triangleheight : / (sqrt 3) 2
+            length-top-to-bottom-at-lon0 : + 1 (* 2 triangleheight)
+            height-deg : * 180 : / triangleheight length-top-to-bottom-at-lon0
+            side-deg : * 180 : / 1 length-top-to-bottom-at-lon0
+          ; in one sixth of the icosaeder, there are 6 reachable
+          ; fields. I am indexing them from top to bottom.
+          format #t "latfromtop: ~a, lonfrac: ~a, height-deg/3: ~a, side-deg: ~a\n" latfromtop lonfrac (/ height-deg 3) side-deg
+          cond
+            : < latfromtop : / height-deg 3
+              . 0
+            : < latfromtop : - (* 2 (/ height-deg 3)) (* lonfrac (/ height-deg 3))
+              . 0
+            : < latfromtop : * 2 : / height-deg 3
+              . 1
+            : < latfromtop : + (* 2 (/ height-deg 3)) (* lonfrac (* 2 (/ height-deg 3)))
+              . 1
+            : < latfromtop : * 4 : / height-deg 3
+              . 2
+            : < latfromtop : - (+ side-deg (* 2 (/ height-deg 3))) (* lonfrac (- (+ side-deg (* 2 (/ height-deg 3))) (* 4 (/ height-deg 3))))
+              . 2
+            : < latfromtop : + side-deg : * 2 : / height-deg 3
+              . 3
+            : < latfromtop : + (+ side-deg (* 2 (/ height-deg 3))) (* lonfrac (- (+ side-deg (* 4 (/ height-deg 3))) (+ side-deg (* 2 (/ height-deg 3)))))
+              . 3
+            : < latfromtop : - (+ side-deg (* 5 (/ height-deg 3))) (* lonfrac (- (+ side-deg (* 5 (/ height-deg 3))) (+ side-deg (* 4 (/ height-deg 3)))))
+              . 4
+            else
+              . 5
+         
+
+define : latlon2cellidx lat lon 
+        . "Convert a position given as latitude (-90 .. 90) and
+longitude (0 .. 360) into the correct cell index."
+        ; cell 1 (index 0) is on top, cell 20 at the bottom. The left
+        ; border of cell 2 is situated at longitude 0. We can cleanly
+        ; divide the upper part of the icosaeder into 3 regions by
+        ; longitude. Let's do that.
+        let* ; the sector number is defined by the uppermost triangle
+            : sector : if (< lon 120) 2 (if (< lon 270) 4 3)
+              ; we start by calculating the fraction inside the sector
+              lonsectorfraction : modulo lon 120
+              ; we can further subdivide the sector by longitude into two subsectors
+              subsector : if (< lonsectorfraction 60) 0 1
+              subseclon : if (= subsector 0) lonsectorfraction (- 120 lonsectorfraction)
+              lonfrac : / subseclon 60
+              latfromtop : - 90 lat
+              sixthslab : latlonsixthslabidx latfromtop lonfrac
+              ; for each sector and subsector, set the dienumber
+              slabsec->index '((2 . ((1 14 19 13 15 20) (1 14 16 17 11 20)))
+                               (4 . ((1 6 9 3 11 20) (1 6 8 2 7 20)))
+                               (3 . ((1 10 4 5 7 20) (1 10 18 12 15 20))))
+            dienumber->cellidx
+              list-ref
+                list-ref
+                  assoc-ref slabsec->index sector
+                  . subsector
+                . sixthslab
 
 
 define : main args
        . "Test the code"
-       ; display : cellidx->dienumber 5
-       ; newline
-       ; display : latlon2cellidx 5 3
-       ; newline
-       ; exit 0
+       if : > 2 (length args)
+         set! args : append args '("88") ; lat
+       if : > 3 (length args)
+         set! args : append args '("45") ; lon
+       display : latlon2cellidx (string->number (first (take-right args 2))) (string->number (last args))
+       newline
+       exit 0
        display : d20-as-text world
        newline
        
