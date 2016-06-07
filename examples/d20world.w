@@ -275,7 +275,6 @@ define : main args
          set! args : append args '("45") ; lon
        display : latlon2cellidx (string->number (first (take-right args 2))) (string->number (last args))
        newline
-       exit 0
        display : d20-as-text world
        newline
        
