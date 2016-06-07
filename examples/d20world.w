@@ -238,7 +238,9 @@ define : latlonsixthslabidx latfromtop lonfrac
 
 define : latlon2cellidx lat lon 
         . "Convert a position given as latitude (-90 .. 90) and
-longitude (0 .. 360) into the correct cell index."
+longitude (0 .. 360) into the correct cell index.
+
+This uses heavy linear approximation."
         ; cell 1 (index 0) is on top, cell 20 at the bottom. The left
         ; border of cell 2 is situated at longitude 0. We can cleanly
         ; divide the upper part of the icosaeder into 3 regions by
