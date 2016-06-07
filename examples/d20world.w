@@ -209,13 +209,27 @@ define : latlon2cellidx lat lon
               ; we start by calculating the fraction inside the sector
               lonsectorfraction : modulo slon 120
               ; we can further subdivide the sector by longitude into two subsectors
-              subseclon : if (< lon 60) lon (-120 lon)
+              subsec : if (< lonsectorfraction 60) 0 1
+              subseclon : if (= subsec 0) lonsectorfraction (- 120 lonsectorfraction)
               ; TODO find some more symmetry or start nontrivial geometry.
             . #t
+
+define : cellidx->dienumber idx
+      let
+       : numbers '(1 14 10 6
+                   19 18 4 8 9 16
+                   2 3 17 13 12 5
+                   11 15 7 20)
+       list-ref numbers (- idx 1)
 
 
 define : main args
        . "Test the code"
+       ; display : cellidx->dienumber 5
+       ; newline
+       ; display : latlon2cellidx 5 3
+       ; newline
+       ; exit 0
        display : d20-as-text world
        newline
        
