@@ -205,6 +205,7 @@ define : dienumber->cellidx number
 
 define : latlonsixthslabidx latfromtop lonfrac
        . "calculate the index in a sixth longitude slab of the icosaeder"
+       ; TODO: use shortest surface distance from center of triangle as faster metric.
        let*
           : triangleheight : / (sqrt 3) 2
             length-top-to-bottom-at-lon0 : + 1 (* 2 triangleheight)
@@ -278,18 +279,18 @@ define : main args
        display : d20-as-text world
        newline
        
-       format #t "Diffuse ~A\n" 0.01
-       d20-diffuse world neighbors 0.01
-       display : d20-as-text world
-       newline
-       format #t "Advect ~A\n" 0.1
-       d20-advect world advection-directions 0.1
-       display : d20-as-text world
-       newline
-       format #t "Diffuse ~A\n" 0.1
-       d20-diffuse world neighbors 0.1
-       display : d20-as-text world
-       newline
+       ; format #t "Diffuse ~A\n" 0.01
+       ; d20-diffuse world neighbors 0.01
+       ; display : d20-as-text world
+       ; newline
+       ; format #t "Advect ~A\n" 0.1
+       ; d20-advect world advection-directions 0.1
+       ; display : d20-as-text world
+       ; newline
+       ; format #t "Diffuse ~A\n" 0.1
+       ; d20-diffuse world neighbors 0.1
+       ; display : d20-as-text world
+       ; newline
        format #t "Diffuse: ~A*(~A)\n" 100 0.1
        let loop : : steps 100
            cond
@@ -300,40 +301,40 @@ define : main args
                loop : 1- steps
        display : d20-as-text world
        newline
-       let 
-         : number 20
-           val 1
-         format #t "disturb: ~A to ~A\n" number val
-         vector-set! world (1- number) val
-         display : d20-as-text world
-         newline
-       format #t "Diffuse ~A\n" 0.1
-       d20-diffuse world neighbors 0.1
-       display : d20-as-text world
-       newline
-       
-       format #t "Advect: ~A*(~A)\n" 1000 0.001
-       let loop : : steps 1000
-           cond
-             : = 0 steps
-               . world
-             else
-               d20-advect world advection-directions 0.001
-               display : d20-as-text world
-               d20-cursor-up-text world
-               loop : 1- steps
-       display : d20-as-text world
-       newline
-       format #t "Diffuse: ~A*(~A)\n" 1000 0.004
-       let loop : : steps 1000
-           cond
-             : = 0 steps
-               . world
-             else
-               d20-diffuse world neighbors 0.004
-               display : d20-as-text world
-               d20-cursor-up-text world
-               loop : 1- steps
+       ; let 
+       ;   : number 20
+       ;     val 1
+       ;   format #t "disturb: ~A to ~A\n" number val
+       ;   vector-set! world (1- number) val
+       ;   display : d20-as-text world
+       ;   newline
+       ; format #t "Diffuse ~A\n" 0.1
+       ; d20-diffuse world neighbors 0.1
+       ; display : d20-as-text world
+       ; newline
+       ; 
+       ; format #t "Advect: ~A*(~A)\n" 1000 0.001
+       ; let loop : : steps 1000
+       ;     cond
+       ;       : = 0 steps
+       ;         . world
+       ;       else
+       ;         d20-advect world advection-directions 0.001
+       ;         display : d20-as-text world
+       ;         d20-cursor-up-text world
+       ;         loop : 1- steps
+       ; display : d20-as-text world
+       ; newline
+       ; format #t "Diffuse: ~A*(~A)\n" 1000 0.004
+       ; let loop : : steps 1000
+       ;     cond
+       ;       : = 0 steps
+       ;         . world
+       ;       else
+       ;         d20-diffuse world neighbors 0.004
+       ;         display : d20-as-text world
+       ;         d20-cursor-up-text world
+       ;         loop : 1- steps
        display : d20-as-text world
        newline
        format #t "Diffuse+Advect: ~A*(~A+~A)\n" 1000 0.002 0.001
@@ -350,30 +351,57 @@ define : main args
        display : d20-as-text world
        newline
        
-       display
-         let loop 
-           : lon 360
-             lat 90
-             map '()
-             zone '()
-           cond
-             : and (= lat -90) (= lon 0)
-               cons : cons (vector-ref world (latlon2cellidx lat lon)) zone 
-                 . map
-             : = lon 0
-               loop
-                 . 360
-                 - lat 1
-                 cons : cons (vector-ref world (latlon2cellidx lat lon)) zone 
-                   . map
-                 . '()
-             else
-               loop
-                 - lon 1
-                 . lat
-                 . map
-                 cons : vector-ref world : latlon2cellidx lat lon
-                   . zone
+       let
+         :
+           v
+              let loop 
+                : lon 360
+                  lat 90
+                  map '()
+                  zone '()
+                cond
+                  : and (= lat -90) (= lon 0)
+                    cons : cons (vector-ref world (latlon2cellidx lat lon)) zone 
+                      . map
+                  : = lon 0
+                    loop
+                      . 360
+                      - lat 1
+                      cons : cons (vector-ref world (latlon2cellidx lat lon)) zone 
+                        . map
+                      . '()
+                  else
+                    loop
+                      - lon 1
+                      . lat
+                      . map
+                      cons : vector-ref world : latlon2cellidx lat lon
+                        . zone
+           port : open-output-pipe "python"
+         display "a = \"" port
+         write v port 
+         display "\"" port
+         newline port
+         display "a = eval(a.replace('(', '[').replace(')', ']').replace(' ',', '))" port
+         newline port
+         display "import numpy as np
+import pylab as pl
+import mpl_toolkits.basemap as bm
+arr = np.array(a)
+
+m = bm.Basemap(projection='cea', resolution='l', lat_ts=37.5)
+m.drawcoastlines(color='k',linewidth=0.3)
+m.drawmeridians(np.arange(-120.0, 180.0, 60), labels=[0,0,0,1], linewidth=0.15) # , yoffset=6) # labels = [left,right,top,bottom]
+m.drawparallels(np.arange(-60.0, 90.0, 30), labels=[1,0,0,0], linewidth=0.15)
+ny, nx = arr.shape
+lons, lats = pl.meshgrid(range(-nx/2, nx/2 + nx%2),
+                         range(-ny/2, ny/2 + ny%2))
+x, y = m(lons, lats)
+
+m.pcolormesh(x, y, arr)
+# pl.imshow(a)
+pl.show()
+" port
        newline
          
        
