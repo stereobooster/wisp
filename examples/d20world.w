@@ -242,6 +242,7 @@ define : latlon2cellidx lat lon
 longitude (0 .. 360) into the correct cell index.
 
 This uses heavy linear approximation."
+        ; FIXME: there is still a bug, as shown in the map plot.
         ; cell 1 (index 0) is on top, cell 20 at the bottom. The left
         ; border of cell 2 is situated at longitude 0. We can cleanly
         ; divide the upper part of the icosaeder into 3 regions by
@@ -301,13 +302,13 @@ define : main args
                loop : 1- steps
        display : d20-as-text world
        newline
-       ; let 
-       ;   : number 20
-       ;     val 1
-       ;   format #t "disturb: ~A to ~A\n" number val
-       ;   vector-set! world (1- number) val
-       ;   display : d20-as-text world
-       ;   newline
+       let 
+         : number 20
+           val 1
+         format #t "disturb: ~A to ~A\n" number val
+         vector-set! world (1- number) val
+         display : d20-as-text world
+         newline
        ; format #t "Diffuse ~A\n" 0.1
        ; d20-diffuse world neighbors 0.1
        ; display : d20-as-text world
@@ -337,14 +338,14 @@ define : main args
        ;         loop : 1- steps
        display : d20-as-text world
        newline
-       format #t "Diffuse+Advect: ~A*(~A+~A)\n" 1000 0.002 0.001
-       let loop : : steps 1000
+       format #t "Diffuse+Advect: ~A*(~A+~A)\n" 500 0.002 0.003
+       let loop : : steps 500
            cond
              : = 0 steps
                . world
              else
                d20-diffuse world neighbors 0.002
-               d20-advect world advection-directions 0.001
+               d20-advect world advection-directions 0.003
                display : d20-as-text world
                d20-cursor-up-text world
                loop : 1- steps
@@ -361,13 +362,13 @@ define : main args
                   zone '()
                 cond
                   : and (= lat -90) (= lon 0)
-                    cons : cons (vector-ref world (latlon2cellidx lat lon)) zone 
+                    cons : cons (latlon2cellidx lat lon) zone ; (vector-ref world (latlon2cellidx lat lon)) zone 
                       . map
                   : = lon 0
                     loop
                       . 359
                       - lat 1
-                      cons : cons (vector-ref world (latlon2cellidx lat lon)) zone 
+                      cons : cons (latlon2cellidx lat lon) zone 
                         . map
                       . '()
                   else
@@ -375,7 +376,7 @@ define : main args
                       - lon 1
                       . lat
                       . map
-                      cons : vector-ref world : latlon2cellidx lat lon
+                      cons : latlon2cellidx lat lon
                         . zone
            port : open-output-pipe "python"
          display "a = \"" port
@@ -399,6 +400,7 @@ lons, lats = pl.meshgrid(range(-nx/2, nx/2 + nx%2),
 x, y = m(lons, lats)
 
 m.pcolormesh(x, y, arr)
+pl.colorbar()
 pl.show()
 " port
          close-pipe port
