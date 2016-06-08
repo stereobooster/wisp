@@ -362,13 +362,13 @@ define : main args
                   zone '()
                 cond
                   : and (= lat -90) (= lon 0)
-                    cons : cons (latlon2cellidx lat lon) zone ; (vector-ref world (latlon2cellidx lat lon)) zone 
+                    cons : cons (vector-ref world (latlon2cellidx lat lon)) zone
                       . map
                   : = lon 0
                     loop
                       . 359
                       - lat 1
-                      cons : cons (latlon2cellidx lat lon) zone 
+                      cons : cons (vector-ref world (latlon2cellidx lat lon)) zone
                         . map
                       . '()
                   else
@@ -376,7 +376,7 @@ define : main args
                       - lon 1
                       . lat
                       . map
-                      cons : latlon2cellidx lat lon
+                      cons : vector-ref world (latlon2cellidx lat lon)
                         . zone
            port : open-output-pipe "python"
          display "a = \"" port
