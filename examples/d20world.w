@@ -1,4 +1,6 @@
-#!/home/arne/wisp/wisp-multiline.sh 
+#!/usr/bin/env sh
+# -*- wisp -*-
+exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples d20world) main)' -s "$0" "$@"
 ; !#
 
 ; A world projected on a d20 (20-sided die, ikosaeder)
@@ -17,6 +19,7 @@ define-module : examples d20world
               . #:export : world neighbors d20-as-text d20-diffuse
 
 use-modules : ice-9 format
+use-modules : srfi srfi-1
 use-modules 
   : ice-9 popen
         . #:select : open-output-pipe close-pipe
@@ -188,150 +191,236 @@ define : d20-advect world advection-directions A
                  loop : cdr neighbors-to-advect
 
 
-define φ : * (/ 1 2) : 1+ : sqrt 5
+define d20numbers '(1 14 10 6
+                    19 18 4 8 9 16
+                    2 3 17 13 12 5
+                    11 15 7 20)
+
+define : cellidx->dienumber idx
+       list-ref d20numbers idx
+
+define : dienumber->cellidx number
+       list-index (λ(x)(= x number)) d20numbers
+
+
+define : latlonsixthslabidx latfromtop lonfrac
+       . "calculate the index in a sixth longitude slab of the icosaeder"
+       let*
+          : triangleheight : / (sqrt 3) 2
+            length-top-to-bottom-at-lon0 : + 1 (* 2 triangleheight)
+            height-deg : * 180 : / triangleheight length-top-to-bottom-at-lon0
+            side-deg : * 180 : / 1 length-top-to-bottom-at-lon0
+          ; in one sixth of the icosaeder, there are 6 reachable
+          ; fields. I am indexing them from top to bottom.
+          ; format #t "latfromtop: ~a, lonfrac: ~a, height-deg/3: ~a, side-deg: ~a\n" latfromtop lonfrac (/ height-deg 3) side-deg
+          cond
+            : < latfromtop : / height-deg 3
+              . 0
+            : < latfromtop : - (* 2 (/ height-deg 3)) (* lonfrac (/ height-deg 3))
+              . 0
+            : < latfromtop : * 2 : / height-deg 3
+              . 1
+            : < latfromtop : + (* 2 (/ height-deg 3)) (* lonfrac (* 2 (/ height-deg 3)))
+              . 1
+            : < latfromtop : * 4 : / height-deg 3
+              . 2
+            : < latfromtop : - (+ side-deg (* 2 (/ height-deg 3))) (* lonfrac (- (+ side-deg (* 2 (/ height-deg 3))) (* 4 (/ height-deg 3))))
+              . 2
+            : < latfromtop : + side-deg : * 2 : / height-deg 3
+              . 3
+            : < latfromtop : + (+ side-deg (* 2 (/ height-deg 3))) (* lonfrac (- (+ side-deg (* 4 (/ height-deg 3))) (+ side-deg (* 2 (/ height-deg 3)))))
+              . 3
+            : < latfromtop : - (+ side-deg (* 5 (/ height-deg 3))) (* lonfrac (- (+ side-deg (* 5 (/ height-deg 3))) (+ side-deg (* 4 (/ height-deg 3)))))
+              . 4
+            else
+              . 5
+         
 
 define : latlon2cellidx lat lon 
-        . "Convert a position given as latitude and longitude into the correct cell index."
-        ; cell 1 (index 0) is on top, cell 20 at the bottom. The right
-        ; border of cell 2 is situated at longitude 0. With that, the
-        ; left corner of cell 19 is at longitude 180. Top and bottom
-        ; are point-symmetric. We can cleanly divide the upper part of
-        ; the icosaeder into 3 regions by longitude. Let's do that.
-        let*
-            : upper : > lat 0
-              ; we start by switching to a symmetric longitude
-              slon : if upper lon : + lon 180
-              ; the sector number is defined by the uppermost triangle
-              ; in it.
-              sector : if (< slon 120) 4 (if (< slon 270) 3 2)
+        . "Convert a position given as latitude (-90 .. 90) and
+longitude (0 .. 360) into the correct cell index.
+
+This uses heavy linear approximation."
+        ; cell 1 (index 0) is on top, cell 20 at the bottom. The left
+        ; border of cell 2 is situated at longitude 0. We can cleanly
+        ; divide the upper part of the icosaeder into 3 regions by
+        ; longitude. Let's do that.
+        let* ; the sector number is defined by the uppermost triangle
+            : sector : if (< lon 120) 2 (if (< lon 270) 4 3)
               ; we start by calculating the fraction inside the sector
-              lonsectorfraction : modulo slon 120
+              lonsectorfraction : modulo lon 120
               ; we can further subdivide the sector by longitude into two subsectors
-              subseclon : if (< lon 60) lon (-120 lon)
-              ; TODO find some more symmetry or start nontrivial geometry.
-            . #t
+              subsector : if (< lonsectorfraction 60) 0 1
+              subseclon : if (= subsector 0) lonsectorfraction (- 120 lonsectorfraction)
+              lonfrac : / subseclon 60
+              latfromtop : - 90 lat
+              sixthslab : latlonsixthslabidx latfromtop lonfrac
+              ; for each sector and subsector, set the dienumber
+              slabsec->index '((2 . ((1 14 19 13 15 20) (1 14 16 17 11 20)))
+                               (4 . ((1 6 9 3 11 20) (1 6 8 2 7 20)))
+                               (3 . ((1 10 4 5 7 20) (1 10 18 12 15 20))))
+            dienumber->cellidx
+              list-ref
+                list-ref
+                  assoc-ref slabsec->index sector
+                  . subsector
+                . sixthslab
 
 
-display : d20-as-text world
-newline
-
-format #t "Diffuse ~A\n" 0.01
-d20-diffuse world neighbors 0.01
-display : d20-as-text world
-newline
-format #t "Advect ~A\n" 0.1
-d20-advect world advection-directions 0.1
-display : d20-as-text world
-newline
-format #t "Diffuse ~A\n" 0.1
-d20-diffuse world neighbors 0.1
-display : d20-as-text world
-newline
-format #t "Diffuse: ~A*(~A)\n" 100 0.1
-let loop : : steps 100
-    cond
-      : = 0 steps
-        . world
-      else
-        d20-diffuse world neighbors 0.1
-        loop : 1- steps
-display : d20-as-text world
-newline
-let 
-  : number 20
-    val 1
-  format #t "disturb: ~A to ~A\n" number val
-  vector-set! world (1- number) val
-  display : d20-as-text world
-  newline
-format #t "Diffuse ~A\n" 0.1
-d20-diffuse world neighbors 0.1
-display : d20-as-text world
-newline
-
-format #t "Advect: ~A*(~A)\n" 1000 0.001
-let loop : : steps 1000
-    cond
-      : = 0 steps
-        . world
-      else
-        d20-advect world advection-directions 0.001
-        display : d20-as-text world
-        d20-cursor-up-text world
-        loop : 1- steps
-display : d20-as-text world
-newline
-format #t "Diffuse: ~A*(~A)\n" 1000 0.004
-let loop : : steps 1000
-    cond
-      : = 0 steps
-        . world
-      else
-        d20-diffuse world neighbors 0.004
-        display : d20-as-text world
-        d20-cursor-up-text world
-        loop : 1- steps
-display : d20-as-text world
-newline
-format #t "Diffuse+Advect: ~A*(~A+~A)\n" 1000 0.002 0.001
-let loop : : steps 1000
-    cond
-      : = 0 steps
-        . world
-      else
-        d20-diffuse world neighbors 0.002
-        d20-advect world advection-directions 0.001
-        display : d20-as-text world
-        d20-cursor-up-text world
-        loop : 1- steps
-display : d20-as-text world
-newline
-
-; now plot the result
-let : : port : open-output-pipe "python"
-  format port "from mpl_toolkits.mplot3d import Axes3D, art3d
-import numpy as np
-import scipy as sp
-from matplotlib import cm
-import matplotlib.pyplot as plt
-from scipy.spatial import Delaunay
-
-def Icosahedron():
-    h = 0.5*(1+np.sqrt(5))
-    p1 = np.array([[0,1,h],[0,1,-h],[0,-1,h],[0,-1,-h]])
-    p2 = p1[:,[1,2,0]]
-    p3 = p1[:,[2,0,1]]
-    return np.vstack((p1,p2,p3))
-
-Ico = Icosahedron()
-tri = Delaunay(Ico)
-CH = tri.convex_hull
-points = tri.points
-
-fig = plt.figure(figsize=(4.0,4.0))
-ax = fig.add_subplot(111, projection='3d')
-
-print points
-for i in range(points.shape[0]):
-    neighbors = tri.neighbors[i,:]
-    for n in range(points.shape[0]):
-        pts = []
-        for u in range(points.shape[0]):
-            pt = np.zeros((3,3))
-            pt[0,:] = points[(i),:]
-            pt[1,:] = points[(n),:]
-            pt[2,:] = points[(u),:]
-            # print pt
-            pt *= 0.5
-            pt += 0.5
-            pts.append(pt)
-        tr = art3d.Poly3DCollection(pts)
-        tr.set_color([(0.9*i)/points.shape[0]] + [(0.9*n)/points.shape[0]]*3)
-        ax.add_collection3d(tr)
-# ax.plot_surface(x, y, z, color='g')
-
-plt.show()
-
-exit()\n"
-  close-pipe port
-
+define : main args
+       . "Test the code"
+       if : > 2 (length args)
+         set! args : append args '("88") ; lat
+       if : > 3 (length args)
+         set! args : append args '("45") ; lon
+       display : latlon2cellidx (string->number (first (take-right args 2))) (string->number (last args))
+       newline
+       display : d20-as-text world
+       newline
+       
+       format #t "Diffuse ~A\n" 0.01
+       d20-diffuse world neighbors 0.01
+       display : d20-as-text world
+       newline
+       format #t "Advect ~A\n" 0.1
+       d20-advect world advection-directions 0.1
+       display : d20-as-text world
+       newline
+       format #t "Diffuse ~A\n" 0.1
+       d20-diffuse world neighbors 0.1
+       display : d20-as-text world
+       newline
+       format #t "Diffuse: ~A*(~A)\n" 100 0.1
+       let loop : : steps 100
+           cond
+             : = 0 steps
+               . world
+             else
+               d20-diffuse world neighbors 0.1
+               loop : 1- steps
+       display : d20-as-text world
+       newline
+       let 
+         : number 20
+           val 1
+         format #t "disturb: ~A to ~A\n" number val
+         vector-set! world (1- number) val
+         display : d20-as-text world
+         newline
+       format #t "Diffuse ~A\n" 0.1
+       d20-diffuse world neighbors 0.1
+       display : d20-as-text world
+       newline
+       
+       format #t "Advect: ~A*(~A)\n" 1000 0.001
+       let loop : : steps 1000
+           cond
+             : = 0 steps
+               . world
+             else
+               d20-advect world advection-directions 0.001
+               display : d20-as-text world
+               d20-cursor-up-text world
+               loop : 1- steps
+       display : d20-as-text world
+       newline
+       format #t "Diffuse: ~A*(~A)\n" 1000 0.004
+       let loop : : steps 1000
+           cond
+             : = 0 steps
+               . world
+             else
+               d20-diffuse world neighbors 0.004
+               display : d20-as-text world
+               d20-cursor-up-text world
+               loop : 1- steps
+       display : d20-as-text world
+       newline
+       format #t "Diffuse+Advect: ~A*(~A+~A)\n" 1000 0.002 0.001
+       let loop : : steps 1000
+           cond
+             : = 0 steps
+               . world
+             else
+               d20-diffuse world neighbors 0.002
+               d20-advect world advection-directions 0.001
+               display : d20-as-text world
+               d20-cursor-up-text world
+               loop : 1- steps
+       display : d20-as-text world
+       newline
+       
+       display
+         let loop 
+           : lon 360
+             lat 90
+             map '()
+             zone '()
+           cond
+             : and (= lat -90) (= lon 0)
+               cons : cons (vector-ref world (latlon2cellidx lat lon)) zone 
+                 . map
+             : = lon 0
+               loop
+                 . 360
+                 - lat 1
+                 cons : cons (vector-ref world (latlon2cellidx lat lon)) zone 
+                   . map
+                 . '()
+             else
+               loop
+                 - lon 1
+                 . lat
+                 . map
+                 cons : vector-ref world : latlon2cellidx lat lon
+                   . zone
+       newline
+         
+       
+;        ; now plot the result
+;        let : : port : open-output-pipe "python"
+;          format port "from mpl_toolkits.mplot3d import Axes3D, art3d
+; import numpy as np
+; import scipy as sp
+; from matplotlib import cm
+; import matplotlib.pyplot as plt
+; from scipy.spatial import Delaunay
+; 
+; def Icosahedron():
+;     h = 0.5*(1+np.sqrt(5))
+;     p1 = np.array([[0,1,h],[0,1,-h],[0,-1,h],[0,-1,-h]])
+;     p2 = p1[:,[1,2,0]]
+;     p3 = p1[:,[2,0,1]]
+;     return np.vstack((p1,p2,p3))
+; 
+; Ico = Icosahedron()
+; tri = Delaunay(Ico)
+; CH = tri.convex_hull
+; points = tri.points
+; 
+; fig = plt.figure(figsize=(4.0,4.0))
+; ax = fig.add_subplot(111, projection='3d')
+; 
+; print points
+; for i in range(points.shape[0]):
+;     neighbors = tri.neighbors[i,:]
+;     for n in range(points.shape[0]):
+;         pts = []
+;         for u in range(points.shape[0]):
+;             pt = np.zeros((3,3))
+;             pt[0,:] = points[(i),:]
+;             pt[1,:] = points[(n),:]
+;             pt[2,:] = points[(u),:]
+;             # print pt
+;             pt *= 0.5
+;             pt += 0.5
+;             pts.append(pt)
+;         tr = art3d.Poly3DCollection(pts)
+;         tr.set_color([(0.9*i)/points.shape[0]] + [(0.9*n)/points.shape[0]]*3)
+;         ax.add_collection3d(tr)
+; # ax.plot_surface(x, y, z, color='g')
+; 
+; plt.show()
+; 
+; exit()\n"
+;          close-pipe port
