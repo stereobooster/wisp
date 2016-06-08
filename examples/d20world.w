@@ -248,7 +248,7 @@ This uses heavy linear approximation."
         ; divide the upper part of the icosaeder into 3 regions by
         ; longitude. Let's do that.
         let* ; the sector number is defined by the uppermost triangle
-            : sector : if (< lon 120) 2 (if (< lon 270) 4 3)
+            : sector : if (< lon 120) 2 (if (< lon 240) 4 3)
               ; we start by calculating the fraction inside the sector
               lonsectorfraction : modulo lon 120
               ; we can further subdivide the sector by longitude into two subsectors
