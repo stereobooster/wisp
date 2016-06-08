@@ -355,8 +355,8 @@ define : main args
          :
            v
               let loop 
-                : lon 360
-                  lat 90
+                : lon 359
+                  lat 89
                   map '()
                   zone '()
                 cond
@@ -365,7 +365,7 @@ define : main args
                       . map
                   : = lon 0
                     loop
-                      . 360
+                      . 359
                       - lat 1
                       cons : cons (vector-ref world (latlon2cellidx lat lon)) zone 
                         . map
@@ -399,9 +399,9 @@ lons, lats = pl.meshgrid(range(-nx/2, nx/2 + nx%2),
 x, y = m(lons, lats)
 
 m.pcolormesh(x, y, arr)
-# pl.imshow(a)
 pl.show()
 " port
+         close-pipe port
        newline
          
        
