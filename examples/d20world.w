@@ -399,7 +399,7 @@ lons, lats = pl.meshgrid(range(-nx/2, nx/2 + nx%2),
                          range(-ny/2, ny/2 + ny%2))
 x, y = m(lons, lats)
 
-m.pcolormesh(x, y, arr)
+m.pcolormesh(x, y, arr, cmap=pl.get_cmap('Paired'))
 pl.colorbar()
 pl.show()
 " port
