@@ -76,7 +76,7 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ;; password), you’d need 200 bits of entropy. A 36 letter, 8 delimiter
 ;; password (221 bits of entropy) would last about 100 billion
 ;; years. With that it would very likely outlast that civilization
-;; (and its star).
+;; (and maybe even its star).
 
 ;; [5]: https://en.wikipedia.org/wiki/Kardashev_scale
 
@@ -87,9 +87,11 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ;; If you ever wanted to anger a type II civilization, encrypt their
 ;; vital information with a 36 letter, 8 delimiter password like this:
 ;; CB6d,D7fX-5sLV!mgCp,kTvG-He6n-7Fg9.REX3-r9F5
-;; keep in mind, though, that they might have other means to get it
+;; Keep in mind, though, that they might have other means to get it
 ;; than brute force. And when they come for you, they will all be
 ;; *really angry* :)
+;; Or they might just have developed reversible computing, then all
+;; these computations are just a fun game to stretch the mind :)
 
 
 define-module : examples securepassword
