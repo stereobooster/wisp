@@ -24,45 +24,40 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ;; [2]: https://blog.codinghorror.com/speed-hashing/
 ;; [3]: http://codahale.com/how-to-safely-store-a-password/ 
 
-;; A password with 8 letters and 2 delimiters (entropy 51) would on
-;; average withstand the strong attack with a single device for 15
-;; hours, so you could buy a cracked md5-secured 8 letter + 2
-;; delimiter password for 45$ (assuming that it was salted, otherwise
-;; you can buy all these md5’ed passwords for around 90$).
+;; A password with 8 letters and 1 delimiter (entropy 49) would on
+;; average withstand the strong attack with a single device for 4
+;; hours, so you could buy a cracked md5-secured 8 letter + 1
+;; delimiter password for 12$ (assuming that it was salted, otherwise
+;; you can buy all these md5’ed passwords for around 24$).
 
-;; The 8 letter and 2 delimiter password would withstand the weak
-;; attack until 2035 (when it would be cracked in one year, with a
+;; The 8 letter and 1 delimiter password would withstand the weak
+;; attack until 2031 (when it would be cracked in one year, with a
 ;; cost of 26k$), assuming doubling of processing power every two
-;; years. Cracking it in one day would be possible in 2052, paying
+;; years. Cracking it in one day would be possible in 2048, paying
 ;; just 72$.
 
-;; (yearstillcrackable 51)
-;; => ((in-one-second 68.78071905112638)
-;;     (in-one-day 35.983231667249996)
-;;     (in-one-year 18.957750741642993))
+;; (yearstillcrackable 49)
+;; => ((in-one-second 64.78071905112638)
+;;     (in-one-day 31.983231667249996)
+;;     (in-one-year 14.957750741642995))
 
-;; A password with 12 letters and 3 delimiters (length 12, entropy 77)
-;; should withstand the strong attack until 2051 (then it would be
+;; A password with 12 letters and 2 delimiters (length 12, entropy 75)
+;; should withstand the strong attack until 2047 (then it would be
 ;; cracked in one year), assuming doubling of processing power every
-;; two years, the weak until 2086.
-
-;; (yearstillcrackable 77 #:guesses/second 20e9)
-;; => ((in-one-second 85.56143810225275)
-;;     (in-one-day 52.763950718376364)
-;;     (in-one-year 35.73846979276937))
+;; two years, the weak until 2083.
 
 ;; For every factor of 1000 (i.e. 1024 computers), the time to get a
 ;; solution is reduced by 20 years.  Using every existing cell phone,
 ;; the 12 letter key would be cracked by the method with 100,000
-;; guesses per second in 2025 (within one year). Facebook could do
+;; guesses per second in 2021 (within one year). Facebook could do
 ;; that with Javascript, so you might want to use a longer password if
 ;; your data has to be secure against the whole planet for longer than
-;; 9 years.
+;; 5 years.
 
-;; (yearstillcrackable 77 #:guesses/second 1.e5 #:number-of-devices 2.e9)
-;; => ((in-one-second 58.98601334315385)
-;;     (in-one-day 26.18852595927747)
-;;     (in-one-year 9.163045033670471))
+;; (yearstillcrackable 75 #:guesses/second 1.e5 #:number-of-devices 2.e9)
+;; => ((in-one-second 54.986013343153864)
+;;     (in-one-day 22.188525959277467)
+;;     (in-one-year 5.163045033670471))
 
 ;; Using Landauer’s principle[4], we can estimate the minimum energy
 ;; needed to to check a password solution with a computer at room
