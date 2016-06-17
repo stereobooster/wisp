@@ -16,33 +16,53 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ;; cracked md5 hashes per second in 2010 for just 3$ per hour. This
 ;; should be around 20 billion guesses per second today.
 
+;; I will from now on call 20 billion guesses per second for 3$ per
+;; hour the "strong attack" and 100,000 guesses per second the "weak
+;; attack".
+
 ;; [1]: http://arstechnica.com/security/2013/05/how-crackers-make-minced-meat-out-of-your-passwords/
 ;; [2]: https://blog.codinghorror.com/speed-hashing/
 ;; [3]: http://codahale.com/how-to-safely-store-a-password/ 
 
-;; A password with 8 letters and 2 delimiters (length 8, entropy 50)
-;; would on average withstand the strong attack with a single device
-;; for 2.5 days. It would take around one day to crack with 20 billion
-;; guesses per second, so you could buy a cracked md5-secured 8 letter
-;; + 2 delimiter password for 72$ (assuming that it was salted,
-;; otherwise you can buy all these md5’ed passwords for around 144$).
+;; A password with 8 letters and 2 delimiters (entropy 51) would on
+;; average withstand the strong attack with a single device for 15
+;; hours, so you could buy a cracked md5-secured 8 letter + 2
+;; delimiter password for 45$ (assuming that it was salted, otherwise
+;; you can buy all these md5’ed passwords for around 90$).
 
 ;; The 8 letter and 2 delimiter password would withstand the weak
-;; attack until 2032 (when it would be cracked in one year), assuming
-;; doubling of processing power every two years. Cracking it in one
-;; day would be possible in 2049.
+;; attack until 2035 (when it would be cracked in one year, with a
+;; cost of 26k$), assuming doubling of processing power every two
+;; years. Cracking it in one day would be possible in 2052, paying
+;; just 72$.
 
-;; A password with 12 letters and 3 delimiters (length 12, entropy 75)
-;; should withstand the strong attack until 2069 (then it would be
+;; (yearstillcrackable 51)
+;; => ((in-one-second 68.78071905112638)
+;;     (in-one-day 35.983231667249996)
+;;     (in-one-year 18.957750741642993))
+
+;; A password with 12 letters and 3 delimiters (length 12, entropy 77)
+;; should withstand the strong attack until 2051 (then it would be
 ;; cracked in one year), assuming doubling of processing power every
-;; two years, the weak until 2099.
+;; two years, the weak until 2086.
+
+;; (yearstillcrackable 77 #:guesses/second 20e9)
+;; => ((in-one-second 85.56143810225275)
+;;     (in-one-day 52.763950718376364)
+;;     (in-one-year 35.73846979276937))
 
 ;; For every factor of 1000 (i.e. 1024 computers), the time to get a
 ;; solution is reduced by 20 years.  Using every existing cell phone,
 ;; the 12 letter key would be cracked by the method with 100,000
-;; guesses per second in 2039 (within one year). Facebook could do
+;; guesses per second in 2025 (within one year). Facebook could do
 ;; that with Javascript, so you might want to use a longer password if
-;; your data has to be secure for longer than 22 years.
+;; your data has to be secure against the whole planet for longer than
+;; 9 years.
+
+;; (yearstillcrackable 77 #:guesses/second 1.e5 #:number-of-devices 2.e9)
+;; => ((in-one-second 58.98601334315385)
+;;     (in-one-day 26.18852595927747)
+;;     (in-one-year 9.163045033670471))
 
 ;; Using Landauer’s principle[4], we can estimate the minimum energy
 ;; needed to to check a password solution with a computer at room
@@ -63,33 +83,38 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ;; [5]: http://advances.sciencemag.org/content/2/3/e1501492 "DOI: 10.1126/sciadv.1501492"
 
 ;; With the password scheme described here, a password with 28 letters
-;; and 6 delimiters (172 bits of entropy) should be secure for almost
-;; 100,000 years in the Landauer limit at 1.e-7K, with the energy of a
-;; large nuclear power plant devoted to cracking it.
+;; and 6 delimiters (178 bits of entropy) should be secure for almost
+;; 6 million years in the Landauer limit at 1.e-7K, with the energy of
+;; a large nuclear power plant devoted to cracking it.
 
-;; With 24 letters and 5 delimiters it would only last about a month,
-;; though. Mind exponentials and the linear limit of the human
+;; (years-to-crack-landau-limit-evaporative-cooling-nuclear-powerplant 178)
+;; => 6070231.659195759
+
+;; With 24 letters and 5 delimiters it would only last about one
+;; month, though. Mind exponentials and the linear limit of the human
 ;; lifespan :)
 
-;; However using the total energy of the sun (about 0.5e21 W), a 28
-;; letter, 6 delimiter password would survive for just about 5
-;; seconds. To reach 50 years of password survival against an attacker
+;; However using the total energy output of the sun (about 0.5e21 W),
+;; a 28 letter, 6 delimiter password would survive for just about 6
+;; minutes. To reach 50 years of password survival against an attacker
 ;; harnessing the energy of the sun (a type II civilization on the
 ;; Kardashev scale[6] devoting its whole civilization to cracking your
-;; password), you’d need 200 bits of entropy. A 36 letter, 8 delimiter
-;; password (221 bits of entropy) would last about 100 billion
-;; years. With that it would very likely outlast that civilization
-;; (and maybe even its star).
+;; password), you’d need 200 bits of entropy: 32 letters and 7
+;; delimiters. A 36 letter, 8 delimiter password (230 bits of entropy)
+;; would last about 54 billion years. With that it would very likely
+;; outlast that civilization (especially if the civilization devotes
+;; all its power to crack your password) and maybe even its star. They
+;; could in theory just get lucky, though.
 
 ;; [6]: https://en.wikipedia.org/wiki/Kardashev_scale
 
 ;; An example of a 28 letter, 6 delimiter password would be:
-;; GV7r!dcbm!venf,nGoH-MDjX,vBT8.1vWF
+;; 7XAG,isCF+soGX.f8i6,Vf7P+pG3J!4Xhf
 ;; Don’t use this one, though :)
 
 ;; If you ever wanted to anger a type II civilization, encrypt their
 ;; vital information with a 36 letter, 8 delimiter password like this:
-;; CB6d,D7fX-5sLV!mgCp,kTvG-He6n-7Fg9.REX3-r9F5
+;; HArw-CUCG+AxRg-WAVN-5KRC*1bRq.v9Tc+SAgG,QfUc
 ;; Keep in mind, though, that they might have other means to get it
 ;; than brute force. And when they come for you, they will all be
 ;; *really angry* :)
@@ -124,9 +149,52 @@ define : years-to-crack-landau-limit-evaporative-cooling-nuclear-powerplant entr
         / (expt 2 entropy) guesses/year 2
 
 
+define : years-to-crack-landau-limit-evaporative-cooling-draining-a-star entropy
+       . "Estimate of the years needed to crack the password in
+the landauer limit using the whole power output of a
+sun-like star"
+       let*
+        : watt-powerplant 1e9
+          watt-star 0.5e21 
+        * : years-to-crack-landau-limit-evaporative-cooling-nuclear-powerplant entropy
+          / watt-powerplant watt-star 
+
+
+define* : secondstocrack entropy #:key (guesses/second 100000) (number-of-devices 1)
+       . "Estimate of the seconds it will take to crack the password with the given computing power"
+       / (expt 2 entropy) guesses/second number-of-devices 2
+
+
+define* : hourstocrack entropy #:key . args
+       . "Estimate of the hours it will take to crack the password with the given computing power"
+       let*
+        : seconds/hour : * 60 60
+        / : apply secondstocrack : cons entropy args
+          . seconds/hour
+
+
+define* : daystocrack entropy . args
+       . "Estimate of the days it will take to crack the password with the given computing power"
+       let*
+        : seconds/day : * 60 60 24
+        / : apply secondstocrack : cons entropy args
+          . seconds/day
+
+
+define* : yearstocrack entropy . args
+       . "Estimate of the years it will take to crack the password with the given computing power"
+       let*
+        : days/year 365.25
+          seconds/day : * 60 60 24
+        / : apply secondstocrack : cons entropy args
+          * days/year seconds/day
+
+
 define* : yearstillcrackable entropy #:key (guesses/second 100000) (number-of-devices 1)
-       . "Estimate of the years it will take until the password is crackable"
-       let 
+       . "Estimate of the years it will take until the password
+is crackable, assuming a doubling of computing power every
+two years" 
+       let
         : seconds/day : * 60 60 24
           days/year 365.25
         ` 
@@ -147,10 +215,17 @@ define* : yearstillcrackable entropy #:key (guesses/second 100000) (number-of-de
                     log 2
 
 
+define : entropy-per-letter lettercount
+       . "calculate the entropy of adding a randomly chosen
+letter from a number of letters equal to LETTERCOUNT"
+       / : log lettercount
+         log 2
+
+
 ;; newbase60 without yz_: 55 letters, 5.78 bits of entropy per letter.
 define qwertysafeletters "0123456789ABCDEFGHJKLMNPQRSTUVWXabcdefghijkmnopqrstuvwx"
-;; delimiters: 2 bits of entropy per delimiter.
-define delimiters ",.!-"
+;; delimiters: 2.8 bits of entropy per delimiter, in the same place on main keys or the num-pad.
+define delimiters ",.+-*/!"
 
 define random-source : make-random-source
 random-source-randomize! random-source
