@@ -5,17 +5,20 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 
 ;; Create secure passwords, usable on US and German keyboards without problems
 
-;; As of 2011, a single device can do 2,800,000,000 guesses per second.
-;; Today this should be 10 billion guesses per second.
-;; According to a recovery company which sells crackers at 1.5k$, as of
-;; 2016 a zip-file can be attacked with 100,000 guesses per second.
+;; As of 2011, a single device can do 2,800,000,000 guesses per
+;; second.  Today this should be 10 billion guesses per second.
+;; According to a recovery company which sells crackers at 1.5k$, as
+;; of 2016 a zip-file can be attacked with 100,000 guesses per
+;; second. Ars Technica reports 8 billion attacks on md5 on a single
+;; device in 2013[1].
 
-;; Codinghorror quotes[1] codohale[2] on the cost of buying 5 billion
+;; Codinghorror quotes[2] codohale[3] on the cost of buying 5 billion
 ;; cracked md5 hashes per second in 2010 for just 3$ per hour. This
 ;; should be around 20 billion guesses per second today.
 
-;; [1]: https://blog.codinghorror.com/speed-hashing/
-;; [2]: http://codahale.com/how-to-safely-store-a-password/ 
+;; [1]: http://arstechnica.com/security/2013/05/how-crackers-make-minced-meat-out-of-your-passwords/
+;; [2]: https://blog.codinghorror.com/speed-hashing/
+;; [3]: http://codahale.com/how-to-safely-store-a-password/ 
 
 ;; A password with 8 letters and 2 delimiters (length 8, entropy 50)
 ;; would on average withstand the strong attack with a single device
@@ -41,11 +44,11 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ;; that with Javascript, so you might want to use a longer password if
 ;; your data has to be secure for longer than 22 years.
 
-;; Using Landauer’s principle[3], we can estimate the minimum energy
+;; Using Landauer’s principle[4], we can estimate the minimum energy
 ;; needed to to check a password solution with a computer at room
 ;; temperature, assuming that reversible entropy computing isn’t
 ;; realized and quantum computers have to stick to Landauer’s limit: A
-;; single bit-flip requires approximately 3 Zeptojoule[4] at room
+;; single bit-flip requires approximately 3 Zeptojoule[5] at room
 ;; temperature, so we can flip 333 e18 bits per second with one Watt
 ;; of Energy. Processing any information requires at least one
 ;; bit-flip. Reducing the temperature to 1.e-7K (reachable with
@@ -56,8 +59,8 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ;; password, a 160 bit password would withstand the attack for about
 ;; 23 years.
 
-;; [3]: https://en.wikipedia.org/wiki/Landauer's_principle
-;; [4]: http://advances.sciencemag.org/content/2/3/e1501492 "DOI: 10.1126/sciadv.1501492"
+;; [4]: https://en.wikipedia.org/wiki/Landauer's_principle
+;; [5]: http://advances.sciencemag.org/content/2/3/e1501492 "DOI: 10.1126/sciadv.1501492"
 
 ;; With the password scheme described here, a password with 28 letters
 ;; and 6 delimiters (172 bits of entropy) should be secure for almost
@@ -72,13 +75,13 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ;; letter, 6 delimiter password would survive for just about 5
 ;; seconds. To reach 50 years of password survival against an attacker
 ;; harnessing the energy of the sun (a type II civilization on the
-;; Kardashev scale[5] devoting its whole civilization to cracking your
+;; Kardashev scale[6] devoting its whole civilization to cracking your
 ;; password), you’d need 200 bits of entropy. A 36 letter, 8 delimiter
 ;; password (221 bits of entropy) would last about 100 billion
 ;; years. With that it would very likely outlast that civilization
 ;; (and maybe even its star).
 
-;; [5]: https://en.wikipedia.org/wiki/Kardashev_scale
+;; [6]: https://en.wikipedia.org/wiki/Kardashev_scale
 
 ;; An example of a 28 letter, 6 delimiter password would be:
 ;; GV7r!dcbm!venf,nGoH-MDjX,vBT8.1vWF
