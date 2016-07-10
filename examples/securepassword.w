@@ -249,6 +249,8 @@ define : flatten e
 
 
 define : password/srfi-42 length
+       . "Generate a password with the given length in letters 
+(not counting delimiters)."
        list->string
          append-ec (: i (iota length 1))
            cons : randomletter qwertysafeletters
@@ -259,6 +261,8 @@ define : password/srfi-42 length
 
 
 define : password/map length
+       . "Generate a password with the given length in letters 
+(not counting delimiters)."
        list->string
          flatten
            map
@@ -273,6 +277,8 @@ define : password/map length
 
 
 define : password length
+       . "Generate a password with the given length in letters 
+(not counting delimiters)."
        let fill
          : letters '()
            remaining length
