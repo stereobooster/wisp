@@ -26,6 +26,10 @@ this works:
 
 ` ,(+ 1 2) ,(+ 2 3) : , + 4 5
 
+display ` , : + 1
+should give (display `(,(+ 1)))
+but gives (display `(,((+ 1))))
+
 [expected]
 # The expected result
 
