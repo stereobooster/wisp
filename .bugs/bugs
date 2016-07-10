@@ -24,7 +24,7 @@ wisp-guile.w does not yet remove the leading . which signifies a continuation. |
 inline ' : should be '(                                      | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:72d534a8b23b4cb168017f1bb7d8816f0ea170c4, time:1366497335.26
 failing test tests/shebang.w                                 | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:74a851f83af8996465a7b24d8453161beb0f0fd5, time:1379106761.57
 non-nested multiline comments with #! !#. Requires restructuring. | owner:, open:False, id:7a57614fa920b2ddad002d044b144d0bb7c34f84, time:1389364108.01
-wisp-guile: multiline-stringsn break. See tests/multiline-string.w | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:7e457dfe042341ea24d0b57c4f0f48fa3d9affc3, time:1462055749.4
+wisp-guile: multiline-stringsn break. See tests/multiline-string.w | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:7e457dfe042341ea24d0b57c4f0f48fa3d9affc3, time:1462055749.4
 wisp-scheme: interpret , : as ,() similar to : ,             | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:85e150dcb10c49d8f51db525e07d24e83bdba0f1, time:1416432201.21
 wisp-guile: support nested multi-line comments with #| ... |#: multiline comments (srfi-30). Requires restructuring. | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:8cf6202873d4454f57813dd17cf60432059f7c62, time:1389569421.6
 wisp-scheme: Does not recognize the . #!curly-infix request for curly-infix or other reader syntax. | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:91f27adb7d4e378e034b3408b6e4616f707f9587, time:1418162368.88

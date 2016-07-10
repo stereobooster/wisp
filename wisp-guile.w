@@ -134,8 +134,8 @@ ____      text : if (eof-object? lastchar) "" : string lastchar
                                 not : char=? lastchar #\\ ; if the last char is not a backslash (escaped quote)
                                 ; or the last char is a backslash preceded by an uneven number of backslashes (so the backslash is actually an escaped backslash)
                                 and : char=? lastchar #\\
-                                      ; not : equal? #f : string-match "\\([^\\]\\)+\\(\\\\\\\\\\)*[\\]$" text ; matches [^\](\\)*\$ - non-backslash + arbitrary number of pairs of backslashes + final backslash which undoes the escaping from the lastchar (by actually escaping the lastchar)
-                                      endsinunevenbackslashes text
+                                      ; if all backslashes before the lastchar are paired, the final quote is escaped.
+                                      not : endsinunevenbackslashes text
                         char=? lastchar #\space ; when the last char was a space, I can get into a string
                         char=? lastchar #\newline ; same for newline chars
                         char=? lastchar #\return 
