@@ -26,11 +26,11 @@ Note that this is full-fledged scheme, with all its capabilities like hygienic m
 Requirements
 ------------
 
-* [Python 3.x][] to bootstrap wisp
-* [GNU Guile 2.x][] for running it
+* [GNU Guile 2.x][] for running wisp
+* [Python 3.x][] for a full bootstrap (optional)
 
-[Python 3.x]: http://python.org "Python Programming Language"
 [GNU Guile 2.x]: http://gnu.org/s/guile "GNU Guile: The official extension language for the GNU operating system."
+[Python 3.x]: http://python.org "Python Programming Language"
 
 Usage
 -----
