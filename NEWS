@@ -3,7 +3,7 @@ wisp ():
 
 wisp 0.9.1:
 - add enter three witches: minimum overhead for a theater script
-- examples/wisp.w: syntax for a with keyword
+- examples/with.w: syntax for a with keyword
   which works like with in Python
 - wisp-mode: add indentation cycling patch
 - Use GUILE_PKG instead of PKG_CHECK_MODULES
