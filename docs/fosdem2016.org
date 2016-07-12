@@ -1,0 +1,454 @@
+#+title: 
+# ^ no title page, but title on the slides
+#+LATEX: \title{wisp}
+
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [presentation]
+#+BEAMER_THEME: Boadilla
+#+options: toc:nil
+
+#+latex: \renewcommand{\inserttotalframenumber}{10}
+
+
+* Wisp - SRFI-119
+
+#+latex: \vspace{1.3cm}
+
+**                                                                :B_columns:
+    :PROPERTIES:
+    :BEAMER_env: columns
+    :END:
+***                                                                   :BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.42
+   :END:
+
+#+BEGIN_SRC wisp 
+define : factorial n
+    if : zero? n
+       . 1
+       * n : factorial {n - 1}
+#+END_SRC
+
+**                                                                  :B_quote:
+   :PROPERTIES:
+   :BEAMER_env: quote
+   :END:
+
+#+latex: \vspace{1.3cm}
+
+\begin{center}
+I love the syntax of Python, \\
+but crave the simplicity and power of Lisp.
+\end{center}
+
+
+* Why Wisp?
+
+
+
+** 
+   :PROPERTIES:
+   :BEAMER_act: <2-2>
+   :END:
+
+\centering
+\Large
+
+\textyen Hello World!\pounds
+
+** 
+   :PROPERTIES:
+   :BEAMER_act: <3-4>
+   :END:
+
+\centering
+\Large
+
+Hello World!
+
+** 
+   :PROPERTIES:
+   :BEAMER_act: <1-1>
+   :END:
+
+\centering
+\Large
+
+(Hello World!)
+
+** Notes                                                            :B_quote:
+   :PROPERTIES:
+   :BEAMER_act: <4-4>
+   :BEAMER_env: quote
+   :END:
+
+- The first and last letter are important for word recognition.¹
+
+- Over 70% of the codelines in the Guile scheme source start with a paren \Rightarrow ceremony.
+
+- Many people avoid Lisp-like languages because of the parens.² 
+
+\footnotesize
+
+¹: Though not all-important. See \\ [[http://www.mrc-cbu.cam.ac.uk/people/matt.davis/cmabridge/][www.mrc-cbu.cam.ac.uk/people/matt.davis/cmabridge/]]
+
+²: Also see [[http://srfi.schemers.org/srfi-110/srfi-110.html#cant-improve][srfi.schemers.org/srfi-110/srfi-110.html#cant-improve]]
+
+* The most common letters: Lisp and Scheme are awesome
+
+** 
+
+\centering
+\Huge
+=.,":'_#?!;=
+
+**                                                          :B_ignoreheading:
+   :PROPERTIES:
+   :BEAMER_env: ignoreheading
+   :END:
+
+\centering
+/The most common non-letter, non-math characters in prose¹/
+
+\vspace{0.3cm}
+
+** 
+
+\centering
+\Huge
+=()=
+
+**                                                          :B_ignoreheading:
+   :PROPERTIES:
+   :BEAMER_env: ignoreheading
+   :END:
+
+\centering
+/The most common paired characters¹/
+
+**                                                          :B_ignoreheading:
+   :PROPERTIES:
+   :BEAMER_env: ignoreheading
+   :END:
+
+
+\vspace{0.5cm}
+
+\raggedright
+\footnotesize
+¹: From letter distributions in newspapers, see: \\ [[https://bitbucket.org/ArneBab/evolve-keyboard-layout/src/tip/1-gramme.arne.txt][bitbucket.org/ArneBab/evolve-keyboard-layout/src/tip/1-gramme.arne.txt]]
+
+* Wisp in a nutshell
+**                                                                :B_columns:
+   :PROPERTIES:
+   :BEAMER_env: columns
+   :END:
+
+
+
+***                                                                   :BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.48
+   :END:
+\vspace{0.5cm}
+
+#+BEGIN_SRC wisp 
+define : factorial n
+    if : zero? n
+       . 1
+       * n : factorial {n - 1}
+#+END_SRC
+
+
+***                                                                   :BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.48
+   :END:
+\vspace{0.5cm}
+
+#+BEGIN_SRC wisp
+(define (factorial n)
+    (if (zero? n)
+      1
+      (* n (factorial {n - 1}))))
+#+END_SRC
+
+**                                                          :B_ignoreheading:
+   :PROPERTIES:
+   :BEAMER_env: ignoreheading
+   :END:
+
+\vspace{1cm}
+
+\footnotesize
+
+- indent as with parens, dot-prefix, inline-:, and use SRFI-105.
+
+- Wisp uses the minimal syntax required to represent arbitrary structure: \\ Syntax justification: [[http://draketo.de/english/wisp#sec-4][draketo.de/english/wisp#sec-4]]
+
+- Many more examples in “From Python to Guile Scheme”: \\ info: [[http://draketo.de/py2guile][draketo.de/py2guile]] \\ download: [[http://draketo.de/proj/py2guile/py2guile.pdf][draketo.de/proj/py2guile/py2guile.pdf]]
+
+
+* Implementation
+
+** REPL and Reader (language wisp spec)                       :B_block:BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.57
+   :BEAMER_env: block
+   :END:
+
+#+BEGIN_SRC wisp
+  define-language wisp
+    . #:title "Wisp Scheme Syntax.."
+    . #:reader read-one-wisp-sexp
+    . #:compilers `(
+        (tree-il . ,compile-tree-il))
+    . #:decompilers `(
+        (tree-il . ,decompile-tree-il))
+    . #:evaluator (lambda (x module) 
+                     primitive-eval x)
+    . #:printer write
+    . #:make-default-environment
+    lambda :
+      let : : m : make-fresh-user-module
+        module-define! m 'current-reader 
+                          make-fluid
+        module-set! m 'format simple-format
+        . m
+#+END_SRC
+
+** Preprocessor (wisp.scm)                                    :B_block:BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.39
+   :BEAMER_env: block
+   :END:
+
+#+BEGIN_SRC sh
+guile wisp.scm tests/hello.w
+#+END_SRC
+
+#+BEGIN_SRC scheme
+(define (hello who)
+  ;; include the newline
+  (format #t "~A ~A!\n"
+          "Hello" who))
+(hello "Wisp")
+#+END_SRC
+
+\footnotesize
+(Plan B: You can always go back)
+
+
+* Applications?
+**                                                                    :BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.50
+   :END:
+
+*** Example: User Scripts
+
+#+BEGIN_SRC wisp
+Enter : First_Witch
+        Second_Witch
+        Third_Witch
+
+First_Witch
+  When shall we three meet again
+  In thunder, lightning, or in rain?
+#+END_SRC
+
+***                                                         :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+
+This displays
+
+***                                                                 :B_block:
+   :PROPERTIES:
+   :BEAMER_env: block
+   :END:
+\footnotesize
+#+BEGIN_EXAMPLE
+First Witch
+  When shall we three meet again
+  In thunder, lightning, or in rain?
+#+END_EXAMPLE
+
+***                                                         :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+
+\footnotesize
+- [[http://draketo.de/english/wisp/shakespeare][draketo.de/english/wisp/shakespeare]]
+- Templates, executable pseudocode, REPL-interaction, configuration, ...
+
+* Solutions
+
+** Run examples/newbase60.w as script
+
+#+BEGIN_SRC wisp
+#!/usr/bin/env sh
+# -*- wisp -*-
+exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp \
+           -e '(@@ (examples newbase60) main)' \
+           -s "$0" "$@"
+; !#
+define-module : examples newbase60
+
+define : main args
+  ...
+#+END_SRC
+
+** Use Wisp code from parenthesized Scheme
+
+- precompile: =guile --language=wisp module=
+- then just import as usual: =(use-modules (...))=
+
+* Experience
+
+**                                                                  :B_quote:
+   :PROPERTIES:
+   :BEAMER_env: quote
+   :END:
+
+\vspace{1cm}
+
+»ArneBab's alternate sexp syntax is best I've seen; pythonesque, hides parens but keeps power« — Christopher Webber \\ \rightarrow [[http://dustycloud.org/blog/wisp-lisp-alternative/][dustycloud.org/blog/wisp-lisp-alternative/]]
+
+\vspace{1cm}
+
+**                                                                  :B_block:
+   :PROPERTIES:
+   :BEAMER_env: block
+   :END:
+
+- Wisp is implemented in Wisp (850 lines, two implementations).
+- Examples: 4 lines (factorial) to 330 lines (advection on icosaheder).
+
+* Try Wisp
+
+** Install
+
+#+BEGIN_SRC sh
+guix package -i guile guile-wisp
+guile --language=wisp
+#+END_SRC
+
+#+BEGIN_SRC sh
+wget https://bitbucket.org/ArneBab/wisp/downloads/wisp-0.9.0.tar.gz;
+tar xf wisp-0.9.0.tar.gz ; cd wisp-0.9.0/;
+./configure; make check;
+examples/newbase60.w 123
+#+END_SRC
+
+- [[http://draketo.de/english/wisp][http://draketo.de/english/wisp]]
+
+** Emacs mode for syntax highlighting
+
+- M-x package-install [RET] *wisp-mode* [RET]
+- https://marmalade-repo.org/packages/wisp-mode
+
+
+* Thank you!
+
+***                                               :B_alertblock:BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.032
+    :BEAMER_env: alertblock
+    :END:
+
+$\ddot \smile$
+
+* Appendix                                                       :B_appendix:
+  :PROPERTIES:
+  :BEAMER_env: appendix
+  :END:
+
+* Why not SRFI-110 or SRFI-49?
+
+** SRFI-49                                                            :BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.45
+   :END:
+
+*** SRFI-49                                                         :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+
+#+BEGIN_SRC wisp
+  + 5
+    * 4 3
+    2
+    1
+    0
+#+END_SRC
+
+- Cannot continue the argument list
+
+*** Wisp                                                            :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+
+#+BEGIN_SRC wisp
+  + 5
+    * 4 3
+    . 2 1 0
+
+#+END_SRC
+
+** SRFI-110                                                   :B_block:BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.45
+   :BEAMER_env: block
+   :END:
+
+#+BEGIN_SRC wisp
+myfunction 
+  x: \\ original-x
+  y: \\ calculate-y original-y
+#+END_SRC
+
+#+BEGIN_SRC wisp
+  a b $ c d e $ f g
+#+END_SRC
+
+#+BEGIN_SRC wisp
+  let <* x getx() \\ y gety() *>
+  ! {{x * x} + {y * y}}
+#+END_SRC
+
+- most common letters?
+
+* Keep parens where they help readability
+
+
+**                                                                    :BMCOL:
+   :PROPERTIES:
+   :BEAMER_col: 0.45
+   :END:
+
+
+#+BEGIN_SRC wisp
+cond 
+  : and (null? l) (zero? a)
+    . '()
+  else
+    cons a l
+#+END_SRC
+
+
+#+BEGIN_SRC wisp
+map 
+  lambda (x) (+ x 1)
+  list 1 2 3
+#+END_SRC
+
+
+# Local Variables:
+# org-latex-minted-options: (("linenos" "false") ("frame" "lines") ("framesep" "6pt") ("fontsize" "\\footnotesize"))
+# End:

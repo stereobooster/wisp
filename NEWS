@@ -1,7 +1,38 @@
+wisp ():
+- 
+
+wisp 0.9.1:
+- add enter three witches: minimum overhead for a theater script
+- examples/with.w: syntax for a with keyword
+  which works like with in Python
+- wisp-mode: add indentation cycling patch
+- Use GUILE_PKG instead of PKG_CHECK_MODULES
+  thanks to Jan Wedekind
+- "make install" adds the wisp language to Guile
+  thanks to Jan Wedekind
+- add examples/securepassword.w
+- add slides for FOSDEM 2016 talk
+- examples/d20world.w: implement basic plotting on a map.
+- more of the examples use the guile reader by default
+  thanks to Kevin W. van Rooijen
+- examples/d6.w: add critical rolls
+- use GUILE_PROGS to check for guile instead of using homegrown stuff
+- fix multiline string bug when the string includes \"
+  tracked down by Michael Lamb
+- new example: say.w (companion to
+  http://draketo.de/english/wisp/shakespeare )
+- add running mean and async
+- add ensemble estimation
+- always use /usr/bin/env bash as hashbang for shell scripts.
+- fix factorial code
+- improve handling of "` , :" (incomplete, see bug e44)
+- unescape up to 6 leading underscores (fix bug 31)
+
 wisp 0.9.0 (2015-09-24):
 - actually distribute wisp.scm
 - wisp now starts from wisp.scm. To bootstrap a release from Python, 
   remove wisp.scm and run `make wisp.scm`
+  starting with 0.9.0, installing wisp no longer depends on Python.
 
 wisp 0.8.7 (2015-09-24):
 - new example say.w, companion to 

@@ -1,9 +1,11 @@
 ;;; wisp-mode.el --- Tools for wisp: the Whitespace-to-Lisp preprocessor
 
-;; Copyright (C) 2013  Arne Babenhauserheide <arne_bab@web.de>
+;; Copyright (C) 2013--2016  Arne Babenhauserheide <arne_bab@web.de>
+;; Copyright (C) 2015--2016  Kevin W. van Rooijen — indentation and tools
+;;               from https://github.com/kwrooijen/indy/blob/master/indy.el
 
 ;; Author: Arne Babenhauserheide <arne_bab@web.de>
-;; Version: 0.2.1
+;; Version: 0.2.3
 ;; Keywords: languages, lisp
 
 ;; This program is free software; you can redistribute it and/or
@@ -28,8 +30,9 @@
 ;; 
 ;; For details on wisp, see 
 ;; http://draketo.de/light/english/wisp-lisp-indentation-preprocessor
-;; 
-;; If you came here looking for wisp the lisp-to-javascript compiler[1], have a look at wispjs-mode[2].
+;;
+;; If you came here looking for wisp the lisp-to-javascript
+;; compiler[1], have a look at wispjs-mode[2].
 ;; 
 ;; [1]: http://jeditoolkit.com/try-wisp
 ;; 
@@ -70,7 +73,7 @@
 ; note: for easy testing: emacs -Q wisp-mode.el -e eval-buffer wisp-guile.w -e delete-other-windows
 
 
-(defvar wisp-builtin '("define" "define-syntax" "syntax-rules" "defun" "let*" "let" "setq" "set!" "set" "if" "when" "while" "set!" "and" "or" "not" "char=?"))
+(defvar wisp-builtin '("define" "define-syntax" "syntax-rules" "syntax-case" "define-syntax-rule" "defun" "let*" "let" "setq" "set!" "set" "if" "when" "while" "set!" "and" "or" "not" "char=?"))
 
 ; TODO: Add special treatment for defun foo : bar baz ⇒ foo = function, bar and baz not.
 ; TODO: Add highlighting for `, , and other macro-identifiers.
@@ -107,6 +110,93 @@
      (" : \\| \\. " . font-lock-keyword-face) ; leading : or .
      ))
   "Default highlighting expressions for wisp mode.")
+(defun wisp--prev-indent ()
+  "Get the amount of indentation spaces if the previous line."
+  (save-excursion
+    (previous-line 1)
+    (while (wisp--line-empty?)
+      (previous-line 1))
+    (back-to-indentation)
+    (current-column)))
+
+(defun wisp--line-empty? ()
+  "Check if the current line is empty."
+  (string-match "^\s*$" (wisp--get-current-line)))
+
+(defun wisp--get-current-line ()
+  "Get the current line as a string."
+  (buffer-substring-no-properties (point-at-bol) (point-at-eol)))
+
+(defun wisp--current-indent ()
+  "Get the amount of indentation spaces if the current line."
+  (save-excursion
+    (back-to-indentation)
+    (current-column)))
+
+(defun indy--fix-num (num)
+  "Make sure NUM is a valid number for calculating indentation."
+  (cond
+   ((not num) 0)
+   ((< num 0) 0)
+   (t num)))
+
+(defun wisp--indent (num)
+  "Indent the current line by the amount of provided in NUM."
+  (unless (equal (wisp--current-indent) num)
+    (let* ((num (max num 0))
+           (ccn (+ (current-column) (- num (wisp--current-indent)))))
+      (indent-line-to num)
+      (move-to-column (indy--fix-num ccn)))))
+
+;;;###autoload
+(defun wisp--tab ()
+  "Cycle through indentations depending on the previous line."
+  (interactive)
+  (let* ((curr (wisp--current-indent))
+         (prev (wisp--prev-indent))
+         (width (cond
+             ((< curr (- prev tab-width)) (- prev tab-width))
+             ((< curr prev) prev)
+             ((equal curr prev) (+ prev tab-width))
+             (t  0))))
+    (wisp--indent width)))
+
+
+(defun wisp-indent-current-line (&optional unindented-ok)
+  "Sets the indentation of the current line. Derived from
+indent-relative."
+  (interactive "P")
+  (let ((start-column (current-column))
+        indent)
+    (save-excursion
+      (beginning-of-line)
+      (if (re-search-backward "^[^\n]" nil t)
+          (let ((end (save-excursion (forward-line 1) (point))))
+  (setq tab-width 4)
+            (move-to-column start-column)
+            ; TODO: If the previous line is less indented by exactly 4
+            ; characters, de-dent to previous-line minus 4. If the
+            ; previous line is more indented, indent to the
+            ; indentation of the previous line. If both lines are
+            ; equally indented, indent to either the previous line
+            ; plus 4, or to the first occurence of a colon, if that’s
+            ; less.
+            (cond
+             ((= (current-column) (- start-column 4))
+              (setq indent (- (current-column) 4))))
+             
+            (or (looking-at "[ \t]")
+                unindented-ok
+                (skip-chars-forward "^ \t" end))
+            (skip-chars-forward " \t" end)
+            (or (= (point) end) (setq indent (current-column))))))
+    (if indent
+        (let ((opoint (point-marker)))
+          (indent-to indent 0)
+          (if (> opoint (point))
+              (goto-char opoint))
+          (move-marker opoint nil))
+      (tab-to-tab-stop))))
 
 ; use this mode automatically
 ;;;###autoload
@@ -123,7 +213,7 @@
   (set (make-local-variable 'parse-sexp-ignore-comments) t)
   (set (make-local-variable 'font-lock-defaults) wisp-font-lock-keywords)
   (set (make-local-variable 'mode-require-final-newline) t)
-  (local-set-key (kbd "<tab>") 'indent-relative))
+  (local-set-key (kbd "<tab>") 'wisp--tab))
 
                         
 

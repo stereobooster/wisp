@@ -7,7 +7,7 @@ define-module : examples factorial
 
 define : factorial n            ;   (define (factorial n)
     if : zero? n                ;       (if (zero? n)
-       . n                      ; =>        n
+       . 1                      ; =>        1
        * n : factorial {n - 1}  ;           (* n (factorial {n - 1}))))
 
 define : main args
