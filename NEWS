@@ -1,4 +1,7 @@
 wisp ():
+- 
+
+wisp 0.9.1:
 - examples/d20world.w: implement basic plotting on a map.
 - more of the examples use the guile reader by default
 - examples/wisp.w: syntax for a with keyword
