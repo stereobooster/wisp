@@ -60,6 +60,34 @@ define-syntax Speak
   : _ (((name :::))) symbol :::
     begin #t symbol :::
 
+
+define : longest-common-prefix-in introduced-names li
+       . "Get the name with the longest common prefix with list li"
+       let loop
+         : names introduced-names
+           longest '()
+         if : null? names
+            . longest
+            let lp
+              : prefix '()
+                name : car names
+                l : li
+              if
+                or 
+                  null? name
+                  null? l
+                  not : equal? (car name) (car l)
+                loop 
+                  cdr names
+                  if (> (length prefix) (length longest))
+                     . prefix
+                     . longest
+                lp
+                  cons (car name) prefix
+                  cdr name
+                  cdr l
+
+
 define-syntax Enter
  lambda (x)
   syntax-case x ()
@@ -81,11 +109,10 @@ define-syntax Enter
            ;   syntax-error
            ;     . "Name not introduced:" name more ...
            : _ symbol ::: ; FIXME: This prevents checking at compiletime :(
-             with-syntax ((oldname (datum->syntax y 'name)))
                ; FIXME: this does not correctly make the second name
                ; part of the name, preventing differentiation between
                ; name and modifier
-               #` Speak (((oldname))) symbol :::
+               #` Speak (((name))) symbol :::
        ;; process the rest of the names
        Enter b ...
        ;; record that the name was introduced. I do not see a way to do
