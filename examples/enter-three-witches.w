@@ -16,6 +16,15 @@ use-modules : ice-9 optargs
 
 define introduced-names '()
 
+define : ->string x
+       cond
+         : symbol? x
+           symbol->string x
+         : number? x
+           format #f "~a" x
+         else
+           format #f "~A" x
+
 define : say nameparts lines
        . "Show the lines as said by the name defined by the list
 of name parts.
@@ -31,7 +40,7 @@ of name parts.
        format #t "~A\n  ~A\n\n"
          string-join : map symbol->string nameparts
          string-join
-           map : lambda (x) (string-join (map symbol->string x))
+           map : lambda (x) (string-join (map ->string x))
                . lines
            . "\n  "
 
@@ -77,8 +86,8 @@ define-syntax Speak
      ;; when using this name, print all lines indented, with the name in front.
      : _ (((name :::))) ((mod :::)) (word :::) line :::
          #` say
-             quote : name ::: mod :::
-             quote : (word :::) line :::
+             quasiquote : name ::: mod :::
+             quasiquote : (word :::) line :::
      ;; extend mod keywords
      : _ (((name :::))) ((mod :::)) modifier line :::
          ;; extend the modifier keyword list
@@ -156,7 +165,7 @@ define : main args
       In thunder, lightning, or in rain?
   
   Second Witch :resolute
-      When the hurlyburly's done,
+      When the hurlyburly's done, (we ,(+ 1 2)) ; inline-code is allowed!
       When the battle's lost and won.
 
   Third Witch
