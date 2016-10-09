@@ -23,7 +23,7 @@ of name parts.
        let 
          ;; symbols starting with : are not treated as part of the
          ;; name. They can be used as actor instructions
-         : pure-name : remove (lambda (x) (string-prefix? ":" (symbol->string x))) nameparts
+         : pure-name : remove (lambda (x) (string-prefix? ":" (symbol->string x))) : remove pair? nameparts
          if : not : member pure-name introduced-names
               error 
                 format #f "Tried to use ~A who did not Enter. Introduced names: ~A" 
@@ -35,43 +35,18 @@ of name parts.
                . lines
            . "\n  "
 
-define-syntax Speak
- syntax-rules ::: ()
-  ;; Support form for modifiers: enclose by double parens (used later)
-  ;; when using this name, print all lines indented, with the name in front.
-  : _ (((name :::))) ((mod :::)) (word :::) line :::
-    say
-      quote : name ::: mod :::
-      quote : (word :::) line :::
-  ;; extend mod keywords
-  : _ (((name :::))) ((mod :::)) modifier line :::
-    begin
-      ;; extend the modifier keyword list
-      Speak (((name :::))) ((mod ::: modifier)) line :::
-  ;; say form without modifier
-  : _ (((name :::))) (word :::) line :::
-    Speak (((name :::))) (()) (word :::) line :::
-  ;; first modifier keyword after the name
-  : _ (((name :::))) modifier line :::
-    begin
-      ;; append to mod helper form
-      Speak (((name :::))) ((modifier)) line :::
-  ;; Strip the name from lines with empty arguments
-  : _ (((name :::))) symbol :::
-    begin #t symbol :::
 
-
-define : longest-common-prefix-in introduced-names li
+define : longest-common-prefix li introduced-names
        . "Get the name with the longest common prefix with list li"
        let loop
          : names introduced-names
            longest '()
          if : null? names
-            . longest
+            reverse longest
             let lp
               : prefix '()
                 name : car names
-                l : li
+                l li
               if
                 or 
                   null? name
@@ -86,6 +61,38 @@ define : longest-common-prefix-in introduced-names li
                   cons (car name) prefix
                   cdr name
                   cdr l
+
+
+define : Squeak . li
+       . "somehow say the given list"
+       let : : name : longest-common-prefix li introduced-names
+         say name : drop li (length name)
+       
+
+define-syntax Speak
+ lambda (x)
+  with-ellipsis :::
+   syntax-case x ()
+     ;; Support form for modifiers: enclose by double parens (used later)
+     ;; when using this name, print all lines indented, with the name in front.
+     : _ (((name :::))) ((mod :::)) (word :::) line :::
+         #` say
+             quote : name ::: mod :::
+             quote : (word :::) line :::
+     ;; extend mod keywords
+     : _ (((name :::))) ((mod :::)) modifier line :::
+         ;; extend the modifier keyword list
+         #` Speak (((name :::))) ((mod ::: modifier)) line :::
+     ;; say form without modifier
+     : _ (((name :::))) (word :::) line :::
+         #` Speak (((name :::))) (()) (word :::) line :::
+     ;; first modifier keyword after the name
+     : _ (((name :::))) modifier line :::
+         ;; append to mod helper form
+         #` Speak (((name :::))) ((modifier)) line :::
+     ;; Strip the name from lines with empty arguments
+     : _ (((name :::))) symbol :::
+         #` begin #t symbol :::
 
 
 define-syntax Enter
@@ -105,14 +112,20 @@ define-syntax Enter
            ; just forward matching rules to Speak
            : _ more ... symbol :::
              #' Speak (((name more ...))) symbol :::
-           ; : _ more ... symbol :::
-           ;   syntax-error
-           ;     . "Name not introduced:" name more ...
            : _ symbol ::: ; FIXME: This prevents checking at compiletime :(
-               ; FIXME: this does not correctly make the second name
-               ; part of the name, preventing differentiation between
-               ; name and modifier
-               #` Speak (((name))) symbol :::
+               ; this does not correctly make the second name part of
+               ; the name, preventing differentiation between name and
+               ; modifier, therefore we have to do that in the Speak
+               ; macro
+               #` let* 
+                    : n : longest-common-prefix '(name symbol :::) introduced-names
+                      lines : drop '(symbol :::) : 1- : length n
+                      line-start-index : list-index pair? lines
+                      line-head : drop-right lines : - (length lines) line-start-index
+                      line-tail : drop lines line-start-index
+                    say
+                      append n line-head ; add mood markers
+                      . line-tail
        ;; process the rest of the names
        Enter b ...
        ;; record that the name was introduced. I do not see a way to do
@@ -142,20 +155,28 @@ define : main args
       When shall we three meet again
       In thunder, lightning, or in rain?
   
-  Second Witch
+  Second Witch :resolute
       When the hurlyburly's done,
       When the battle's lost and won.
 
   Third Witch
       That will be ere the set of sun.
 
-  First Eldritch
+  First Eldritch :crazy
       gnignigni!
 
   Enter : Second Eldritch
   
-  Second Eldritch
+  Second Eldritch :quick
       Guh!
+      ; . :goo ; invalid ⇒ would be an error
+      ; . foo ; invalid ⇒ would be an error
+      Moo
+
+;; Making the name longer throws an Error, but only at runtime:
+;  Second Eldritch shoo
+;      Guh!
+;; ⇒ ERROR: Tried to use (Second Eldritch shoo) who did not Enter. Introduced names: ((Second Eldritch) (First Witch) (Second Witch) (Third Witch) (First Eldritch))
 
 ;; Adding one who did not enter throws an Error, but only at runtime:
 ;  Third Eldritch
