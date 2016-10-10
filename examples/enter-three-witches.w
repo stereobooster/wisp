@@ -37,6 +37,29 @@ define : show str
               lp : cdr chars
 
 
+define colortable
+    `
+      #f . "\x1b[0m"
+      black . "\x1b[1;30m"
+      red . "\x1b[1;31m"
+      green . "\x1b[1;32m"
+      yellow . "\x1b[1;33m"
+      blue . "\x1b[1;34m"
+      magenta . "\x1b[1;35m"
+      cyan . "\x1b[1;36m"
+      white . "\x1b[1;37m"
+      
+
+define : color col
+       . "helper function to colorize the input"
+       cond
+         : assoc col colortable
+           format #t : assoc-ref colortable col
+           . #f
+         else
+           format #t : assoc-ref colortable #f
+           . #f
+
 define-syntax say-words 
     lambda (x)
         syntax-case x ()
@@ -177,25 +200,27 @@ define : main args
 
   First Witch
       When shall we three meet again
-      In thunder, lightning, or in rain?
+      In ,(color 'cyan) thunder, ,(color #f) ,(color 'white) lightning, ,(color #f) or in ,(color 'blue) rain? ,(color #f)
   
   Second Witch :resolute
       When the hurlyburly's done, (we ,(+ 1 2)) ; inline-code is allowed!
-      When the battle's lost and won. ; ,(read-char) ; and executed when the word is shown
+      When the ,(color 'red) battle's ,(color #f) 
+         . lost and won. ; ,(read-char) ; and executed when the word is shown
 
   Third Witch
-      That will be ere the set of sun.
+      That will be ere the set of ,(color 'yellow) sun. ,(color #f)
+      ; FIXME: there is a bug in wisp which disallows using the dot at the end!
 
   First Eldritch :crazy
-      gnignigni!
+      ,(color 'magenta) gnignigni! ,(color #f)
 
   Enter : Second Eldritch
   
   Second Eldritch :quick
-      Guh!
+      ,(color 'black) Guh!
       ; . :goo ; invalid ⇒ would be an error
       ; . foo ; invalid ⇒ would be an error
-      Moo
+      Moo ,(color #f)
 
 ;; Making the name longer throws an Error, but only at runtime:
 ;  Second Eldritch shoo
