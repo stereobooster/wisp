@@ -83,33 +83,6 @@ define-syntax say
            say-words lines
 
 
-define : longest-common-prefix li introduced-names
-       . "Get the name with the longest common prefix with list li"
-       let loop
-         : names introduced-names
-           longest '()
-         if : null? names
-            reverse longest
-            let lp
-              : prefix '()
-                name : car names
-                l li
-              if
-                or 
-                  null? name
-                  null? l
-                  not : equal? (car name) (car l)
-                loop 
-                  cdr names
-                  if (> (length prefix) (length longest))
-                     . prefix
-                     . longest
-                lp
-                  cons (car name) prefix
-                  cdr name
-                  cdr l
-
-
 define-syntax Speak
  lambda (x)
   with-ellipsis :::
