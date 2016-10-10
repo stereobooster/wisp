@@ -112,16 +112,19 @@ define-syntax Speak
 define-syntax Speak-indirect
     lambda (x)
         syntax-case x ()
-            ;; Adjust name and lines for Speak
-            ;; input: (name1 name2 ... (word ...) ...) 
-            : _ ((((name ...)))) ((lines ...))
-              #` Speak (((name ...))) lines ...
+            ;; Adjust name and lines for Speak for the case where I
+            ;; cannot match for the whole name.
+            ;; input: (name1 name2 ... (word ...) ...)
+            
+            ;; grab the lines one by one from the back
             : _ ((lines ...)) symbols ... (lastline ...)
               #` Speak-indirect ((lines ... (lastline ...))) symbols ...
+            ;; start with the last line: create a deeply nested list as helper
             : _ symbols ... (lastline ...)
               #` Speak-indirect (((lastline ...))) symbols ...
+            ;; no more lines remain at the end: the rest must be the 
             : _ ((lines ...)) name ...
-              #` Speak-indirect ((((name ...)))) ((lines ...))
+              #` Speak (((name ...))) lines ...
 
 
 define-syntax Enter
