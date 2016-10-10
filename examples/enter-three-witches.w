@@ -26,21 +26,33 @@ define : ->string x
            format #f "~A" x
 
 
+define : show str
+      let lp : : chars : string->list str
+          cond 
+            : null? chars
+              . #t
+            else
+              display : car chars
+              usleep 80000
+              lp : cdr chars
+
+
 define-syntax say-words 
     lambda (x)
         syntax-case x ()
             : _ (((word words ...))) (() lines ...)
               #` begin
-                 display : ->string `word
-                 display " "
+                 show " "
+                 show : ->string `word
                  say-words (((words ...))) (() lines ...)
             : _ ((())) (() lines ...)
               #` begin
+                 usleep 200000
                  newline
                  say-words (lines ...)
             : _ ((word words ...) lines ...)
               #` begin
-                 display "  "
+                 show " "
                  say-words (((word words ...))) (() lines ...)
             : _ (() lines ...)
               #` say-words (lines ...)
