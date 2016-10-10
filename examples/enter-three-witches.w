@@ -25,10 +25,31 @@ define : ->string x
          else
            format #f "~A" x
 
-define : say nameparts lines
-       . "Show the lines as said by the name defined by the list
-of name parts.
-       "
+
+define-syntax say-words 
+    lambda (x)
+        syntax-case x ()
+            : _ (((word words ...))) (() lines ...)
+              #` begin
+                 display : ->string `word
+                 display " "
+                 say-words (((words ...))) (() lines ...)
+            : _ ((())) (() lines ...)
+              #` begin
+                 newline
+                 say-words (lines ...)
+            : _ ((word words ...) lines ...)
+              #` begin
+                 display "  "
+                 say-words (((word words ...))) (() lines ...)
+            : _ (() lines ...)
+              #` say-words (lines ...)
+            : _ (lines ...)
+              #` begin
+                 newline
+
+
+define : say-name nameparts
        let 
          ;; symbols starting with : are not treated as part of the
          ;; name. They can be used as actor instructions
@@ -37,12 +58,17 @@ of name parts.
               error 
                 format #f "Tried to use ~A who did not Enter. Introduced names: ~A" 
                   . pure-name introduced-names
-       format #t "~A\n  ~A\n\n"
+       format #t "~A\n"
          string-join : map symbol->string nameparts
-         string-join
-           map : lambda (x) (string-join (map ->string x))
-               . lines
-           . "\n  "
+
+
+define-syntax say
+  lambda (x)
+    syntax-case x ()
+      : _ nameparts lines
+        #` begin
+           say-name nameparts
+           say-words lines
 
 
 define : longest-common-prefix li introduced-names
@@ -72,12 +98,6 @@ define : longest-common-prefix li introduced-names
                   cdr l
 
 
-define : Squeak . li
-       . "somehow say the given list"
-       let : : name : longest-common-prefix li introduced-names
-         say name : drop li (length name)
-       
-
 define-syntax Speak
  lambda (x)
   with-ellipsis :::
@@ -85,9 +105,9 @@ define-syntax Speak
      ;; Support form for modifiers: enclose by double parens (used later)
      ;; when using this name, print all lines indented, with the name in front.
      : _ (((name :::))) ((mod :::)) (word :::) line :::
-         #` say
-             quasiquote : name ::: mod :::
-             quasiquote : (word :::) line :::
+         #` begin
+            say-name : quasiquote : name ::: mod :::
+            say-words : (word :::) line :::
      ;; extend mod keywords
      : _ (((name :::))) ((mod :::)) modifier line :::
          ;; extend the modifier keyword list
@@ -102,6 +122,21 @@ define-syntax Speak
      ;; Strip the name from lines with empty arguments
      : _ (((name :::))) symbol :::
          #` begin #t symbol :::
+
+
+define-syntax Speak-indirect
+    lambda (x)
+        syntax-case x ()
+            ;; Adjust name and lines for Speak
+            ;; input: (name1 name2 ... (word ...) ...) 
+            : _ ((((name ...)))) ((lines ...))
+              #` Speak (((name ...))) lines ...
+            : _ ((lines ...)) symbols ... (lastline ...)
+              #` Speak-indirect ((lines ... (lastline ...))) symbols ...
+            : _ symbols ... (lastline ...)
+              #` Speak-indirect (((lastline ...))) symbols ...
+            : _ ((lines ...)) name ...
+              #` Speak-indirect ((((name ...)))) ((lines ...))
 
 
 define-syntax Enter
@@ -121,20 +156,12 @@ define-syntax Enter
            ; just forward matching rules to Speak
            : _ more ... symbol :::
              #' Speak (((name more ...))) symbol :::
-           : _ symbol ::: ; FIXME: This prevents checking at compiletime :(
+           : _ symbols ::: ; FIXME: This prevents checking at compiletime :(
                ; this does not correctly make the second name part of
                ; the name, preventing differentiation between name and
                ; modifier, therefore we have to do that in the Speak
                ; macro
-               #` let* 
-                    : n : longest-common-prefix '(name symbol :::) introduced-names
-                      lines : drop '(symbol :::) : 1- : length n
-                      line-start-index : list-index pair? lines
-                      line-head : drop-right lines : - (length lines) line-start-index
-                      line-tail : drop lines line-start-index
-                    say
-                      append n line-head ; add mood markers
-                      . line-tail
+               #` Speak-indirect name symbols :::
        ;; process the rest of the names
        Enter b ...
        ;; record that the name was introduced. I do not see a way to do
