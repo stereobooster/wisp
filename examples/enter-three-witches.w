@@ -33,7 +33,7 @@ define : show str
               . #t
             else
               display : car chars
-              usleep 80000
+              usleep 60000
               lp : cdr chars
 
 
