@@ -65,8 +65,9 @@ define-syntax say-words
         syntax-case x ()
             : _ (((word words ...))) (() lines ...)
               #` begin
-                 show " "
-                 show : ->string `word
+                 when : not : equal? `word #f
+                   show " "
+                   show : ->string `word
                  say-words (((words ...))) (() lines ...)
             : _ ((())) (() lines ...)
               #` begin
