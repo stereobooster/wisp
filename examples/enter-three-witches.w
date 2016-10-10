@@ -181,7 +181,7 @@ define : main args
   
   Second Witch :resolute
       When the hurlyburly's done, (we ,(+ 1 2)) ; inline-code is allowed!
-      When the battle's lost and won. ,(read-char) ; but executed all at once when the char starts
+      When the battle's lost and won. ; ,(read-char) ; and executed when the word is shown
 
   Third Witch
       That will be ere the set of sun.
