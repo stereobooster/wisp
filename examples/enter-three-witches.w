@@ -190,11 +190,11 @@ define-syntax Enter
        ; newline
    : _ (name more ...) b ...
      ; existing binding: Just allow using this. TODO: Make the checking happen at compile time.
-     with-syntax ((oldname (datum->syntax x 'name)))
-       #' begin 
-          set! introduced-names : cons '(name more ...) introduced-names
+     #' begin
+        Enter b ...
+        set! introduced-names : cons '(name more ...) introduced-names
    : _ b ...
-     #' begin 
+     #' begin #t
 
 
 define : main args
