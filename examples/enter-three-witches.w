@@ -118,7 +118,6 @@ define-syntax Speak
   with-ellipsis :::
    syntax-case x ()
      ;; Support form for modifiers: enclose by double parens (used later)
-     ;; when using this name, print all lines indented, with the name in front.
      : _ (((name :::))) ((mod :::)) (word :::) line :::
          #` begin
             say-name : quasiquote : name ::: mod :::
@@ -144,16 +143,16 @@ define-syntax Speak-indirect
         syntax-case x ()
             ;; Adjust name and lines for Speak for the case where I
             ;; cannot match for the whole name.
-            ;; input: (name1 name2 ... (word ...) ...)
+            ;; input: (((name1 name2 ... (word ...) ...)))
             
             ;; grab the lines one by one from the back
-            : _ ((lines ...)) symbols ... (lastline ...)
-              #` Speak-indirect (((lastline ...) lines ...)) symbols ...
-            ;; start with the last line: create a deeply nested list as helper
-            : _ symbols ... (lastline ...)
-              #` Speak-indirect (((lastline ...))) symbols ...
-            ;; no more lines remain at the end: the rest must be the 
-            : _ ((lines ...)) name ...
+            : _ (((symbols ... (word ...)))) lines ...
+              #` Speak-indirect (((symbols ...))) (word ...) lines ...
+            ;; start with the last line
+            : _ (((symbols ... (word ...))))
+              #` Speak-indirect (((symbols ...))) (word ...)
+            ;; no more lines remain at the end: the rest must be the name
+            : _ (((name ...))) lines ...
               #` Speak (((name ...))) lines ...
 
 
@@ -177,9 +176,8 @@ define-syntax Enter
            : _ symbols ::: ; FIXME: This prevents checking at compiletime :(
                ; this does not correctly make the second name part of
                ; the name, preventing differentiation between name and
-               ; modifier, therefore we have to do that in the Speak
-               ; macro
-               #` Speak-indirect name symbols :::
+               ; modifier
+               #` Speak-indirect (((name symbols :::)))
        ;; process the rest of the names
        Enter b ...
        ;; record that the name was introduced. I do not see a way to do
