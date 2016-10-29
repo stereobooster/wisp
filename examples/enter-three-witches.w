@@ -66,9 +66,14 @@ define-syntax say-words
         syntax-case x ()
             : _ (((word words ...))) (() lines ...)
               #` begin
-                 when : not : equal? `word #f
-                   show " "
-                   show : ->string `word
+                 cond
+                   : equal? `word #f
+                     . #f
+                   : equal? `word '..
+                     show "."
+                   else
+                     show " "
+                     show : ->string `word
                  say-words (((words ...))) (() lines ...)
             : _ ((())) (() lines ...)
               #` begin
@@ -210,8 +215,9 @@ define : main args
          . lost and won. ; ,(read-char) ; and executed when the word is shown
 
   Third Witch
-      That will be ere the set of ,(color 'yellow) sun. ,(color #f)
-      ; FIXME: there is a bug in wisp which disallows using the dot at the end!
+      That will be ere the set of ,(color 'yellow) sun ,(color #f) ..
+      ; .. can be used for a . without preceding space. It MUST be
+      ; used to get a trailing .
 
   First Eldritch :crazy
       ,(color 'magenta) gnignigni! ,(color #f)
