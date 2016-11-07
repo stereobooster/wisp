@@ -85,7 +85,7 @@ define x^true : append-ec (: i (length x^seed)) : list-ec (: j x^seed) : * j : l
 ;; And add an initial guess of the parameters
 define x^b : append-ec (: i (length x^seed))  '(1 1 1 1) ; 1 1 1 1) ; initial guess
 ;; set x^b as x^true to test losing uncertainty
-define x^b x^true
+; define x^b x^true
 define x^seed-std : append-ec (: i (length x^seed)) '(0.5 0.1 0.3 0.1) ; 0.2 0.2 0.2 0.2)
 define P : make-covariance-matrix-from-standard-deviations x^seed-std
 
@@ -130,7 +130,7 @@ x are parameters to be optimized, pos is another input which is not optimized. F
 ;; the equivalent of measured observations
 define y^true : list-ec (: i y⁰-pos) : H x^true i
 ;; now we disturb the observations with a fixed standard deviation. This assumes uncorrelated observations.
-define y⁰-std 1
+define y⁰-std 4
 define y⁰ : list-ec (: i y^true) : + i : * y⁰-std : random:normal
 ;; and define the covariance matrix. This assumes uncorrelated observations.
 define R : make-covariance-matrix-from-standard-deviations : list-ec (: i y⁰-num) y⁰-std
@@ -247,7 +247,7 @@ define : flatten li
 
 define : main args
     let*
-      : ensemble-member-count 16
+      : ensemble-member-count 32
         optimized : EnSRT H x^b P y⁰ R y⁰-pos ensemble-member-count
         x-opt : list-ref optimized 0
         x-deviations : list-ref optimized 1
@@ -306,7 +306,7 @@ cNorm = mpl.colors.Normalize(vmin=~A, vmax=~A)
 scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=paired)\n" 0 (length member)
                      list-ec (: param-idx 0 (length member) 4) ; step = 4
                         ; plot parameter 0
-                        format port "pl.plot(~A, ~A, marker='.', color=scalarMap.to_rgba(~A), linewidth=0, label='', alpha=0.3, zorder=-1)\n" (/ step 10) (+ 80 (* 60 (list-ref member param-idx))) param-idx
+                        format port "pl.plot(~A, ~A, marker='.', color=scalarMap.to_rgba(~A), linewidth=0, label='', alpha=0.6, zorder=-1)\n" (/ step 10) (+ 80 (* 60 (list-ref member param-idx))) param-idx
         format port "pl.legend(loc='upper right')\n"
         format port "pl.xlabel('position [arbitrary units]')\n"
         format port "pl.ylabel('value [arbitrary units]')\n"
