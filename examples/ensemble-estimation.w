@@ -298,7 +298,7 @@ define : main args
         format port "pl.errorbar(*zip(*sorted(zip(ypos, yinit))), yerr=zip(*sorted(zip(ypos, yinitstds)))[1], label='prior')\n"
         format port "pl.plot(*zip(*sorted(zip(ypos, ytrue))), label='true')\n"
         format port "pl.errorbar(*zip(*sorted(zip(ypos, yopt))), yerr=zip(*sorted(zip(ypos, yoptstds)))[1], label='optimized')\n"
-        format port "eb=pl.errorbar(*zip(*sorted(zip(ypos, y0))), yerr=yerr, alpha=0.9, marker='+', color='k', linewidth=0, label='measurements')\neb[-1][0].set_linewidth(1)\n"
+        format port "eb=pl.errorbar(*zip(*sorted(zip(ypos, y0))), yerr=yerr, alpha=0.6, marker='+', linewidth=0, label='measurements')\neb[-1][0].set_linewidth(1)\n"
         list-ec (: step 0 (length x^steps) 10) ; stepsize 10: sample one in 10 steps
                 list-ec (: member (list-ref x^steps (- (length x^steps) step 1))) ; reversed
                    begin
