@@ -288,6 +288,7 @@ define : main args
       let : : port : open-output-pipe "python"
         format port "import pylab as pl\nimport matplotlib as mpl\n"
         format port "y0 = [float(i) for i in '~A'[1:-1].split(' ')]\n" y⁰
+        format port "yerr = ~A\n" y⁰-std
         format port "ypos = [float(i) for i in '~A'[1:-1].split(' ')]\n" y⁰-pos
         format port "yinit = [float(i) for i in '~A'[1:-1].split(' ')]\n" : list-ec (: i y⁰-pos) : H x^b i
         format port "yinitstds = [float(i) for i in '~A'[1:-1].split(' ')]\n" y^b-stds
@@ -297,7 +298,7 @@ define : main args
         format port "pl.errorbar(*zip(*sorted(zip(ypos, yinit))), yerr=zip(*sorted(zip(ypos, yinitstds)))[1], label='prior')\n"
         format port "pl.plot(*zip(*sorted(zip(ypos, ytrue))), label='true')\n"
         format port "pl.errorbar(*zip(*sorted(zip(ypos, yopt))), yerr=zip(*sorted(zip(ypos, yoptstds)))[1], label='optimized')\n"
-        format port "pl.plot(*zip(*sorted(zip(ypos, y0))), marker='+', linewidth=0, label='measurements')\n"
+        format port "eb=pl.errorbar(*zip(*sorted(zip(ypos, y0))), yerr=yerr, marker='+', linewidth=0, label='measurements')\neb[-1][0].set_linewidth(1)\n"
         list-ec (: step 0 (length x^steps) 10) ; stepsize 10: sample one in 10 steps
                 list-ec (: member (list-ref x^steps (- (length x^steps) step 1))) ; reversed
                    begin
