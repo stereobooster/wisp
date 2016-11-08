@@ -340,6 +340,6 @@ scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=paired)\n" 0 (length member)
         format port "pl.xlabel('position [arbitrary units]')\n"
         format port "pl.ylabel('value [arbitrary units]')\n"
         format port "pl.title('ensemble optimization results')\n"
-        format port "pl.show()\n"
+        format port "pl.savefig('/tmp/fit.pdf')\n"
         format port "exit()\n"
         close-pipe port
