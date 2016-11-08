@@ -282,8 +282,8 @@ define : flatten li
 
 define : main args
     let*
-      : ensemble-member-count 64
-        ensemble-member-plot-skip 4
+      : ensemble-member-count 256
+        ensemble-member-plot-skip 16
         optimized : EnSRT H x^b P y⁰ R y⁰-pos ensemble-member-count
         x-opt : list-ref optimized 0
         x-deviations : list-ref optimized 1
