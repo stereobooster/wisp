@@ -104,20 +104,21 @@ define* : write-multiple . x
 
 ;; Start with the simple case: One variable and independent observations (R diagonal)
 ;; First define a truth
-define x^seed '(0.5 2 0.6 0.1) ; 0.7 0.9 0.8 0.4)
+define x^seed '(0.5 0.6 0.1 2 -0.1 -0.5 -2 1) ; 0.7 0.9 0.8 0.4)
+define x^seed-std '(0.5 0.1 0.1 0.3 0.1 0.7 0.6 0.1) ; 0.2 0.2 0.2 0.2)
 ;; The size is the length of the seed, squared, each multiplied by each
 define x^true : append-ec (: i (length x^seed)) : list-ec (: j x^seed) : * j : list-ref x^seed i
 ;; And add an initial guess of the parameters
 define x^b : append-ec (: i (length x^seed))  '(1 1 1 1) ; 1 1 1 1) ; initial guess
 ;; set x^b as x^true to test losing uncertainty
 ; define x^b x^true
-define x^seed-std : append-ec (: i (length x^seed)) '(0.5 0.1 0.3 0.1) ; 0.2 0.2 0.2 0.2)
-define P : make-covariance-matrix-from-standard-deviations x^seed-std
+define x^true-std : append-ec (: i (length x^seed)) x^seed-std
+define P : make-covariance-matrix-from-standard-deviations x^true-std
 
 ;; Then generate observations
-define y⁰-num 3000
-define y⁰-plot-skip 100
+define y⁰-num 40
 define y⁰-pos-max 100
+define y⁰-plot-skip 1
 ;; At the positions where they are measured. Drawn randomly to avoid
 ;; giving an undue weight to later values.
 define y⁰-pos-sorted : list-ec (: i y⁰-num) : exact->inexact : * y⁰-pos-max : / i y⁰-num 
@@ -135,6 +136,15 @@ define : H-single-parameter xi xi-pos pos
              * xi pos 
                exp : - : expt xi-posdist 2
 
+define : H-single-parameter-sinx/x xi xi-pos pos
+       . "Observation function for a single parameter."
+       let* 
+         : xi-posdist : abs : / {pos - xi-pos} {y⁰-pos-max / 20}
+         * xi 15
+           / : sin xi-posdist
+             . xi-posdist
+                    
+
 ;; We need an observation operator to generate observations from true values
 define : H x pos
        . "Observation operator. It generates modelled observations from the input.
@@ -147,7 +157,7 @@ x are parameters to be optimized, pos is another input which is not optimized. F
              x-pos : list-ec (: i len) : * ystretch {{i + 0.5} / {len + 1}}
            apply +
                  list-ec (: i len)
-                      H-single-parameter 
+                      H-single-parameter-sinx/x
                         list-ref x i
                         list-ref x-pos i
                         . pos
@@ -156,7 +166,7 @@ x are parameters to be optimized, pos is another input which is not optimized. F
 ;; the equivalent of measured observations
 define y^true : list-ec (: i y⁰-pos) : H x^true i
 ;; now we disturb the observations with a fixed standard deviation. This assumes uncorrelated observations.
-define y⁰-std 16
+define y⁰-std 4
 define y⁰ : list-ec (: i y^true) : + i : * y⁰-std : random:normal
 ;; and define the covariance matrix. This assumes uncorrelated observations.
 define R : make-covariance-matrix-from-standard-deviations : list-ec (: i y⁰-num) y⁰-std
@@ -274,7 +284,7 @@ define : flatten li
 define : main args
     let*
       : ensemble-member-count 256
-        ensemble-member-plot-skip 32
+        ensemble-member-plot-skip 4
         optimized : EnSRT H x^b P y⁰ R y⁰-pos ensemble-member-count
         x-opt : list-ref optimized 0
         x-deviations : list-ref optimized 1
@@ -293,7 +303,7 @@ define : main args
               flatten y-deviations
         y-stds : list-ec (: i y-deviations) : apply standard-deviation-from-deviations i
         y^b-stds : list-ec (: i y^b-deviations) : apply standard-deviation-from-deviations i
-      format #t "x⁰:   ~A\n    ± ~A\nx:    ~A\n    ± ~A\nx^t:  ~A\nx-t/σ:~A\ny̅:    ~A ± ~A\ny̅⁰:   ~A ± ~A\ny̅^t:  ~A\nnoise:~A\n" 
+      format #t "x⁰:    ~A\n    ± ~A\nx:     ~A\n    ± ~A\nx^t:   ~A\nx-t/σ: ~A\nΣ̅|Δ/σ|:~A\ny̅:     ~A ± ~A\ny̅⁰:    ~A ± ~A\ny̅^t:   ~A\nnoise: ~A\n" 
                  . x^b
                  list-ec (: i (length x^b)) : list-ref (list-ref P i) i
                  . x-opt 
@@ -302,6 +312,12 @@ define : main args
                  list-ec (: i (length x-opt)) 
                    / : - (list-ref x-opt i) (list-ref x^true i)
                        apply standard-deviation-from-deviations : list-ec (: j x-deviations) : list-ref j i
+                 sum-ec (: i (length x-opt))
+                  sqrt
+                   expt
+                     / : - (list-ref x-opt i) (list-ref x^true i)
+                         apply standard-deviation-from-deviations : list-ec (: j x-deviations) : list-ref j i
+                     . 2
                  mean : map (lambda (x) (H x-opt x)) y⁰-pos
                  . y-std
                      ; list-ec (: i (length y-opt))
@@ -340,6 +356,6 @@ scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=paired)\n" 0 (length member)
         format port "pl.xlabel('position [arbitrary units]')\n"
         format port "pl.ylabel('value [arbitrary units]')\n"
         format port "pl.title('ensemble optimization results')\n"
-        format port "pl.savefig('/tmp/fit.pdf')\n"
+        format port "pl.show()\n"
         format port "exit()\n"
         close-pipe port
