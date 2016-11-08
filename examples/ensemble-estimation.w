@@ -104,21 +104,21 @@ define* : write-multiple . x
 
 ;; Start with the simple case: One variable and independent observations (R diagonal)
 ;; First define a truth
-define x^seed '(0.5 0.6 0.1 2 -0.1 -0.5 -2 1) ; 0.7 0.9 0.8 0.4)
-define x^seed-std '(0.5 0.1 0.1 0.3 0.1 0.7 0.6 0.1) ; 0.2 0.2 0.2 0.2)
+define x^seed '(-3 2 -1) ; 0.7 0.9 0.8 0.4)
+define x^seed-std '(0.5 0.3 0.2) ; 0.2 0.2 0.2 0.2)
 ;; The size is the length of the seed, squared, each multiplied by each
 define x^true : append-ec (: i (length x^seed)) : list-ec (: j x^seed) : * j : list-ref x^seed i
 ;; And add an initial guess of the parameters
-define x^b : append-ec (: i (length x^seed))  '(1 1 1 1) ; 1 1 1 1) ; initial guess
+define x^b : list-ec (: i (length x^true)) 1 ; initial guess
 ;; set x^b as x^true to test losing uncertainty
 ; define x^b x^true
-define x^true-std : append-ec (: i (length x^seed)) x^seed-std
-define P : make-covariance-matrix-from-standard-deviations x^true-std
+define x^b-std : append-ec (: i (length x^seed)) x^seed-std
+define P : make-covariance-matrix-from-standard-deviations x^b-std
 
 ;; Then generate observations
-define y⁰-num 40
+define y⁰-num 400
 define y⁰-pos-max 100
-define y⁰-plot-skip 1
+define y⁰-plot-skip : max 1 : * (/ 5 2) {y⁰-num / y⁰-pos-max}
 ;; At the positions where they are measured. Drawn randomly to avoid
 ;; giving an undue weight to later values.
 define y⁰-pos-sorted : list-ec (: i y⁰-num) : exact->inexact : * y⁰-pos-max : / i y⁰-num 
@@ -139,7 +139,7 @@ define : H-single-parameter xi xi-pos pos
 define : H-single-parameter-sinx/x xi xi-pos pos
        . "Observation function for a single parameter."
        let* 
-         : xi-posdist : abs : / {pos - xi-pos} {y⁰-pos-max / 20}
+         : xi-posdist : abs : / {pos - xi-pos} {y⁰-pos-max / 26.4} ; for (2 2 2 2) this just barely does resolves the two central values
          * xi 15
            / : sin xi-posdist
              . xi-posdist
@@ -154,19 +154,18 @@ x are parameters to be optimized, pos is another input which is not optimized. F
        let*
            : len : length x
              ystretch y⁰-pos-max
-             x-pos : list-ec (: i len) : * ystretch {{i + 0.5} / {len + 1}}
-           apply +
-                 list-ec (: i len)
-                      H-single-parameter-sinx/x
-                        list-ref x i
-                        list-ref x-pos i
-                        . pos
+             x-pos : list-ec (: i len) : * ystretch {{i + 0.5} / len}
+           sum-ec (: i len)
+                   H-single-parameter-sinx/x
+                       list-ref x i
+                       list-ref x-pos i
+                       . pos
 
 ;; We start with true observations which we will disturb later to get
 ;; the equivalent of measured observations
 define y^true : list-ec (: i y⁰-pos) : H x^true i
 ;; now we disturb the observations with a fixed standard deviation. This assumes uncorrelated observations.
-define y⁰-std 4
+define y⁰-std 2
 define y⁰ : list-ec (: i y^true) : + i : * y⁰-std : random:normal
 ;; and define the covariance matrix. This assumes uncorrelated observations.
 define R : make-covariance-matrix-from-standard-deviations : list-ec (: i y⁰-num) y⁰-std
@@ -283,7 +282,7 @@ define : flatten li
 
 define : main args
     let*
-      : ensemble-member-count 256
+      : ensemble-member-count 64
         ensemble-member-plot-skip 4
         optimized : EnSRT H x^b P y⁰ R y⁰-pos ensemble-member-count
         x-opt : list-ref optimized 0
