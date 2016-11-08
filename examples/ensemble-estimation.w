@@ -54,19 +54,29 @@ define : make-diagonal-matrix-with-trace trace
 
 define-class <sparse-covariance-matrix> ()
   trace #:getter get-trace #:init-keyword #:trace
-                
+  zeros #:getter get-zeros #:init-keyword #:zeros
+  stds #:getter get-stds #:init-keyword #:stds
+      . #:allocation #:virtual
+      . #:slot-ref (lambda (o)
+                       (map (lambda (x) (expt x 0.5)) (slot-ref o 'trace)))
+      . #:slot-set! (lambda (o m)
+                       (slot-set! o 'trace (map (lambda (x) (expt x 2)) m))
+                       (slot-set! o 'zeros (list-ec (: i (length m)) 0)))
 
 define-generic list-ref 
 define-method : list-ref (M <sparse-covariance-matrix>) (i <integer>)
-              let : : trace : slot-ref M 'trace
-                list-ec (: j (length trace))
-                    if : equal? i j
-                         list-ref trace i
-                         . 0
+              let
+                : trace : slot-ref M 'trace
+                  zeros : slot-ref M 'zeros
+                append
+                  list-head zeros i
+                  list : list-ref trace i
+                  list-tail zeros : + i 1
+
 
 define : make-covariance-matrix-from-standard-deviations stds
          ; make-diagonal-matrix-with-trace : map (lambda (x) (expt x 2)) stds
-         make <sparse-covariance-matrix> #:trace : map (lambda (x) (expt x 2)) stds
+         make <sparse-covariance-matrix> #:stds stds
 
 define : mean l
        . "Calculate the average value of l (numbers)."
