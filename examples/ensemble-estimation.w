@@ -35,6 +35,8 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 
 define-module : examples ensemble-estimation 
 use-modules : srfi srfi-42 ; list-ec
+              srfi srfi-9 ; records
+              oop goops ; generic functions
 use-modules 
   : ice-9 popen
         . #:select : open-output-pipe close-pipe
@@ -50,8 +52,21 @@ define : make-diagonal-matrix-with-trace trace
                       list-ref trace i
                       . 0.0
 
+define-class <sparse-covariance-matrix> ()
+  trace #:getter get-trace #:init-keyword #:trace
+                
+
+define-generic list-ref 
+define-method : list-ref (M <sparse-covariance-matrix>) (i <integer>)
+              let : : trace : slot-ref M 'trace
+                list-ec (: j (length trace))
+                    if : equal? i j
+                         list-ref trace i
+                         . 0
+
 define : make-covariance-matrix-from-standard-deviations stds
-         make-diagonal-matrix-with-trace : map (lambda (x) (expt x 2)) stds
+         ; make-diagonal-matrix-with-trace : map (lambda (x) (expt x 2)) stds
+         make <sparse-covariance-matrix> #:trace : map (lambda (x) (expt x 2)) stds
 
 define : mean l
        . "Calculate the average value of l (numbers)."
