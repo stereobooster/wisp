@@ -197,15 +197,20 @@ define-syntax Enter
    : _ b ...
      #' begin #t
 
+
 define-syntax Scene
   lambda (x)
     syntax-case x ()
       : _ thisscene args ...
         with-syntax ((c (datum->syntax x (module-name (current-module)))))
           #` begin ; FIXME: this currently requires the Scene identifier to be a valid symbol -> cannot use "Scene 1"
+             module-re-export! (current-module) 
+               module-map (λ (x y) x)
+                  module-import-interface (current-module) 'Scene ; ensure that all symbols remain available
              define-module (scene thisscene)
-               . #:use-module c
-             re-export Scene
+             import c
+             . #t
+
 
 define : main args
   Enter : First Witch
