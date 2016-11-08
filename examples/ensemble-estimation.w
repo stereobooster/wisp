@@ -303,22 +303,27 @@ define : main args
               flatten y-deviations
         y-stds : list-ec (: i y-deviations) : apply standard-deviation-from-deviations i
         y^b-stds : list-ec (: i y^b-deviations) : apply standard-deviation-from-deviations i
+        σ
+          list-ec (: i (length x-opt))
+                   apply standard-deviation-from-deviations : list-ec (: j x-deviations) : list-ref j i
         Δ/σ
           list-ec (: i (length x-opt))
                    / : - (list-ref x-opt i) (list-ref x^true i)
-                       apply standard-deviation-from-deviations : list-ec (: j x-deviations) : list-ref j i
-      format #t "x⁰:    ~A\n    ± ~A\nx:     ~A\n    ± ~A\nx^t:   ~A\nx-t/σ: ~A\nΣ̅|Δ/σ|:~A\ny̅:     ~A ± ~A\ny̅⁰:    ~A ± ~A\ny̅^t:   ~A\nnoise: ~A\n" 
+                       list-ref σ i
+      format #t "x⁰:        ~A\n         ± ~A\nx:         ~A\n         ± ~A\nx^t:       ~A\nx-t/σ:     ~A\n√Σ(Δ/σ)²/N:~A\n√Σσ²:      ~A\ny̅:         ~A ± ~A\ny̅⁰:        ~A ± ~A\ny̅^t:       ~A\nnoise:     ~A\n" 
                  . x^b
                  list-ec (: i (length x^b)) : list-ref (list-ref P i) i
                  . x-opt 
                  . x-std
                  . x^true
                  . Δ/σ
-                 mean
-                   list-ec (: i (length x-opt))
-                     sqrt
-                       expt : list-ref Δ/σ i
-                            . 2
+                 * {1 / (length Δ/σ)}
+                   sqrt
+                     sum-ec (: i Δ/σ)
+                        expt i 2
+                 sqrt
+                   sum-ec (: i σ)
+                      expt i 2
                  mean : map (lambda (x) (H x-opt x)) y⁰-pos
                  . y-std
                      ; list-ec (: i (length y-opt))
