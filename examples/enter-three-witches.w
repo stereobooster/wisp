@@ -5,7 +5,7 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ; !#
 
 define-module : examples enter-three-witches
-    . #:export : introduced-names ->string show colortable color say-words say-name say Speak Speak-indirect Enter
+    . #:export : introduced-names ->string show colortable color say-words say-name say Speak Speak-indirect Enter Scene
 
 use-modules : ice-9 optargs
               srfi srfi-1
