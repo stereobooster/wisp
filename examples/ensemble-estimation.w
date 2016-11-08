@@ -115,7 +115,8 @@ define x^seed-std : append-ec (: i (length x^seed)) '(0.5 0.1 0.3 0.1) ; 0.2 0.2
 define P : make-covariance-matrix-from-standard-deviations x^seed-std
 
 ;; Then generate observations
-define y⁰-num 600 ; careful: N² in memory, 1000 is still OK
+define y⁰-num 3000
+define y⁰-plot-skip 100
 define y⁰-pos-max 100
 ;; At the positions where they are measured. Drawn randomly to avoid
 ;; giving an undue weight to later values.
@@ -155,7 +156,7 @@ x are parameters to be optimized, pos is another input which is not optimized. F
 ;; the equivalent of measured observations
 define y^true : list-ec (: i y⁰-pos) : H x^true i
 ;; now we disturb the observations with a fixed standard deviation. This assumes uncorrelated observations.
-define y⁰-std 4
+define y⁰-std 16
 define y⁰ : list-ec (: i y^true) : + i : * y⁰-std : random:normal
 ;; and define the covariance matrix. This assumes uncorrelated observations.
 define R : make-covariance-matrix-from-standard-deviations : list-ec (: i y⁰-num) y⁰-std
@@ -272,7 +273,8 @@ define : flatten li
 
 define : main args
     let*
-      : ensemble-member-count 32
+      : ensemble-member-count 256
+        ensemble-member-plot-skip 32
         optimized : EnSRT H x^b P y⁰ R y⁰-pos ensemble-member-count
         x-opt : list-ref optimized 0
         x-deviations : list-ref optimized 1
@@ -324,15 +326,16 @@ define : main args
         format port "pl.plot(*zip(*sorted(zip(ypos, ytrue))), label='true')\n"
         format port "pl.errorbar(*zip(*sorted(zip(ypos, yopt))), yerr=zip(*sorted(zip(ypos, yoptstds)))[1], label='optimized')\n"
         format port "eb=pl.errorbar(*zip(*sorted(zip(ypos, y0))), yerr=yerr, alpha=0.6, marker='+', linewidth=0, label='measurements')\neb[-1][0].set_linewidth(1)\n"
-        list-ec (: step 0 (length x^steps) 10) ; stepsize 10: sample one in 10 steps
-                list-ec (: member (list-ref x^steps (- (length x^steps) step 1))) ; reversed
-                   begin
+        list-ec (: step 0 (length x^steps) y⁰-plot-skip)
+             let : : members : list-ref x^steps (- (length x^steps) step 1)
+                list-ec (: member-idx 0 (length members) ensemble-member-plot-skip) ; reversed
+                   let : : member : list-ref members member-idx
                      format port "paired = pl.get_cmap('Paired')
 cNorm = mpl.colors.Normalize(vmin=~A, vmax=~A)
 scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=paired)\n" 0 (length member)
                      list-ec (: param-idx 0 (length member) 4) ; step = 4
                         ; plot parameter 0
-                        format port "pl.plot(~A, ~A, marker='.', color=scalarMap.to_rgba(~A), linewidth=0, label='', alpha=0.6, zorder=-1)\n" (/ step 10) (+ 80 (* 60 (list-ref member param-idx))) param-idx
+                        format port "pl.plot(~A, ~A, marker='.', color=scalarMap.to_rgba(~A), linewidth=0, label='', alpha=0.6, zorder=-1)\n" (/ step y⁰-plot-skip) (+ 80 (* 60 (list-ref member param-idx))) param-idx
         format port "pl.legend(loc='upper right')\n"
         format port "pl.xlabel('position [arbitrary units]')\n"
         format port "pl.ylabel('value [arbitrary units]')\n"
