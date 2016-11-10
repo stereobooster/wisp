@@ -18,7 +18,7 @@ define : matrrix-set! X u v val
 
 
 define : cholesky! a
-  . "Modifies the square matirx a to contain its cholesky decomposition.
+  . "Modifies the square matrix a to contain its cholesky decomposition.
 
 sets a to g with a = ggT,
 
