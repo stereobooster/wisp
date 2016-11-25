@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (wisp-scheme) (language wisp spec))'
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples ensemble-estimation) main)' -s "$0" "$@"
+exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples ensemble-estimation) main)' -l $(dirname $(realpath "$0"))/cholesky.w -s "$0" "$@"
 ; !#
 
 ;; Simple Ensemble Square Root Filter to estimate function parameters
@@ -37,6 +37,7 @@ define-module : examples ensemble-estimation
 use-modules : srfi srfi-42 ; list-ec
               srfi srfi-9 ; records
               oop goops ; generic functions
+              examples cholesky ; cholesky! for random variables with covariance
 use-modules 
   : ice-9 popen
         . #:select : open-output-pipe close-pipe
@@ -73,6 +74,9 @@ define-method : list-ref (M <sparse-covariance-matrix>) (i <integer>)
                   list : list-ref trace i
                   list-tail zeros : + i 1
 
+define-generic length
+define-method : length (M <sparse-covariance-matrix>)
+                length : slot-ref M 'trace
 
 define : make-covariance-matrix-from-standard-deviations stds
          ; make-diagonal-matrix-with-trace : map (lambda (x) (expt x 2)) stds
@@ -175,26 +179,38 @@ define R : make-covariance-matrix-from-standard-deviations : list-ec (: i y⁰-n
 ;; The actual observations
 ;; define y⁰ : list-ec (: i y⁰-num) : + y⁰-mean : * y⁰-std : random:normal
 
+define : matrix-times-vector X y
+       . "Calculate the matrix product of X and Y"
+       list-ec (: row (length X))
+         sum-ec (: i (length y))
+                 * : list-ref y i
+                     list-ref (list-ref X row) i
+
 
 define x^steps '()
 
 define : EnSRT H x P y R y-pos N
-       . "Observation function H, parameters x,
+     . "Observation function H, parameters x,
 parameter-covariance P, observations y, observation covariance R
 and number of ensemble members N.
 
 Limitations: y is a single value. R and P are diagonal.
 "
+     let*
+       : P_copy : list-ec (: j (length P)) : list-ec (: k (length (list-ref P j))) : list-ref (list-ref P j) k
+         L
+           cholesky! P_copy
        let step
          : observations-to-process y
            observation-variances : list-ec (: i (length y)) : list-ref (list-ref R i) i
            observation-positions y-pos
            x^b x
-           x-deviations
+           x-deviations ; multiply the sqrt of P (L with LLt=P) with a vector with random perturbations
                list-ec (: i N)
-                 list-ec (: j (length x))
+                 matrix-times-vector L
+                   list-ec (: j (length x))
                      * : random:normal
-                         sqrt : list-ref (list-ref P j) j ; only for diagonal P!
+                       . 1 ; sqrt : list-ref (list-ref P j) j ; only for diagonal P!
          set! x^steps : cons x-deviations x^steps
          cond
             : null? observations-to-process

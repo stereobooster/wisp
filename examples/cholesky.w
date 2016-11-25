@@ -6,7 +6,7 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ;; Cholesky decomposition, following https://de.wikipedia.org/wiki/Cholesky-Zerlegung#Pseudocode
 
 define-module : examples cholesky
-              . #:export : cholesky!
+              . #:export : cholesky! matrix-ref matrix-set! matrix-transpose matrix-multiply
 
 use-modules : srfi srfi-42
 
