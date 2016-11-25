@@ -120,8 +120,8 @@ define* : write-multiple . x
 
 ;; Start with the simple case: One variable and independent observations (R diagonal)
 ;; First define a truth
-define x^seed '(-3 2 -1) ; 0.7 0.9 0.8 0.4)
-define x^seed-std '(0.5 0.3 0.2) ; 0.2 0.2 0.2 0.2)
+define x^seed '(-2 3 -1) ; 0.7 0.9 0.8 0.4)
+define x^seed-std '(3 4 2) ; 0.2 0.2 0.2 0.2)
 ;; The size is the length of the seed, squared, each multiplied by each
 define x^true : append-ec (: i (length x^seed)) : list-ec (: j x^seed) : * j : list-ref x^seed i
 ;; And add an initial guess of the parameters
@@ -132,7 +132,7 @@ define x^b-std : append-ec (: i (length x^seed)) x^seed-std
 define P : make-covariance-matrix-from-standard-deviations x^b-std
 
 ;; Then generate observations
-define y⁰-num 400
+define y⁰-num 80
 define y⁰-pos-max 100
 define y⁰-plot-skip : max 1 : * (/ 5 2) {y⁰-num / y⁰-pos-max}
 ;; At the positions where they are measured. Drawn randomly to avoid
@@ -181,7 +181,7 @@ x are parameters to be optimized, pos is another input which is not optimized. F
 ;; the equivalent of measured observations
 define y^true : list-ec (: i y⁰-pos) : H x^true i
 ;; now we disturb the observations with a fixed standard deviation. This assumes uncorrelated observations.
-define y⁰-std 2
+define y⁰-std 100
 define y⁰ : list-ec (: i y^true) : + i : * y⁰-std : random:normal
 ;; and define the covariance matrix. This assumes uncorrelated observations.
 define R : make-covariance-matrix-from-standard-deviations : list-ec (: i y⁰-num) y⁰-std
