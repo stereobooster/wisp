@@ -29,8 +29,8 @@ define : matrix-multiply X Y
        list-ec (: row (length Y))
          list-ec (: col (length X))
            sum-ec (: inner (length (list-ref Y row)))
-                   * : matrix-ref X inner col
-                       matrix-ref Y row inner
+                   * : matrix-ref Y inner col
+                       matrix-ref X row inner
 
 define : cholesky! a
   . "Modifies the square matrix a to contain its cholesky decomposition.
@@ -40,12 +40,11 @@ sets a to g with a = ggT,
 a is represented as list of lists."
   let : : n : length a
     do-ec (: i n)
-     begin
       do-ec (: j (+ 1 i))
         let : : sum : matrix-ref a i j
           ; format #t "n: ~A i: ~A j: ~A\n" n i j
           when : >= j 1
-            do-ec (: k {j - 1})
+            do-ec (: k j)
               set! sum : - sum : * (matrix-ref a i k) (matrix-ref a j k)
           cond
             : > i j ; lower triangle
@@ -56,27 +55,35 @@ a is represented as list of lists."
               matrix-set! a i i : sqrt sum
             else
               throw 'matrix-numerically-not-symmetric-positive-definite a
+    do-ec (: i n)
       do-ec (: j (+ 1 i) n)
         matrix-set! a i j 0
     . a
 
 
 define : main args
-   let : : X '((1 -1 1)
-               (-1 3 -.5)
-               (1 -.5 4))
+   let
+         :  X : apply list '(( 1  -1   1)
+                             (-1   3 -.5)
+                             ( 1 -.5   4))
+            L : apply list '(( 1 0          0)
+                             (-1 1.41421356 0)
+                             ( 1 0.35355339 1.6955825))
+         format #t "X\n"
+         display X
+         newline
          format #t "cholesky\n"
-         display : cholesky! '((1 -1 1)
-                               (-1 3 -.5)
-                               (1 -.5 4))
+         display : cholesky! X
          newline
          format #t "X\n"
          display X
          newline
-         cholesky! X
-         format #t "Lt·L\n"
+         format #t "L\n"
+         display L
+         newline
+         format #t "L·Lt\n"
          display
-           matrix-multiply (matrix-transpose X) X
+           matrix-multiply L : matrix-transpose L
          newline
          display : matrix-transpose '((1 2)
                                       (3 4))
