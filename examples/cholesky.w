@@ -75,9 +75,6 @@ define : main args
          format #t "cholesky\n"
          display : cholesky! X
          newline
-         format #t "X\n"
-         display X
-         newline
          format #t "L\n"
          display L
          newline
@@ -85,8 +82,7 @@ define : main args
          display
            matrix-multiply L : matrix-transpose L
          newline
-         display : matrix-transpose '((1 2)
-                                      (3 4))
+         format #t "X·Xt\n"
+         display
+           matrix-multiply X : matrix-transpose X
          newline
-         display : matrix-ref '((1 2)
-                                (3 4)) 0 1
