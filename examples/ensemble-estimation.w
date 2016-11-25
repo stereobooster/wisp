@@ -53,6 +53,17 @@ define : make-diagonal-matrix-with-trace trace
                       list-ref trace i
                       . 0.0
 
+define : make-covariance-matrix-with-offdiagonals-using-stds stds
+         . "this is a dense covariance matrix with (√1/N std_i std_j) as the off-diagonal elements, with N the number of elements in the stds."
+         let : : dim : length stds
+             list-ec (: i dim)
+               list-ec (: j dim)
+                 if : = i j
+                      expt (list-ref stds i) 2
+                      ; add smaller off-diag elements
+                      * (sqrt (/ 1 dim)) (list-ref stds i) (list-ref stds j)
+
+; TODO: Allow for off-diagonal elements
 define-class <sparse-covariance-matrix> ()
   trace #:getter get-trace #:init-keyword #:trace
   zeros #:getter get-zeros #:init-keyword #:zeros
@@ -80,7 +91,8 @@ define-method : length (M <sparse-covariance-matrix>)
 
 define : make-covariance-matrix-from-standard-deviations stds
          ; make-diagonal-matrix-with-trace : map (lambda (x) (expt x 2)) stds
-         make <sparse-covariance-matrix> #:stds stds
+         ; make <sparse-covariance-matrix> #:stds stds
+         make-covariance-matrix-with-offdiagonals-using-stds stds
 
 define : mean l
        . "Calculate the average value of l (numbers)."
