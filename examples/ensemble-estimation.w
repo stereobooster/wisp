@@ -255,7 +255,7 @@ Limitations: y is a single value. R and P are diagonal.
                       list-ec (: j (length x^b)) ; for each x^b_i multiply the state-element and model-deviation for all ensemble members.
                          * {1 / {N - 1}} 
                              sum-ec (: i N) 
-                               * : list-ref (list-ref x-deviations i) j ; FIXME: this currently does not use j because I only do length 1 x
+                               * : list-ref (list-ref x-deviations i) j
                                    list-ref Hx^b-prime i
                    K : list-ec (: i PHt) {i / {HPHt + R_cur}}
                    x^a 
