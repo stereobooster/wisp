@@ -174,7 +174,7 @@ define-syntax Enter
            ; just forward matching rules to Speak
            : _ more ... symbol :::
              #' Speak (((name more ...))) symbol :::
-           : _ symbols ::: ; FIXME: This prevents checking at compiletime :(
+           : _ symbols :::
                ; this does not correctly make the second name part of
                ; the name, preventing differentiation between name and
                ; modifier
@@ -190,7 +190,7 @@ define-syntax Enter
        ;   quote : list Enter (name more ...) b ...
        ; newline
    : _ (name more ...) b ...
-     ; existing binding: Just allow using this. TODO: Make the checking happen at compile time.
+     ; existing binding: Just allow using this.
      #' begin
         Enter b ...
         set! introduced-names : cons '(name more ...) introduced-names
@@ -204,7 +204,7 @@ define-syntax Scene
       : _ thisscene args ...
         with-syntax ((c (datum->syntax x (module-name (current-module)))))
           #` begin ; FIXME: this currently requires the Scene identifier to be a valid symbol -> cannot use "Scene 1"
-             module-re-export! (current-module) 
+             module-re-export! (current-module)
                module-map (λ (x y) x)
                   module-import-interface (current-module) 'Scene ; ensure that all symbols remain available
              define-module (scene thisscene)
