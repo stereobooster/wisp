@@ -200,6 +200,7 @@ define : matrix-times-vector X y
 
 
 define x^steps '()
+define 1-AK '()
 
 define : EnSRT H x P y R y-pos N
      . "Observation function H, parameters x,
@@ -271,6 +272,11 @@ Limitations: y is a single value. R and P are diagonal.
                            * α
                              list-ref K j
                              list-ref Hx^b-prime i
+                 if : equal? 1-AK '()
+                      set! 1-AK : list-ec (: i K) {1 - i} ; init
+                      set! 1-AK : list-ec (: i (length K)) : * (list-ref 1-AK i) {1 - (abs (list-ref K i))}
+                 display 1-AK ; TODO: What does this actually signify?
+                 newline
                  step
                    cdr observations-to-process
                    cdr observation-variances
