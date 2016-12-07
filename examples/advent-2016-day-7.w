@@ -2048,7 +2048,7 @@ define : has-abba? string
           string-drop s 1 .
 
 
-define : extract-non-hypernet line
+define : extract-supernet line
   let extractor
     : l line
       hypers '("")
@@ -2073,7 +2073,7 @@ define : count-transport-layer-snooping lines
       count 0
     if : null? l
        . count
-       if : and (member #t (map has-abba? (extract-non-hypernet (car l)))) (not (member #t (map has-abba? (extract-hypernet (car l)))))
+       if : and (member #t (map has-abba? (extract-supernet (car l)))) (not (member #t (map has-abba? (extract-hypernet (car l)))))
          snooper (cdr l) (+ 1 count)
          snooper (cdr l) count .
 
@@ -2105,7 +2105,7 @@ define : extract-abas string
 define : supports-super-secret-listening line
   let ssl
     : hypers : extract-hypernet line
-      abas : apply append : map extract-abas : extract-non-hypernet line
+      abas : apply append : map extract-abas : extract-supernet line
     if : null? hypers
          . #f
          if : member #t : map (λ (aba) (not (equal? #f (string-contains (car hypers) (string-append (string-take (string-drop aba 1) 1) (string-take aba 1) (string-take (string-drop aba 1) 1)))))) abas
