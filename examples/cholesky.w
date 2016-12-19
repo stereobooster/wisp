@@ -72,7 +72,7 @@ a is represented as list of lists."
                   matrix-ref a j j
             : > sum 0 ; diagonal element
               matrix-set! a i i
-                mostly-exact-sqrt sum
+                mostly-exact-sqrt sum ; preserves the exactness, since the result is an exact number, though not an exact result
             else
               throw 'matrix-numerically-not-symmetric-positive-definite a
     do-ec (: i n)
