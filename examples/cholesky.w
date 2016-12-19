@@ -8,7 +8,22 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 define-module : examples cholesky
               . #:export : cholesky! matrix-ref matrix-set! matrix-transpose matrix-multiply
 
-use-modules : srfi srfi-42
+use-modules : srfi srfi-42 ; list-comprehension
+              srfi srfi-11 ; let-values
+
+define : ->exact-matrix list-of-lists
+       . "Turn a list of lists into a matrix"
+       map 
+         λ : x
+             apply list : map inexact->exact x
+         . list-of-lists
+
+define : ->inexact-matrix list-of-lists
+       . "Turn a list of lists into a matrix"
+       map 
+         λ : x
+             apply list : map exact->inexact x
+         . list-of-lists
 
 define : matrix-ref X row col
   list-ref (list-ref X row) col
@@ -32,6 +47,16 @@ define : matrix-multiply X Y
                    * : matrix-ref Y inner col
                        matrix-ref X row inner
 
+define : mostly-exact-sqrt n
+       . "Calculate an exact sqrt if possible, else use a good approximation"
+       let maybe-exact-sqrt : : j : inexact->exact n
+                cond 
+                   : integer? j
+                     inexact->exact : sqrt j
+                   else
+                     / : inexact->exact : maybe-exact-sqrt : numerator j
+                         inexact->exact : maybe-exact-sqrt : denominator j
+
 define : cholesky! a
   . "Modifies the square matrix a to contain its cholesky decomposition.
 
@@ -52,7 +77,8 @@ a is represented as list of lists."
                 / sum
                   matrix-ref a j j
             : > sum 0 ; diagonal element
-              matrix-set! a i i : sqrt sum
+              matrix-set! a i i
+                mostly-exact-sqrt sum
             else
               throw 'matrix-numerically-not-symmetric-positive-definite a
     do-ec (: i n)
@@ -63,26 +89,28 @@ a is represented as list of lists."
 
 define : main args
    let
-         :  X : apply list '(( 1  -1   1)
-                             (-1   3 -.5)
-                             ( 1 -.5   4))
-            L : apply list '(( 1 0          0)
-                             (-1 1.41421356 0)
-                             ( 1 0.35355339 1.6955825))
+         :  X : ->exact-matrix '(( 1  -1   1)
+                                 (-1   3 -.5)
+                                 ( 1 -.5   4))
+            L : ->exact-matrix '(( 1 0          0)
+                                 (-1 1.41421356 0)
+                                 ( 1 0.35355339 1.6955825))
          format #t "X\n"
-         display X
+         display : ->inexact-matrix X
          newline
          format #t "cholesky\n"
-         display : cholesky! X
+         display : ->inexact-matrix : cholesky! X
          newline
          format #t "L\n"
-         display L
+         display : ->inexact-matrix L
          newline
          format #t "L·Lt\n"
          display
-           matrix-multiply L : matrix-transpose L
+           ->inexact-matrix
+             matrix-multiply L : matrix-transpose L
          newline
          format #t "X·Xt\n"
          display
-           matrix-multiply X : matrix-transpose X
+           ->inexact-matrix
+             matrix-multiply X : matrix-transpose X
          newline
