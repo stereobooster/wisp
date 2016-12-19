@@ -49,13 +49,7 @@ define : matrix-multiply X Y
 
 define : mostly-exact-sqrt n
        . "Calculate an exact sqrt if possible, else use a good approximation"
-       let maybe-exact-sqrt : : j : inexact->exact n
-                cond 
-                   : integer? j
-                     inexact->exact : sqrt j
-                   else
-                     / : inexact->exact : maybe-exact-sqrt : numerator j
-                         inexact->exact : maybe-exact-sqrt : denominator j
+       inexact->exact : sqrt : inexact->exact n
 
 define : cholesky! a
   . "Modifies the square matrix a to contain its cholesky decomposition.
