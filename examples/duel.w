@@ -25,7 +25,7 @@ define : duel me other
       You fight like a Dairy Farmer!
   say-name ' : choose your answer
   say-words
-      : ,(string-join answers "\n  ")
+      ,(string-join answers "\n  ")
   let
     : answer : list-ref answers (string->number (format #f "~a" (peek-char)))
     drain-input (current-input-port)
