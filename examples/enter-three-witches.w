@@ -65,11 +65,6 @@ define : color col
 define-syntax say-words 
     lambda (x)
         syntax-case x ()
-            ;; lines of form ,(...)
-            : _ (((unq (word words ...)))) (() lines ...)
-              #` begin if : equal 'unquote `unq
-              #` begin ; add an extra level of parens
-                 say-words ((((unq (word words ...))))) (() lines ...)
             : _ (((word words ...))) (() lines ...)
               #` begin
                  cond
@@ -86,6 +81,12 @@ define-syntax say-words
                  usleep 200000
                  newline
                  say-words (lines ...)
+            ;; lines of form ,(...)
+            : _ ((unq (word words ...)) lines ...)
+              #` begin if : equal 'unquote `unq
+              #` begin ; add an extra level of parens
+                 show " "
+                 say-words ((((unq (word words ...))))) (() lines ...)
             : _ ((word words ...) lines ...)
               #` begin
                  show " "
