@@ -13,6 +13,15 @@ Enter : Galtag Nimbleday
         choose your answer
 
 define answers
+  `
+    : You fight like a Dairy Farmer!
+      How appropriate! You fight like a cow!
+      And I've got a little TIP for you, get the POINT?
+
+write answers
+newline
+
+define answers
   ' 
     . "How appropriate! You fight like a cow!"
     . "And I've got a little TIP for you, get the POINT?"
@@ -25,9 +34,13 @@ define : duel me other
       You fight like a Dairy Farmer!
   say-name ' : choose your answer
   say-words
-      ,(string-join answers "\n  ")
+        ,(let ((counter 0))
+           (string-join 
+             (map (λ (x) 
+                     (set! counter (+ 1 counter))
+                     (string-append (number->string counter) "  " x)) answers) "\n  "))
   let
-    : answer : list-ref answers (string->number (format #f "~a" (peek-char)))
+    : answer : list-ref answers (- (string->number (format #f "~a" (peek-char))) 1)
     drain-input (current-input-port)
     say-name me
     say-words
@@ -44,3 +57,4 @@ define-syntax-rule : Duel fighter1 fighter2
 Duel
   Galtag Nimbleday
   Lowlife Pirate
+
