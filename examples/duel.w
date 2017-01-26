@@ -35,7 +35,12 @@ define : duel me other
         ,answer
     
 
-;; TODO: Turn this into a macro
-duel
-  ' Galtag Nimbleday
-  ' Lowlife Pirate
+define-syntax-rule : Duel fighter1 fighter2
+   duel
+     quote fighter1
+     quote fighter2
+
+
+Duel
+  Galtag Nimbleday
+  Lowlife Pirate
