@@ -68,14 +68,15 @@ define-syntax say-words
         syntax-case x ()
             : _ (((word words ...))) (() lines ...)
               #` begin
-                 cond
-                   : equal? `word #f
-                     . #f
-                   : equal? `word '..
-                     show "."
-                   else
-                     show " "
-                     show : ->string `word
+                 let : : w `word
+                   cond
+                     : equal? w #f
+                       . #f
+                     : equal? w '..
+                       show "."
+                     else
+                       show " "
+                       show : ->string w
                  say-words (((words ...))) (() lines ...)
             : _ ((())) (() lines ...)
               #` begin
