@@ -18,8 +18,8 @@ define answers
       How appropriate! You fight like a cow!
       And I've got a little TIP for you, get the POINT?
 
-write answers
-newline
+; write answers
+; newline
 
 define answers
   ' 
@@ -34,7 +34,7 @@ define : duel me other
       You fight like a Dairy Farmer!
   say-name ' : choose your answer
   say-words
-        ,(let ((counter 0))
+       : ,(let ((counter 0))
            (string-join 
              (map (λ (x) 
                      (set! counter (+ 1 counter))
