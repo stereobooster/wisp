@@ -10,6 +10,7 @@ define-module : examples enter-three-witches
 use-modules : ice-9 optargs
               srfi srfi-1
               system syntax
+              ice-9 rdelim
 
 ;; FIXME: This version currently does not allow using the same first
 ;; name several times. It will need a more refined macro generator
@@ -86,7 +87,7 @@ define-syntax say-words
               #` begin if : equal 'unquote `unq
               #` begin ; add an extra level of parens
                  show " "
-                 say-words ((((unq (word words ...))))) (() lines ...)
+                 say-words (((unq (word words ...)))) (() lines ...)
             : _ ((word words ...) lines ...)
               #` begin
                  show " "
