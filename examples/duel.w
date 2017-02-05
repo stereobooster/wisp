@@ -30,7 +30,7 @@ define : list->textline L
          string-join : map ->string L
                      . " "
 
-;; TODO: use macro define-interaction
+;; TODO: define-syntax define-interaction
 define : duel me other
   let*
     : challenge : random-challenge
@@ -40,6 +40,8 @@ define : duel me other
     say-words
       : ,tease
     say-name ' : choose your answer
+    ;; TODO: shuffle the answers, check whether the right one is given
+    ;; (the first answer in the original ordering is the right one)
     say-words
          : ,(let ((counter 0))
              (string-join
