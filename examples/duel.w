@@ -34,11 +34,11 @@ define : list->textline L
 define : duel me other
   let*
     : challenge : random-challenge
-      tease : list->textline : car challenge
+      tease : car challenge
       answers : map list->textline : cdr challenge
     say-name other
     say-words
-      : ,tease
+      : ,@tease
     say-name ' : choose your answer
     ;; TODO: shuffle the answers, check whether the right one is given
     ;; (the first answer in the original ordering is the right one)
