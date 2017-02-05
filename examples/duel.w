@@ -8,11 +8,13 @@ exec guile -L "$W" --language=wisp -l "$D/enter-three-witches.w" -s "$0" "$@"
 
 import : examples enter-three-witches
 
+set! *random-state* : random-state-from-platform
+
 Enter : Galtag Nimbleday
         Lowlife Pirate
         choose your answer
 
-define answers
+define challenges
   `
     : You fight like a Dairy Farmer!
       How appropriate! You fight like a cow!
@@ -21,31 +23,35 @@ define answers
 ; write answers
 ; newline
 
-define answers
-  ' 
-    . "How appropriate! You fight like a cow!"
-    . "And I've got a little TIP for you, get the POINT?"
+define : random-challenge
+         list-ref challenges : random : length challenges
+
+define : list->textline L
+         string-join : map ->string L
+                     . " "
 
 ;; TODO: use macro define-interaction
 define : duel me other
-  say-name other 
-  say-words 
-    : 
-      You fight like a Dairy Farmer!
-  say-name ' : choose your answer
-  say-words
-       : ,(let ((counter 0))
-           (string-join 
-             (map (λ (x) 
-                     (set! counter (+ 1 counter))
-                     (string-append (number->string counter) "  " x)) answers) "\n  "))
-  let
-    : answer : list-ref answers (- (string->number (format #f "~a" (peek-char))) 1)
-    drain-input (current-input-port)
-    say-name me
+  let*
+    : challenge : random-challenge
+      tease : list->textline : car challenge
+      answers : map list->textline : cdr challenge
+    say-name other
     say-words
-      :
-        ,answer
+      : ,tease
+    say-name ' : choose your answer
+    say-words
+         : ,(let ((counter 0))
+             (string-join
+               (map (λ (x)
+                       (set! counter (+ 1 counter))
+                       (string-append (number->string counter) "  " x)) answers) "\n  "))
+    let
+      : answer : list-ref answers (- (string->number (format #f "~a" (peek-char))) 1)
+      drain-input (current-input-port)
+      say-name me
+      say-words
+        : ,answer
     
 
 define-syntax-rule : Duel fighter1 fighter2
