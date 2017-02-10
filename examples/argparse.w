@@ -5,12 +5,16 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ; !#
 
 ;; Argument parser
+;; 
+;; Status: draft (basic interface works, but does not do something useful yet)
+;; 
 ;; plan: 
 ;;   - simplest usage: (import (examples argparse))(let ((args (parse-args))) (write args))
 ;;   - with setup: (import (examples argparse))
 ;;                 (let* ((parser (setup-args #:help "foo"))
 ;;                        (args (parse-args #:parser parser)))
 ;;                       (write args))
+;;   - implement -h | --help | --usage and -V | --version, set up automatically and improved via setup-args.
 
 define-module : examples argparse
     . #:export : args-parse args-setup
