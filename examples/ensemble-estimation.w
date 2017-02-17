@@ -368,7 +368,7 @@ define : main args
                  * {1 / (length y⁰)} : apply + : map (lambda (x) (H x^true x)) y⁰-pos
                  . y⁰-std
       ; now plot the result
-      let : : port : open-output-pipe "python"
+      let : : port : open-output-pipe "python2"
         format port "import pylab as pl\nimport matplotlib as mpl\n"
         format port "y0 = [float(i) for i in '~A'[1:-1].split(' ')]\n" y⁰
         format port "yerr = ~A\n" y⁰-std
