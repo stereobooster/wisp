@@ -5,7 +5,7 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ; !#
 
 ;; Simple Ensemble Square Root Filter to estimate function parameters
-;; based on measurements.
+;; based on measurements with uncertainty.
 
 ;; Provide first guess parameters x^b and measurements y⁰ to get
 ;; optimized parameters x^a.
