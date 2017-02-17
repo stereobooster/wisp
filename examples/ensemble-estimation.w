@@ -34,6 +34,7 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ;;     x'^a = x'^b - αK·H(x'^b)
 
 define-module : examples ensemble-estimation 
+              . #:export : EnSRF H standard-deviation-from-deviations make-covariance-matrix-with-offdiagonals-using-stds
 use-modules : srfi srfi-42 ; list-ec
               srfi srfi-9 ; records
               oop goops ; generic functions
