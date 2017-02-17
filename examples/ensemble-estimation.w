@@ -202,7 +202,7 @@ define : matrix-times-vector X y
 define x^steps '()
 define 1-AK '()
 
-define : EnSRT H x P y R y-pos N
+define : EnSRF H x P y R y-pos N
      . "Observation function H, parameters x,
 parameter-covariance P, observations y, observation covariance R
 and number of ensemble members N.
@@ -318,7 +318,7 @@ define : main args
     let*
       : ensemble-member-count 32
         ensemble-member-plot-skip 4
-        optimized : EnSRT H x^b P y⁰ R y⁰-pos ensemble-member-count
+        optimized : EnSRF H x^b P y⁰ R y⁰-pos ensemble-member-count
         x-opt : list-ref optimized 0
         x-deviations : list-ref optimized 1
         x-std 
