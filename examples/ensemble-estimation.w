@@ -34,7 +34,10 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ;;     x'^a = x'^b - αK·H(x'^b)
 
 define-module : examples ensemble-estimation 
-              . #:export : EnSRF H standard-deviation-from-deviations make-covariance-matrix-with-offdiagonals-using-stds
+              . #:export (EnSRF H standard-deviation-from-deviations 
+                          make-covariance-matrix-with-offdiagonals-using-stds
+                          x-deviations->y-deviations x^steps)
+
 use-modules : srfi srfi-42 ; list-ec
               srfi srfi-9 ; records
               oop goops ; generic functions
@@ -276,8 +279,8 @@ Limitations: y is a single value. R and P are diagonal.
                  if : equal? 1-AK '()
                       set! 1-AK : list-ec (: i K) {1 - i} ; init
                       set! 1-AK : list-ec (: i (length K)) : * (list-ref 1-AK i) {1 - (abs (list-ref K i))}
-                 display 1-AK ; TODO: What does this actually signify?
-                 newline
+                 ;; display 1-AK ; TODO: What does this actually signify?
+                 ;; newline
                  step
                    cdr observations-to-process
                    cdr observation-variances
