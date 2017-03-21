@@ -74,7 +74,7 @@ define : benchmark-list-append
   let : (steps 100)
     concatenate
       list 
-        let : (param-list (zip (logiota steps 1 10000) (logiota steps 1 0)))
+        let : (param-list (zip (logiota steps 1 100) (logiota steps 1 0)))
                bench-append param-list
         ;; let : (param-list (zip (logiota steps 20 0) (logiota steps 1 10000)))
         ;;        bench-append param-list
@@ -111,35 +111,53 @@ import
     only : ice-9 popen
          . open-output-pipe close-pipe
 
-define : H x pos
+define-syntax-rule : or0 test c ...
+    if test : begin c ...
+            . 0
+
+define-syntax-rule : define-quoted sym val
+    ;; set the value to true using eval to break the symbol->variable barrier
+    primitive-eval `(define ,sym val)
+
+define* 
+       H-N-m x pos #:key all const OlogN OsqrtN ON ONlogN ON²
+                                 . Ologm Osqrtm Om Omlogm Om²
+                                 . OlogNm ONlogm OmlogN ONm
+                                 . ON²m Om²N OsinN/N Osinm/m
        . "Observation operator. It generates modelled observations from the input.
 
 x are parameters to be optimized, pos is another input which is not optimized. For plain functions it could be the position of the measurement on the x-axis. We currently assume absolute knowledge about the position.
 "
+       when all
+           let lp : (l '(const OlogN OsqrtN ON ONlogN ON² Ologm Osqrtm Om Omlogm Om² OlogNm ONlogm OmlogN ONm ON²m Om²N OsinN/N Osinm/m))
+               when : not : null? l
+                      define-quoted (car l) #t
+                      lp : cdr l
+       
        let : (N (first pos)) (m (second pos))
            +
-             list-ref x 0 ; constant value
+             or0 const : list-ref x 0 ; constant value
              ;; pure N
-             * (list-ref x 1) : log (+ 1 N) ; avoid breakage at pos 0
-             * (list-ref x 2) : sqrt N
-             * (list-ref x 3) N
-             * (list-ref x 4) : * N : log (+ 1 N)
-             * (list-ref x 5) : expt N 2
+             or0 OlogN  : * (list-ref x 1) : log (+ 1 N) ; avoid breakage at pos 0
+             or0 OsqrtN : * (list-ref x 2) : sqrt N
+             or0 ON     : * (list-ref x 3) N
+             or0 ONlogN : * (list-ref x 4) : * N : log (+ 1 N)
+             or0 ON²    : * (list-ref x 5) : expt N 2
              ;; pure m
-             * (list-ref x 6) : log (+ 1 m) ; avoid breakage at pos 0
-             * (list-ref x 7) : sqrt m
-             * (list-ref x 8) m
-             * (list-ref x 9) : * m : log (+ 1 m)
-             * (list-ref x 10) : expt m 2
+             or0 Ologm  : * (list-ref x 6) : log (+ 1 m) ; avoid breakage at pos 0
+             or0 Osqrtm : * (list-ref x 7) : sqrt m
+             or0 Om     : * (list-ref x 8) m
+             or0 Omlogm : * (list-ref x 9) : * m : log (+ 1 m)
+             or0 Om²    : * (list-ref x 10) : expt m 2
              ;; mixed terms
-             * (list-ref x 11) : log (+ 1 N m)
-             * (list-ref x 12) : * N : log (+ 1 m)
-             * (list-ref x 13) : * m : log (+ 1 N)
-             * (list-ref x 14) : * N m
-             * (list-ref x 15) : * (expt N 2) m
-             * (list-ref x 16) : * (expt m 2) N
-             * (list-ref x 17) : / (sin (- N (list-ref x 18))) N ; sin(x)/x
-             * (list-ref x 19) : / (sin (- m (list-ref x 20))) m ; sin(x)/x
+             or0 OlogNm : * (list-ref x 11) : log (+ 1 N m)
+             or0 ONlogm : * (list-ref x 12) : * N : log (+ 1 m)
+             or0 OmlogN : * (list-ref x 13) : * m : log (+ 1 N)
+             or0 ONm    : * (list-ref x 14) : * N m
+             or0 ON²m   : * (list-ref x 15) : * (expt N 2) m
+             or0 Om²N   : * (list-ref x 16) : * (expt m 2) N
+             or0 OsinN/N : * (list-ref x 17) : / (sin (/ (- N (list-ref x 18)) (list-ref x 19))) N ; sin(x)/x
+             or0 Osinm/m : * (list-ref x 20) : / (sin (/ (- m (list-ref x 21)) (list-ref x 22))) m ; sin(x)/x
 
 
 define : interleave lx lz
@@ -154,7 +172,7 @@ define : print-fit x σ
     . "Print the big-O parameters which are larger than σ (their standard deviation)."
     let : : number-format "~,1,,,,,'ee±~,1,,,,,'ee"
       let big-O
-        : names : list "" "log(N)" "sqrt(N)" "N log(N)" "N^2" "log(m)" "sqrt(m)" "m" "m log(m)" "m^2" "log(N + m)" "N log(m)" "m log(N)" "N m" "N^2 m" "m^2 N" "sin(N-x)/N" "sin(N-x)/N" "sin(m-x)/m" "sin(m-x)/m" 
+        : names : list "" "log(N)" "sqrt(N)" "N log(N)" "N^2" "log(m)" "sqrt(m)" "m" "m log(m)" "m^2" "log(N + m)" "N log(m)" "m log(N)" "N m" "N^2 m" "m^2 N" "sin((N-x)/p)/N" "sin((N-x*)/p)/N" "sin((N-x)/p*)/N" "sin((m-x)/p)/m" "sin((m-x*)/p)/m" "sin((m-x)/p*)/m" 
           x x
           σ σ
         cond
@@ -172,7 +190,7 @@ define : flatten li
          append-ec (: i li) i
 
 ;; TODO: add filename and title and fix the units
-define* : plot-benchmark-result bench
+define* : plot-benchmark-result bench H
      let*
         : ensemble-member-count 256
           ensemble-member-plot-skip 4
@@ -180,7 +198,7 @@ define* : plot-benchmark-result bench
           y_m : apply max : map car : map cdr bench
           nb : apply max : interleave (map car (map car bench)) (map car (map cdr (map car bench)))
           ;; "const" "log(N)" "sqrt(N)" "N" "N^2" "N^3" "log(m)" "sqrt(m)" "m" "m^2" "m^3" "log(N + m)" "N log(m)" "m log(N)" "N m" "N^2 m" "m^2 N"
-          x^b : list y_0 (/ y_m (log nb)) (/ y_m (sqrt nb)) (/ y_m nb) (/ y_m nb nb) (/ y_m nb nb nb) (/ y_m (log nb)) (/ y_m (sqrt nb)) (/ y_m nb) (/ y_m nb nb) (/ y_m nb nb nb) (/ y_m nb nb) (/ y_m nb nb) (/ y_m nb nb nb) (/ y_m nb nb nb) (/ y_m nb nb nb nb) (/ y_m nb nb nb nb) y_0 (/ nb 10) y_0 (/ nb 10) ; inital guess: constant starting at the first result
+          x^b : list y_0 (/ y_m (log nb)) (/ y_m (sqrt nb)) (/ y_m nb) (/ y_m nb nb) (/ y_m nb nb nb) (/ y_m (log nb)) (/ y_m (sqrt nb)) (/ y_m nb) (/ y_m nb nb) (/ y_m nb nb nb) (/ y_m nb nb) (/ y_m nb nb) (/ y_m nb nb nb) (/ y_m nb nb nb) (/ y_m nb nb nb nb) (/ y_m nb nb nb nb) y_0 (/ nb 100) 10000 y_0 (/ nb 100) 10000 ; inital guess: constant starting at the first result
           x^b-std : list-ec (: i x^b) i ; inital guess: 100% uncertainty
           P : make-covariance-matrix-with-offdiagonals-using-stds x^b-std
           y⁰-pos : map car bench
@@ -210,6 +228,8 @@ define* : plot-benchmark-result bench
  
         ;; print-fit x-std
         print-fit x-opt x-std
+        ;; TODO: minimize y-mismatch * y-uncertainty
+        format #t "Model standard deviation (uncertainty): ~,4e\n" y-std
         ; now plot the result
         let : : port : open-output-pipe "python2"
           format port "import pylab as pl\nimport matplotlib as mpl\n"
@@ -222,10 +242,10 @@ define* : plot-benchmark-result bench
           format port "yopt = [float(i) for i in '~A'[1:-1].split(' ')]\n" : list-ec (: i y⁰-pos) : H x-opt i
           format port "yoptstds = [float(i) for i in '~A'[1:-1].split(' ')]\n" y-stds
           ;; format port "pl.errorbar(*zip(*sorted(zip(ypos1, yinit))), yerr=zip(*sorted(zip(ypos1, yinitstds)))[1], label='prior vs N')\n"
-          format port "pl.errorbar(*zip(*sorted(zip(ypos1, yopt))), yerr=zip(*sorted(zip(ypos1, yoptstds)))[1], marker='+', mew=2, ms=10, linewidth=0.1, label='optimized vs N')\n"
+          format port "pl.errorbar(*zip(*sorted(zip(ypos1, yopt))), yerr=zip(*sorted(zip(ypos1, yoptstds)))[1], marker='H', mew=0, ms=10, linewidth=0.1, label='optimized vs N')\n"
           format port "eb=pl.errorbar(*zip(*sorted(zip(ypos1, y0))), yerr=yerr, alpha=0.6, marker='x', mew=2, ms=10, linewidth=0, label='measurements vs N')\neb[-1][0].set_linewidth(1)\n"
           ;; format port "pl.errorbar(*zip(*sorted(zip(ypos2, yinit))), yerr=zip(*sorted(zip(ypos2, yinitstds)))[1], label='prior vs. m')\n"
-          format port "pl.errorbar(*zip(*sorted(zip(ypos2, yopt))), yerr=zip(*sorted(zip(ypos2, yoptstds)))[1], marker='+', mew=2, ms=10, linewidth=0.1, label='optimized vs. m')\n"
+          format port "pl.errorbar(*zip(*sorted(zip(ypos2, yopt))), yerr=zip(*sorted(zip(ypos2, yoptstds)))[1], marker='h', mew=0, ms=10, linewidth=0.1, label='optimized vs. m')\n"
           format port "eb=pl.errorbar(*zip(*sorted(zip(ypos2, y0))), yerr=yerr, alpha=0.6, marker='x', mew=2, ms=10, linewidth=0, label='measurements vs. m')\neb[-1][0].set_linewidth(1)\n"
           format port "pl.plot(sorted(ypos1+ypos2), pl.log(sorted(ypos1+ypos2))*(max(y0) / pl.log(max(ypos1+ypos2))), label='log(x)')\n"
           format port "pl.plot(sorted(ypos1+ypos2), pl.sqrt(sorted(ypos1+ypos2))*(max(y0) / pl.sqrt(max(ypos1+ypos2))), label='sqrt(x)')\n"
@@ -242,7 +262,7 @@ scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=paired)\n" 0 (length member)
                           let : (offset (/ (apply max (append y⁰ y-opt)) 2)) (spreading (/ (apply max (append y⁰ y-opt)) (- (apply max member) (apply min member))))
                               format port "pl.plot(~A, ~A, marker='.', color=scalarMap.to_rgba(~A), linewidth=0, label='', alpha=0.6, zorder=-1)\n"
                                           . (/ step 1) (+ offset (* spreading (list-ref member param-idx))) param-idx
-          format port "pl.legend(loc='lower right')\n"
+          format port "pl.legend(loc='upper left')\n"
           format port "pl.xlabel('position [arbitrary units]')\n"
           format port "pl.ylabel('value [arbitrary units]')\n"
           format port "pl.title('~A')\n" "Operation scaling behaviour"
@@ -256,4 +276,5 @@ scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=paired)\n" 0 (length member)
 define : main args
    let*
       : bench : benchmark-list-append ;; benchmark results
-      plot-benchmark-result bench
+        H : lambda (x pos) (H-N-m x pos #:const #t #:ON #t #:ONlogN #t)
+      plot-benchmark-result bench H
