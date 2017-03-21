@@ -71,13 +71,13 @@ define : benchmark-list-append
            let : (N (list-ref x 0)) (m (list-ref x 1))
                benchmark (append a b) :let ((a (iota N))(b (iota m)))
          . param-list
-  let : (steps 50)
+  let : (steps 100)
     concatenate
       list 
-        let : (param-list (zip (logiota steps 1 100) (logiota steps 1 0)))
-               bench-append param-list
-        ;; let : (param-list (zip (logiota steps 100 0) (logiota steps 1 100)))
+        ;; let : (param-list (zip (logiota steps 1 100) (logiota steps 1 0)))
         ;;        bench-append param-list
+        let : (param-list (zip (logiota steps 20 0) (logiota steps 1 100)))
+               bench-append param-list
         ;; let : (param-list (zip (logiota steps 1 1000) (logiota steps 1 0)))
         ;;        bench-append param-list
         ;; let : (param-list (zip (logiota steps 1 0) (logiota steps 1 1000)))
@@ -181,7 +181,7 @@ define : main args
    let*
       : bench : benchmark-list-append ;; benchmark results
         ;; fitting to cost estimates
-        ensemble-member-count 128
+        ensemble-member-count 256
         ensemble-member-plot-skip 4
         y_0 : apply min : map car : map cdr bench
         y_m : apply max : map car : map cdr bench
@@ -192,7 +192,7 @@ define : main args
         P : make-covariance-matrix-with-offdiagonals-using-stds x^b-std
         y⁰-pos : map car bench
         y⁰ : append-map cdr bench
-        y⁰-std : list-ref (sort y⁰ <) : round : / (length y⁰) 16 ; lower octile median
+        y⁰-std : list-ref (sort y⁰ <) : round : / (length y⁰) 32 ; lower octile median
         R : make-covariance-matrix-with-offdiagonals-using-stds : list-ec (: i (length bench)) y⁰-std
         optimized : EnSRF H x^b P y⁰ R y⁰-pos ensemble-member-count
         x-opt : list-ref optimized 0
@@ -234,9 +234,9 @@ define : main args
         ;; format port "pl.errorbar(*zip(*sorted(zip(ypos2, yinit))), yerr=zip(*sorted(zip(ypos2, yinitstds)))[1], label='prior vs. m')\n"
         format port "pl.errorbar(*zip(*sorted(zip(ypos2, yopt))), yerr=zip(*sorted(zip(ypos2, yoptstds)))[1], marker='+', mew=2, ms=10, linewidth=0.1, label='optimized vs. m')\n"
         format port "eb=pl.errorbar(*zip(*sorted(zip(ypos2, y0))), yerr=yerr, alpha=0.6, marker='x', mew=2, ms=10, linewidth=0, label='measurements vs. m')\neb[-1][0].set_linewidth(1)\n"
-        format port "pl.plot(sorted(ypos1), pl.log(sorted(ypos1))*(max(y0) / pl.log(max(ypos1))), label='log(N)')\n"
-        format port "pl.plot(sorted(ypos1), pl.sqrt(sorted(ypos1))*(max(y0) / pl.sqrt(max(ypos1))), label='sqrt(N)')\n"
-        format port "pl.plot(sorted(ypos1), pl.multiply(sorted(ypos1), max(y0) / max(ypos1)), label='N')\n"
+        format port "pl.plot(sorted(ypos1+ypos2), pl.log(sorted(ypos1+ypos2))*(max(y0) / pl.log(max(ypos1+ypos2))), label='log(x)')\n"
+        format port "pl.plot(sorted(ypos1+ypos2), pl.sqrt(sorted(ypos1+ypos2))*(max(y0) / pl.sqrt(max(ypos1+ypos2))), label='sqrt(x)')\n"
+        format port "pl.plot(sorted(ypos1+ypos2), pl.multiply(sorted(ypos1+ypos2), max(y0) / max(ypos1+ypos2)), label='x')\n"
         list-ec (: step 0 (length x^steps) 4)
              let : : members : list-ref x^steps (- (length x^steps) step 1)
                 list-ec (: member-idx 0 (length members) ensemble-member-plot-skip) ; reversed
@@ -249,7 +249,7 @@ scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=paired)\n" 0 (length member)
                         let : (offset (/ (apply max (append y⁰ y-opt)) 2)) (spreading (/ (apply max (append y⁰ y-opt)) (- (apply max member) (apply min member))))
                             format port "pl.plot(~A, ~A, marker='.', color=scalarMap.to_rgba(~A), linewidth=0, label='', alpha=0.6, zorder=-1)\n" 
                                         . (/ step 1) (+ offset (* spreading (list-ref member param-idx))) param-idx
-        format port "pl.legend(loc='upper right')\n"
+        format port "pl.legend(loc='lower right')\n"
         format port "pl.xlabel('position [arbitrary units]')\n"
         format port "pl.ylabel('value [arbitrary units]')\n"
         format port "pl.title('~A')\n" "Operation scaling behaviour"
