@@ -23,14 +23,30 @@ define : stddev nums
                 length nums
             expt (/ (apply + nums) (length nums)) 2
 
+
+define : stddev-unbiased-normal nums
+    . "Approximated unbiased standard deviation for the normal distribution
+
+    'for n = 3 the bias is equal to 1.3%, and for n = 9 the bias is already less than 0.1%.'
+     - https://en.wikipedia.org/wiki/Standard_deviation#Unbiased_sample_standard_deviation
+    "
+    sqrt
+        -
+            / : apply + : map (lambda (i) (* i i)) nums
+                - (length nums) 1.5
+            expt (/ (apply + nums) (length nums)) 2
+
+
 define : running-stddev nums
   define : running-stddev-2 num
       set! nums : cons num nums
       stddev nums
   . running-stddev-2
 
-define* : benchmark-run fun #:key (min-seconds 0.1)
-  let profiler : (loop-num 10)
+define* : benchmark-run-single fun #:key (min-seconds 0.1)
+  let profiler : (loop-num 4)
+    ;; trigger garbage collection before stats collection to avoid polluting the data
+    gc
     let : : t : get-internal-real-time
       with-output-to-string
         lambda ()
@@ -41,13 +57,26 @@ define* : benchmark-run fun #:key (min-seconds 0.1)
       let*
         : dt : - (get-internal-real-time) t
           seconds : / (exact->inexact dt) internal-time-units-per-second
-        pretty-print : list dt seconds loop-num
-        if : > seconds min-seconds
-            / seconds loop-num ;; this wastes less than {(10 * ((10^(i-1)) - 1)) / 10^i} fractional data but gains big in simplicity
-            profiler (* 10 loop-num)
+        ;; pretty-print : list dt seconds loop-num
+        if {seconds > min-seconds}
+            /  seconds loop-num ;; this wastes less than {(4 * ((4^(i-1)) - 1)) / 4^i} fractional data but gains big in simplicity
+            profiler (* 4 loop-num) ;; for fast functions I need to go up rapidly, for slow ones I need to avoid overshooting
+
+define* : benchmark-run fun #:key (max-relative-uncertainty 0.2)
+    pretty-print fun
+    let lp : (min-seconds 1.e-5) (sampling-steps 4) ;; min seconds: 10μs ~ 30k cycles, start with at least 3 sampling steps to make the approximations in stddev-unbiased-normal good enough
+        let*
+          : res : list-ec (: i sampling-steps) : benchmark-run-single fun #:min-seconds min-seconds
+            std : stddev-unbiased-normal res
+            mean : / (apply + res) (length res)
+           pretty-print : list mean '± std min-seconds sampling-steps
+           if : < std {mean * max-relative-uncertainty}
+              . mean
+              lp (* 2 min-seconds) (* 2 sampling-steps) ;; should decrease σ by factor 2 or √2 (for slow functions)
 
 define loopcost
   benchmark-run (λ() #f)
+
 
 ;; TODO: Simplify #:key setup -> . setup
 define* : benchmark-fun fun #:key setup
@@ -89,7 +118,7 @@ define : benchmark-list-append
            let : (N (list-ref x 0)) (m (list-ref x 1))
                benchmark (append a b) :let ((a (iota N))(b (iota m)))
          . param-list
-  let : (steps 100)
+  let : (steps 10)
     concatenate
       list 
         let : (param-list (zip (logiota steps 1 10000) (logiota steps 1 0)))
@@ -207,8 +236,9 @@ define* : plot-benchmark-result bench H
           P : make-covariance-matrix-with-offdiagonals-using-stds x^b-std
           y⁰-pos : map car bench
           y⁰ : append-map cdr bench
-          y⁰-std : list-ref (sort y⁰ <) : round : / (length y⁰) 32 ; lower octile median
-          R : make-covariance-matrix-with-offdiagonals-using-stds : list-ec (: i (length bench)) y⁰-std
+          y⁰-stds : list-ec (: i y⁰) {i * 0.2} ; enforcing 20% max std in benchmark-run
+          y⁰-std : list-ref (sort y⁰ <) : round : / (length y⁰) 8 ; lower octile median
+          R : make-covariance-matrix-with-offdiagonals-using-stds y⁰-stds
           optimized : EnSRF H x^b P y⁰ R y⁰-pos ensemble-member-count
           x-opt : list-ref optimized 0
           x-deviations : list-ref optimized 1
