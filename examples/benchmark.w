@@ -14,19 +14,37 @@ import : statprof
          system vm program
 
 
-define : benchmark-run fun
-  let profiler : : loop-num 100
-    statprof-start
-    with-output-to-string
-      lambda ()
-        let lp : (i loop-num)
-          fun
-          when (> i 0)
-            lp (- i 1)
-    statprof-stop
-    if : > (statprof-sample-count) 10
-        / (statprof-accumulated-time) (statprof-sample-count)
-        profiler (* 10 loop-num)
+
+;; stddev from rosetta code: http://rosettacode.org/wiki/Standard_deviation#Scheme
+define : stddev nums
+    sqrt
+        -
+            / : apply + : map (lambda (i) (* i i)) nums
+                length nums
+            expt (/ (apply + nums) (length nums)) 2
+
+define : running-stddev nums
+  define : running-stddev-2 num
+      set! nums : cons num nums
+      stddev nums
+  . running-stddev-2
+
+define* : benchmark-run fun #:key (min-seconds 0.1)
+  let profiler : (loop-num 10)
+    let : : t : get-internal-real-time
+      with-output-to-string
+        lambda ()
+          let lp : (i loop-num)
+            : λ () : fun
+            when (> i 0)
+              lp (- i 1)
+      let*
+        : dt : - (get-internal-real-time) t
+          seconds : / (exact->inexact dt) internal-time-units-per-second
+        pretty-print : list dt seconds loop-num
+        if : > seconds min-seconds
+            / seconds loop-num ;; this wastes less than {(10 * ((10^(i-1)) - 1)) / 10^i} fractional data but gains big in simplicity
+            profiler (* 10 loop-num)
 
 define loopcost
   benchmark-run (λ() #f)
@@ -74,7 +92,7 @@ define : benchmark-list-append
   let : (steps 100)
     concatenate
       list 
-        let : (param-list (zip (logiota steps 1 100) (logiota steps 1 0)))
+        let : (param-list (zip (logiota steps 1 10000) (logiota steps 1 0)))
                bench-append param-list
         ;; let : (param-list (zip (logiota steps 20 0) (logiota steps 1 10000)))
         ;;        bench-append param-list
@@ -86,20 +104,6 @@ define : benchmark-list-append
         ;;        bench-append param-list
         ;; let : (param-list (zip (logiota steps 100000 0) (logiota steps 1 1000)))
         ;;        bench-append param-list
-
-;; stddev from rosetta code: http://rosettacode.org/wiki/Standard_deviation#Scheme
-define : stddev nums
-    sqrt 
-        - 
-            / : apply + : map (lambda (i) (* i i)) nums
-                length nums 
-            expt (/ (apply + nums) (length nums)) 2
-
-define : running-stddev nums
-  define : running-stddev-2 num
-      set! nums : cons num nums
-      stddev nums
-  . running-stddev-2
 
 
 ;; prepare a multi-function fit
