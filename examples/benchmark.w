@@ -268,14 +268,14 @@ define : flatten li
 ;; TODO: add filename and title and fix the units
 define* : plot-benchmark-result bench H #:key filename title
      let*
-        : ensemble-member-count 128
+        : ensemble-member-count 64
           ensemble-member-plot-skip 16 ;; must not be zero!
           y_0 : apply min : map car : map cdr bench
-          y_m : apply max : map car : map cdr bench
+          y_m : * 0.25 : apply max : map car : map cdr bench
           nb : apply max : interleave (map car (map car bench)) (map car (map cdr (map car bench)))
           ;; "const" "log(N)" "sqrt(N)" "N" "N^2" "N^3" "log(m)" "sqrt(m)" "m" "m^2" "m^3" "log(N + m)" "N log(m)" "m log(N)" "N m" "N^2 m" "m^2 N"
           x^b : list y_0 (/ y_m (log nb)) (/ y_m (sqrt nb)) (/ y_m nb) (/ y_m nb nb) (/ y_m nb nb nb) (/ y_m (log nb)) (/ y_m (sqrt nb)) (/ y_m nb) (/ y_m nb nb) (/ y_m nb nb nb) (/ y_m nb nb) (/ y_m nb nb) (/ y_m nb nb nb) (/ y_m nb nb nb) (/ y_m nb nb nb nb) (/ y_m nb nb nb nb)  ; inital guess: constant starting at the first result
-          x^b-std : list-ec (: i x^b) i ; inital guess: 100% uncertainty
+          x^b-std : list-ec (: i x^b) (* 2 i) ; inital guess: 200% uncertainty
           P : make-covariance-matrix-with-offdiagonals-using-stds x^b-std
           y⁰-pos : map car bench
           y⁰ : append-map cdr bench
@@ -304,6 +304,9 @@ define* : plot-benchmark-result bench H #:key filename title
           y^b-stds : list-ec (: i y^b-deviations) : apply standard-deviation-from-deviations i
  
         ;; print-fit x-std
+        when title
+            display title
+            newline
         print-fit x-opt x-std
         ;; TODO: minimize y-mismatch * y-uncertainty
         format #t "Model standard deviation (uncertainty): ~,4e\n" y-std
@@ -341,13 +344,13 @@ scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=paired)\n" 0 (length member)
                               format port "pl.plot(~A, ~A, marker='.', color=scalarMap.to_rgba(~A), linewidth=0, label='', alpha=0.6, zorder=-1)\n"
                                           . (/ step 1) (+ offset (* spreading (list-ref member param-idx))) param-idx
           format port "pl.legend(loc='upper left', fancybox=True, framealpha=0.5)\n"
-          format port "pl.xlabel('position [arbitrary units]')\n"
-          format port "pl.ylabel('value [arbitrary units]')\n"
+          format port "pl.xlabel('position / arbitrary units')\n"
+          format port "pl.ylabel('time / s')\n"
           format port "pl.title('''~A''')\n" : or title "Operation scaling behaviour"
           format port "pl.xscale('log')\n"
           ;; format port "pl.yscale('log')\n"
           if filename
-              format port "pl.savefig('~A')\n" filename
+              format port "pl.savefig('~A', bbox_inches='tight')\n" filename
               format port "pl.show()\n"
           format port "exit()\n"
           close-pipe port
@@ -356,7 +359,7 @@ scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=paired)\n" 0 (length member)
 define : main args
    let*
       : H : lambda (x pos) (H-N-m x pos #:const #t #:ON #t #:ONlogN #t #:OlogN #:Ologm #:Om #:Omlogm)
-        steps 5
+        steps 10
         pbr plot-benchmark-result
       let lp
         : N-start '(1    1    1    100)
@@ -374,36 +377,46 @@ define : main args
                 dm : car m-step
                 param-list : zip (logiota steps N dN) (logiota steps m dm)
               when : equal? dm 0 ;; only over N
-                  pbr (bench-car param-list) H #:filename
-                      format #f "/tmp/benchmark-car-~a-~a.pdf"
+                  pbr (bench-car param-list) H
+                      . #:title "car (iota N)"
+                      . #:filename
+                      format #f "/tmp/benchmark-car-~a-~a.png"
                           if (equal? dN 0) N "N"
                           . m
-                  pbr (bench-cdr param-list) H #:filename
-                      format #f "/tmp/benchmark-cdr-~a-~a.pdf"
+                  pbr (bench-cdr param-list)
+                      . #:title "cdr (iota N)"
+                      . #:filename
+                      format #f "/tmp/benchmark-cdr-~a-~a.png"
                           if (equal? dN 0) N "N"
                           . m
-              pbr (bench-append param-list) H #:filename 
-                  format #f "/tmp/benchmark-list-append-~a-~a.pdf"
+              pbr (bench-append param-list) H
+                  . #:title "append (iota N) (iota m)"
+                  . #:filename
+                  format #f "/tmp/benchmark-list-append-~a-~a.png"
                       if (equal? dN 0) N "N"
                       if (equal? dm 0) m "m"
-              pbr (bench-append-string param-list) H #:filename 
-                  format #f "/tmp/benchmark-string-append-~a-~a.pdf"
+              pbr (bench-append-string param-list) H
+                  . #:title "string-append (make-string N) (make-string m)"
+                  . #:filename
+                  format #f "/tmp/benchmark-string-append-~a-~a.png"
                       if (equal? dN 0) N "N"
                       if (equal? dm 0) m "m"
-              pbr (bench-append-vector param-list) H #:filename 
-                  format #f "/tmp/benchmark-vector-append-~a-~a.pdf"
+              pbr (bench-append-vector param-list) H
+                  . #:title "vector-append (make-vector N 1) (make-vector m 1)"
+                  . #:filename
+                  format #f "/tmp/benchmark-vector-append-~a-~a.png"
                       if (equal? dN 0) N "N"
                       if (equal? dm 0) m "m"
               pbr (bench-assoc param-list) H 
                   . #:title "assoc m '((N . N) (N-1 . N-1) ... )" 
                   . #:filename
-                  format #f "/tmp/benchmark-assoc-~a-~a.pdf"
+                  format #f "/tmp/benchmark-assoc-~a-~a.png"
                       if (equal? dN 0) N "N"
                       if (equal? dm 0) m "m"
               pbr (bench-cons param-list) H
                   . #:title "cons m (iota N)"
                   . #:filename
-                  format #f "/tmp/benchmark-cons-~a-~a.pdf"
+                  format #f "/tmp/benchmark-cons-~a-~a.png"
                       if (equal? dN 0) N "N"
                       if (equal? dm 0) m "m"
               ;; interesting functions: 
