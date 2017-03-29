@@ -383,7 +383,7 @@ define : main args
                       format #f "/tmp/benchmark-car-~a-~a.png"
                           if (equal? dN 0) N "N"
                           . m
-                  pbr (bench-cdr param-list)
+                  pbr (bench-cdr param-list) H
                       . #:title "cdr (iota N)"
                       . #:filename
                       format #f "/tmp/benchmark-cdr-~a-~a.png"
