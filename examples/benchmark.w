@@ -255,7 +255,7 @@ define : flatten li
 define* : plot-benchmark-result bench H #:key filename
      let*
         : ensemble-member-count 128
-          ensemble-member-plot-skip 1 ;; must not be zero!
+          ensemble-member-plot-skip 16 ;; must not be zero!
           y_0 : apply min : map car : map cdr bench
           y_m : apply max : map car : map cdr bench
           nb : apply max : interleave (map car (map car bench)) (map car (map cdr (map car bench)))
