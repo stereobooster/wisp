@@ -166,7 +166,7 @@ define : bench-car param-list
   zip param-list 
       map 
        lambda (x)
-         let : (N (list-ref x 0)) (m (list-ref x 1))
+         let : (N (list-ref x 0))
              benchmark (car b) :let ((b (iota N)))
        . param-list
 
@@ -175,7 +175,7 @@ define : bench-cdr param-list
   zip param-list 
       map 
        lambda (x)
-         let : (N (list-ref x 0)) (m (list-ref x 1))
+         let : (N (list-ref x 0))
              benchmark (cdr b) :let ((b (iota N)))
        . param-list
 
@@ -343,7 +343,7 @@ scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=paired)\n" 0 (length member)
           format port "pl.legend(loc='upper left', fancybox=True, framealpha=0.5)\n"
           format port "pl.xlabel('position [arbitrary units]')\n"
           format port "pl.ylabel('value [arbitrary units]')\n"
-          format port "pl.title('~A')\n" : or title "Operation scaling behaviour"
+          format port "pl.title('''~A''')\n" : or title "Operation scaling behaviour"
           format port "pl.xscale('log')\n"
           ;; format port "pl.yscale('log')\n"
           if filename
@@ -356,12 +356,12 @@ scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=paired)\n" 0 (length member)
 define : main args
    let*
       : H : lambda (x pos) (H-N-m x pos #:const #t #:ON #t #:ONlogN #t #:OlogN #:Ologm #:Om #:Omlogm)
-        steps 20
+        steps 5
         pbr plot-benchmark-result
       let lp
-        : N-start '(1    1    1 100)
-          N-step  '(1000 1000 0 0)
-          m-start '(1    100  1 1)
+        : N-start '(1    1    1    100)
+          N-step  '(1000 1000 0    0)
+          m-start '(1    100  1    1)
           m-step  '(0    0    1000 1000)
         cond
           : null? N-start
@@ -374,10 +374,6 @@ define : main args
                 dm : car m-step
                 param-list : zip (logiota steps N dN) (logiota steps m dm)
               when : equal? dm 0 ;; only over N
-                  pbr (bench-cons param-list) H #:filename
-                      format #f "/tmp/benchmark-cons-~a-~a.pdf"
-                          if (equal? dN 0) N "N"
-                          . m
                   pbr (bench-car param-list) H #:filename
                       format #f "/tmp/benchmark-car-~a-~a.pdf"
                           if (equal? dN 0) N "N"
@@ -402,6 +398,12 @@ define : main args
                   . #:title "assoc m '((N . N) (N-1 . N-1) ... )" 
                   . #:filename
                   format #f "/tmp/benchmark-assoc-~a-~a.pdf"
+                      if (equal? dN 0) N "N"
+                      if (equal? dm 0) m "m"
+              pbr (bench-cons param-list) H
+                  . #:title "cons m (iota N)"
+                  . #:filename
+                  format #f "/tmp/benchmark-cons-~a-~a.pdf"
                       if (equal? dN 0) N "N"
                       if (equal? dm 0) m "m"
               ;; interesting functions: 
