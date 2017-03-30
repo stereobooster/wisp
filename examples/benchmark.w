@@ -140,6 +140,32 @@ define : benchmark-list-append-100-m steps
   bench-append (zip (logiota steps 100 0) (logiota steps 1 1000))
 
 
+define : bench-append-string param-list
+  . "Test (append a b) with lists of lengths from the param-list."
+  zip param-list 
+      map 
+       lambda (x)
+         let : (N (list-ref x 0)) (m (list-ref x 1))
+             benchmark (string-append a b) :let ((a (make-string N))(b (make-string m)))
+       . param-list
+
+define : benchmark-string-append-N-1 steps
+  . "Test (append a b) with lists with lengths N and 1."
+  bench-append-string (zip (logiota steps 1 1000) (logiota steps 1 0))
+
+define : benchmark-string-append-N-100 steps
+  . "Test (append a b) with lists with lengths N and 1."
+  bench-append-string (zip (logiota steps 1 1000) (logiota steps 100 0))
+
+define : benchmark-string-append-1-m steps
+  . "Test (append a b) with lists with lengths N and 1."
+  bench-append-string (zip (logiota steps 1 0) (logiota steps 1 1000))
+
+define : benchmark-string-append-100-m steps
+  . "Test (append a b) with lists with lengths N and 1."
+  bench-append-string (zip (logiota steps 100 0) (logiota steps 1 1000))
+
+
 ;; prepare a multi-function fit
 import 
     only : examples ensemble-estimation
@@ -315,10 +341,14 @@ scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=paired)\n" 0 (length member)
 
 define : main args
    let*
-      : H : lambda (x pos) (H-N-m x pos #:const #t #:ON #t #:ONlogN #t)
-        steps 200
+      : H : lambda (x pos) (H-N-m x pos #:const #t #:ON #t #:ONlogN #t #:OlogN #:Ologm #:Om #:Omlogm)
+        steps 20
         pbr plot-benchmark-result
       pbr (benchmark-list-append-N-1 steps) H #:filename "/tmp/benchmark-N-1.pdf"
       pbr (benchmark-list-append-N-100 steps) H #:filename "/tmp/benchmark-N-100.pdf"
       pbr (benchmark-list-append-1-m steps) H #:filename "/tmp/benchmark-1-m.pdf"
       pbr (benchmark-list-append-100-m steps) H #:filename "/tmp/benchmark-100-m.pdf"
+      pbr (benchmark-string-append-N-1 steps) H #:filename "/tmp/benchmark-string-N-1.pdf"
+      pbr (benchmark-string-append-N-100 steps) H #:filename "/tmp/benchmark-string-N-100.pdf"
+      pbr (benchmark-string-append-1-m steps) H #:filename "/tmp/benchmark-string-1-m.pdf"
+      pbr (benchmark-string-append-100-m steps) H #:filename "/tmp/benchmark-string-100-m.pdf"
