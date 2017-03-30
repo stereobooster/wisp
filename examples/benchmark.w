@@ -10,6 +10,7 @@ import : statprof
          ice-9 format
          srfi srfi-1
          srfi srfi-42 ; list-ec
+         srfi srfi-43 ; vector-append
          ice-9 pretty-print
          system vm program
 
@@ -114,6 +115,7 @@ define : logiota steps start stepsize
           logstep : / (- (log (+ start (* stepsize (- steps 1)))) logstart) (- steps 1)
         map inexact->exact : map round : map exp : iota steps logstart logstep 
 
+
 define : bench-append param-list
   . "Test (append a b) with lists of lengths from the param-list."
   zip param-list 
@@ -122,23 +124,6 @@ define : bench-append param-list
          let : (N (list-ref x 0)) (m (list-ref x 1))
              benchmark (append a b) :let ((a (iota N))(b (iota m)))
        . param-list
-
-define : benchmark-list-append-N-1 steps
-  . "Test (append a b) with lists with lengths N and 1."
-  bench-append (zip (logiota steps 1 1000) (logiota steps 1 0))
-
-define : benchmark-list-append-N-100 steps
-  . "Test (append a b) with lists with lengths N and 1."
-  bench-append (zip (logiota steps 1 1000) (logiota steps 100 0))
-
-define : benchmark-list-append-1-m steps
-  . "Test (append a b) with lists with lengths N and 1."
-  bench-append (zip (logiota steps 1 0) (logiota steps 1 1000))
-
-define : benchmark-list-append-100-m steps
-  . "Test (append a b) with lists with lengths N and 1."
-  bench-append (zip (logiota steps 100 0) (logiota steps 1 1000))
-
 
 define : bench-append-string param-list
   . "Test (append a b) with lists of lengths from the param-list."
@@ -149,21 +134,50 @@ define : bench-append-string param-list
              benchmark (string-append a b) :let ((a (make-string N))(b (make-string m)))
        . param-list
 
-define : benchmark-string-append-N-1 steps
-  . "Test (append a b) with lists with lengths N and 1."
-  bench-append-string (zip (logiota steps 1 1000) (logiota steps 1 0))
+define : bench-append-vector param-list
+  . "Test (append a b) with lists of lengths from the param-list."
+  zip param-list 
+      map 
+       lambda (x)
+         let : (N (list-ref x 0)) (m (list-ref x 1))
+             benchmark (vector-append a b) :let ((a (make-vector N 1))(b (make-vector m 1)))
+       . param-list
 
-define : benchmark-string-append-N-100 steps
-  . "Test (append a b) with lists with lengths N and 1."
-  bench-append-string (zip (logiota steps 1 1000) (logiota steps 100 0))
+define : bench-assoc param-list
+  . "Test (append a b) with lists of lengths from the param-list."
+  zip param-list 
+      map 
+       lambda (x)
+         let : (N (list-ref x 0)) (m (list-ref x 1))
+             benchmark (assoc a b) :let ((a m)(b (fold (λ (x y z) (acons x y z)) '() (iota N 1) (iota N 1))))
+       . param-list
 
-define : benchmark-string-append-1-m steps
-  . "Test (append a b) with lists with lengths N and 1."
-  bench-append-string (zip (logiota steps 1 0) (logiota steps 1 1000))
+define : bench-cons param-list
+  . "Test (cons a b) with element A and list B of lengths from the param-list."
+  zip param-list 
+      map 
+       lambda (x)
+         let : (N (list-ref x 0)) (m (list-ref x 1))
+             benchmark (cons a b) :let ((a m)(b (iota N)))
+       . param-list
 
-define : benchmark-string-append-100-m steps
-  . "Test (append a b) with lists with lengths N and 1."
-  bench-append-string (zip (logiota steps 100 0) (logiota steps 1 1000))
+define : bench-car param-list
+  . "Test (cons a b) with element A and list B of lengths from the param-list."
+  zip param-list 
+      map 
+       lambda (x)
+         let : (N (list-ref x 0)) (m (list-ref x 1))
+             benchmark (car b) :let ((b (iota N)))
+       . param-list
+
+define : bench-cdr param-list
+  . "Test (cons a b) with element A and list B of lengths from the param-list."
+  zip param-list 
+      map 
+       lambda (x)
+         let : (N (list-ref x 0)) (m (list-ref x 1))
+             benchmark (cdr b) :let ((b (iota N)))
+       . param-list
 
 
 ;; prepare a multi-function fit
@@ -252,7 +266,7 @@ define : flatten li
          append-ec (: i li) i
 
 ;; TODO: add filename and title and fix the units
-define* : plot-benchmark-result bench H #:key filename
+define* : plot-benchmark-result bench H #:key filename title
      let*
         : ensemble-member-count 128
           ensemble-member-plot-skip 16 ;; must not be zero!
@@ -329,7 +343,7 @@ scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=paired)\n" 0 (length member)
           format port "pl.legend(loc='upper left', fancybox=True, framealpha=0.5)\n"
           format port "pl.xlabel('position [arbitrary units]')\n"
           format port "pl.ylabel('value [arbitrary units]')\n"
-          format port "pl.title('~A')\n" "Operation scaling behaviour"
+          format port "pl.title('~A')\n" : or title "Operation scaling behaviour"
           format port "pl.xscale('log')\n"
           ;; format port "pl.yscale('log')\n"
           if filename
@@ -344,11 +358,59 @@ define : main args
       : H : lambda (x pos) (H-N-m x pos #:const #t #:ON #t #:ONlogN #t #:OlogN #:Ologm #:Om #:Omlogm)
         steps 20
         pbr plot-benchmark-result
-      pbr (benchmark-list-append-N-1 steps) H #:filename "/tmp/benchmark-N-1.pdf"
-      pbr (benchmark-list-append-N-100 steps) H #:filename "/tmp/benchmark-N-100.pdf"
-      pbr (benchmark-list-append-1-m steps) H #:filename "/tmp/benchmark-1-m.pdf"
-      pbr (benchmark-list-append-100-m steps) H #:filename "/tmp/benchmark-100-m.pdf"
-      pbr (benchmark-string-append-N-1 steps) H #:filename "/tmp/benchmark-string-N-1.pdf"
-      pbr (benchmark-string-append-N-100 steps) H #:filename "/tmp/benchmark-string-N-100.pdf"
-      pbr (benchmark-string-append-1-m steps) H #:filename "/tmp/benchmark-string-1-m.pdf"
-      pbr (benchmark-string-append-100-m steps) H #:filename "/tmp/benchmark-string-100-m.pdf"
+      let lp
+        : N-start '(1    1    1 100)
+          N-step  '(1000 1000 0 0)
+          m-start '(1    100  1 1)
+          m-step  '(0    0    1000 1000)
+        cond
+          : null? N-start
+            . #t
+          else
+            let*
+              : N : car N-start
+                dN : car N-step
+                m : car m-start
+                dm : car m-step
+                param-list : zip (logiota steps N dN) (logiota steps m dm)
+              when : equal? dm 0 ;; only over N
+                  pbr (bench-cons param-list) H #:filename
+                      format #f "/tmp/benchmark-cons-~a-~a.pdf"
+                          if (equal? dN 0) N "N"
+                          . m
+                  pbr (bench-car param-list) H #:filename
+                      format #f "/tmp/benchmark-car-~a-~a.pdf"
+                          if (equal? dN 0) N "N"
+                          . m
+                  pbr (bench-cdr param-list) H #:filename
+                      format #f "/tmp/benchmark-cdr-~a-~a.pdf"
+                          if (equal? dN 0) N "N"
+                          . m
+              pbr (bench-append param-list) H #:filename 
+                  format #f "/tmp/benchmark-list-append-~a-~a.pdf"
+                      if (equal? dN 0) N "N"
+                      if (equal? dm 0) m "m"
+              pbr (bench-append-string param-list) H #:filename 
+                  format #f "/tmp/benchmark-string-append-~a-~a.pdf"
+                      if (equal? dN 0) N "N"
+                      if (equal? dm 0) m "m"
+              pbr (bench-append-vector param-list) H #:filename 
+                  format #f "/tmp/benchmark-vector-append-~a-~a.pdf"
+                      if (equal? dN 0) N "N"
+                      if (equal? dm 0) m "m"
+              pbr (bench-assoc param-list) H 
+                  . #:title "assoc m '((N . N) (N-1 . N-1) ... )" 
+                  . #:filename
+                  format #f "/tmp/benchmark-assoc-~a-~a.pdf"
+                      if (equal? dN 0) N "N"
+                      if (equal? dm 0) m "m"
+              ;; interesting functions: 
+              ;; - add to set/alist/hashmap
+              ;; - retrieve from alist/hashmap
+              ;; - sort
+              ;; - ... see https://wiki.python.org/moin/TimeComplexity
+            lp
+                cdr N-start
+                cdr N-step
+                cdr m-start
+                cdr m-step
