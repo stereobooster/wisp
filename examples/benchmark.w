@@ -116,68 +116,86 @@ define : logiota steps start stepsize
         map inexact->exact : map round : map exp : iota steps logstart logstep 
 
 
+;; List benchmarks
 define : bench-append param-list
   . "Test (append a b) with lists of lengths from the param-list."
-  zip param-list 
-      map 
-       lambda (x)
-         let : (N (list-ref x 0)) (m (list-ref x 1))
-             benchmark (append a b) :let ((a (iota N))(b (iota m)))
-       . param-list
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (append a b) :let ((a (iota N))(b (iota m)))
+  zip param-list : map f param-list
 
-define : bench-append-string param-list
-  . "Test (append a b) with lists of lengths from the param-list."
-  zip param-list 
-      map 
-       lambda (x)
-         let : (N (list-ref x 0)) (m (list-ref x 1))
-             benchmark (string-append a b) :let ((a (make-string N))(b (make-string m)))
-       . param-list
+define : bench-ref param-list
+  . "Test (list-ref a b) with lists of lengths from the param-list."
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (list-ref a b) :let ((a (iota (max N m)))(b (- m 1)))
+  zip param-list : map f param-list
 
-define : bench-append-vector param-list
-  . "Test (append a b) with lists of lengths from the param-list."
-  zip param-list 
-      map 
-       lambda (x)
-         let : (N (list-ref x 0)) (m (list-ref x 1))
-             benchmark (vector-append a b) :let ((a (make-vector N 1))(b (make-vector m 1)))
-       . param-list
+define : bench-car param-list
+  . "Test (coar a b) with element A and list B of lengths from the param-list."
+  define : f x
+     let : (N (list-ref x 0))
+            benchmark (car b) :let ((b (iota N)))
+  zip param-list : map f param-list
 
-define : bench-assoc param-list
-  . "Test (append a b) with lists of lengths from the param-list."
-  zip param-list 
-      map 
-       lambda (x)
-         let : (N (list-ref x 0)) (m (list-ref x 1))
-             benchmark (assoc a b) :let ((a m)(b (fold (λ (x y z) (acons x y z)) '() (iota N 1) (iota N 1))))
-       . param-list
+define : bench-cdr param-list
+  . "Test (cdr a b) with element A and list B of lengths from the param-list (note: this is really, really fast)."
+  define : f x
+     let : (N (list-ref x 0))
+            benchmark (cdr b) :let ((b (iota N)))
+  zip param-list : map f param-list
+
+define : bench-sort param-list
+  . "Test (sort a <) with lists of lengths from the param-list."
+  define : f x
+     let : (N (list-ref x 0))
+            benchmark (sort a <) :let ((a (iota N)))
+  zip param-list : map f param-list
 
 define : bench-cons param-list
   . "Test (cons a b) with element A and list B of lengths from the param-list."
-  zip param-list 
-      map 
-       lambda (x)
-         let : (N (list-ref x 0)) (m (list-ref x 1))
-             benchmark (cons a b) :let ((a m)(b (iota N)))
-       . param-list
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (cons b a) :let ((a (iota N))(b m))
+  zip param-list : map f param-list
 
-define : bench-car param-list
+define : bench-copy param-list
   . "Test (cons a b) with element A and list B of lengths from the param-list."
-  zip param-list 
-      map 
-       lambda (x)
-         let : (N (list-ref x 0))
-             benchmark (car b) :let ((b (iota N)))
-       . param-list
+  define : f x
+     let : (N (list-ref x 0))
+            benchmark (list-copy a) :let ((a (iota N)))
+  zip param-list : map f param-list
 
-define : bench-cdr param-list
+define : bench-set param-list
   . "Test (cons a b) with element A and list B of lengths from the param-list."
-  zip param-list 
-      map 
-       lambda (x)
-         let : (N (list-ref x 0))
-             benchmark (cdr b) :let ((b (iota N)))
-       . param-list
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (list-set! a b) :let ((a (iota N))(b m))
+  zip param-list : map f param-list
+
+;; String benchmarks
+define : bench-append-string param-list
+  . "Test (string-append a b) with lists of lengths from the param-list."
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (string-append a b) :let ((a (make-string N))(b (make-string m)))
+  zip param-list : map f param-list
+
+;; Vector benchmarks
+define : bench-append-vector param-list
+  . "Test (vector-append a b) with lists of lengths from the param-list."
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (vector-append a b) :let ((a (make-vector N 1))(b (make-vector m 1)))
+  zip param-list : map f param-list
+
+;; Map/set benchmarks
+define : bench-assoc param-list
+  . "Test (assoc a b) with lists of lengths from the param-list."
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (assoc a b) :let ((a m)(b (reverse (fold (λ (x y z) (acons x y z)) '() (iota N 1) (iota N 1)))))
+  zip param-list : map f param-list
 
 
 ;; prepare a multi-function fit
@@ -340,7 +358,7 @@ cNorm = mpl.colors.Normalize(vmin=~A, vmax=~A)
 scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=paired)\n" 0 (length member)
                        list-ec (: param-idx 0 (length member) 4) ; step = 4
                           ;; plot parameter 0
-                          let : (offset (/ (apply max (append y⁰ y-opt)) 2)) (spreading (/ (apply max (append y⁰ y-opt)) (- (apply max member) (apply min member))))
+                          let : (offset (/ (apply max (append y⁰ y-opt)) 2)) (spreading (/ (apply max (append y⁰ y-opt)) (- (apply max member) (apply min member)) 2))
                               format port "pl.plot(~A, ~A, marker='.', color=scalarMap.to_rgba(~A), linewidth=0, label='', alpha=0.6, zorder=-1)\n"
                                           . (/ step 1) (+ offset (* spreading (list-ref member param-idx))) param-idx
           format port "pl.legend(loc='upper left', fancybox=True, framealpha=0.5)\n"
@@ -359,7 +377,7 @@ scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=paired)\n" 0 (length member)
 define : main args
    let*
       : H : lambda (x pos) (H-N-m x pos #:const #t #:ON #t #:ONlogN #t #:OlogN #:Ologm #:Om #:Omlogm)
-        steps 10
+        steps 200
         pbr plot-benchmark-result
       let lp
         : N-start '(1    1    1    100)
@@ -376,49 +394,44 @@ define : main args
                 m : car m-start
                 dm : car m-step
                 param-list : zip (logiota steps N dN) (logiota steps m dm)
+              define : title description
+                  string-append description
+                    format #f ", ~a ~a"
+                      if (equal? dN 0) N "N"
+                      if (equal? dm 0) m "m"
+              define : filename identifier
+                  format #f "/tmp/benchmark-~a-~a-~a.png"
+                      . identifier
+                      if (equal? dN 0) N "N"
+                      if (equal? dm 0) m "m"
+              pbr (bench-ref param-list) H
+                  . #:title : title "list-ref (iota (max m N)) m"
+                  . #:filename : filename "list-ref"
               when : equal? dm 0 ;; only over N
                   pbr (bench-car param-list) H
-                      . #:title "car (iota N)"
-                      . #:filename
-                      format #f "/tmp/benchmark-car-~a-~a.png"
-                          if (equal? dN 0) N "N"
-                          . m
+                      . #:title : title "car (iota N)"
+                      . #:filename : filename "car"
                   pbr (bench-cdr param-list) H
-                      . #:title "cdr (iota N)"
-                      . #:filename
-                      format #f "/tmp/benchmark-cdr-~a-~a.png"
-                          if (equal? dN 0) N "N"
-                          . m
+                      . #:title : title "cdr (iota N)"
+                      . #:filename : filename "cdr"
+                  pbr (bench-sort param-list) H
+                      . #:title : title "sort (iota N)"
+                      . #:filename : filename "sort"
               pbr (bench-append param-list) H
-                  . #:title "append (iota N) (iota m)"
-                  . #:filename
-                  format #f "/tmp/benchmark-list-append-~a-~a.png"
-                      if (equal? dN 0) N "N"
-                      if (equal? dm 0) m "m"
+                  . #:title : title "append (iota N) (iota m)"
+                  . #:filename : filename list-append
               pbr (bench-append-string param-list) H
-                  . #:title "string-append (make-string N) (make-string m)"
-                  . #:filename
-                  format #f "/tmp/benchmark-string-append-~a-~a.png"
-                      if (equal? dN 0) N "N"
-                      if (equal? dm 0) m "m"
+                  . #:title : title "string-append (make-string N) (make-string m)"
+                  . #:filename : filename "string-append"
               pbr (bench-append-vector param-list) H
-                  . #:title "vector-append (make-vector N 1) (make-vector m 1)"
-                  . #:filename
-                  format #f "/tmp/benchmark-vector-append-~a-~a.png"
-                      if (equal? dN 0) N "N"
-                      if (equal? dm 0) m "m"
+                  . #:title : title "vector-append (make-vector N 1) (make-vector m 1)"
+                  . #:filename : filename "vector-append"
               pbr (bench-assoc param-list) H 
-                  . #:title "assoc m '((N . N) (N-1 . N-1) ... )" 
-                  . #:filename
-                  format #f "/tmp/benchmark-assoc-~a-~a.png"
-                      if (equal? dN 0) N "N"
-                      if (equal? dm 0) m "m"
+                  . #:title : title "assoc m '((1 . 1) (2 . 2) ... (N . N))"
+                  . #:filename : filename "assoc"
               pbr (bench-cons param-list) H
-                  . #:title "cons m (iota N)"
-                  . #:filename
-                  format #f "/tmp/benchmark-cons-~a-~a.png"
-                      if (equal? dN 0) N "N"
-                      if (equal? dm 0) m "m"
+                  . #:title : title "cons m (iota N)"
+                  . #:filename : filename "cons"
               ;; interesting functions: 
               ;; - add to set/alist/hashmap
               ;; - retrieve from alist/hashmap
