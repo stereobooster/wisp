@@ -64,7 +64,7 @@ define* : benchmark-run-single fun #:key (min-seconds 0.1)
             profiler (* 4 loop-num) ;; for fast functions I need to go up rapidly, for slow ones I need to avoid overshooting
 
 ;; Define targets for the data aquisition
-define max-iterations 1.e5 ;; at most 100k samples, which is more than I typically see
+define max-iterations 1.e4 ;; at most 10k samples, which is more than I typically see
 define max-relative-uncertainty 0.3 ;; 3 sigma from 0
 define min-aggregated-runtime-seconds 1.e-5 ;; 10μs ~ 30k cycles
 define max-absolute-uncertainty-seconds 1.e-3 ;; 1ms, required to ensure that the model uses the higher values (else they would have huge uncertainties). If you find you need more, use a smaller test case.
@@ -75,10 +75,9 @@ define* : benchmark-run fun
         let*
           : res : list-ec (: i sampling-steps) : benchmark-run-single fun #:min-seconds min-seconds
             std : stddev-unbiased-normal res
-            len : length res
-            mean : / (apply + res) len
+            mean : / (apply + res) sampling-steps
            ;; pretty-print : list mean '± std min-seconds sampling-steps
-           if : or {len > max-iterations} : and {std < {mean * max-relative-uncertainty}} {std < max-absolute-uncertainty-seconds}
+           if : or {sampling-steps > max-iterations} : and {std < {mean * max-relative-uncertainty}} {std < max-absolute-uncertainty-seconds}
               . mean
               lp (* 2 min-seconds) (* 2 sampling-steps) ;; should decrease σ by factor 2 or √2 (for slow functions)
 
@@ -377,7 +376,7 @@ scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=paired)\n" 0 (length member)
 define : main args
    let*
       : H : lambda (x pos) (H-N-m x pos #:const #t #:ON #t #:ONlogN #t #:OlogN #:Ologm #:Om #:Omlogm)
-        steps 200
+        steps 50
         pbr plot-benchmark-result
       let lp
         : N-start '(1    1    1    100)
