@@ -64,10 +64,10 @@ define* : benchmark-run-single fun #:key (min-seconds 0.1)
             profiler (* 4 loop-num) ;; for fast functions I need to go up rapidly, for slow ones I need to avoid overshooting
 
 ;; Define targets for the data aquisition
-define max-iterations 1024 ;; at most 1024 samples
 define max-relative-uncertainty 0.3 ;; 3 sigma from 0
-define min-aggregated-runtime-seconds 1.e-5 ;; 10μs ~ 30k cycles
 define max-absolute-uncertainty-seconds 1.e-3 ;; 1ms, required to ensure that the model uses the higher values (else they would have huge uncertainties). If you find you need more, use a smaller test case.
+define min-aggregated-runtime-seconds 1.e-5 ;; 10μs ~ 30k cycles
+define max-iterations 1024 ;; at most 1024 samples, currently corresponding to at least 10ms each, so the benchmark should take at most 10 seconds.
 
 define* : benchmark-run fun
     ;; pretty-print fun
@@ -418,7 +418,7 @@ define : main args
                       . #:filename : filename "sort"
               pbr (bench-append param-list) H
                   . #:title : title "append (iota N) (iota m)"
-                  . #:filename : filename list-append
+                  . #:filename : filename "list-append"
               pbr (bench-append-string param-list) H
                   . #:title : title "string-append (make-string N) (make-string m)"
                   . #:filename : filename "string-append"
