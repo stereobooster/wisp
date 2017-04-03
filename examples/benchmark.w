@@ -67,7 +67,7 @@ define* : benchmark-run-single fun #:key (min-seconds 0.1)
 define max-relative-uncertainty 0.3 ;; 3 sigma from 0
 define max-absolute-uncertainty-seconds 1.e-3 ;; 1ms, required to ensure that the model uses the higher values (else they would have huge uncertainties). If you find you need more, use a smaller test case.
 define min-aggregated-runtime-seconds 1.e-5 ;; 10μs ~ 30k cycles
-define max-iterations 1024 ;; at most 1024 samples, currently corresponding to at least 10ms each, so the benchmark should take at most 10 seconds.
+define max-iterations 128 ;; at most 128 samples, currently corresponding to at least 1ms each, so a benchmark of a fast function should take at most 0.1 seconds.
 
 define* : benchmark-run fun
     ;; pretty-print fun
