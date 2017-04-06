@@ -117,7 +117,32 @@ define : logiota steps start stepsize
         map inexact->exact : map round : map exp : iota steps logstart logstep 
 
 
-;; List benchmarks
+;; interesting functions to benchmark:
+;; - TODO: add to set/alist/hashmap
+;; - TODO: retrieve from alist/hashmap
+;; - TODO: sort
+;; - ... see https://wiki.python.org/moin/TimeComplexity
+
+;; operation benchmarks
+;; - TODO: or #f #t
+;; - TODO: and #t #f
+
+;; List benchmarks:
+;; - TODO: list-copy (py-copy)
+;; - cons (py-push / py-append)
+;; - car (py-pop)
+;; - list-ref (py-get-item)
+;; - TODO: list-set! (py-set-item)
+;; - TODO: take + drop (py-get-slice)
+;; - TODO: take-right + drop-right (py-get-slice)
+;; - TODO: last
+;; - TODO: append (py-extend)
+;; - TODO: delete (py-delete-item)
+;; - TODO: min (py-min)
+;; - TODO: max (py-max)
+;; - TODO: member (py-in)
+;; - TODO: reverse (py-reversed)
+;; - TODO: length (py-len)
 define : bench-append param-list
   . "Test (append a b) with lists of lengths from the param-list."
   define : f x
@@ -173,6 +198,10 @@ define : bench-set param-list
      let : (N (list-ref x 0)) (m (list-ref x 1))
             benchmark (list-set! a b) :let ((a (iota N))(b m))
   zip param-list : map f param-list
+
+
+;; VList benchmarks
+
 
 ;; String benchmarks
 define : bench-append-string param-list
@@ -357,7 +386,7 @@ define* : plot-benchmark-result bench H #:key filename title
           format port "yopt = [float(i) for i in '~A'[1:-1].split(' ')]\n" : list-ec (: i y⁰-pos) : H x-opt i
           format port "yoptstds = [float(i) for i in '~A'[1:-1].split(' ')]\n" y-stds
           ;; format port "pl.errorbar(*zip(*sorted(zip(ypos1, yinit))), yerr=zip(*sorted(zip(ypos1, yinitstds)))[1], label='prior vs N')\n"
-          format port "pl.errorbar(*zip(*sorted(zip(ypos1, yopt))), yerr=zip(*sorted(zip(ypos1, yoptstds)))[1], marker='H', mew=0, ms=10, linewidth=0.1, label='optimized vs N')\n"
+          format port "pl.errorbar(*zip(*sorted(zip(ypos1, yopt))), yerr=zip(*sorted(zip(ypos1, yoptstds)))[1], marker='H', mew=1, ms=10, linewidth=0.1, label='optimized vs N')\n"
           format port "eb=pl.errorbar(*zip(*sorted(zip(ypos1, y0))), yerr=ystds, alpha=0.6, marker='x', mew=2, ms=10, linewidth=0, label='measurements vs N')\neb[-1][0].set_linewidth(1)\n"
           ;; format port "pl.errorbar(*zip(*sorted(zip(ypos2, yinit))), yerr=zip(*sorted(zip(ypos2, yinitstds)))[1], label='prior vs. m')\n"
           format port "pl.errorbar(*zip(*sorted(zip(ypos2, yopt))), yerr=zip(*sorted(zip(ypos2, yoptstds)))[1], marker='h', mew=0, ms=10, linewidth=0.1, label='optimized vs. m')\n"
@@ -448,11 +477,6 @@ define : main args
               pbr (bench-cons param-list) H
                   . #:title : title "cons m (iota N)"
                   . #:filename : filename "cons"
-              ;; interesting functions: 
-              ;; - add to set/alist/hashmap
-              ;; - retrieve from alist/hashmap
-              ;; - sort
-              ;; - ... see https://wiki.python.org/moin/TimeComplexity
             lp
                 cdr N-start
                 cdr N-step
