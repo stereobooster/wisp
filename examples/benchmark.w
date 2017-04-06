@@ -287,8 +287,9 @@ define : flatten li
 ;; TODO: add filename and title and fix the units
 define* : plot-benchmark-result bench H #:key filename title
      let*
-        : ensemble-member-count 64
-          ensemble-member-plot-skip 16 ;; must not be zero!
+        : ensemble-member-count 32
+          ensemble-member-plot-skip 8 ;; must not be zero!
+          iterations 4
           y_0 : apply min : map car : map cdr bench
           y_m : * 0.25 : apply max : map car : map cdr bench
           nb : apply max : interleave (map car (map car bench)) (map car (map cdr (map car bench)))
@@ -298,9 +299,25 @@ define* : plot-benchmark-result bench H #:key filename title
           P : make-covariance-matrix-with-offdiagonals-using-stds x^b-std
           y⁰-pos : map car bench
           y⁰ : append-map cdr bench
-          y⁰-stds : list-ec (: i y⁰) : min max-absolute-uncertainty-seconds {max-relative-uncertainty * i} ; enforcing 20% max std in benchmark-run
+          ;; several iterations to better cope with non-linearity, following http://journals.ametsoc.org/doi/abs/10.1175/MWR-D-11-00176.1 (but globally)
+          y⁰-stds : list-ec (: i y⁰) : * (sqrt iterations) : min max-absolute-uncertainty-seconds {max-relative-uncertainty * i} ; enforcing 20% max std in benchmark-run
           R : make-covariance-matrix-with-offdiagonals-using-stds y⁰-stds
-          optimized : EnSRF H x^b P y⁰ R y⁰-pos ensemble-member-count
+          optimized ;; iterate N times
+              let lp : (N iterations) (x^b x^b) (P P)
+                  let : : optimized : EnSRF H x^b P y⁰ R y⁰-pos ensemble-member-count
+                      cond
+                         : <= N 1
+                            . optimized
+                         else
+                            let*
+                              : x-opt : list-ref optimized 0
+                                x-deviations : list-ref optimized 1
+                                x-std ;; re-create the ensemble with the new std
+                                    list-ec (: i (length x-opt))
+                                        apply standard-deviation-from-deviations
+                                            list-ec (: j x-deviations) : list-ref j i
+                                P : make-covariance-matrix-with-offdiagonals-using-stds x-std
+                              lp (- N 1) x-opt P
           x-opt : list-ref optimized 0
           x-deviations : list-ref optimized 1
           x-std 
@@ -404,7 +421,7 @@ define : main args
                       if (equal? dN 0) N "N"
                       if (equal? dm 0) m "m"
               pbr (bench-ref param-list) H
-                  . #:title : title "list-ref (iota (max m N)) m"
+                  . #:title : title "list-ref (iota (max m N)) (- m 1)"
                   . #:filename : filename "list-ref"
               when : equal? dm 0 ;; only over N
                   pbr (bench-car param-list) H
