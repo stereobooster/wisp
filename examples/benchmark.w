@@ -241,6 +241,10 @@ define-syntax-rule : or0 test c ...
     if test : begin c ...
             . 0
 
+define-syntax-rule : oror0 test1 test2 c ...
+    if (or test1 test2) : begin c ...
+                        . 0
+
 define-syntax-rule : define-quoted sym val
     ;; set the value to true using eval to break the symbol->variable barrier
     primitive-eval `(define ,sym val)
@@ -249,39 +253,33 @@ define*
        H-N-m x pos #:key all const OlogN OsqrtN ON ONlogN ON²
                                  . Ologm Osqrtm Om Omlogm Om²
                                  . OlogNm ONlogm OmlogN ONm
-                                 . ON²m Om²N
+                                 . ONlogNlogN Omlogmlogm
        . "Observation operator. It generates modelled observations from the input.
 
 x are parameters to be optimized, pos is another input which is not optimized. For plain functions it could be the position of the measurement on the x-axis. We currently assume absolute knowledge about the position.
 "
-       when all
-           let lp : (l '(const OlogN OsqrtN ON ONlogN ON² Ologm Osqrtm Om Omlogm Om² OlogNm ONlogm OmlogN ONm ON²m Om²N))
-               when : not : null? l
-                      define-quoted (car l) #t
-                      lp : cdr l
-       
        let : (N (first pos)) (m (second pos))
            +
-             or0 const : list-ref x 0 ; constant value
+             oror0 all const : list-ref x 0 ; constant value
              ;; pure N
-             or0 OlogN  : * (list-ref x 1) : log (+ 1 N) ; avoid breakage at pos 0
-             or0 OsqrtN : * (list-ref x 2) : sqrt N
-             or0 ON     : * (list-ref x 3) N
-             or0 ONlogN : * (list-ref x 4) : * N : log (+ 1 N)
-             or0 ON²    : * (list-ref x 5) : expt N 2
+             oror0 all OlogN  : * (list-ref x 1) : log (+ 1 N) ; avoid breakage at pos 0
+             oror0 all OsqrtN : * (list-ref x 2) : sqrt N
+             oror0 all ON     : * (list-ref x 3) N
+             oror0 all ONlogN : * (list-ref x 4) : * N : log (+ 1 N)
+             oror0 all ON²    : * (list-ref x 5) : expt N 2
              ;; pure m
-             or0 Ologm  : * (list-ref x 6) : log (+ 1 m) ; avoid breakage at pos 0
-             or0 Osqrtm : * (list-ref x 7) : sqrt m
-             or0 Om     : * (list-ref x 8) m
-             or0 Omlogm : * (list-ref x 9) : * m : log (+ 1 m)
-             or0 Om²    : * (list-ref x 10) : expt m 2
+             oror0 all Ologm  : * (list-ref x 6) : log (+ 1 m) ; avoid breakage at pos 0
+             oror0 all Osqrtm : * (list-ref x 7) : sqrt m
+             oror0 all Om     : * (list-ref x 8) m
+             oror0 all Omlogm : * (list-ref x 9) : * m : log (+ 1 m)
+             oror0 all Om²    : * (list-ref x 10) : expt m 2
              ;; mixed terms
-             or0 OlogNm : * (list-ref x 11) : log (+ 1 N m)
-             or0 ONlogm : * (list-ref x 12) : * N : log (+ 1 m)
-             or0 OmlogN : * (list-ref x 13) : * m : log (+ 1 N)
-             or0 ONm    : * (list-ref x 14) : * N m
-             or0 ON²m   : * (list-ref x 15) : * (expt N 2) m
-             or0 Om²N   : * (list-ref x 16) : * (expt m 2) N
+             oror0 all OlogNm : * (list-ref x 11) : log (+ 1 N m)
+             oror0 all ONlogm : * (list-ref x 12) : * N : log (+ 1 m)
+             oror0 all OmlogN : * (list-ref x 13) : * m : log (+ 1 N)
+             oror0 all ONm    : * (list-ref x 14) : * N m
+             oror0 all ONlogNlogN   : * (list-ref x 15) : * (log (+ 1 N)) (log (+ 1 N)) N
+             oror0 all Omlogmlogm   : * (list-ref x 16) : * (log (+ 1 m)) (log (+ 1 m)) m
 
 
 define : interleave lx lz
@@ -296,13 +294,13 @@ define : print-fit x σ
     . "Print the big-O parameters which are larger than σ (their standard deviation)."
     let : : number-format "~,1,,,,,'ee±~,1,,,,,'ee"
       let big-O
-        : names : list "" "log(N)" "sqrt(N)" "N log(N)" "N^2" "log(m)" "sqrt(m)" "m" "m log(m)" "m^2" "log(N + m)" "N log(m)" "m log(N)" "N m" "N^2 m" "m^2 N"
+        : names : list "" "log(N)" "sqrt(N)" "N log(N)" "N^2" "log(m)" "sqrt(m)" "m" "m log(m)" "m^2" "log(N + m)" "N log(m)" "m log(N)" "N m" "N log(N)^2" "m^2 N"
           x x
           σ σ
         cond
           : or (null? names) (null? x) (null? σ)
             newline
-          : > (abs (car x)) (car σ)
+          : > (abs (car x)) (* 2 (car σ)) ;; 2 times standard deviation as significance level
             format #t : string-append number-format " " (car names) "  "
                       . (car x) (car σ)
             big-O (cdr names) (cdr x) (cdr σ)
@@ -374,6 +372,7 @@ define* : plot-benchmark-result bench H #:key filename title
         print-fit x-opt x-std
         ;; TODO: minimize y-mismatch * y-uncertainty
         format #t "Model standard deviation (uncertainty): ~,4e\n" y-std
+        newline
         ; now plot the result
         let : : port : open-output-pipe "python2"
           format port "import pylab as pl\nimport matplotlib as mpl\n"
@@ -389,7 +388,7 @@ define* : plot-benchmark-result bench H #:key filename title
           format port "pl.errorbar(*zip(*sorted(zip(ypos1, yopt))), yerr=zip(*sorted(zip(ypos1, yoptstds)))[1], marker='H', mew=1, ms=10, linewidth=0.1, label='optimized vs N')\n"
           format port "eb=pl.errorbar(*zip(*sorted(zip(ypos1, y0))), yerr=ystds, alpha=0.6, marker='x', mew=2, ms=10, linewidth=0, label='measurements vs N')\neb[-1][0].set_linewidth(1)\n"
           ;; format port "pl.errorbar(*zip(*sorted(zip(ypos2, yinit))), yerr=zip(*sorted(zip(ypos2, yinitstds)))[1], label='prior vs. m')\n"
-          format port "pl.errorbar(*zip(*sorted(zip(ypos2, yopt))), yerr=zip(*sorted(zip(ypos2, yoptstds)))[1], marker='h', mew=0, ms=10, linewidth=0.1, label='optimized vs. m')\n"
+          format port "pl.errorbar(*zip(*sorted(zip(ypos2, yopt))), yerr=zip(*sorted(zip(ypos2, yoptstds)))[1], marker='h', mew=1, ms=10, linewidth=0.1, label='optimized vs. m')\n"
           format port "eb=pl.errorbar(*zip(*sorted(zip(ypos2, y0))), yerr=ystds, alpha=0.6, marker='x', mew=2, ms=10, linewidth=0, label='measurements vs. m')\neb[-1][0].set_linewidth(1)\n"
           format port "pl.plot(sorted(ypos1+ypos2), pl.log(sorted(ypos1+ypos2))*(max(y0) / pl.log(max(ypos1+ypos2))), label='log(x)')\n"
           format port "pl.plot(sorted(ypos1+ypos2), pl.sqrt(sorted(ypos1+ypos2))*(max(y0) / pl.sqrt(max(ypos1+ypos2))), label='sqrt(x)')\n"
@@ -421,7 +420,10 @@ scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=paired)\n" 0 (length member)
 
 define : main args
    let*
-      : H : lambda (x pos) (H-N-m x pos #:const #t #:ON #t #:ONlogN #t #:OlogN #:Ologm #:Om #:Omlogm)
+      : H : lambda (x pos) (H-N-m x pos #:all #t)
+        H-const : lambda (x pos) (H-N-m x pos #:const #t)
+        H-log : lambda (x pos) (H-N-m x pos #:const #t #:OlogN #t #:Ologm #t)
+        H-lin : lambda (x pos) (H-N-m x pos #:const #t #:ON #t #:Om #t #:ONlogN #t #:Omlogm #t #:ONlogNlogN #t #:Omlogmlogm #t )
         steps 50
         pbr plot-benchmark-result
       let lp
@@ -449,26 +451,26 @@ define : main args
                       . identifier
                       if (equal? dN 0) N "N"
                       if (equal? dm 0) m "m"
-              pbr (bench-ref param-list) H
+              pbr (bench-ref param-list) H-const
                   . #:title : title "list-ref (iota (max m N)) (- m 1)"
                   . #:filename : filename "list-ref"
               when : equal? dm 0 ;; only over N
-                  pbr (bench-car param-list) H
+                  pbr (bench-car param-list) H-const
                       . #:title : title "car (iota N)"
                       . #:filename : filename "car"
-                  pbr (bench-cdr param-list) H
+                  pbr (bench-cdr param-list) H-const
                       . #:title : title "cdr (iota N)"
                       . #:filename : filename "cdr"
-                  pbr (bench-sort param-list) H
+                  pbr (bench-sort param-list) H-lin
                       . #:title : title "sort (iota N)"
                       . #:filename : filename "sort"
-              pbr (bench-append param-list) H
+              pbr (bench-append param-list) H-lin
                   . #:title : title "append (iota N) (iota m)"
                   . #:filename : filename "list-append"
-              pbr (bench-append-string param-list) H
+              pbr (bench-append-string param-list) H-lin
                   . #:title : title "string-append (make-string N) (make-string m)"
                   . #:filename : filename "string-append"
-              pbr (bench-append-vector param-list) H
+              pbr (bench-append-vector param-list) H-lin
                   . #:title : title "vector-append (make-vector N 1) (make-vector m 1)"
                   . #:filename : filename "vector-append"
               pbr (bench-assoc param-list) H 
