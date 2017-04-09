@@ -128,21 +128,21 @@ define : logiota steps start stepsize
 ;; - TODO: and #t #f
 
 ;; List benchmarks:
-;; - TODO: list-copy (py-copy)
+;; - list-copy (py-copy)
 ;; - cons (py-push / py-append)
 ;; - car (py-pop)
 ;; - list-ref (py-get-item)
-;; - TODO: list-set! (py-set-item)
-;; - TODO: take + drop (py-get-slice)
-;; - TODO: take-right + drop-right (py-get-slice)
-;; - TODO: last
-;; - TODO: append (py-extend)
-;; - TODO: delete (py-delete-item)
-;; - TODO: min (py-min)
-;; - TODO: max (py-max)
-;; - TODO: member (py-in)
-;; - TODO: reverse (py-reversed)
-;; - TODO: length (py-len)
+;; - list-set! (py-set-item)
+;; - take + drop (py-get-slice)
+;; - take-right + drop-right (py-get-slice)
+;; - last
+;; - append (py-extend)
+;; - delete (py-delete-item)
+;; - min (py-min)
+;; - max (py-max)
+;; - member (py-in)
+;; - reverse (py-reversed)
+;; - length (py-len)
 define : bench-append param-list
   . "Test (append a b) with lists of lengths from the param-list."
   define : f x
@@ -196,11 +196,102 @@ define : bench-set param-list
   . "Test (cons a b) with element A and list B of lengths from the param-list."
   define : f x
      let : (N (list-ref x 0)) (m (list-ref x 1))
-            benchmark (list-set! a b) :let ((a (iota N))(b m))
+            benchmark (list-set! a b #t) :let ((a (iota (max N m)))(b (- m 1)))
+  zip param-list : map f param-list
+
+define : bench-copy param-list
+  . "Copy a list of length N."
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (set! b (list-copy a)) :let ((a (iota N))(b #f))
+  zip param-list : map f param-list
+
+define : bench-getslice-left param-list
+  . "Get a slice from left."
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (take (drop a b) b) :let ((a (iota (max N (* 2 m))))(b m))
+  zip param-list : map f param-list
+
+define : bench-getslice-right param-list
+  . "Get a slice from right."
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (take-right (drop-right a b) b) :let ((a (iota (max N (* 2 m))))(b m))
+  zip param-list : map f param-list
+
+define : bench-length param-list
+  . "Get the length of a list."
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (length a) :let ((a (iota N))(b m))
+  zip param-list : map f param-list
+
+define : bench-reverse param-list
+  . "Reverse a list."
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (reverse a) :let ((a (iota N))(b m))
+  zip param-list : map f param-list
+
+define : bench-member param-list
+  . "Check (member b a)."
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (member b a) :let ((a (iota N)) (b (- m 1)))
+  zip param-list : map f param-list
+
+define : bench-last param-list
+  . "Get the last element of a list."
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (last a) :let ((a (iota N))(b m))
+  zip param-list : map f param-list
+
+define : bench-max param-list
+  . "Get the maximum value of a list."
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (apply max a) :let ((a (iota N))(b m))
+  zip param-list : map f param-list
+
+define : bench-min param-list
+  . "Get the minimum value of a list."
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (apply min a) :let ((a (iota N))(b m))
+  zip param-list : map f param-list
+
+define : bench-delete param-list
+  . "Check (member b a)."
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (delete b a) :let ((a (iota N)) (b (- m 1)))
+  zip param-list : map f param-list
+
+define : bench-delete-smaller param-list
+  . "Check (delete b a <)."
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (delete b a <) :let ((a (iota N)) (b (- m 1)))
+  zip param-list : map f param-list
+
+define : bench-delete-larger param-list
+  . "Check (delete b a >)."
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (delete b a >) :let ((a (iota N)) (b (- m 1)))
+  zip param-list : map f param-list
+
+define : bench-delete! param-list
+  . "Check (member b a)."
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (delete! b a) :let ((a (iota N)) (b (- m 1)))
   zip param-list : map f param-list
 
 
-;; VList benchmarks
+;; TODO: VList benchmarks
 
 
 ;; String benchmarks
@@ -419,12 +510,18 @@ scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=paired)\n" 0 (length member)
 
 
 define : main args
+ let : : steps 50
+   when : member "--quick" args
+       set! max-relative-uncertainty 1.5
+       set! max-absolute-uncertainty-seconds 1.e-1
+       set! min-aggregated-runtime-seconds 1.e-7
+       set! max-iterations 16
+       set! steps 5
    let*
       : H : lambda (x pos) (H-N-m x pos #:all #t)
         H-const : lambda (x pos) (H-N-m x pos #:const #t)
         H-log : lambda (x pos) (H-N-m x pos #:const #t #:OlogN #t #:Ologm #t)
         H-lin : lambda (x pos) (H-N-m x pos #:const #t #:ON #t #:Om #t #:ONlogN #t #:Omlogm #t #:ONlogNlogN #t #:Omlogmlogm #t )
-        steps 50
         pbr plot-benchmark-result
       let lp
         : N-start '(1    1    1    100)
@@ -464,9 +561,52 @@ define : main args
                   pbr (bench-sort param-list) H-lin
                       . #:title : title "sort (iota N)"
                       . #:filename : filename "sort"
+                  pbr (bench-copy param-list) H
+                      . #:title : title "list-copy (iota N)"
+                      . #:filename : filename "copy"
+                  pbr (bench-length param-list) H
+                      . #:title : title "length (iota N)"
+                      . #:filename : filename "length"
+                  pbr (bench-reverse param-list) H
+                      . #:title : title "reverse (iota N)"
+                      . #:filename : filename "reverse"
+                  pbr (bench-last param-list) H
+                      . #:title : title "last (iota N)"
+                      . #:filename : filename "last"
+                  pbr (bench-max param-list) H
+                      . #:title : title "apply max (iota N)"
+                      . #:filename : filename "max"
+                  pbr (bench-min param-list) H
+                      . #:title : title "apply min (iota N)"
+                      . #:filename : filename "min"
               pbr (bench-append param-list) H-lin
                   . #:title : title "append (iota N) (iota m)"
                   . #:filename : filename "list-append"
+              pbr (bench-set param-list) H
+                  . #:title : title "list-set! (iota (max N m)) m #t"
+                  . #:filename : filename "list-set"
+              pbr (bench-getslice-left param-list) H
+                  . #:title : title "take (drop (iota (max N (* 2 m))) m) m"
+                  . #:filename : filename "list-getslice-left"
+              pbr (bench-getslice-right param-list) H
+                  . #:title : title "take-right (drop-right (iota (max N (* 2 m))) m) m"
+                  . #:filename : filename "list-getslice-right"
+              pbr (bench-member param-list) H
+                  . #:title : title "member (- m 1) (iota N)"
+                  . #:filename : filename "member"
+              pbr (bench-delete param-list) H
+                  . #:title : title "delete (- m 1) (iota N)"
+                  . #:filename : filename "delete"
+              pbr (bench-delete-smaller param-list) H
+                  . #:title : title "delete (- m 1) (iota N) <"
+                  . #:filename : filename "delete-smaller"
+              pbr (bench-delete-larger param-list) H
+                  . #:title : title "member (- m 1) (iota N) >"
+                  . #:filename : filename "delete-larger"
+              pbr (bench-delete! param-list) H
+                  . #:title : title "delete! (- m 1) (iota N)"
+                  . #:filename : filename "delete-bang"
+              ;; strings
               pbr (bench-append-string param-list) H-lin
                   . #:title : title "string-append (make-string N) (make-string m)"
                   . #:filename : filename "string-append"
