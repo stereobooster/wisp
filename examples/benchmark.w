@@ -302,6 +302,13 @@ define : bench-append-string param-list
             benchmark (string-append a b) :let ((a (make-string N))(b (make-string m)))
   zip param-list : map f param-list
 
+define : bench-append-string/shared param-list
+  . "Test (string-append/shared a b) with lists of lengths from the param-list."
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (string-append/shared a b) :let ((a (make-string N))(b (make-string m)))
+  zip param-list : map f param-list
+
 ;; Vector benchmarks
 define : bench-append-vector param-list
   . "Test (vector-append a b) with lists of lengths from the param-list."
@@ -610,9 +617,14 @@ define : main args
               pbr (bench-append-string param-list) H-lin
                   . #:title : title "string-append (make-string N) (make-string m)"
                   . #:filename : filename "string-append"
+              pbr (bench-append-string/shared param-list) H-lin
+                  . #:title : title "string-append/shared (make-string N) (make-string m)"
+                  . #:filename : filename "string-append-shared"
+              ;; vectors
               pbr (bench-append-vector param-list) H-lin
                   . #:title : title "vector-append (make-vector N 1) (make-vector m 1)"
                   . #:filename : filename "vector-append"
+              ;; maps
               pbr (bench-assoc param-list) H 
                   . #:title : title "assoc m '((1 . 1) (2 . 2) ... (N . N))"
                   . #:filename : filename "assoc"
