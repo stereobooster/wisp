@@ -126,6 +126,7 @@ define : logiota steps start stepsize
 ;; operation benchmarks
 ;; - TODO: or #f #t
 ;; - TODO: and #t #f
+;; - TODO: math
 
 ;; List benchmarks:
 ;; - list-copy (py-copy)
@@ -323,6 +324,22 @@ define : bench-assoc param-list
   define : f x
      let : (N (list-ref x 0)) (m (list-ref x 1))
             benchmark (assoc a b) :let ((a m)(b (reverse (fold (λ (x y z) (acons x y z)) '() (iota N 1) (iota N 1)))))
+  zip param-list : map f param-list
+
+
+;; opertations
+define : bench-operation-+ param-list
+  . "Test (assoc a b) with lists of lengths from the param-list."
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (+ a b) :let ((a N)(b m)(c 1)(d 2))
+  zip param-list : map f param-list
+
+define : bench-operation-+++ param-list
+  . "Test (assoc a b) with lists of lengths from the param-list."
+  define : f x
+     let : (N (list-ref x 0)) (m (list-ref x 1))
+            benchmark (+ (+ (+ a b) c) d) :let ((a N)(b m)(c 50)(d 100))
   zip param-list : map f param-list
 
 
@@ -555,6 +572,12 @@ define : main args
                       . identifier
                       if (equal? dN 0) N "N"
                       if (equal? dm 0) m "m"
+              pbr (bench-operation-+ param-list) H
+                  . #:title : title "+ N m"
+                  . #:filename : filename "operation-plus"
+              pbr (bench-operation-+++ param-list) H
+                  . #:title : title "+ (+ (+ N m) 50) 100"
+                  . #:filename : filename "operation-plus3"
               pbr (bench-ref param-list) H-const
                   . #:title : title "list-ref (iota (max m N)) (- m 1)"
                   . #:filename : filename "list-ref"
