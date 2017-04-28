@@ -14,13 +14,17 @@ define factors⁻¹
     10 . 0.9726592741
 
 define : std . vals
-  let* 
-    : len (length vals)
-      mean (/ (apply + vals) len)
-      factor (or (assoc-ref factors⁻¹ len) 1)
-    * (/ 1 factor) : sqrt : * (/ 1 (- len 1)) : apply + : map (λ(x) (expt (- x mean) 2)) vals .
+  . "Calculate the unbiased standard deviation of the values (the biased std for more than 10 values)."
+  let : : len : length vals
+     if : < len 2
+        . +inf.0
+        let
+          : mean (/ (apply + vals) len)
+            factor (or (assoc-ref factors⁻¹ len) 1)
+          * (/ 1 factor) : sqrt : * (/ 1 (- len 1)) : apply + : map (λ(x) (expt (- x mean) 2)) vals .
 
 ;; quick test
 let : : res : std 0 0 3
   when : not : > 0.01 : abs : - res : * 1.129 : sqrt 3 ;; calculated by hand
          format #t "Bug: (std 0 0 3) gives ~a instead of 1.995\n" res
+
