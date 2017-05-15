@@ -28,3 +28,4 @@ let : : res : std 0 0 3
   when : not : > 0.01 : abs : - res : * 1.129 : sqrt 3 ;; calculated by hand
          format #t "Bug: (std 0 0 3) gives ~a instead of 1.995\n" res
 
+write : std 5860.16 6141.81 6088.67

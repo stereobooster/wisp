@@ -7,8 +7,6 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 
 ; TODO: genetic with mutate+combinate, population which keeps the best and directed which only keeps improvements
 
-; NOTE: This only works after preprocessing to scheme.
-
 define-module : examples evolve
               . #:export : main
 
@@ -156,7 +154,3 @@ define : main args
          newline
 
 
-define : main
-       display "foo"
-       newline 
-       run
