@@ -71,7 +71,7 @@ define max-iterations 128 ;; at most 128 samples, currently corresponding to at 
 
 define* : benchmark-run fun
     ;; pretty-print fun
-    let lp : (min-seconds min-aggregated-runtime-seconds) (sampling-steps 4) ;; start with at least 3 sampling steps to make the approximations in stddev-unbiased-normal good enough
+    let lp : (min-seconds min-aggregated-runtime-seconds) (sampling-steps 8) ;; start with at least 3 sampling steps to make the approximations in stddev-unbiased-normal good enough
         let*
           : res : list-ec (: i sampling-steps) : benchmark-run-single fun #:min-seconds min-seconds
             std : stddev-unbiased-normal res
@@ -383,7 +383,7 @@ x are parameters to be optimized, pos is another input which is not optimized. F
              oror0 all ONlogN : * (list-ref x 4) : * N : log (+ 1 N)
              oror0 all ON²    : * (list-ref x 5) : expt N 2
              ;; pure m
-             oror0 all Ologm  : * (list-ref x 6) : log (+ 1 m) ; avoid breakage at pos 0
+             oror0 all Ologm  : * (list-ref x 6) : log (+ 1 m)
              oror0 all Osqrtm : * (list-ref x 7) : sqrt m
              oror0 all Om     : * (list-ref x 8) m
              oror0 all Omlogm : * (list-ref x 9) : * m : log (+ 1 m)
@@ -406,7 +406,7 @@ define : interleave lx lz
 
 
 define : print-fit x σ
-    . "Print the big-O parameters which are larger than σ (their standard deviation)."
+    . "Print the big-O parameters which are larger than 3σ (thrice their standard deviation)."
     let : : number-format "~,1,,,,,'ee±~,1,,,,,'ee"
       let big-O
         : names : list "" "log(N)" "sqrt(N)" "N log(N)" "N^2" "log(m)" "sqrt(m)" "m" "m log(m)" "m^2" "log(N + m)" "N log(m)" "m log(N)" "N m" "N log(N)^2" "m^2 N"
@@ -415,7 +415,7 @@ define : print-fit x σ
         cond
           : or (null? names) (null? x) (null? σ)
             newline
-          : > (abs (car x)) (* 2 (car σ)) ;; 2 times standard deviation as significance level
+          : > (abs (car x)) (* 3 (car σ)) ;; 3 times standard deviation as significance level
             format #t : string-append number-format " " (car names) "  "
                       . (car x) (car σ)
             big-O (cdr names) (cdr x) (cdr σ)
@@ -490,6 +490,8 @@ define* : plot-benchmark-result bench H #:key filename title
         newline
         ; now plot the result
         let : : port : open-output-pipe "python2"
+          format port "# encoding: utf-8\n"
+          format port "from __future__ import unicode_literals\n"
           format port "import pylab as pl\nimport matplotlib as mpl\n"
           format port "y0 = [float(i) for i in '~A'[1:-1].split(' ')]\n" y⁰
           format port "ystds = [float(i) for i in '~A'[1:-1].split(' ')]\n" y⁰-stds
@@ -521,9 +523,10 @@ scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=paired)\n" 0 (length member)
                               format port "pl.plot(~A, ~A, marker='.', color=scalarMap.to_rgba(~A), linewidth=0, label='', alpha=0.6, zorder=-1)\n"
                                           . (/ step 1) (+ offset (* spreading (list-ref member param-idx))) param-idx
           format port "pl.legend(loc='upper left', fancybox=True, framealpha=0.5)\n"
-          format port "pl.xlabel('position / arbitrary units')\n"
+          format port "pl.xlabel('position (N or m) / arbitrary units')\n"
           format port "pl.ylabel('time / s')\n"
           format port "pl.title('''~A''')\n" : or title "Operation scaling behaviour"
+          format port "pl.text(1, 0, '''fit: ~A''', horizontalalignment='right', verticalalignment='center', transform=pl.gca().transAxes)\n" : with-output-to-string : λ() : print-fit x-opt x-std
           format port "pl.xscale('log')\n"
           ;; format port "pl.yscale('log')\n"
           if filename
@@ -534,7 +537,7 @@ scalarMap = mpl.cm.ScalarMappable(norm=cNorm, cmap=paired)\n" 0 (length member)
 
 
 define : main args
- let : : steps 50
+ let : : steps 25
    when : member "--quick" args
        set! max-relative-uncertainty 1.5
        set! max-absolute-uncertainty-seconds 1.e-1
