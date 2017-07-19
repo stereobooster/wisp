@@ -406,7 +406,8 @@ define : interleave lx lz
 
 
 define : print-fit x σ
-    . "Print the big-O parameters which are larger than 3σ (thrice their standard deviation)."
+    . "Print the big-O parameters which are larger than 2.6σ (2.6 times their standard deviation, roughly 99% / p 0.01)."
+    ;; see https://en.wikipedia.org/wiki/68%E2%80%9395%E2%80%9399.7_rule#/media/File:Standard_score_and_prediction_interval.png
     let : : number-format "~,1,,,,,'ee±~,1,,,,,'ee"
       let big-O
         : names : list "" "log(N)" "sqrt(N)" "N log(N)" "N^2" "log(m)" "sqrt(m)" "m" "m log(m)" "m^2" "log(N + m)" "N log(m)" "m log(N)" "N m" "N log(N)^2" "m^2 N"
@@ -415,7 +416,7 @@ define : print-fit x σ
         cond
           : or (null? names) (null? x) (null? σ)
             newline
-          : > (abs (car x)) (* 3 (car σ)) ;; 3 times standard deviation as significance level
+          : > (abs (car x)) (* 2.6 (car σ)) ;; 99%: 2.6 times standard deviation as significance level
             format #t : string-append number-format " " (car names) "  "
                       . (car x) (car σ)
             big-O (cdr names) (cdr x) (cdr σ)
