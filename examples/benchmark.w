@@ -551,10 +551,10 @@ define : main args
         H-lin : lambda (x pos) (H-N-m x pos #:const #t #:ON #t #:Om #t #:ONlogN #t #:Omlogm #t #:ONlogNlogN #t #:Omlogmlogm #t )
         pbr plot-benchmark-result
       let lp
-        : N-start '(1    1    1    100)
-          N-step  '(1000 1000 0    0)
-          m-start '(1    100  1    1)
-          m-step  '(0    0    1000 1000)
+        : N-start `(1    1    1    100   ,(* steps 1000))
+          N-step  '(1000 1000 0    0     0)
+          m-start '(1    100  1    1     1)
+          m-step  '(0    0    1000 1000  1000)
         cond
           : null? N-start
             . #t
