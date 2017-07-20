@@ -635,7 +635,7 @@ define : main args
                   . #:title : title "delete (- m 1) (iota N) <"
                   . #:filename : filename "delete-smaller"
               pbr (bench-delete-larger param-list) H
-                  . #:title : title "member (- m 1) (iota N) >"
+                  . #:title : title "delete (- m 1) (iota N) >"
                   . #:filename : filename "delete-larger"
               pbr (bench-delete! param-list) H
                   . #:title : title "delete! (- m 1) (iota N)"
