@@ -1,7 +1,4 @@
-#!/bin/bash
-(# -*- wisp -*-)
-(exec guile -L . --language=wisp -s "$0" "$@")
-; !#
+#lang racket
 
 ;; Scheme-only implementation of a wisp-preprocessor which output a
 ;; scheme code tree to feed to a scheme interpreter instead of a
@@ -35,20 +32,6 @@
 ;; SOFTWARE.
 
 
-(define-module (wisp-scheme)
-   #:export (wisp-scheme-read-chunk wisp-scheme-read-all 
-               wisp-scheme-read-file-chunk wisp-scheme-read-file
-               wisp-scheme-read-string))
-
-; use curly-infix by default
-(read-enable 'curly-infix)
-
-(use-modules 
-  (srfi srfi-1)
-  (srfi srfi-11 ); for let-values
-  (ice-9 rw ); for write-string/partial
-  (ice-9 match))
-
 ;; Helper functions for the indent-and-symbols data structure: '((indent token token ...) ...)
 (define (line-indent line)
          (car line))
@@ -63,8 +46,6 @@
 (define (line-code line)
          (let ((code (cdr line)))
              ; propagate source properties
-             (when (not (null? code))
-                    (set-source-properties! code (source-properties line)))
              code))
 
 ; literal values I need
