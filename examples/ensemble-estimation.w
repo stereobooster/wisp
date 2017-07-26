@@ -41,6 +41,7 @@ define-module : examples ensemble-estimation
 use-modules : srfi srfi-42 ; list-ec
               srfi srfi-9 ; records
               oop goops ; generic functions
+              ice-9 optargs
               examples cholesky ; cholesky! for random variables with covariance
 use-modules 
   : ice-9 popen
@@ -206,10 +207,13 @@ define : matrix-times-vector X y
 define x^steps '()
 define 1-AK '()
 
-define : EnSRF H x P y R y-pos N
+define* : EnSRF H x P y R y-pos N #:key (penalty-function-of-x (λ (x) 0))
      . "Observation function H, parameters x,
 parameter-covariance P, observations y, observation covariance R
 and number of ensemble members N.
+
+TODO: PENALTY-FUNCTION-OF-X is any function which takes the
+parameters X and returns a penalty.
 
 Limitations: y is a single value. R and P are diagonal.
 "
@@ -242,7 +246,7 @@ Limitations: y is a single value. R and P are diagonal.
                    Hx^b_i
                        list-ec (: i x-deviations) 
                            H 
-                             list-ec (: j (length i)) 
+                             list-ec (: j (length i))
                                  + (list-ref x^b j) (list-ref i j)
                              . y-pos_cur
                    Hx^b 
