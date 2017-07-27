@@ -9,6 +9,7 @@ define-module : examples doctests
 
 import : ice-9 optargs
          ice-9 rdelim
+         ice-9 match
          oop goops
          texinfo reflection
 
@@ -40,38 +41,75 @@ define : doctests-extract-from-string s
 
           This is an example test:
 
-          (test #:name mytest
+          (test \"mytest\"
               (define v (make-vector 5 99))
               (test-assert (vector? v))
               (test-eqv 99 (vector-ref v 2))
               (vector-set! v 2 7)
               (test-eqv 7 (vector-ref v 2)))
+          (test \"mytest2\"
+              (test-assert #t))
 "
-       let : : idx : string-index s "(test"
-          when idx
-              let : : sub : substring s idx
-                  with-input-from-string sub
-                      λ () : read 
+       let lp
+           : str s
+             tests : list
+           if : string-null? str
+              reverse tests
+              let : : idx : string-index str "(test"
+                  if : not idx
+                      reverse tests
+                      let : : sub : substring str idx
+                          lp ; recurse with the rest of the string
+                             with-input-from-string sub
+                                 λ () (read) (read-string)
+                             cons
+                                 with-input-from-string sub
+                                     λ () : read
+                                 . tests
 
 define : doctests-testmod mod
        . "Execute all doctests in the current module"
        let* 
            : names : module-map (λ (sym var) sym) mod
+             filename
+                 if (module-filename mod) (module-filename mod)
+                     string-join (cons "-" (map symbol->string (module-name mod))) "-"
              docstrings
                  map (λ (x) (if (procedure? x) (procedure-documentation x)))
                      map (λ (x) (module-ref mod x)) names
-           let loop : (names names) (docstrings docstrings)
+           let loop
+               : names names
+                 docstrings docstrings
                when : not : null? docstrings
                    when : string? : car docstrings
                        let*
                            : name : car names
                              docstring : car docstrings
-                             doctest : doctests-extract-from-string : car docstrings
-                           write : list name doctest
-                           newline
-                           let :
-                               primitive-eval doctest
-                           newline
+                           let loop-tests
+                              : doctests : doctests-extract-from-string : car docstrings
+                              when : and (list? doctests) : not : null? doctests
+                                 let*
+                                   : doctest : car doctests
+                                     testid
+                                        if : not : list? doctest
+                                             . #f
+                                             string-join : list filename (symbol->string name) : car : cdr doctest
+                                                         . "--"
+                                     cleaned
+                                         if : not : list? doctest
+                                           . '#f
+                                           append
+                                               cons 'begin
+                                                   cons '(import (srfi srfi-64))
+                                                       cons
+                                                           list 'test-begin testid
+                                                           cdr : cdr doctest
+                                               list : list 'test-end testid
+                                   when cleaned
+                                       let :
+                                           eval cleaned mod
+                                       newline
+                                   loop-tests : cdr doctests
                    loop (cdr names) (cdr docstrings)
 
 define %this-module : current-module
