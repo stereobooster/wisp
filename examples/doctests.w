@@ -69,10 +69,10 @@ define : doctests-extract-from-string s
 
 define : doctests-testmod mod
        . "Execute all doctests in the current module"
-       let* 
+       let*
            : names : module-map (λ (sym var) sym) mod
              filename
-                 if (module-filename mod) (module-filename mod)
+                 if (module-filename mod) (string-join (string-split (module-filename mod) #\/) "-")
                      string-join (cons "._" (map symbol->string (module-name mod))) "-"
              docstrings
                  map (λ (x) (if (procedure? x) (procedure-documentation x)))
