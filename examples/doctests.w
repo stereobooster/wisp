@@ -73,7 +73,7 @@ define : doctests-testmod mod
            : names : module-map (λ (sym var) sym) mod
              filename
                  if (module-filename mod) (module-filename mod)
-                     string-join (cons "-" (map symbol->string (module-name mod))) "-"
+                     string-join (cons "._" (map symbol->string (module-name mod))) "-"
              docstrings
                  map (λ (x) (if (procedure? x) (procedure-documentation x)))
                      map (λ (x) (module-ref mod x)) names
