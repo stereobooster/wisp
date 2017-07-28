@@ -41,13 +41,13 @@ define : doctests-extract-from-string s
 
           This is an example test:
 
-          (test \"mytest\"
+          (test 'mytest
               (define v (make-vector 5 99))
               (test-assert (vector? v))
               (test-eqv 99 (vector-ref v 2))
               (vector-set! v 2 7)
               (test-eqv 7 (vector-ref v 2)))
-          (test \"mytest2\"
+          (test 'mytest2
               (test-assert #t))
 "
        let lp
@@ -72,7 +72,7 @@ define : doctests-testmod mod
        let*
            : names : module-map (λ (sym var) sym) mod
              filename
-                 if (module-filename mod) (string-join (string-split (module-filename mod) #\/) "-")
+                 if (module-filename mod) (string-join (string-split (module-filename mod) #\/ ) "-")
                      string-join (cons "._" (map symbol->string (module-name mod))) "-"
              docstrings
                  map (λ (x) (if (procedure? x) (procedure-documentation x)))
@@ -93,7 +93,7 @@ define : doctests-testmod mod
                                      testid
                                         if : not : list? doctest
                                              . #f
-                                             string-join : list filename (symbol->string name) : car : cdr doctest
+                                             string-join : list filename (symbol->string name) : symbol->string : primitive-eval : car : cdr doctest
                                                          . "--"
                                      cleaned
                                          if : not : list? doctest

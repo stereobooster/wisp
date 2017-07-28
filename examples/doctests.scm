@@ -39,13 +39,13 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) -e '(@@ (examples doctests)
 
           This is an example test:
 
-          (test \"mytest\"
+          (test 'mytest
               (define v (make-vector 5 99))
               (test-assert (vector? v))
               (test-eqv 99 (vector-ref v 2))
               (vector-set! v 2 7)
               (test-eqv 7 (vector-ref v 2)))
-          (test \"mytest2\"
+          (test 'mytest2
               (test-assert #t))
 "
        (let lp
@@ -91,7 +91,7 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) -e '(@@ (examples doctests)
                                      (testid
                                         (if (not (list? doctest))
                                              #f
-                                             (string-join (list filename (symbol->string name) (car (cdr doctest)))
+                                             (string-join (list filename (symbol->string name) (symbol->string (primitive-eval (car (cdr doctest)))))
                                                          "--")))
                                      (cleaned
                                          (if (not (list? doctest))

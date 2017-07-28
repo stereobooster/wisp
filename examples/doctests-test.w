@@ -9,7 +9,7 @@ define-module : examples doctests-test
 import : examples doctests
 
 define : foo
-    . "(test \"foo\"
+    . "(test 'foo
         (test-equal \"bar\" (foo)))
     "
     . "bar"
@@ -17,7 +17,7 @@ define : foo
 define %this-module : current-module
 define : main args
        . " Testing doctests
-   (test \"mytest\"
+   (test 'mytest
        (test-assert #t)
        (test-assert #f))
 "
