@@ -8,6 +8,12 @@ define-module : examples doctests-test
 
 import : examples doctests
 
+define : foo
+    . "(test \"foo\"
+        (test-equal \"bar\" (foo)))
+    "
+    . "bar"
+
 define %this-module : current-module
 define : main args
        . " Testing doctests

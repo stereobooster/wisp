@@ -6,6 +6,12 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) -e '(@@ (examples doctests-
 
 (import (examples doctests))
 
+(define (foo)
+    "(test \"foo\"
+        (test-equal \"bar\" (foo)))
+    "
+    "bar")
+
 (define %this-module (current-module))
 (define (main args)
        " Testing doctests
