@@ -42,7 +42,7 @@ Usage
 * Preprocess files: `guile ./wisp.scm infile.wisp > outfile.scm`
 * Wisp at the REPL: `guile -L . --language=wisp # run this in the wisp-folder`
 
-Install systemwide with `./configure --datarootdir=/usr/share && sudo make install`, then you can run `guile --language=wisp` anywhere. `guile -c '(import (language wisp spec))'`. Install in your home folder with `./configure --prefix=$HOME/.local; make install`.
+Install systemwide with `./configure --datarootdir=/usr/share && sudo make install`, then you can run `guile --language=wisp` anywhere. Install in your home folder with `./configure --prefix=$HOME/.local; make install`. Use `guile -c '(import (language wisp spec))'` to get rid of auto-compile errors.
 
 Run tests with `make check`. Distribute your own version with `make distcheck`.
 
