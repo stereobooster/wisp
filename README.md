@@ -35,10 +35,14 @@ Requirements
 Usage
 -----
 
-* Get wisp: `hg clone http://draketo.de/proj/wisp`
+* Get wisp: `hg clone http://draketo.de/proj/wisp` (needs [Mercurial](http://mercurial-scm.org))
 * Bootstrap: `cd wisp && autoreconf -i && ./configure && make`
 * Preprocess files: `guile ./wisp.scm infile.wisp > outfile.scm`
 * Wisp at the REPL: `guile -L . --language=wisp # run this in the wisp-folder`
+
+Install systemwide with `./configure --datarootdir=/usr/share && sudo make install`, then you can run `guile --language=wisp` anywhere. `guile -c '(import (language wisp spec))'`. Install in your home folder with `./configure --prefix=$HOME/.local; make install`.
+
+Run tests with `make check`. Distribute your own version with `make distcheck`.
 
 Wisp and curly infix (SRFI-105)
 -------------------------------
