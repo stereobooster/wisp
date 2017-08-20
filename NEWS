@@ -1,5 +1,13 @@
 wisp ():
-- 
+
+wisp 0.9.2:
+- README: note the releases and split usage into setup+usage
+- add y-combinator example in examples/y-combinator.w
+- added datatype benchmarks in examples/benchmark.w
+- ensemble estimation: setup deviations from the covariance matrix
+  by cholesky decomposition
+- enter three witches: i love you (dynamic dialog generation)
+- enter three witches: multiple scenes and .. as escape for .
 
 wisp 0.9.1:
 - add enter three witches: minimum overhead for a theater script
