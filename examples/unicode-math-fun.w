@@ -1,10 +1,16 @@
-#!/home/arne/wisp/wisp-multiline.sh 
+#!/usr/bin/env sh
+# -*- wisp -*-
+guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (wisp-scheme) (language wisp spec))'
+exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -s "$0" "$@"
 ; !#
 
 ;; Having fun with unicode and math :)
 
 define : Σ . n
     apply + n
+
+define : Π . n
+    apply * n
 
 define : ∪ . lists
     apply append lists
@@ -26,6 +32,8 @@ define : ∩ list1 list2
                         loop inboth : list-tail tocheck 1
 
 display : Σ 1 2 8 0  5 7 59 12 5
+newline
+display : Π 1 2 8 0  5 7 59 12 5
 newline
 display : ∪ '(1 2 3) '(4 5 6)
 newline

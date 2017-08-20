@@ -1,5 +1,15 @@
 wisp ():
-- 
+
+wisp 0.9.2:
+- README: note the releases and split usage into setup+usage
+- also add examples argparse, y-combinator, unbiased-std, ild, duel,
+  commandline-handling, cartesian-sets, advent-2016-day-7
+- added datatype benchmarks in examples/benchmark.w
+- ensemble estimation: setup deviations from the covariance matrix
+  by cholesky decomposition
+- enter three witches: i love you (dynamic dialog generation)
+- enter three witches: multiple scenes, whitespace in names, colors
+  and .. as escape for .
 
 wisp 0.9.1:
 - add enter three witches: minimum overhead for a theater script

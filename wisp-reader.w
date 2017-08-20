@@ -1,7 +1,4 @@
-#!/home/arne/wisp/wisp-multiline.sh 
-; !#
-;;
-;; Implement wisp in guile
+;; Language interface for Wisp in Guile
 ;;
 ;; -Author: Arne Babenhauserheide
 

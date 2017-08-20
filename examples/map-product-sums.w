@@ -2,9 +2,9 @@
 exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples map-product-sums) main)' -s "$0" "$@"
 ; !#
 
-use-modules : (srfi srfi-42) 
-
 define-module : examples map-product-sums
+
+use-modules : srfi srfi-42
 
 define : list-product-sums list-of-numbers
        . "return a list with the sum of the products of each number with all other numbers.
