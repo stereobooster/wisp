@@ -51,6 +51,8 @@ Install systemwide with `./configure --datarootdir=/usr/share && sudo make insta
 
 Run tests with `make check`. Distribute your own version with `make distcheck`.
 
+If your Guile is installed in your home, you might need to use `./configure PKG_CONFIG_PATH=$HOME/.local/lib/pkgconfig/` and `make distcheck PKG_CONFIG_PATH=$HOME/.local/lib/pkgconfig/`
+
 Usage
 -----
 
