@@ -2,6 +2,7 @@ wisp ():
 
 wisp 0.9.2:
 - README: note the releases and split usage into setup+usage
+- add argparse example in examples/argparse.w
 - add y-combinator example in examples/y-combinator.w
 - added datatype benchmarks in examples/benchmark.w
 - ensemble estimation: setup deviations from the covariance matrix
