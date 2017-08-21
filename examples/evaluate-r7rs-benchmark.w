@@ -99,7 +99,9 @@ let*
   format #t "=== ~a Geometric Mean slowdown ===\n" : string-locale-titlecase project-prefix
   newline
   pretty-print
-     expt
-        apply * : get-multiples guile-data data-min-by-test
-        / 1 : length : get-multiples guile-data data-min-by-test
+     if : null? : get-multiples guile-data data-min-by-test
+        . #f
+        expt
+           apply * : get-multiples guile-data data-min-by-test
+           / 1 : length : get-multiples guile-data data-min-by-test
   newline
