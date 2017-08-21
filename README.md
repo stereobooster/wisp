@@ -13,7 +13,9 @@ Wisp: Whitespace to Lisp
                 rek {i + 1} v {u + v}                 (rek (+ i 1) v (+ u v)))))
 
 
-Wisp turns indentation based syntax into Lisp. The conversion is homoiconic[^h], generic[^g], and backwards-compatible[^b]. It is inspired by [project readable][], but tries to keep itself simple (and stupid: just add parens for indentation). More information is available on the [wisp-website][], and code in the [wisp-repository][].
+Wisp turns indentation based syntax into Lisp. The conversion is homoiconic[^h], generic[^g], and backwards-compatible[^b]. It is inspired by [project readable][], but tries to keep itself simple (and stupid: just add parens for indentation).
+
+More information is available on the **[wisp-website][]**, and code in the [wisp-repository][].
 
 For a short presentation, see [Why Wisp?](why-wisp.html)
 
@@ -32,13 +34,31 @@ Requirements
 [GNU Guile 2.x]: http://gnu.org/s/guile "GNU Guile: The official extension language for the GNU operating system."
 [Python 3.x]: http://python.org "Python Programming Language"
 
+Setup
+-----
+
+From the repository:
+
+* Get wisp: `hg clone http://draketo.de/proj/wisp` (needs [Mercurial](http://mercurial-scm.org))
+* Bootstrap: `cd wisp && autoreconf -i && ./configure && make`
+
+From a release:
+
+* Get a release from [bitbucket.org/ArneBab/wisp/downloads/](https://bitbucket.org/ArneBab/wisp/downloads/)
+* Unpack and build: `tar xf [release].tar.gz; cd [release]; ./configure; make`
+
+Install systemwide with `./configure --datarootdir=/usr/share && sudo make install`, then you can run `guile --language=wisp` anywhere. Install in your home folder with `./configure --prefix=$HOME/.local; make install`. Use `guile -c '(import (language wisp spec))'` to get rid of auto-compile errors.
+
+Run tests with `make check`. Distribute your own version with `make distcheck`.
+
+If your Guile is installed in your home, you might need to use `./configure PKG_CONFIG_PATH=$HOME/.local/lib/pkgconfig/` and `make distcheck PKG_CONFIG_PATH=$HOME/.local/lib/pkgconfig/`
+
 Usage
 -----
 
-* Get wisp: `hg clone http://draketo.de/proj/wisp`
-* Bootstrap: `cd wisp && autoreconf -i && ./configure && make`
 * Preprocess files: `guile ./wisp.scm infile.wisp > outfile.scm`
-* Wisp at the REPL: `guile -L . --language=wisp # run this in the wisp-folder`
+* Wisp at the REPL: `guile -L . --language=wisp # in the wisp-folder`
+* The files in examples/ show how to make executable wisp programs.
 
 Wisp and curly infix (SRFI-105)
 -------------------------------
