@@ -3,7 +3,7 @@ SUFFIXES = .w .scm .sh
 sitedir = $(GUILE_SITE)
 site_DATA = wisp-scheme.scm
 
-langdir = ${datarootdir}/guile/$(GUILE_EFFECTIVE_VERSION)/language/wisp
+langdir = ${datarootdir}/guile/site/$(GUILE_EFFECTIVE_VERSION)/language/wisp
 lang_DATA = language/wisp/spec.scm
 
 WISP = wisp-guile.w wisp-reader.w wisp-scheme.w

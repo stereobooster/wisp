@@ -53,6 +53,8 @@ Run tests with `make check`. Distribute your own version with `make distcheck`.
 
 If your Guile is installed in your home, you might need to use `./configure PKG_CONFIG_PATH=$HOME/.local/lib/pkgconfig/` and `make distcheck PKG_CONFIG_PATH=$HOME/.local/lib/pkgconfig/`
 
+The same might apply for Guile in /usr/local/: you might have to use PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
+
 Usage
 -----
 
