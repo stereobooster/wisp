@@ -44,5 +44,6 @@ AM_COND_IF([IS_MAKE_DISTCHECK], [AC_MSG_RESULT([yes])], [AC_MSG_RESULT([no])])
 AM_INIT_AUTOMAKE([gnu])
 AM_MAINTAINER_MODE([enable])
 AC_CONFIG_FILES([Makefile])
+AC_CONFIG_LINKS([tests/realpath.sh:tests/realpath.sh])
 
 AC_OUTPUT

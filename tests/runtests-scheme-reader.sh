@@ -2,16 +2,20 @@
 
 # Simple test runner for wisp, mainly intended to be run by autotools.
 
+# FIXME: ./tests/realpath.sh currently encodes the path to the
+# command. AC_CONFIG_LINKS in autoconf.ac ensures that this exists in
+# the build dir. Still this could be nicer.
+
 if [[ x"$1" == x"" || x"$1" == x"." ]]; then
-    srcdir="$(realpath "$(pwd)")"
+    srcdir="$(./tests/realpath.sh "$(pwd)")"
 else
-    srcdir="$(realpath "$1")"
+    srcdir="$(./tests/realpath.sh "$1")"
 fi
 
 if [[ x"$2" == x"" || x"$2" == x"."  ]]; then
-    builddir="$(realpath $(pwd))"
+    builddir="$(./tests/realpath.sh $(pwd))"
 else
-    builddir="$(realpath "$2")"
+    builddir="$(./tests/realpath.sh "$2")"
 fi
 
 failed=0
