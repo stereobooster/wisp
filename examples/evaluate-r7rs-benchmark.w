@@ -84,22 +84,22 @@ let*
     data-by-project : read-csv port
     data-min-by-test : min-alist-by-test data-by-project
     guile-data : select-project-data data-by-project project-prefix
-  display "=== Best times ==="
-  newline
+  display "=== Best times ===\n\n"
   pretty-print : sort data-min-by-test (λ (x y) (string<? (car x) (car y)))
   newline
-  format #t "=== ~a times ===\n" : string-locale-titlecase project-prefix
-  newline
+  format #t "=== ~a times ===\n\n" : string-locale-titlecase project-prefix
   pretty-print : sort guile-data (λ (x y) (string<? (car x) (car y)))
   newline
-  format #t "=== ~a slowdown ===\n" : string-locale-titlecase project-prefix
-  newline
+  format #t "=== ~a slowdown ===\n\n" : string-locale-titlecase project-prefix
   pretty-print : get-multiples guile-data data-min-by-test
   newline
-  format #t "=== ~a Geometric Mean slowdown ===\n" : string-locale-titlecase project-prefix
-  newline
-  pretty-print
-     expt
-        apply * : get-multiples guile-data data-min-by-test
-        / 1 : length : get-multiples guile-data data-min-by-test
+  format #t "=== ~a Geometric Mean slowdown (successful tests / total tests) ===\n\n" : string-locale-titlecase project-prefix
+  format #t "~a (~a / ~a)"
+     if : null? : get-multiples guile-data data-min-by-test
+        . #f
+        expt
+           apply * : get-multiples guile-data data-min-by-test
+           / 1 : length : get-multiples guile-data data-min-by-test
+     length : remove (λ(x) (equal? #f (string->number (car (cdr x))))) guile-data
+     length guile-data
   newline
