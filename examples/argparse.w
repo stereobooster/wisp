@@ -8,7 +8,7 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ;; 
 ;; Status: draft (basic interface works, but does not do something useful yet)
 ;; 
-;; plan: 
+;; plan: (TODO)
 ;;   - simplest usage: (import (examples argparse))(let ((args (parse-args))) (write args))
 ;;   - with setup: (import (examples argparse))
 ;;                 (let* ((parser (setup-args #:help "foo"))
