@@ -34,11 +34,11 @@ mkdir -p ${builddir}/language/wisp
 echo ";;;" preparing the reader: wisp at the REPL 1>&2
 
 echo ";;;" parsing wisp-scheme.w with the parser for the REPL 1>&2
-${guile} ${wisp} ${srcdir}/wisp-scheme.w 2>/dev/null > ${builddir}/wisp-scheme.scm \
+${guile} ${wisp} ${srcdir}/wisp-scheme.w 2>/dev/null > ${builddir}/language/wisp.scm \
     && echo ";;;" ...precompiling the parser... 1>&2 \
-    && ${guile} -s ${builddir}/wisp-scheme.scm 2>/dev/null \
+    && ${guile} -s ${builddir}/language/wisp.scm 2>/dev/null \
     && echo ";;;" ...succeeded 1>&2 \
-    || echo creating wisp-scheme.scm failed
+    || echo creating language/wisp.scm failed
 
 echo ";;;"  parsing the spec file... 1>&2
 ${guile} ${wisp} ${srcdir}/wisp-reader.w 2>/dev/null > ${builddir}/language/wisp/spec.scm \

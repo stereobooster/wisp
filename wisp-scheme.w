@@ -35,7 +35,7 @@ exec guile -L . --language=wisp -s "$0" "$@"
 ;; SOFTWARE.
 
 
-define-module : wisp-scheme
+define-module : language wisp
    . #:export (wisp-scheme-read-chunk wisp-scheme-read-all 
                wisp-scheme-read-file-chunk wisp-scheme-read-file
                wisp-scheme-read-string)
