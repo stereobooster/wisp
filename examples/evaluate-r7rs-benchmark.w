@@ -6,6 +6,10 @@ exec guile -L ~/wisp --language=wisp -s $0 "$@"
 ;; Evaluate the benchmarks from ecraven at http://ecraven.github.io/r7rs-benchmarks/benchmark.html
 ;; Uses data from http://ecraven.github.io/r7rs-benchmarks/all.csv
 
+;; example usage: 
+;; $ for i in bigloo bones chez chibi chicken- chickencsi- cyclone femtolisp foment gambitc gauche guile ironscheme kawa larceny mit mosh petite picrin racket rhizome rscheme s9fes sagittarius scheme48- stalin tinyscheme vicare ypsilon; do echo $i $(./evaluate-r7rs-benchmark.w guile-ecraven-benchmarks-result-2017-08-13.csv $i | grep Geom -A 2 | grep -v = | grep .); done | sed 's/(//' > evaluate-r7rs-benchmark.data
+;; $ echo -e 'set xtics rotate by 90 right\nplot "< sort -g -k2 evaluate-r7rs-benchmark.data" using 0:2:xtic(1) with lines title "runtime: geometric mean multiple of fastest", "< sort -g -k2 evaluate-r7rs-benchmark.data" using 0:3:xtic(1) with lines title "successful tests"' | gnuplot -p
+
 import : ice-9 rdelim
          srfi srfi-1
          ice-9 pretty-print
