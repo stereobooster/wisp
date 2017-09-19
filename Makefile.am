@@ -1,14 +1,14 @@
-SUFFICES = .w .scm .sh
+SUFFIXES = .w .scm .sh
 
 sitedir = $(GUILE_SITE)
 site_DATA = wisp-scheme.scm
 
-langdir = ${datarootdir}/guile/$(GUILE_EFFECTIVE_VERSION)/language/wisp
-lang_DATA = language/wisp/spec.scm
+langdir = ${datarootdir}/guile/site/$(GUILE_EFFECTIVE_VERSION)/language/wisp
+lang_DATA = language/wisp/spec.scm language/wisp.scm
 
 WISP = wisp-guile.w wisp-reader.w wisp-scheme.w
 
-EXTRA_DIST = $(WISP) bootstrap.sh bootstrap-reader.sh examples tests wisp-repl-guile.sh testrunner.w wisp.py wisp.scm
+EXTRA_DIST = $(WISP) bootstrap.sh bootstrap-reader.sh language examples tests wisp-repl-guile.sh testrunner.w wisp.py wisp.scm m4
 CLEANFILES = 1 2
 DISTCLEANFILES = $(lang_DATA) $(site_DATA)
 # don't spout out lots of stuff at each distcheck. Disable for debugging.
@@ -53,3 +53,5 @@ uninstall-langDATA:
 	echo "Running 'make distcheck'; local installchecks disabled."
 else !IS_MAKE_DISTCHECK
 endif !IS_MAKE_DISTCHECK
+
+ACLOCAL_AMFLAGS = -I m4

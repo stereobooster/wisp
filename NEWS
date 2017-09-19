@@ -1,5 +1,17 @@
 wisp ():
 
+wisp 0.9.5:
+- move wisp-scheme.scm to language/wisp.scm
+  this allows creating a wisp-project by simply copying language/
+
+wisp 0.9.4:
+- provide realpath on OSX to get the tests to run
+- change installation to guile/site/(guile version)/language/wisp
+- evaluation for the r7rs benchmarks
+
+wisp 0.9.3:
+- fix autotools for platforms with wissing or old Guile aclocal.
+
 wisp 0.9.2:
 - README: note the releases and split usage into setup+usage
 - also add examples argparse, y-combinator, unbiased-std, ild, duel,
