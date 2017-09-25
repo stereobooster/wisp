@@ -531,7 +531,15 @@ define : wisp-scheme-indentation-to-parens lines
                      : > current-indentation current-line-indentation
                        ; display "current-indent > next-line\n"
                        ; this just steps back one level via the side-recursion.
-                       values processed unprocessed
+                       let : : previous-indentation : car : cdr indentation-levels
+                         if : <= current-line-indentation previous-indentation
+                            values processed unprocessed
+                            loop ;; not yet used level!
+                              . processed
+                              . unprocessed
+                              cons ; recursion via the indentation-levels
+                                . current-line-indentation 
+                                cdr indentation-levels
                      : = current-indentation current-line-indentation
                        ; display "current-indent = next-line\n"
                        let 
