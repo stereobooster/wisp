@@ -460,9 +460,6 @@ define : wisp-propagate-source-properties code
 
 define : wisp-scheme-indentation-to-parens lines
          . "Add parentheses to lines and remove the indentation markers"
-         ; FIXME: Find new algorithm which mostly uses current-line
-         ; and the indentation-levels for tracking. The try I have in
-         ; here right now is wrong.
          when 
            and 
              not : null? lines
@@ -534,7 +531,7 @@ define : wisp-scheme-indentation-to-parens lines
                        let : : previous-indentation : car : cdr indentation-levels
                          if : <= current-line-indentation previous-indentation
                             values processed unprocessed
-                            loop ;; not yet used level!
+                            loop ;; not yet used level! TODO: maybe throw an error here.
                               . processed
                               . unprocessed
                               cons ; recursion via the indentation-levels
