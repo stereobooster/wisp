@@ -35,7 +35,7 @@ exec guile -L . --language=wisp -s "$0" "$@"
 ;; SOFTWARE.
 
 
-define-module : wisp-scheme
+define-module : language wisp
    . #:export (wisp-scheme-read-chunk wisp-scheme-read-all 
                wisp-scheme-read-file-chunk wisp-scheme-read-file
                wisp-scheme-read-string)
@@ -460,9 +460,6 @@ define : wisp-propagate-source-properties code
 
 define : wisp-scheme-indentation-to-parens lines
          . "Add parentheses to lines and remove the indentation markers"
-         ; FIXME: Find new algorithm which mostly uses current-line
-         ; and the indentation-levels for tracking. The try I have in
-         ; here right now is wrong.
          when 
            and 
              not : null? lines
@@ -531,7 +528,15 @@ define : wisp-scheme-indentation-to-parens lines
                      : > current-indentation current-line-indentation
                        ; display "current-indent > next-line\n"
                        ; this just steps back one level via the side-recursion.
-                       values processed unprocessed
+                       let : : previous-indentation : car : cdr indentation-levels
+                         if : <= current-line-indentation previous-indentation
+                            values processed unprocessed
+                            loop ;; not yet used level! TODO: maybe throw an error here.
+                              . processed
+                              . unprocessed
+                              cons ; recursion via the indentation-levels
+                                . current-line-indentation 
+                                cdr indentation-levels
                      : = current-indentation current-line-indentation
                        ; display "current-indent = next-line\n"
                        let 

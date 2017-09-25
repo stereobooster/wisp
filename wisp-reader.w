@@ -8,7 +8,7 @@
 ; adapted from spec.scm: https://gitorious.org/nacre/guile-sweet/source/ae306867e371cb4b56e00bb60a50d9a0b8353109:sweet/spec.scm
 define-module : language wisp spec
 ;   . #:use-module : wisp
-  . #:use-module : wisp-scheme
+  . #:use-module : language wisp
   . #:use-module : system base compile
   . #:use-module : system base language
   . #:use-module : language scheme compile-tree-il

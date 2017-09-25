@@ -1,5 +1,11 @@
 wisp ():
 
+wisp 0.9.5:
+- Fix bug with using not yet defined lower indentation levels.
+  See tests/partial-indent.{w,scm}
+- move wisp-scheme.scm to language/wisp.scm
+  this allows creating a wisp-project by simply copying language/
+
 wisp 0.9.4:
 - provide realpath on OSX to get the tests to run
 - change installation to guile/site/(guile version)/language/wisp

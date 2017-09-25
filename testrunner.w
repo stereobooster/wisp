@@ -11,7 +11,7 @@ define scheme-file : list-ref (command-line) 2
 
 use-modules 
   srfi srfi-1
-  wisp-scheme
+  language wisp
 
 
 define : read-all port
