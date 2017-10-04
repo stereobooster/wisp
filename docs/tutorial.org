@@ -1,0 +1,1 @@
+- for devs from other languages: the only line terminator is the newline. ; starts a comment till the end of the line.
