@@ -14,6 +14,7 @@ multiple escaped initial underscores must be unescaped.      | owner:, open:Fals
 wisp: handle general paren prefixes like quote, quasiquote, etc. | owner:, open:False, id:323ff94b5be635742619467e1cb44f4c0d96f63f, time:1379047798.47
 throw an exception when reducing indentation to an unknown indentation level. | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:424186bd85f186b7279c5c59e2bd42f847284719, time:1376003568.91
 LANG=C breaks bootstrap: python encoding error: it uses ascii. | owner:, open:True, id:43c7461bfb6f35a90ff3f4497c8232e2457ce1c7, time:1427819877.7
+bootstrapping does not pre-compile correctly anymore         | owner:Arne Babenhauserheide <bab@draketo.de>, open:True, id:499afb16915b64d56aff710d292b46ddaa060869, time:1507501352.6
 wisp-in-wisp: only parses the first 272 lines, for some reason. | owner:, open:False, id:4cb6c556d7136609e2da9ab3fc045a39847f1ef3, time:1377014682.98
 adjust runtests.sh to use testrunner.w                       | owner:, open:False, id:4d4e76343fe09f0ec72a3e5eb0077bd16e12f9d5, time:1415127234.43
 wisp-scheme: REPL: sometimes the output of a command is only shown after typing the next non-empty line. | owner:, open:False, id:56d2f81e9c89accb0b0bc668ddc8feed3b60e9b2, time:1416584789.23
