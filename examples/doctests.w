@@ -39,17 +39,17 @@ define : string-index s fragment
 define : doctests-extract-from-string s
        . "Extract all test calls from a given string.
 
-          This is an example test:
-
-          (test 'mytest
-              (define v (make-vector 5 99))
-              (test-assert (vector? v))
-              (test-eqv 99 (vector-ref v 2))
-              (vector-set! v 2 7)
-              (test-eqv 7 (vector-ref v 2)))
-          (test 'mytest2
-              (test-assert #t))
-"
+          This procedure provides an example test:"
+       . #((tests
+            (test 'mytest
+                (define v (make-vector 5 99))
+                (test-assert (vector? v))
+                (test-eqv 99 (vector-ref v 2))
+                (vector-set! v 2 7)
+                (test-eqv 7 (vector-ref v 2)))
+            (test 'mytest2
+                (test-assert #t))))
+       ;; thanks to Vítor De Araújo: https://lists.gnu.org/archive/html/guile-user/2017-08/msg00003.html
        let lp
            : str s
              tests : list
@@ -77,16 +77,21 @@ define : doctests-testmod mod
              docstrings
                  map (λ (x) (if (procedure? x) (procedure-documentation x)))
                      map (λ (x) (module-ref mod x)) names
+             doctests
+                 map (λ (x) (if (procedure? x) (procedure-property x 'tests)))
+                     map (λ (x) (module-ref mod x)) names
            let loop
                : names names
                  docstrings docstrings
+                 doctests doctests
                when : not : null? docstrings
-                   when : string? : car docstrings
+                   when doctests
                        let*
                            : name : car names
                              docstring : car docstrings
+                             doctest : car doctests
                            let loop-tests
-                              : doctests : doctests-extract-from-string : car docstrings
+                              : doctests doctest
                               when : and (list? doctests) : not : null? doctests
                                  let*
                                    : doctest : car doctests
@@ -110,7 +115,7 @@ define : doctests-testmod mod
                                            eval cleaned mod
                                        newline
                                    loop-tests : cdr doctests
-                   loop (cdr names) (cdr docstrings)
+                   loop (cdr names) (cdr docstrings) (cdr doctests)
 
 define %this-module : current-module
 define : main args
