@@ -362,7 +362,6 @@ define : wisp-scheme-read-chunk-lines port
                      . #f ; incomment
                      . currentindent
                      ; this also takes care of the hashbang and leading comments.
-                     ; TODO: If used from Guile, activate curly infix via read-options.
                      append currentsymbols : list : wisp-read port
                      . emptylines
 
@@ -531,12 +530,15 @@ define : wisp-scheme-indentation-to-parens lines
                        let : : previous-indentation : car : cdr indentation-levels
                          if : <= current-line-indentation previous-indentation
                             values processed unprocessed
-                            loop ;; not yet used level! TODO: maybe throw an error here.
-                              . processed
-                              . unprocessed
-                              cons ; recursion via the indentation-levels
-                                . current-line-indentation 
-                                cdr indentation-levels
+                            begin ;; not yet used level! TODO: maybe throw an error here instead of a warning.
+                                let : : linenumber : - (length lines) (length unprocessed)
+                                    format (current-error-port) ";;; WARNING:~A: used lower but undefined indentation level (line ~A of the current chunk: ~S). This makes refactoring much more error-prone, therefore it might become an error in a later version of Wisp.\n" linenumber linenumber (cdr current-line)
+                                loop
+                                  . processed
+                                  . unprocessed
+                                  cons ; recursion via the indentation-levels
+                                    . current-line-indentation 
+                                    cdr indentation-levels
                      : = current-indentation current-line-indentation
                        ; display "current-indent = next-line\n"
                        let 
