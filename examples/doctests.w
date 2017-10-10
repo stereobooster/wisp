@@ -57,8 +57,8 @@ define : doctests-extract-from-string s
                                  . tests
 
 define : subtract a b
-    . "Subtract B from A"
-    . #((tests ('positive (test-eqv 3 (subtract 5 2)))))
+    . "Subtract B from A."
+    . #((tests ((test-eqv 3 (subtract 5 2))))) ;; TODO: remove the double paren
     - a b
 
 define : doctests-testmod mod
@@ -97,6 +97,7 @@ define : doctests-testmod mod
                        let*
                            : name : car names
                              docstring : car docstrings
+                             
                            let loop-tests
                               : doctest : car doctests
                               when : and (pair? doctest) (car doctest) : pair? : car doctest
@@ -105,20 +106,29 @@ define : doctests-testmod mod
                                  let*
                                    :
                                      testid
-                                        if : not : pair? doctest
-                                             . #f
-                                             string-join : list filename (symbol->string name) : symbol->string : primitive-eval : car : car doctest
+                                        match : car doctest
+                                          : ('quote id) tests ...
+                                            string-join : list filename (symbol->string name) : symbol->string id
                                                          . "--"
+                                          : tests ...
+                                            string-join : list filename (symbol->string name)
+                                                         . "--"
+                                     body
+                                         match : car doctest
+                                          : ('quote id) tests ...
+                                            . tests
+                                          : tests ...
+                                            . tests
                                      cleaned
-                                         if : not : list? doctest
-                                           . '#f
-                                           append
-                                               cons 'begin
-                                                   cons '(import (srfi srfi-64))
-                                                       cons
-                                                           list 'test-begin testid
-                                                           cdr : car doctest
-                                               list : list 'test-end testid
+                                            cons 'begin
+                                                cons '(import (srfi srfi-64)) 
+                                                    cons 
+                                                        list 'test-begin : or testid ""
+                                                        append
+                                                            . body
+                                                            list : list 'test-end : or testid ""
+                                   ;; pretty-print testid
+                                   ;; pretty-print body
                                    ;; pretty-print cleaned
                                    ;; newline
                                    when cleaned
