@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# -*- wisp -*-)
+# -*- scheme -*-
 exec guile -L $(dirname $(dirname $(realpath "$0"))) -e '(@@ (examples doctests) main)' -s "$0" "$@"
 ; !#
 

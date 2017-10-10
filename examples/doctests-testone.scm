@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+# -*- scheme -*-
 exec guile -L $(dirname $(dirname $(realpath "$0"))) -s "$0" "$@"
 ; !#
 
