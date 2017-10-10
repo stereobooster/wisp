@@ -9,17 +9,16 @@ define-module : examples doctests-test
 import : examples doctests
 
 define : foo
-    . "(test 'foo
-        (test-equal \"bar\" (foo)))
-    "
+    . #((tests 
+      ('foo
+        (test-equal "bar" (foo)))))
     . "bar"
 
 define %this-module : current-module
 define : main args
-       . " Testing doctests
-   (test 'mytest
-       (test-assert #t)
-       (test-assert #f))
-"
+       . " Testing doctests"
+       . #((tests ('mytest
+              (test-assert #t)
+              (test-assert #f))))
        doctests-testmod %this-module
 
