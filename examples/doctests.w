@@ -4,6 +4,46 @@ guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec)
 exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples doctests) main)' -s "$0" "$@"
 ; !#
 
+;;; doctests --- simple testing by adding procedure-properties with tests.
+
+;;; Usage
+
+;; Add a tests property to a procedure to have simple unit tests.
+
+;; Simple tests:
+;;
+;; (define (A)
+;;     #((tests (test-eqv 'A (A))
+;;              (test-assert #t)))
+;;     'A)
+;;
+;; Named tests:
+;;
+;; (define (A)
+;;     #((tests ('test1 (test-eqv 'A (A))
+;;                      (test-assert #t))
+;;              ('test2 (test-assert #t))))
+;;     'A)
+;;
+;; Allows for docstrings:
+;;
+;; (define (A)
+;;     "returns 'A"
+;;     #((tests (test-eqv 'A (A))
+;;              (test-assert #t)))
+;;     'A)
+
+;; For writing the test before the implementation, start with the test and #f:
+
+;; (define (A)
+;;     #((tests (test-eqv 'A (A))))
+;;     #f)
+
+;; With wisp, you currently need to use the literal #((tests (...)))
+;; TODO: add array parsing to wisp following quoting with ':
+;;       # a b → #(a b) and # : a b c → #((a b))
+
+
 define-module : examples doctests
               . #:export : doctests-testmod
 
@@ -58,7 +98,7 @@ define : doctests-extract-from-string s
 
 define : subtract a b
     . "Subtract B from A."
-    . #((tests ((test-eqv 3 (subtract 5 2))))) ;; TODO: remove the double paren
+    . #((tests (test-eqv 3 (subtract 5 2))))
     - a b
 
 define : doctests-testmod mod
@@ -80,63 +120,61 @@ define : doctests-testmod mod
              filename
                  if (module-filename mod) (string-join (string-split (module-filename mod) #\/ ) "-")
                      string-join (cons "._" (map symbol->string (module-name mod))) "-"
-             docstrings
-                 map (λ (x) (if (procedure? x) (procedure-documentation x)))
-                     map (λ (x) (module-ref mod x)) names
              doctests
                  map (λ (x) (if (procedure? x) (procedure-property x 'tests)))
                      map (λ (x) (module-ref mod x)) names
            let loop
                : names names
-                 docstrings docstrings
                  doctests doctests
                ;; pretty-print doctests
                ;; newline
-               when : not : null? docstrings
-                   when doctests
-                       let*
-                           : name : car names
-                             docstring : car docstrings
-                             
-                           let loop-tests
-                              : doctest : car doctests
-                              when : and (pair? doctest) (car doctest) : pair? : car doctest
-                                 ;; pretty-print : car doctest
-                                 ;; newline
-                                 let*
-                                   :
-                                     testid
-                                        match : car doctest
-                                          : ('quote id) tests ...
-                                            string-join : list filename (symbol->string name) : symbol->string id
-                                                         . "--"
-                                          : tests ...
-                                            string-join : list filename (symbol->string name)
-                                                         . "--"
-                                     body
-                                         match : car doctest
-                                          : ('quote id) tests ...
-                                            . tests
-                                          : tests ...
-                                            . tests
-                                     cleaned
-                                            cons 'begin
-                                                cons '(import (srfi srfi-64)) 
-                                                    cons 
-                                                        list 'test-begin : or testid ""
-                                                        append
-                                                            . body
-                                                            list : list 'test-end : or testid ""
-                                   ;; pretty-print testid
-                                   ;; pretty-print body
-                                   ;; pretty-print cleaned
-                                   ;; newline
-                                   when cleaned
-                                       let :
-                                           eval cleaned mod
-                                       newline
-                                   loop-tests : cdr doctest
-                   loop (cdr names) (cdr docstrings) (cdr doctests)
+               when : pair? doctests
+                   let*
+                       : name : car names
+                         doctest : car doctests
+                       let loop-tests
+                          : doctest doctest
+                          when : and (pair? doctest) (car doctest) : pair? : car doctest
+                             ;; pretty-print : car doctest
+                             ;; newline
+                             let*
+                               :
+                                 testid
+                                    match doctest
+                                      : (('quote id) tests ...) moretests ...
+                                        string-join : list filename (symbol->string name) : symbol->string id
+                                                     . "--"
+                                      : tests ...
+                                        string-join : list filename (symbol->string name)
+                                                     . "--"
+                                 body
+                                     match doctest
+                                      : (('quote id) test tests ...) moretests ...
+                                        cons test tests
+                                      : tests ...
+                                        . tests
+                                 cleaned
+                                        cons 'begin
+                                            cons '(import (srfi srfi-64)) 
+                                                cons 
+                                                    list 'test-begin : or testid ""
+                                                    append
+                                                        . body
+                                                        list : list 'test-end : or testid ""
+                               ;; pretty-print testid
+                               ;; pretty-print body
+                               ;; pretty-print cleaned
+                               ;; newline
+                               when cleaned
+                                   let :
+                                       eval cleaned mod
+                                   newline
+                               match doctest
+                                      : (('quote id) tests ...) moretests ...
+                                        loop-tests moretests
+                                      : tests ...
+                                        . #t
+                   loop (cdr names) (cdr doctests)
 
 define %this-module : current-module
 define : main args
