@@ -76,10 +76,10 @@ define* : benchmark-run fun
           : res : list-ec (: i sampling-steps) : benchmark-run-single fun #:min-seconds min-seconds
             std : stddev-unbiased-normal res
             mean : / (apply + res) sampling-steps
-           ;; pretty-print : list mean '± std min-seconds sampling-steps
-           if : or {sampling-steps > max-iterations} : and {std < {mean * max-relative-uncertainty}} {std < max-absolute-uncertainty-seconds}
-              . mean
-              lp (* 2 min-seconds) (* 2 sampling-steps) ;; should decrease σ by factor 2 or √2 (for slow functions)
+          ;; pretty-print : list mean '± std min-seconds sampling-steps
+          if : or {sampling-steps > max-iterations} : and {std < {mean * max-relative-uncertainty}} {std < max-absolute-uncertainty-seconds}
+             . mean
+             lp (* 2 min-seconds) (* 2 sampling-steps) ;; should decrease σ by factor 2 or √2 (for slow functions)
 
 define loopcost
   benchmark-run (λ() #f)
