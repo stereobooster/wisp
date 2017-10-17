@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
+guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
 exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples cartesian-sets) main)' -s "$0" "$@"
 ; !#
 ;; Implementation of the cartesian product over a list of lists, building on http://stackoverflow.com/a/20591545/7666

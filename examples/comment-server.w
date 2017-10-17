@@ -1,4 +1,6 @@
 #!./wisp-multiline.sh
+guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
+
 ; !#
 
 use-modules 

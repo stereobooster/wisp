@@ -1,5 +1,6 @@
 #!/bin/sh
 # -*- wisp -*-
+guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
 exec guile -L ~/wisp --language=wisp -s $0 "$@"
 !#
 
