@@ -532,7 +532,7 @@ define* : wisp-scheme-indentation-to-parens lines
                             values processed unprocessed
                             begin ;; not yet used level! TODO: maybe throw an error here instead of a warning.
                                 let : : linenumber : - (length lines) (length unprocessed)
-                                    format (current-error-port) ";;; WARNING:~A: used lower but undefined indentation level (line ~A of the current chunk: ~S). This makes refactoring much more error-prone, therefore it might become an error in a later version of Wisp.\n" linenumber : cdr current-line
+                                    format (current-error-port) ";;; WARNING:~A: used lower but undefined indentation level (line ~A of the current chunk: ~S). This makes refactoring much more error-prone, therefore it might become an error in a later version of Wisp.\n" (source-property current-line 'line) linenumber (cdr current-line)
                                 loop
                                   . processed
                                   . unprocessed

@@ -1,5 +1,8 @@
 wisp ():
 
+wisp 0.9.7:
+- FIX: install language/wisp.scm instead of wisp-scheme.scm
+
 wisp 0.9.6:
 - Add a warning with undefined indentation levels: they can
   produce surprising behaviour when changing existing code.
