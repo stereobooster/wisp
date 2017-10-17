@@ -276,7 +276,7 @@ define : wisp-scheme-read-chunk-lines port
                  ; an error. This is stricter than the current wisp
                  ; syntax definition. TODO: Fix the definition. Better
                  ; start too strict. FIXME: breaks on lines with only
-                 ; underscores which should empty lines.
+                 ; underscores which should be empty lines.
                  : and inunderscoreindent : and (not (equal? #\space next-char)) (not (equal? #\newline next-char))
                    throw 'wisp-syntax-error "initial underscores without following whitespace at beginning of the line after" : last indent-and-symbols
                  : equal? #\newline next-char
@@ -343,8 +343,8 @@ define : wisp-scheme-read-chunk-lines port
                      . currentsymbols
                      . emptylines
                           ; | cludge to appease the former wisp parser
-                          ; | which had a problem with the literal comment
-                          ; v char.
+                          ; | used for bootstrapping which has a
+                          ; v problem with the literal comment char
                  : equal? (string-ref ";" 0) next-char
                    loop 
                      . indent-and-symbols
@@ -457,7 +457,7 @@ define : wisp-propagate-source-properties code
                  append processed : list : wisp-propagate-source-properties line
                  cdr unprocessed
 
-define : wisp-scheme-indentation-to-parens lines
+define* : wisp-scheme-indentation-to-parens lines
          . "Add parentheses to lines and remove the indentation markers"
          when 
            and 
@@ -532,7 +532,7 @@ define : wisp-scheme-indentation-to-parens lines
                             values processed unprocessed
                             begin ;; not yet used level! TODO: maybe throw an error here instead of a warning.
                                 let : : linenumber : - (length lines) (length unprocessed)
-                                    format (current-error-port) ";;; WARNING:~A: used lower but undefined indentation level (line ~A of the current chunk: ~S). This makes refactoring much more error-prone, therefore it might become an error in a later version of Wisp.\n" linenumber linenumber (cdr current-line)
+                                    format (current-error-port) ";;; WARNING:~A: used lower but undefined indentation level (line ~A of the current chunk: ~S). This makes refactoring much more error-prone, therefore it might become an error in a later version of Wisp.\n" (source-property current-line 'line) linenumber (cdr current-line)
                                 loop
                                   . processed
                                   . unprocessed

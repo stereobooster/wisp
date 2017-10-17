@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+# -*- scheme -*-
 exec guile -L $(dirname $(dirname $(realpath "$0"))) -e '(@@ (examples doctests-test) main)' -s "$0" "$@"
 ; !#
 
@@ -7,18 +8,17 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) -e '(@@ (examples doctests-
 (import (examples doctests))
 
 (define (foo)
-    "(test 'foo
-        (test-equal \"bar\" (foo)))
-    "
+    #((tests
+      ('foo
+        (test-equal "bar" (foo)))))
     "bar")
 
 (define %this-module (current-module))
 (define (main args)
-       " Testing doctests
-   (test 'mytest
-       (test-assert #t)
-       (test-assert #f))
-"
+       " Testing doctests"
+       #((tests ('mytest
+              (test-assert #t)
+              (test-assert #f))))
        (doctests-testmod %this-module))
 
 

@@ -1,0 +1,31 @@
+# Lines starting with '#' and sections without content
+# are not displayed by a call to 'details'
+#
+[paths]
+# Paths related to this bug.
+# suggested format: REPO_PATH:LINENUMBERS
+
+
+[details]
+# Additional details
+
+
+[expected]
+# The expected result
+
+
+[actual]
+# What happened instead
+
+
+[reproduce]
+# Reproduction steps
+wget https://bitbucket.org/ArneBab/wisp/downloads/wisp-0.9.6.tar.gz;
+tar xf wisp-0.9.6.tar.gz ; cd wisp-0.9.6/;
+./configure; make check;
+examples/newbase60.w 123
+
+^ shows compilation errors which go away after a short guile ... -c '(import (language wisp spec))'
+
+[comments]
+# Comments and updates - leave your name
