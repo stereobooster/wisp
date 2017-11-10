@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
-guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (wisp-scheme) (language wisp spec))'
+guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
 exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples ensemble-estimation) main)' -l $(dirname $(realpath "$0"))/cholesky.w -s "$0" "$@"
 ; !#
 

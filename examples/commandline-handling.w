@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
-guile-2.0 -L $(dirname $(dirname $(realpath "$0"))) -c '(import (wisp-scheme) (language wisp spec))'
+guile-2.0 -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
 exec guile-2.0 -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(examples commandline-handling)' -s "$0" "$@"
 ; !#
 

@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
+guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
 exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -s "$0"
 ; !#
 

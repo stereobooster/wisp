@@ -2,7 +2,7 @@
 # -*- wisp -*-
 D="$(dirname $(realpath "$0"))"
 W="$(dirname $(dirname $(realpath "$0")))"
-guile -L "$W" -c '(import (wisp-scheme) (language wisp spec))'
+guile -L "$W" -c '(import (language wisp spec))'
 exec guile -L "$W" --language=wisp -l "$D/enter-three-witches.w" -s "$0" "$@"
 ; !#
 
