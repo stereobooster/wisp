@@ -686,6 +686,15 @@ define : wisp-replace-paren-quotation-repr code
                 list 'quasisyntax : map wisp-replace-paren-quotation-repr a
              : 'REPR-UNSYNTAXSPLICING-e749c73d-c826-47e2-a798-c16c13cb89dd a ...
                 list 'unsyntax-splicing : map wisp-replace-paren-quotation-repr a
+             ;; literal array as start of a line: # (a b) c -> (#(a b) c)
+             : #\# a ...
+               with-input-from-string ;; hack to defer to read
+                   string-append "#"
+                       with-output-to-string
+                           λ :
+                             write : map wisp-replace-paren-quotation-repr a
+                                     current-output-port
+                   . read
              : a ...
                map wisp-replace-paren-quotation-repr a
              a
