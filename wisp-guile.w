@@ -478,7 +478,7 @@ Also unescape \\: to :.
                                     string-append (string-drop-right unprocessed 2) 
                                     string-append "(" processed
                                 ; turn " ' (" into " '(", do not modify unprocessed, except to shorten it!
-                                ; same for ` , #' #` #, #,@,
+                                ; same for ` , #' #` #, #,@, #
                           : and (string-prefix? "(" processed) : equal? " ' " lastupto3
                                     ; leave out the second space
                                     linebracketizer instring inbrackets bracketstoadd 
@@ -493,6 +493,12 @@ Also unescape \\: to :.
                                         ; leave out the second space
                                         linebracketizer instring inbrackets bracketstoadd 
                                             . (string-append (string-drop-right unprocessed 2) "`")
+                                            . processed
+                          ;; literal array #(...)
+                          : and (string-prefix? "(" processed) : equal? " # " lastupto3
+                                        ; leave out the second space
+                                        linebracketizer instring inbrackets bracketstoadd 
+                                            . (string-append (string-drop-right unprocessed 2) "#")
                                             . processed
                           : and (string-prefix? "(" processed) : equal? " #` " lastupto4
                                         ; leave out the second space
@@ -515,7 +521,7 @@ Also unescape \\: to :.
                                             . (string-append (string-drop-right unprocessed 5) "#,@,")
                                             . processed
                           else ; just go on
-                                        linebracketizer instring inbrackets bracketstoadd 
+                                        linebracketizer instring inbrackets bracketstoadd
                                             . (string-drop-right unprocessed 1)
                                             . (string-append lastletter processed)
                         
@@ -538,7 +544,7 @@ The line *must* have a whitespace after the prefix, except if the prefix is the 
              line-indent line
              string-append "(" : string-drop (line-content line) 1 ; keep whitespace
              line-comment line
-         let loop : : paren-prefixes : list "' " ", " "` " "#` " "#' " "#, " "#,@, "
+         let loop : : paren-prefixes : list "' " ", " "` " "#` " "#' " "#, " "#,@, " "# "
              ; first check whether we are done checking
              if : null-list? paren-prefixes
                  ; construct the line structure: '(indentation-depth content comment)
