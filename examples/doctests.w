@@ -98,22 +98,24 @@ define : doctests-extract-from-string s
 
 define : subtract a b
     . "Subtract B from A."
-    . #((tests (test-eqv 3 (subtract 5 2))))
+    ##
+      tests : test-eqv 3 (subtract 5 2)
     - a b
 
 define : doctests-testmod mod
        . "Execute all doctests in the current module
 
           This procedure provides an example test:"
-       . #((tests 
-            ('mytest
-              (define v (make-vector 5 99))
-              (test-assert (vector? v))
-              (test-eqv 99 (vector-ref v 2))
-              (vector-set! v 2 7)
-              (test-eqv 7 (vector-ref v 2)))
-            ('mytest2
-              (test-assert #t))))
+       ##
+         tests
+            'mytest
+              define v (make-vector 5 99)
+              test-assert (vector? v)
+              test-eqv 99 (vector-ref v 2)
+              vector-set! v 2 7
+              test-eqv 7 (vector-ref v 2)
+            'mytest2
+              test-assert #t
        ;; thanks to Vítor De Araújo: https://lists.gnu.org/archive/html/guile-user/2017-08/msg00003.html
        let*
            : names : module-map (λ (sym var) sym) mod
