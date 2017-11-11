@@ -494,12 +494,6 @@ Also unescape \\: to :.
                                         linebracketizer instring inbrackets bracketstoadd 
                                             . (string-append (string-drop-right unprocessed 2) "`")
                                             . processed
-                          ;; literal array #(...)
-                          : and (string-prefix? "(" processed) : equal? " # " lastupto3
-                                        ; leave out the second space
-                                        linebracketizer instring inbrackets bracketstoadd 
-                                            . (string-append (string-drop-right unprocessed 2) "#")
-                                            . processed
                           : and (string-prefix? "(" processed) : equal? " #` " lastupto4
                                         ; leave out the second space
                                         linebracketizer instring inbrackets bracketstoadd 
@@ -514,6 +508,12 @@ Also unescape \\: to :.
                                         ; leave out the second space
                                         linebracketizer instring inbrackets bracketstoadd 
                                             . (string-append (string-drop-right unprocessed 3) "#,")
+                                            . processed
+                          ;; literal array #(...)
+                          : and (string-prefix? "(" processed) : equal? " ## " lastupto4
+                                        ; leave out the second space
+                                        linebracketizer instring inbrackets bracketstoadd 
+                                            . (string-append (string-drop-right unprocessed 3) "#")
                                             . processed
                           : and (string-prefix? "(" processed) : equal? " #,@, " lastupto6
                                         ; leave out the second space
@@ -544,7 +544,7 @@ The line *must* have a whitespace after the prefix, except if the prefix is the 
              line-indent line
              string-append "(" : string-drop (line-content line) 1 ; keep whitespace
              line-comment line
-         let loop : : paren-prefixes : list "' " ", " "` " "#` " "#' " "#, " "#,@, " "# "
+         let loop : : paren-prefixes : list "' " ", " "` " "#` " "#' " "#, " "#,@, " "## "
              ; first check whether we are done checking
              if : null-list? paren-prefixes
                  ; construct the line structure: '(indentation-depth content comment)
@@ -563,14 +563,18 @@ The line *must* have a whitespace after the prefix, except if the prefix is the 
                            list 
                                line-indent line
                                string-append 
-                                   . prefix-no-space "("
+                                   ;; special case for literal arrays, clean in wisp-scheme.w
+                                   if (equal? prefix-no-space "##") "#" prefix-no-space
+                                   . "("
                                    string-drop (line-content line) : string-length prefix
                                line-comment line
                          : line-only-prefix? line prefix-no-space
                            list 
                                line-indent line
                                string-append 
-                                   . (string-drop-right prefix 1) "("
+                                   ;; special case for literal arrays, clean in wisp-scheme.w
+                                   if (equal? prefix-no-space "##") "#" (string-drop-right prefix 1)
+                                   . "("
                                    string-drop (line-content line) : string-length prefix-no-space
                                line-comment line
                          else

@@ -37,7 +37,7 @@ define wisp-pending-sexps : list
 
 define : read-one-wisp-sexp port env
          ;; allow using "# foo" as #(foo).
-         read-hash-extend #\space : λ (chr port) #\#
+         read-hash-extend #\# : λ (chr port) #\#
          cond
             : eof-object? : peek-char port
               read-char port ; return eof: we’re done
