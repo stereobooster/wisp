@@ -1,6 +1,7 @@
-#!./wisp-multiline.sh
-guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-
+#!/usr/bin/env sh
+# -*- wisp -*-
+guile-2.0 -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
+exec guile-2.0 -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -s "$0" "$@"
 ; !#
 
 use-modules 
@@ -24,7 +25,7 @@ define : show-comments request comments-hash-table
     <input type='submit' name='submit' value='Save' />
 </form>"
           hash-ref comments-hash-table uri-components
-            string-join uri-components
+            string-join uri-components ;; default
           . "</body></html>\n"
 
 define : change-comment-content current to-add
@@ -56,7 +57,8 @@ define : uri-comment-showing-handler request request-body
       add-comment request request-body global-comment-hash-table
       show-comments request global-comment-hash-table
 
-display "Server starting. Test it at http://127.0.0.1:8081"
-newline
+display "Server starting. Test it at http://127.0.0.1:8083
+                 Hit CTRL-C twice to stop the server.
+"
 
-run-server uri-comment-showing-handler 'http ' : #:port 8081
+run-server uri-comment-showing-handler 'http ' : #:port 8083
