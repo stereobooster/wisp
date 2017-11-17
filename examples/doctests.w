@@ -178,6 +178,15 @@ define : doctests-testmod mod
                                         . #t
                    loop (cdr names) (cdr doctests)
 
+define : hello who
+    . "Say hello to WHO"
+    ##
+        tests
+            test-equal "Hello World!\n"
+                       hello "World"
+    format #f "Hello ~a!\n"
+                   . who
+
 define %this-module : current-module
 define : main args
          doctests-testmod %this-module
