@@ -1,4 +1,7 @@
-#!/home/arne/wisp/wisp-multiline.sh -l guile
+#!/usr/bin/env sh
+# -*- wisp -*-
+guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
+exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -s "$0" "$@"
 ; !#
 
 define-module : examples tinyenc
@@ -6,7 +9,7 @@ define-module : examples tinyenc
 ;   . #:use-syntax : ice-9 syncase
 ; `use-syntax' is deprecated. For compatibility with old and new guile I therefore need this.
 ; Syntax-case macros are now a part of Guile core; importing (ice-9 syncase) is no longer necessary.
-use-syntax : ice-9 syncase
+; use-syntax : ice-9 syncase
 
 ; http://en.wikipedia.org/wiki/Tiny_Encryption_Algorithm#toctitle
 

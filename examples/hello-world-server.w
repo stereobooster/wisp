@@ -1,4 +1,7 @@
-#!./wisp-multiline.sh
+#!/usr/bin/env sh
+# -*- wisp -*-
+guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
+exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -s "$0" "$@"
 ; !#
 
 use-modules 
@@ -37,7 +40,7 @@ define : hello-world-handler request request-body
     header
     content
 
-display "Server starting. Test it at http://127.0.0.1:8081"
+display "Server starting. Test it at http://127.0.0.1:8084"
 newline
 
-run-server hello-world-handler 'http ' : #:port 8081
+run-server hello-world-handler 'http ' : #:port 8084

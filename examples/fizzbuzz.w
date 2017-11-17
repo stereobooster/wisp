@@ -1,4 +1,8 @@
-#!./wisp-multiline.sh
+#!/usr/bin/env sh
+# -*- wisp -*-
+guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (guildhall ext foof-loop))'
+guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
+exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -s "$0" "$@"
 ; !#
 
 ;; this example needs foof-loop installed via guildhall!
