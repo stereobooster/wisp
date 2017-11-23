@@ -15,7 +15,7 @@ WISP = wisp-guile.w wisp-reader.w wisp-scheme.w
 
 EXTRA_DIST = $(WISP) bootstrap.sh bootstrap-reader.sh language examples tests wisp-repl-guile.sh testrunner.w wisp.py wisp.scm m4
 CLEANFILES = 1 2
-DISTCLEANFILES = $(site_DATA) $(lang_DATA) $(langwisp_DATA)
+DISTCLEANFILES = $(bin_SCRIPTS) $(site_DATA) $(lang_DATA) $(langwisp_DATA)
 # don't spout out lots of stuff at each distcheck. Disable for debugging.
 AM_DISTCHECK_CONFIGURE_FLAGS="--quiet"
 
@@ -52,11 +52,15 @@ TESTS=syntaxtests.sh syntaxtestsreader.sh
 # they won't be installed in the final location used by the tools.
 # FIXME: automake should honor DESTDIR set by make distcheck
 if IS_MAKE_DISTCHECK
+install-binSCRIPTS:
+	echo "Running 'make distcheck'; local installchecks disabled."
 install-siteDATA:
 	echo "Running 'make distcheck'; local installchecks disabled."
 install-langDATA:
 	echo "Running 'make distcheck'; local installchecks disabled."
 install-langwispDATA:
+	echo "Running 'make distcheck'; local installchecks disabled."
+uninstall-binSCRIPTS:
 	echo "Running 'make distcheck'; local installchecks disabled."
 uninstall-siteDATA:
 	echo "Running 'make distcheck'; local installchecks disabled."
