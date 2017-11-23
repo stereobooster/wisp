@@ -1,4 +1,6 @@
 wisp ():
+- make install provides wisp2lisp as program:
+  convert any wisp program to lisp.
 
 wisp 0.9.7:
 - FIX: install language/wisp.scm instead of wisp-scheme.scm
