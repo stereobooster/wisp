@@ -1,4 +1,4 @@
-#!/home/arne/wisp/wisp-multiline.sh 
+#!/usr/bin/env guile
 ; !#
 
 ;; This file might need to be licensed permissively for inclusion in

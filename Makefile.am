@@ -1,5 +1,7 @@
 SUFFIXES = .w .scm .sh
 
+bin_SCRIPTS = wisp2lisp
+
 sitedir = $(datarootdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site
 site_DATA = wisp.scm
 
@@ -20,6 +22,9 @@ AM_DISTCHECK_CONFIGURE_FLAGS="--quiet"
 ChangeLog :
 	hg log --style changelog > ChangeLog
 
+$(bin_SCRIPTS): wisp.scm
+	cp $< $@
+
 .INTERMEDIATE: .mydatastuff
 $(lang_DATA) $(langwisp_DATA): .wispbootstrap
 .wispbootstrap : ${WISP} wisp.scm
@@ -27,6 +32,7 @@ $(lang_DATA) $(langwisp_DATA): .wispbootstrap
 
 wisp.scm: wisp-guile.w wisp.py
 	@abs_top_srcdir@/bootstrap.sh @abs_top_srcdir@ @GUILE@ @python3@ 2>&1 | sed "s/^;;;.*//" 2>&1 | grep . 1>&2 ; test ! $$? -eq 0 # it worked if grep does not find anything
+	chmod +x $@
 
 .INTERMEDIATE: syntaxtests.sh
 syntaxtests.sh : wisp.scm tests/runtests-scheme-preprocessor.sh
