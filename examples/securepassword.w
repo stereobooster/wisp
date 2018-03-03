@@ -124,6 +124,7 @@ import
     only (srfi srfi-27) random-source-make-integers
       . make-random-source random-source-randomize!
     only (srfi srfi-1) first second third iota
+    srfi srfi-11 ;; let-values
     srfi srfi-42
     ice-9 optargs
 
@@ -250,7 +251,7 @@ define : block-value letterblock letters
                + : * (string-length letters) value
                  letter-index letters : string-ref rest 0
 
-define : checkstring letters delimiters . letterblocks
+define : checkchar letters delimiters . letterblocks
     let*
         : value : block-value (apply string-append letterblocks) letters
           modvalue : string-length delimiters
@@ -312,7 +313,7 @@ define : blocks-to-passphrase blocks
                  string-append passphrase
                      first blocks
                      string
-                         checkstring qwertysafeletters delimiters 
+                         checkchar qwertysafeletters delimiters
                              first blocks 
                              second blocks
                  cdr blocks
@@ -320,8 +321,8 @@ define : blocks-to-passphrase blocks
 
 define : single-block
     apply string-append
-        list-ec (: i 4)
-            string : randomletter qwertysafeletters
+        map : λ (x) : string : randomletter qwertysafeletters
+            iota 4
 
 
 define : letterblocks blockcount
@@ -333,6 +334,25 @@ define : letterblocks blockcount
            loop
                - remaining 1
                cons (single-block) blocks
+
+
+define : letterblock-invalid? password
+    let loop
+        : rest password
+          count 5
+        if {(string-length rest) < 5}
+           values #f #f #f
+           let*
+               : check : string : string-ref rest 4
+                 block1 : string-take rest 4
+                 block2
+                     string-take (string-drop rest 5)
+                         min 4 : - (string-length rest) 5
+                 calck : string : checkchar qwertysafeletters delimiters block1 block2
+               if : not : equal? check calck
+                  values check calck count
+                  loop : string-drop rest 5
+                         + count 5
 
 
 define : password length
@@ -353,6 +373,15 @@ define : password length
 
 
 define : main args
+    if : and {(length args) > 2} : equal? "--check" : second args
+      let-values : : (check calck count) : letterblock-invalid? : third args
+          cond 
+              count
+                  format #t "letterblock invalid. First failed checksum: ~a should have been ~a at position ~a\n"
+                      . check calck count
+                  exit 1
+              else
+                  format #t "valid letterblock password\n"
       let
        :
          len
