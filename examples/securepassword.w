@@ -123,7 +123,7 @@ define-module : examples securepassword
 import
     only (srfi srfi-27) random-source-make-integers
       . make-random-source random-source-randomize!
-    only (srfi srfi-1) second third iota
+    only (srfi srfi-1) first second third iota
     srfi srfi-42
     ice-9 optargs
 
@@ -236,6 +236,28 @@ define : randomletter letters
           string-length letters
 
 
+define : letter-index letters letter
+    string-index letters letter
+
+define : block-value letterblock letters
+    let loop
+        : rest letterblock
+          value 0
+        if : equal? "" rest
+           . value
+           loop
+               string-drop rest 1
+               + : * (string-length letters) value
+                 letter-index letters : string-ref rest 0
+
+define : checkstring letters delimiters . letterblocks
+    let*
+        : value : block-value (apply string-append letterblocks) letters
+          modvalue : string-length delimiters
+          checksum : modulo value modvalue
+        string-ref delimiters checksum
+
+
 define : flatten e
     cond 
        : pair? e
@@ -276,13 +298,50 @@ define : password/map length
              iota length 1
 
 
+define : blocks-to-passphrase blocks
+    let check
+        : passphrase ""
+          blocks blocks
+        cond
+         : null? blocks
+             . passphrase
+         {(length blocks) = 1}
+             string-append passphrase : first blocks
+         else
+             check
+                 string-append passphrase
+                     first blocks
+                     string
+                         checkstring qwertysafeletters delimiters 
+                             first blocks 
+                             second blocks
+                 cdr blocks
+
+
+define : single-block
+    apply string-append
+        list-ec (: i 4)
+            string : randomletter qwertysafeletters
+
+
+define : letterblocks blockcount
+    let loop
+        : remaining blockcount
+          blocks '()
+        if : zero? remaining
+           blocks-to-passphrase : reverse blocks
+           loop
+               - remaining 1
+               cons (single-block) blocks
+
+
 define : password length
        . "Generate a password with the given length in letters 
 (not counting delimiters)."
        let fill
          : letters '()
            remaining length
-         if : zero? remaining
+         if {remaining <= 0}
             reverse-list->string letters
             fill
               cons : randomletter qwertysafeletters
@@ -309,5 +368,7 @@ define : main args
              display : password/map len
            : = idx 3
              display : password/srfi-42 len
+           : = idx 4
+             display : letterblocks {len / 4}
          newline
 
