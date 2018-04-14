@@ -299,7 +299,7 @@ letter from a number of letters equal to LETTERCOUNT"
          (len
            (if (<= 2 (length args))
               (string->number (second args))
-              8)))
+              12)))
        (let 
          ((idx (if (> 3 (length args)) 1 (string->number (third args)))))
          (cond
