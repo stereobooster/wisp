@@ -220,8 +220,8 @@ letter from a number of letters equal to LETTERCOUNT"
 
 ;; newbase60 without yz_: 54 letters, 5.75 bits of entropy per letter.
 define qwertysafeletters "0123456789ABCDEFGHJKLMNPQRTUVWXabcdefghijkmnopqrstuvwx"
-;; delimiters: 2.6 bits of entropy per delimiter, in the same place on main keys or the num-pad.
-define delimiters ".+-=/?"
+;; delimiters: 2.3 bits of entropy per delimiter, in the same place on main keys or the num-pad.
+define delimiters ".+-=/"
 
 define random-source : make-random-source
 random-source-randomize! random-source
