@@ -127,6 +127,9 @@ import
     srfi srfi-11 ;; let-values
     srfi srfi-42
     ice-9 optargs
+    only (ice-9 rdelim) read-line
+    ice-9 match
+    ice-9 pretty-print
 
 
 define : years-to-crack-landau-limit-evaporative-cooling-nuclear-powerplant entropy
@@ -372,32 +375,93 @@ define : password length
               - remaining 1
 
 
+define : lines-from-file filepath
+   let : : port : open-input-file filepath
+     let reader : : lines '()
+        let : : line : read-line port
+           if : eof-object? line
+              reverse! lines
+              reader : cons line lines
+
+
+define : split-corpus-line line
+       . "turn LINE into '(first-letter second-letter weight)"
+       define : log2 number
+                / (log number) (log 2)
+       let*
+          : space-index : string-index line #\space
+            weight : log2 : string->number : string-take line space-index
+            first-letter : string-ref line : + space-index 1
+            second-letter : string-ref line : + space-index 2
+          list first-letter second-letter weight
+             
+
+define : shift-and-scale-cost line-costs upper-limit
+   . "shift the COST to have cost values between zero (log-scale) and the UPPER-LIMIT."
+   let* 
+       : numbers : map (λ (x) (third x)) line-costs
+         minimum : apply min numbers
+         shifted-up : map (λ (x) (list (first x) (second x) (- (third x) minimum))) line-costs
+         shifted-numbers : map (λ (x) (third x)) shifted-up
+         maximum : apply max shifted-numbers
+         scaling-factor {upper-limit / maximum}
+       map : λ(x) (list (first x) (second x) (inexact->exact (floor (* scaling-factor (third x)))))
+           . shifted-up
+
+
+define : collapse-weighting letters cost
+   define : index-value char
+            string-index letters char
+   let : : collapsed : make-string (expt (string-length letters) 2) (string-ref letters 0)
+       let update-string : : cost cost
+         if : null? cost
+           . collapsed
+           let*
+              : element : car cost
+                one : first element
+                two : second element
+                val : third element
+                idx : + (index-value two) {(index-value one) * (string-length letters)}
+              string-set! collapsed idx val
+              update-string : cdr cost
+
+define : weighting-from-corpusfile filename
+   let*
+       : cost : map split-corpus-line : lines-from-file filename
+         letters : string-append qwertysafeletters delimiters " "
+         shifted : shift-and-scale-cost cost : - (string-length letters) 1
+       collapse-weighting letters
+           map : λ (x) (list (first x) (second x) (string-ref letters (third x)))
+               . shifted
+      
 define : main args
-    if : and {(length args) > 2} : equal? "--check" : second args
-      let-values : : (check calck count) : letterblock-invalid? : third args
-          cond 
-              count
-                  format #t "letterblock invalid. First failed checksum: ~a should have been ~a at position ~a\n"
-                      . check calck count
-                  exit 1
-              else
-                  format #t "valid letterblock password\n"
+  if : and {(length args) > 2} : equal? "--check" : second args
+    let-values : : (check calck count) : letterblock-invalid? : third args
+        cond 
+            count
+                format #t "letterblock invalid. First failed checksum: ~a should have been ~a at position ~a\n"
+                    . check calck count
+                exit 1
+            else
+                format #t "valid letterblock password\n"
+    if : and {(length args) > 2} : equal? "--weighting-from-corpusfile" : second args
+      format #t "~a\n" : weighting-from-corpusfile : third args
       let
        :
          len
            if : <= 2 : length args
               string->number : second args
               . 12
-       let 
+       let
          : idx (if (> 3 (length args)) 1 (string->number (third args)))
          cond
            : = idx 1
-             display : password len
+             display : letterblocks : floor {len / 4}
            : = idx 2
              display : password/map len
            : = idx 3
              display : password/srfi-42 len
            : = idx 4
-             display : letterblocks {len / 4}
+             display : password len
          newline
 
