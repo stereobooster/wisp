@@ -133,6 +133,7 @@ import
     srfi srfi-11 ;; let-values
     srfi srfi-42
     ice-9 optargs
+    ice-9 format
     only (ice-9 rdelim) read-line
     ice-9 match
     ice-9 pretty-print
@@ -389,9 +390,13 @@ define : lines-from-file filepath
               reverse! lines
               reader : cons line lines
 
-
 define : split-corpus-line line
-       . "turn LINE into '(first-letter second-letter weight)"
+       . "turn LINE into '(first-letter second-letter weight)
+
+A LINE is formatted as cost ab, with cost a number and a and b the letters. For example:
+10123151.392154863 en
+0.020499130776997592 q6
+"
        define : log2 number
                 / (log number) (log 2)
        let*
@@ -407,10 +412,11 @@ define : shift-and-scale-cost line-costs upper-limit
    let* 
        : numbers : map (λ (x) (third x)) line-costs
          minimum : apply min numbers
-         shifted-up : map (λ (x) (list (first x) (second x) (- (third x) minimum))) line-costs
+         shifted-up : map (λ (x) (list (first x) (second x) {(third x) - minimum})) line-costs
          shifted-numbers : map (λ (x) (third x)) shifted-up
          maximum : apply max shifted-numbers
          scaling-factor {upper-limit / maximum}
+       format #t "Scaling factor: ~a\n" scaling-factor
        map : λ(x) (list (first x) (second x) (inexact->exact (floor (* scaling-factor (third x)))))
            . shifted-up
 
@@ -431,18 +437,47 @@ define : collapse-weighting letters cost
               string-set! collapsed idx val
               update-string : cdr cost
 
+define weightletters : string-append qwertysafeletters delimiters " "
+define scalingfactor-inverse {1 / 2.0429752944704385}
+define weight "snkkmmmkkjPURRPPVMMXTXMPFMNRVUKXUaWfXURNUXeWUWFTfURKRbqUjUetpnnmmnmmnqUTUVRRTUFKQUNQEHTQMTHbaaXaXbUJFVVUMWRXaRPQgUmWjXfoqkkkkmjjjjQUWVQQVKKRNTJPHNQMUQRWabaaXaRRKRaXVeTUdbPQRcmWhaeonjjjjjiiiiRPQXPVQKLNVRML8UPJMHQXaWaWWXLQGVaULMCVXWTGRUjXiWbomiiiijiiiiPLNMPPPLTNWTHKHUNKLQLUbXTWVWQHURTMRVAQVURHPWjbgTdomiiiiiiihhRQPMNULQHNHWQUTQMPUQJVTaWWaPNMMQWQGQLLaQRHLRjQgNcomhihiimiihURNRHKQNGLLPKMCGGTLJKVUXVXUQRKUQTMFQRGWNAVMRjThRdokhihhihiihMNKTJRPGGGFQHLJHPHFMJVUVWWWKLDGKTRRKLTVQGDKRiQfMbnmhiiiijiiiLPLLJLRPLQPQGKCPKHLHGVVVXWXMMQHTTcEP9GVNCLLUiPgMbnkjjjkjkkmoPPJJQKJFFRHTEPJHMHGKMWWUUUVGPJELTGAFMTVP9NNQiQfLbnMXVVVVTPRMdcdebbgWUaeegdXffbXWXcphjagfffUjmrTjaqkjrdbbcPdNWmQTURRPRRRQefbXbXbTRabchUPcVbaWJqLRbtaRUocJRKnHToWRpRNMgJcLViRUWVQRPLRMdVcgkWVfTcbaWbTbcWcRPmJMPgUHofHKJPnM6gXQfLMHbXdPUiRUUPRRPRKMdaWeheWaWUbbgeXfafdXUrQHbrMMVsVKVUoQ7mdcmWRLbMdVUjQQQRRMMMMReadebbbVMXddfdThieefcejghUgchqNbioUebrngngbkbNeachRWTQMTRRQMdbcebcVUNUcVTXHbabUVPpNNHoUNNoRTPToEJqVUkQLGXFcKVfHVMMNNNPTRbcWUfVadJRaXggKcbcVWJmUDTsRQcjNDefmJFqXNjPTGbLbUWhTQWMLPNNNNdVXXdWeWMWbWUVQXgXUVKrPKPqPXJoNFbKoKLdQNkNTBaKWQRfDKKFGFEGLTUNQRUPTTWTLPLXQRPRTQKqTMKkQUVcDLJGmTFUTJnFECaCRDMbMQNRKMKJHGaWRdbVaTNWXXUgNUWXVXNpPQNmWNanQJWhqTJoTPnQUFaQaNTfTQQLUPKJGGhXXafadRNWcVUbKUbWVTPpPRUqQRPqTWEJmM4TWUkdMQaPbRViJRTXaPNLMPfbXbfUWXRTcbTcUUaXVcVrTcTqURRrLULWoWRjVQnHNHbKbLQgMQVLPJJJPKebdffafWQaVUeaLaigXaNqHLRoTTPmMPQQpPQcQXkRNFaKaWTjMTUTPLLJTJeRchfUfXPVgXXdQdcbTRLpNMUnjGmiUWNVoTRrfWkWPEaNbLVhJLGHJLTGCJXJLJVJKDHAWNTHQXVXRWTWDPFN7PEUPJNGQQ6EMXmFcAQ7TEDaRVRPPKPJJJeWedhXaQNXdccdMdfWaaMoURTrMUgmLKJRnGLMTPmFMPaKbRRhPVTTQPNKNTeVcafbVfVWbcXeJceadUUoReUpNRqmUNUcoTTofQiTdhXJaPQgXUfQNQLKKHXVXXaVaRHWcaeWDefQURRMWTbacWjUMamqReEjfbNMcNWMdEdiQRQLLKPLQFaWdacTbTNQaVbXEVRTWaLkHKTraWHnKLJJpHJVRPaWMDbEbUQgFQNQHRVELEbVTXeWVUTTWcUbMWVRRVPpGKPrMNkqPPNKoMLdURiFQGaWWHTgJXLQKNPKKEQLUPURKMMKUWHVENaLVFcaUQQWQKMW6NRFVULQMRRTKQVFXHQeVecXcVVVWURVTWNWPRGQRReRRUXEMQFovvtmsvushsv+grc...xqmkjTmahuWccaWXWWaVMNRGMTNeLNRNMLDNJBLJatmgi+gnjtjggjrgXsrprfjViQgXhqaabWXTVVUWTPXWTNUJKVWTQcQKURNLCsconsfd/pbujetkepmrpjebgMibioWdbdcacXRWWVUWbTMUJVWRaVURcVTREwkhp=kkk.ehjntjcsqotjnfnWmeh.ajgfebcbWWWkaXeaWbPVWaWaQaaPUXXuuuwttvu-hrw qsm/+wurssqTpho=UcdWUVUWeWUaVRQRUKNQXULPQWTPPR9tijfutnhtdgimuictnupdieoMibawQWbTURRRTWRXMUXUPNFHPVRNJRVQQHGshhh+joqseoippgXtssrgggnUkbiwNVWPNMRMPETMNQUUTRMPJTQRPTTQULGxkej-ipiwdnstugXwrxrgqTmRjdf.JccTMJPLHMLdTNPPRUGNTRMWJQRRPULsr+t-twsiesu=vqfv.+mrgmjViVctBMQPPM7C6JRGQFABCFT56LJJPK6TCNJoaVcrdXVebbVakecWbVnWXRVLVNXfRTWVULNJRHRVXLURJRRNMVMPLRVTPWLthekvjjiqamjpsfWqptqjidjUjWfsabccXVRRTRWNRNTNURKQRWNRNRLPNRBwpekxjjfvbktjssdeqprhhXjKiWgxVaciRKRQVPXWVXaabTVTVUWWNXaUUcMvps-+s.pwhtowvkfnwxtonetVodk/URbbTMQLeFXTaUXMQUQUUQLQPWbHUQanrutmurrojpv.rsb.tuupskkNmUgvcfgceUQUPRRKLRXTPUKMEKTFTMTDTNFtdgkuqhorVgigsrbuoqqaechPkfiqDTWTHM04L4UQRQRQU3JF6QR54RRF94MXacafdXXXbRXaacicbeqWfVcGPTKhRifbbabRRUWXcUUQQVRQQVQVFXRNTWLxstv+strwgssvwoeswxunqcpTnek-bdeWKTQQQNVXWVTWWVLNVWRWMRPURWLuo.m+npsxfpomvtgox+snpgqWohn-XegVXRPNTQaXXabVXXTRWVUXRXcUQWQvmok-noxxemonvnbvvvujrmraohj-JQUQKKaLCHGNMeLPQMKNKQHbJQTMJLEpqtqsvsnpdnu+jrXxwwiihihJgLWucbfcTKWTFBHGLMNVQUFDHVDWQLQLWTFpbgewdjasWXfhvcbjiediXXeGkcdnTWVbP8fR98MTTWRNTUTMUKDMHTWLTVMudegwefrwecentebmmgqXjdhTgUbqejcaTVWQbXRRNbWUUPTPPNRR4PRDGKPkkmdkjbemcigdjnbfopfhdcgVhbfnpmkjiijghghgakgdddbcbeecNcbedfPjgkjhghhggegghmbikihdhcmQfHiwkfbaWVUMNRQMQLMMRLPHNXKLCMTFKKLQUPNPTPMQKQVRLQNQVWJNPUNdahVkmnmhifeeggjjiihiiigjijgjbjjghibmkmjjkjkihhkiimdmnkiihceVrbarbdaVUVUTQPNNWRUeUPMLNNgTVLeRNQLiXbkabhXWRgjgcbUcheXVcgJKWmXrcffcdaaaabecadfefeVcddaihccWXcVjijikijjfbhihgkehmjihifeQcTjirtsonnmkkkvvrvuuutsutvsumtustug+xu-.www.ruxwwunu+xxw.jkosrm/"
+
+
 define : weighting-from-corpusfile filename
+   . "this is how the weighting above was calculated"
    let*
        : cost : map split-corpus-line : lines-from-file filename
-         letters : string-append qwertysafeletters delimiters " "
+         letters weightletters
          shifted : shift-and-scale-cost cost : - (string-length letters) 1
        collapse-weighting letters
            map : λ (x) (list (first x) (second x) (string-ref letters (third x)))
                . shifted
       
+define : recreate-corpus-from-weighting
+       . "Expand the weight string back into a full corpus by using the weightletters"
+       let expander
+           : weightleft weight
+             letter1 weightletters
+             letter2 weightletters
+           cond
+             : string-null? weightleft
+               . #t
+             : string-null? letter1
+               error "could not expand the whole corpus. Letters left: ~a" weightleft
+             : string-null? letter2
+               expander weightleft (string-drop letter1 1) weightletters
+             else
+               let : : cost : expt 2 : * scalingfactor-inverse : string-index weightletters : string-ref weightleft 0
+                   format #t "~f ~a~a\n" cost (string-ref letter1 0) (string-ref letter2 0)
+               expander
+                  string-drop weightleft 1
+                  . letter1
+                  string-drop letter2 1
+               
+
 define : main args
-  if : and {(length args) > 2} : equal? "--check" : second args
-    let-values : : (check calck count) : letterblock-invalid? : third args
+ cond
+   : and {(length args) > 2} : equal? "--check" : second args
+     let-values : : (check calck count) : letterblock-invalid? : third args
         cond 
             count
                 format #t "letterblock invalid. First failed checksum: ~a should have been ~a at position ~a\n"
@@ -450,24 +485,27 @@ define : main args
                 exit 1
             else
                 format #t "valid letterblock password\n"
-    if : and {(length args) > 2} : equal? "--weighting-from-corpusfile" : second args
-      format #t "~a\n" : weighting-from-corpusfile : third args
+   : and {(length args) > 2} : equal? "--weighting-from-corpusfile" : second args
+     format #t "~a\n" : weighting-from-corpusfile : third args
+   : and {(length args) = 2} : equal? "--recreate-corpus-from-weighting" : second args
+     recreate-corpus-from-weighting
+   else
+     let
+      :
+        len
+          if : <= 2 : length args
+             string->number : second args
+             . 12
       let
-       :
-         len
-           if : <= 2 : length args
-              string->number : second args
-              . 12
-       let
-         : idx (if (> 3 (length args)) 1 (string->number (third args)))
-         cond
-           : = idx 1
-             display : letterblocks : floor {len / 4}
-           : = idx 2
-             display : password/map len
-           : = idx 3
-             display : password/srfi-42 len
-           : = idx 4
-             display : password len
-         newline
+        : idx (if (> 3 (length args)) 1 (string->number (third args)))
+        cond
+          : = idx 1
+            display : letterblocks : floor {len / 4}
+          : = idx 2
+            display : password/map len
+          : = idx 3
+            display : password/srfi-42 len
+          : = idx 4
+            display : password len
+        newline
 
