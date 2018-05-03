@@ -501,8 +501,10 @@ define : word-weight word
                    + cost : bigram->weight : string-take s 2
 
 
-define* : letterblocks-nice blockcount #:key (best-of 8) ;; best-of 16 consumes 4 bits of entropy, but creates much nicer passwords
-     . "Generate BEST-OF letterblocks and return the one most likely to appear in the corpus given by weight-collapsed"
+define* : letterblocks-nice blockcount #:key (best-of 8)
+     . "Generate BEST-OF letterblocks and return the one most likely to appear in the corpus given by weight-collapsed
+
+best-of 8 consumes 3 bits of entropy, but creates passwords which are easier to remember. "
      ;; for debugging
      ;; let : : words : map (λ (x) (letterblocks blockcount)) : iota best-of
      ;;   ;; downcase the words to sort by phonetics
