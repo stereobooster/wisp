@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples securepassword) main)' -s "$0" "$@"
+exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples securepassword)' -s "$0" "$@"
 ; !#
 
 ;; Create secure passwords, usable on US and German keyboards without problems
@@ -124,7 +124,7 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ;;   ./securepassword.w 
 
 define-module : examples securepassword
-              . #:export : password yearstillcrackable
+              . #:export : password yearstillcrackable letterblocks letterblocks-nice main
 
 import
     only (srfi srfi-27) random-source-make-integers
