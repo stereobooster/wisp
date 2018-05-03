@@ -439,7 +439,7 @@ define : collapse-weighting letters cost
 
 define weightletters : string-append qwertysafeletters delimiters " "
 define scalingfactor-inverse {1 / 2.0429752944704385}
-define weight "snkkmmmkkjPURRPPVMMXTXMPFMNRVUKXUaWfXURNUXeWUWFTfURKRbqUjUetpnnmmnmmnqUTUVRRTUFKQUNQEHTQMTHbaaXaXbUJFVVUMWRXaRPQgUmWjXfoqkkkkmjjjjQUWVQQVKKRNTJPHNQMUQRWabaaXaRRKRaXVeTUdbPQRcmWhaeonjjjjjiiiiRPQXPVQKLNVRML8UPJMHQXaWaWWXLQGVaULMCVXWTGRUjXiWbomiiiijiiiiPLNMPPPLTNWTHKHUNKLQLUbXTWVWQHURTMRVAQVURHPWjbgTdomiiiiiiihhRQPMNULQHNHWQUTQMPUQJVTaWWaPNMMQWQGQLLaQRHLRjQgNcomhihiimiihURNRHKQNGLLPKMCGGTLJKVUXVXUQRKUQTMFQRGWNAVMRjThRdokhihhihiihMNKTJRPGGGFQHLJHPHFMJVUVWWWKLDGKTRRKLTVQGDKRiQfMbnmhiiiijiiiLPLLJLRPLQPQGKCPKHLHGVVVXWXMMQHTTcEP9GVNCLLUiPgMbnkjjjkjkkmoPPJJQKJFFRHTEPJHMHGKMWWUUUVGPJELTGAFMTVP9NNQiQfLbnMXVVVVTPRMdcdebbgWUaeegdXffbXWXcphjagfffUjmrTjaqkjrdbbcPdNWmQTURRPRRRQefbXbXbTRabchUPcVbaWJqLRbtaRUocJRKnHToWRpRNMgJcLViRUWVQRPLRMdVcgkWVfTcbaWbTbcWcRPmJMPgUHofHKJPnM6gXQfLMHbXdPUiRUUPRRPRKMdaWeheWaWUbbgeXfafdXUrQHbrMMVsVKVUoQ7mdcmWRLbMdVUjQQQRRMMMMReadebbbVMXddfdThieefcejghUgchqNbioUebrngngbkbNeachRWTQMTRRQMdbcebcVUNUcVTXHbabUVPpNNHoUNNoRTPToEJqVUkQLGXFcKVfHVMMNNNPTRbcWUfVadJRaXggKcbcVWJmUDTsRQcjNDefmJFqXNjPTGbLbUWhTQWMLPNNNNdVXXdWeWMWbWUVQXgXUVKrPKPqPXJoNFbKoKLdQNkNTBaKWQRfDKKFGFEGLTUNQRUPTTWTLPLXQRPRTQKqTMKkQUVcDLJGmTFUTJnFECaCRDMbMQNRKMKJHGaWRdbVaTNWXXUgNUWXVXNpPQNmWNanQJWhqTJoTPnQUFaQaNTfTQQLUPKJGGhXXafadRNWcVUbKUbWVTPpPRUqQRPqTWEJmM4TWUkdMQaPbRViJRTXaPNLMPfbXbfUWXRTcbTcUUaXVcVrTcTqURRrLULWoWRjVQnHNHbKbLQgMQVLPJJJPKebdffafWQaVUeaLaigXaNqHLRoTTPmMPQQpPQcQXkRNFaKaWTjMTUTPLLJTJeRchfUfXPVgXXdQdcbTRLpNMUnjGmiUWNVoTRrfWkWPEaNbLVhJLGHJLTGCJXJLJVJKDHAWNTHQXVXRWTWDPFN7PEUPJNGQQ6EMXmFcAQ7TEDaRVRPPKPJJJeWedhXaQNXdccdMdfWaaMoURTrMUgmLKJRnGLMTPmFMPaKbRRhPVTTQPNKNTeVcafbVfVWbcXeJceadUUoReUpNRqmUNUcoTTofQiTdhXJaPQgXUfQNQLKKHXVXXaVaRHWcaeWDefQURRMWTbacWjUMamqReEjfbNMcNWMdEdiQRQLLKPLQFaWdacTbTNQaVbXEVRTWaLkHKTraWHnKLJJpHJVRPaWMDbEbUQgFQNQHRVELEbVTXeWVUTTWcUbMWVRRVPpGKPrMNkqPPNKoMLdURiFQGaWWHTgJXLQKNPKKEQLUPURKMMKUWHVENaLVFcaUQQWQKMW6NRFVULQMRRTKQVFXHQeVecXcVVVWURVTWNWPRGQRReRRUXEMQFovvtmsvushsv+grc...xqmkjTmahuWccaWXWWaVMNRGMTNeLNRNMLDNJBLJatmgi+gnjtjggjrgXsrprfjViQgXhqaabWXTVVUWTPXWTNUJKVWTQcQKURNLCsconsfd/pbujetkepmrpjebgMibioWdbdcacXRWWVUWbTMUJVWRaVURcVTREwkhp=kkk.ehjntjcsqotjnfnWmeh.ajgfebcbWWWkaXeaWbPVWaWaQaaPUXXuuuwttvu-hrw qsm/+wurssqTpho=UcdWUVUWeWUaVRQRUKNQXULPQWTPPR9tijfutnhtdgimuictnupdieoMibawQWbTURRRTWRXMUXUPNFHPVRNJRVQQHGshhh+joqseoippgXtssrgggnUkbiwNVWPNMRMPETMNQUUTRMPJTQRPTTQULGxkej-ipiwdnstugXwrxrgqTmRjdf.JccTMJPLHMLdTNPPRUGNTRMWJQRRPULsr+t-twsiesu=vqfv.+mrgmjViVctBMQPPM7C6JRGQFABCFT56LJJPK6TCNJoaVcrdXVebbVakecWbVnWXRVLVNXfRTWVULNJRHRVXLURJRRNMVMPLRVTPWLthekvjjiqamjpsfWqptqjidjUjWfsabccXVRRTRWNRNTNURKQRWNRNRLPNRBwpekxjjfvbktjssdeqprhhXjKiWgxVaciRKRQVPXWVXaabTVTVUWWNXaUUcMvps-+s.pwhtowvkfnwxtonetVodk/URbbTMQLeFXTaUXMQUQUUQLQPWbHUQanrutmurrojpv.rsb.tuupskkNmUgvcfgceUQUPRRKLRXTPUKMEKTFTMTDTNFtdgkuqhorVgigsrbuoqqaechPkfiqDTWTHM04L4UQRQRQU3JF6QR54RRF94MXacafdXXXbRXaacicbeqWfVcGPTKhRifbbabRRUWXcUUQQVRQQVQVFXRNTWLxstv+strwgssvwoeswxunqcpTnek-bdeWKTQQQNVXWVTWWVLNVWRWMRPURWLuo.m+npsxfpomvtgox+snpgqWohn-XegVXRPNTQaXXabVXXTRWVUXRXcUQWQvmok-noxxemonvnbvvvujrmraohj-JQUQKKaLCHGNMeLPQMKNKQHbJQTMJLEpqtqsvsnpdnu+jrXxwwiihihJgLWucbfcTKWTFBHGLMNVQUFDHVDWQLQLWTFpbgewdjasWXfhvcbjiediXXeGkcdnTWVbP8fR98MTTWRNTUTMUKDMHTWLTVMudegwefrwecentebmmgqXjdhTgUbqejcaTVWQbXRRNbWUUPTPPNRR4PRDGKPkkmdkjbemcigdjnbfopfhdcgVhbfnpmkjiijghghgakgdddbcbeecNcbedfPjgkjhghhggegghmbikihdhcmQfHiwkfbaWVUMNRQMQLMMRLPHNXKLCMTFKKLQUPNPTPMQKQVRLQNQVWJNPUNdahVkmnmhifeeggjjiihiiigjijgjbjjghibmkmjjkjkihhkiimdmnkiihceVrbarbdaVUVUTQPNNWRUeUPMLNNgTVLeRNQLiXbkabhXWRgjgcbUcheXVcgJKWmXrcffcdaaaabecadfefeVcddaihccWXcVjijikijjfbhihgkehmjihifeQcTjirtsonnmkkkvvrvuuutsutvsumtustug+xu-.www.ruxwwunu+xxw.jkosrm/"
+define weight-collapsed "snkkmmmkkjPURRPPVMMXTXMPFMNRVUKXUaWfXURNUXeWUWFTfURKRbqUjUetpnnmmnmmnqUTUVRRTUFKQUNQEHTQMTHbaaXaXbUJFVVUMWRXaRPQgUmWjXfoqkkkkmjjjjQUWVQQVKKRNTJPHNQMUQRWabaaXaRRKRaXVeTUdbPQRcmWhaeonjjjjjiiiiRPQXPVQKLNVRML8UPJMHQXaWaWWXLQGVaULMCVXWTGRUjXiWbomiiiijiiiiPLNMPPPLTNWTHKHUNKLQLUbXTWVWQHURTMRVAQVURHPWjbgTdomiiiiiiihhRQPMNULQHNHWQUTQMPUQJVTaWWaPNMMQWQGQLLaQRHLRjQgNcomhihiimiihURNRHKQNGLLPKMCGGTLJKVUXVXUQRKUQTMFQRGWNAVMRjThRdokhihhihiihMNKTJRPGGGFQHLJHPHFMJVUVWWWKLDGKTRRKLTVQGDKRiQfMbnmhiiiijiiiLPLLJLRPLQPQGKCPKHLHGVVVXWXMMQHTTcEP9GVNCLLUiPgMbnkjjjkjkkmoPPJJQKJFFRHTEPJHMHGKMWWUUUVGPJELTGAFMTVP9NNQiQfLbnMXVVVVTPRMdcdebbgWUaeegdXffbXWXcphjagfffUjmrTjaqkjrdbbcPdNWmQTURRPRRRQefbXbXbTRabchUPcVbaWJqLRbtaRUocJRKnHToWRpRNMgJcLViRUWVQRPLRMdVcgkWVfTcbaWbTbcWcRPmJMPgUHofHKJPnM6gXQfLMHbXdPUiRUUPRRPRKMdaWeheWaWUbbgeXfafdXUrQHbrMMVsVKVUoQ7mdcmWRLbMdVUjQQQRRMMMMReadebbbVMXddfdThieefcejghUgchqNbioUebrngngbkbNeachRWTQMTRRQMdbcebcVUNUcVTXHbabUVPpNNHoUNNoRTPToEJqVUkQLGXFcKVfHVMMNNNPTRbcWUfVadJRaXggKcbcVWJmUDTsRQcjNDefmJFqXNjPTGbLbUWhTQWMLPNNNNdVXXdWeWMWbWUVQXgXUVKrPKPqPXJoNFbKoKLdQNkNTBaKWQRfDKKFGFEGLTUNQRUPTTWTLPLXQRPRTQKqTMKkQUVcDLJGmTFUTJnFECaCRDMbMQNRKMKJHGaWRdbVaTNWXXUgNUWXVXNpPQNmWNanQJWhqTJoTPnQUFaQaNTfTQQLUPKJGGhXXafadRNWcVUbKUbWVTPpPRUqQRPqTWEJmM4TWUkdMQaPbRViJRTXaPNLMPfbXbfUWXRTcbTcUUaXVcVrTcTqURRrLULWoWRjVQnHNHbKbLQgMQVLPJJJPKebdffafWQaVUeaLaigXaNqHLRoTTPmMPQQpPQcQXkRNFaKaWTjMTUTPLLJTJeRchfUfXPVgXXdQdcbTRLpNMUnjGmiUWNVoTRrfWkWPEaNbLVhJLGHJLTGCJXJLJVJKDHAWNTHQXVXRWTWDPFN7PEUPJNGQQ6EMXmFcAQ7TEDaRVRPPKPJJJeWedhXaQNXdccdMdfWaaMoURTrMUgmLKJRnGLMTPmFMPaKbRRhPVTTQPNKNTeVcafbVfVWbcXeJceadUUoReUpNRqmUNUcoTTofQiTdhXJaPQgXUfQNQLKKHXVXXaVaRHWcaeWDefQURRMWTbacWjUMamqReEjfbNMcNWMdEdiQRQLLKPLQFaWdacTbTNQaVbXEVRTWaLkHKTraWHnKLJJpHJVRPaWMDbEbUQgFQNQHRVELEbVTXeWVUTTWcUbMWVRRVPpGKPrMNkqPPNKoMLdURiFQGaWWHTgJXLQKNPKKEQLUPURKMMKUWHVENaLVFcaUQQWQKMW6NRFVULQMRRTKQVFXHQeVecXcVVVWURVTWNWPRGQRReRRUXEMQFovvtmsvushsv+grc...xqmkjTmahuWccaWXWWaVMNRGMTNeLNRNMLDNJBLJatmgi+gnjtjggjrgXsrprfjViQgXhqaabWXTVVUWTPXWTNUJKVWTQcQKURNLCsconsfd/pbujetkepmrpjebgMibioWdbdcacXRWWVUWbTMUJVWRaVURcVTREwkhp=kkk.ehjntjcsqotjnfnWmeh.ajgfebcbWWWkaXeaWbPVWaWaQaaPUXXuuuwttvu-hrw qsm/+wurssqTpho=UcdWUVUWeWUaVRQRUKNQXULPQWTPPR9tijfutnhtdgimuictnupdieoMibawQWbTURRRTWRXMUXUPNFHPVRNJRVQQHGshhh+joqseoippgXtssrgggnUkbiwNVWPNMRMPETMNQUUTRMPJTQRPTTQULGxkej-ipiwdnstugXwrxrgqTmRjdf.JccTMJPLHMLdTNPPRUGNTRMWJQRRPULsr+t-twsiesu=vqfv.+mrgmjViVctBMQPPM7C6JRGQFABCFT56LJJPK6TCNJoaVcrdXVebbVakecWbVnWXRVLVNXfRTWVULNJRHRVXLURJRRNMVMPLRVTPWLthekvjjiqamjpsfWqptqjidjUjWfsabccXVRRTRWNRNTNURKQRWNRNRLPNRBwpekxjjfvbktjssdeqprhhXjKiWgxVaciRKRQVPXWVXaabTVTVUWWNXaUUcMvps-+s.pwhtowvkfnwxtonetVodk/URbbTMQLeFXTaUXMQUQUUQLQPWbHUQanrutmurrojpv.rsb.tuupskkNmUgvcfgceUQUPRRKLRXTPUKMEKTFTMTDTNFtdgkuqhorVgigsrbuoqqaechPkfiqDTWTHM04L4UQRQRQU3JF6QR54RRF94MXacafdXXXbRXaacicbeqWfVcGPTKhRifbbabRRUWXcUUQQVRQQVQVFXRNTWLxstv+strwgssvwoeswxunqcpTnek-bdeWKTQQQNVXWVTWWVLNVWRWMRPURWLuo.m+npsxfpomvtgox+snpgqWohn-XegVXRPNTQaXXabVXXTRWVUXRXcUQWQvmok-noxxemonvnbvvvujrmraohj-JQUQKKaLCHGNMeLPQMKNKQHbJQTMJLEpqtqsvsnpdnu+jrXxwwiihihJgLWucbfcTKWTFBHGLMNVQUFDHVDWQLQLWTFpbgewdjasWXfhvcbjiediXXeGkcdnTWVbP8fR98MTTWRNTUTMUKDMHTWLTVMudegwefrwecentebmmgqXjdhTgUbqejcaTVWQbXRRNbWUUPTPPNRR4PRDGKPkkmdkjbemcigdjnbfopfhdcgVhbfnpmkjiijghghgakgdddbcbeecNcbedfPjgkjhghhggegghmbikihdhcmQfHiwkfbaWVUMNRQMQLMMRLPHNXKLCMTFKKLQUPNPTPMQKQVRLQNQVWJNPUNdahVkmnmhifeeggjjiihiiigjijgjbjjghibmkmjjkjkihhkiimdmnkiihceVrbarbdaVUVUTQPNNWRUeUPMLNNgTVLeRNQLiXbkabhXWRgjgcbUcheXVcgJKWmXrcffcdaaaabecadfefeVcddaihccWXcVjijikijjfbhihgkehmjihifeQcTjirtsonnmkkkvvrvuuutsutvsumtustug+xu-.www.ruxwwunu+xxw.jkosrm/"
 
 
 define : weighting-from-corpusfile filename
@@ -451,11 +451,11 @@ define : weighting-from-corpusfile filename
        collapse-weighting letters
            map : λ (x) (list (first x) (second x) (string-ref letters (third x)))
                . shifted
-      
+
 define : recreate-corpus-from-weighting
        . "Expand the weight string back into a full corpus by using the weightletters"
        let expander
-           : weightleft weight
+           : weightleft weight-collapsed
              letter1 weightletters
              letter2 weightletters
            cond
@@ -472,7 +472,51 @@ define : recreate-corpus-from-weighting
                   string-drop weightleft 1
                   . letter1
                   string-drop letter2 1
-               
+
+define : bigram->weight bigram
+       . "Calculate the weight of the given bigram in a corpus"
+       let*
+           : letter1 : string-ref bigram 0
+             letter2 : string-ref bigram 1
+             idx1 : string-index weightletters letter1
+             idx2 : string-index weightletters letter2
+             ;; for downcased bigrams (for phonetics) we might have to get the uppercase version
+             idx1 : if idx1 idx1 : string-index weightletters : char-upcase letter1
+             idx2 : if idx2 idx2 : string-index weightletters : char-upcase letter2
+             len : string-length weightletters
+             costchar : string-ref weight-collapsed {{idx1 * len} + idx2}
+           expt 2 : * scalingfactor-inverse : string-index weightletters costchar
+
+define : word-weight word
+       . "calculate the probability weight of the given word to appear in a corpus given by the weight-collapsed"
+       let loop
+           : s : string-append " " word " "
+             cost 0
+           cond
+             : string-null? : string-drop s 2
+               . cost
+             else
+               loop 
+                   string-drop s 2
+                   + cost : bigram->weight : string-take s 2
+
+
+define* : letterblocks-nice blockcount #:key (best-of 8) ;; best-of 16 consumes 4 bits of entropy, but creates much nicer passwords
+     . "Generate BEST-OF letterblocks and return the one most likely to appear in the corpus given by weight-collapsed"
+     ;; for debugging
+     ;; let : : words : map (λ (x) (letterblocks blockcount)) : iota best-of
+     ;;   ;; downcase the words to sort by phonetics
+     ;;   display : sort words : λ (a b) : > (word-weight (string-downcase a)) (word-weight (string-downcase b))
+     ;;   newline
+     car
+         sort
+             map : λ (x) (letterblocks blockcount)
+                 iota best-of
+             λ (a b)
+                  > 
+                      word-weight : string-downcase a
+                      word-weight : string-downcase b
+
 
 define : main args
  cond
@@ -500,12 +544,14 @@ define : main args
         : idx (if (> 3 (length args)) 1 (string->number (third args)))
         cond
           : = idx 1
-            display : letterblocks : floor {len / 4}
+            display : letterblocks-nice : floor {len / 4}
           : = idx 2
-            display : password/map len
+            display : letterblocks : floor {len / 4}
           : = idx 3
-            display : password/srfi-42 len
+            display : password/map len
           : = idx 4
+            display : password/srfi-42 len
+          : = idx 5
             display : password len
         newline
 
