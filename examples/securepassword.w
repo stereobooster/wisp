@@ -5,6 +5,8 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 
 ;; Create secure passwords, usable on US and German keyboards without problems
 
+;; 
+
 ;; As of 2011, a single device can do 2,800,000,000 guesses per
 ;; second.  Today this should be 10 billion guesses per second.
 ;; According to a recovery company which sells crackers at 1.5k$, as
@@ -116,6 +118,10 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ;; Or they might just have developed reversible computing, then all
 ;; these computations are just a fun game to stretch the mind :)
 
+;; Update the letter-weights: 
+;;   grep -P '^[ 0123456789ABCDEFGHJKLMNPQRTUVWXabcdefghijkmnopqrstuvwx.+\-=/\r]*$' 2-gramme.arne.txt > securepassword.corpus
+;;   with 2-gramme.arne.txt from https://bitbucket.org/ArneBab/evolve-keyboard-layout
+;;   ./securepassword.w 
 
 define-module : examples securepassword
               . #:export : password yearstillcrackable
