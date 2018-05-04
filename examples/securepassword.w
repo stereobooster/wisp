@@ -501,10 +501,39 @@ define : word-weight word
                    + cost : bigram->weight : string-take s 2
 
 
+define* : string-replace-substring s substr replacement #:optional (start 0) (end (string-length s))
+       . "Replace every instance of substring in s by replacement."
+       let : : substr-length : string-length substr
+          if : zero? substr-length
+             error "string-replace-substring: empty substr"
+             let loop
+                 : start start
+                   pieces : list : substring s 0 start
+                 let : : idx : string-contains s substr start end
+                   if idx
+                     loop : + idx substr-length
+                           cons* replacement
+                                  substring s start idx
+                                  . pieces
+                     string-concatenate-reverse
+                                                cons : substring s start
+                                                    . pieces
+
+
 define* : letterblocks-nice blockcount #:key (best-of 8)
      . "Generate BEST-OF letterblocks and return the one most likely to appear in the corpus given by weight-collapsed
 
 best-of 8 consumes 3 bits of entropy, but creates passwords which are easier to remember. "
+     define : delimiters-to-space s
+            . "replace all delimiters by spaces"
+            let replace
+              : s s
+                delim delimiters
+              if : string-null? delim
+                . s
+                replace
+                    string-replace-substring s (string-take delim 1) " "
+                    string-drop delim 1
      ;; for debugging
      ;; let : : words : map (λ (x) (letterblocks blockcount)) : iota best-of
      ;;   ;; downcase the words to sort by phonetics
@@ -516,8 +545,8 @@ best-of 8 consumes 3 bits of entropy, but creates passwords which are easier to 
                  iota best-of
              λ (a b)
                   > 
-                      word-weight : string-downcase a
-                      word-weight : string-downcase b
+                      word-weight : delimiters-to-space : string-downcase a
+                      word-weight : delimiters-to-space : string-downcase b
 
 
 define : main args
