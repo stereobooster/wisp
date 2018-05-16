@@ -549,8 +549,21 @@ best-of 8 consumes 3 bits of entropy, but creates passwords which are easier to 
                       word-weight : delimiters-to-space : string-downcase b
 
 
+define : help args
+       format #t "Usage: ~a [options]
+
+Options:
+  [<length> [<password-type>]]            create password
+   --check <password>                     verify the checksums
+   --weighting-from-corpusfile <filepath> create a new cost string
+   --recreate-corpus-from-weighting       create the corpus from the cost string (for debuging)
+   --help                                 show this message
+" : first args
+
 define : main args
  cond
+   : and {(length args) > 1} : equal? "--help" : second args
+     help args
    : and {(length args) > 2} : equal? "--check" : second args
      let-values : : (check calck count) : letterblock-invalid? : third args
         cond 
