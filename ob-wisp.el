@@ -83,7 +83,7 @@ This function is called by `org-babel-execute-src-block'."
 	 (preamble (cdr (assoc :preamble params)))
          (full-body
 	  (org-babel-expand-body:generic
-	   (concat body (if return-val (format ". %s" return-val) ""))
+	   (concat body (if return-val (format ". %s\n" return-val) "\n"))
 	   params (org-babel-variable-assignments:wisp params)))
          (result (org-babel-wisp-evaluate
 		  session full-body result-type result-params preamble)))
