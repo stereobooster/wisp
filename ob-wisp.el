@@ -41,7 +41,7 @@
 
 (defvar org-babel-default-header-args:wisp '())
 
-(defcustom org-babel-wisp-command "guile -L $HOME/wisp --language=wisp"
+(defcustom org-babel-wisp-command "guile -L $HOME/wisp --language=wisp -e '(lambda (args) (set! (@@ (system repl common) repl-welcome) (const #f)))'"
   "Name of the command for executing Wisp code."
   :version "24.4"
   :package-version '(Org . "8.0")
