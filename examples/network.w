@@ -51,7 +51,7 @@ define : random-network locations
             let 
                 : node : cdr : vhash-assoc (car unprocessed) network
                   peer : cdr : vhash-assoc (car shifted) network
-                node-set-peers! node (cons peer (node-peers node))
+                node-set-peers! node : cons peer (node-peers node)
             loop shift
                 cdr shifted
                 cons (car shifted) seen
