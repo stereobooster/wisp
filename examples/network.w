@@ -26,7 +26,7 @@ define-record-type <node>
 ;; 100k nodes, 30 peers, 120 MiB of memory
 define locations
     list-ec (: i 100000) : random:uniform
-    
+
 ;; add 30 random peers to each node, since these are unordered, I can simply use a sliding window
 define : random-network locations
     define network vlist-null
