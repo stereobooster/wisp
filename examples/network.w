@@ -25,7 +25,7 @@ define-record-type <node>
 ;; vhash with 1,000,000 keys pointing to lists: 105 MiB
 ;; 100k nodes, 30 peers, 120 MiB of memory
 define locations
-    list-ec (: i 100000) : random:uniform
+    list-ec (: i 10000) : random:uniform
 
 ;; add 30 random peers to each node, since these are unordered, I can simply use a sliding window
 define : random-network locations
@@ -36,9 +36,9 @@ define : random-network locations
     ;; connect nodes at random
     let loop
         : shift 0
-          shifted locations
-          seen '()
-          unprocessed locations
+          shifted '()
+          seen : reverse locations
+          unprocessed '()
         cond
           {shift >= 30}
             . 'done
@@ -58,6 +58,23 @@ define : random-network locations
                 cdr unprocessed
     . network
 
+define : modulo-distance loc1 loc2
+    min
+        abs (- loc1 loc2)
+        abs (- (- loc1 1) loc2)
+        abs (- loc1 (- loc2 1))
+
 define : main args
-    display : random-network locations
-    sleep 10
+    let
+      :
+        distances
+            vhash-fold
+                λ (loc node previous)
+                    append
+                        map (λ (peer) (modulo-distance (node-location peer) loc))
+                            node-peers node
+                        . previous
+                . '()
+                random-network locations
+      map : λ (x) (display x) (newline)
+          sort distances <
