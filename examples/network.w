@@ -23,8 +23,9 @@ define-record-type <node>
 ;; list of 1,000,000 records, each with a random float and a list: 110 MiB
 ;; list of lists with two random floats: 108 MiB
 ;; vhash with 1,000,000 keys pointing to lists: 105 MiB
+;; 100k nodes, 30 peers, 120 MiB of memory
 define locations
-    list-ec (: i 1000000) : random:uniform
+    list-ec (: i 100000) : random:uniform
     
 ;; add 30 random peers to each node, since these are unordered, I can simply use a sliding window
 define : random-network locations
