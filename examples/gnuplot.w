@@ -5,7 +5,7 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) -x .w --language=wisp -e '(
 ; !#
 
 define-module : examples gnuplot
-    . #:export : main
+    . #:export : main plot-numbers
 
 import : ice-9 optargs
          ice-9 rdelim

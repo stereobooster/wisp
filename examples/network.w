@@ -26,7 +26,7 @@ define-record-type <node>
 ;; vhash with 1,000,000 keys pointing to lists: 105 MiB
 ;; 100k nodes, 30 peers, 120 MiB of memory
 define locations
-    list-ec (: i 600) : random:uniform
+    list-ec (: i 100000) : random:uniform
 
 define : connect-neighbor-nodes nodes steps stepsize
     . "Add neighbors of the nodes to the peers of the respective nodes"
@@ -57,21 +57,26 @@ define : connect-neighbor-nodes nodes steps stepsize
                 cdr unprocessed
     . nodes
        
+define : log2 number
+    / : log number
+        log 2
 
 ;; add 30 random peers to each node, since these are unordered, I can simply use a sliding window
 define : random-network locations
     define nodes
         list-ec (: i locations)
             make-node i (list)
-    connect-neighbor-nodes nodes 16 1
+    define steps : truncate : * 2 : + 1 : log2 (length locations)
+    connect-neighbor-nodes nodes steps 1
 
 define : neighbor-network locations
     define nodes
         list-ec (: i (sort locations < ))
             make-node i (list)
+    define steps : truncate : + 1 : log2 (length locations)
     connect-neighbor-nodes 
-        reverse : connect-neighbor-nodes nodes 8 1
-        . 8 1
+        reverse : connect-neighbor-nodes nodes steps 1
+        . steps 1
 
 define : smallworld-network locations
     . "create an approximate small world network. Approximate, because it only uses the order of the locations, not their distance"
@@ -98,9 +103,22 @@ define : modulo-distance loc1 loc2
         abs (- (- loc1 1) loc2)
         abs (- loc1 (- loc2 1))
 
+define : choose-network args
+    if : not : equal? "--network" : second args
+         . random-network
+         let : : name : third args
+           cond
+               : equal? name "random"
+                 . random-network
+               : equal? name "neighbor"
+                 . neighbor-network
+               : equal? name "smallworld"
+                 . smallworld-network
+        
+
 define : main args
-    let
-      :
+    let*
+      : network-function : choose-network args
         distances
             fold
                 λ (node previous)
@@ -109,12 +127,10 @@ define : main args
                             node-peers node
                         . previous
                 . '()
-                random-network locations
+                network-function locations
+      ;; plot-numbers : sort distances <
       map : λ (x) (display x) (newline)
           sort distances <
 
-;; create networks, currently by adjusting source
-;; plot with gnuplot:
-;;   set term X
-;;   set logscale y
-;;   plot "/tmp/2" title "random", "/tmp/1" title "smallworld", "/tmp/3" title "neighbor"
+;; plot network: 
+;;     for i in random neighbor smallworld; do ./network.w --network $i > /tmp/$i; done; echo -e 'set term X\nset logscale y\nplot "/tmp/random" title "random", "/tmp/smallworld" title "smallworld", "/tmp/neighbor" title "neighbor"\n' | gnuplot -p
