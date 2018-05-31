@@ -26,7 +26,7 @@ define-record-type <node>
 ;; vhash with 1,000,000 keys pointing to lists: 105 MiB
 ;; 100k nodes, 30 peers, 120 MiB of memory
 define locations
-    list-ec (: i 100000) : random:uniform
+    list-ec (: i 100) : random:uniform
 
 define : connect-neighbor-nodes nodes steps stepsize
     . "Add neighbors of the nodes to the peers of the respective nodes"
@@ -103,10 +103,14 @@ define : modulo-distance loc1 loc2
         abs (- (- loc1 1) loc2)
         abs (- loc1 (- loc2 1))
 
+define : get-argument args name default
+    let : : index : list-index (λ(x) (equal? x name)) args
+        if : not index 
+           . default
+           list-ref args {index + 1}
+
 define : choose-network args
-    if : not : equal? "--network" : second args
-         . random-network
-         let : : name : third args
+         let : : name : get-argument args "--network" "random"
            cond
                : equal? name "random"
                  . random-network
@@ -128,7 +132,6 @@ define : main args
                         . previous
                 . '()
                 network-function locations
-      ;; plot-numbers : sort distances <
       map : λ (x) (display x) (newline)
           sort distances <
 
