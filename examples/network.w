@@ -26,7 +26,7 @@ define : make-node location peers
 define-method : display (node <node>)
     display node #f
 define-method : display (node <node>) port
-    format port "#<<node> ~a peers: ~a htl-set: ~a"
+    format port "#<<node> ~a peers: ~a htl-set: ~a>"
         node-location node
         length : node-peers node
         length : node-decrement-htl node
@@ -82,11 +82,13 @@ define : random-network locations
 
 define : neighbor-network locations
     define nodes
-        list-ec (: i (sort locations < ))
+        list-ec (: i locations)
             make-node i (list)
     define steps : truncate : + 1 : log2 (length locations)
     connect-neighbor-nodes 
-        reverse : connect-neighbor-nodes nodes steps 1
+        reverse
+            connect-neighbor-nodes : sort nodes : λ(a b) : < (node-location a) (node-location b)
+                . steps 1
         . steps 1
 
 define : smallworld-network locations
@@ -102,7 +104,9 @@ define : smallworld-network locations
           . nodes
           loop
               connect-neighbor-nodes 
-                  reverse : connect-neighbor-nodes nodes steps stepsize
+                  reverse
+                      connect-neighbor-nodes : sort nodes : λ(a b) : < (node-location a) (node-location b)
+                          . steps stepsize
                   . steps stepsize
               . steps
               . {stepsize * 2}
@@ -115,7 +119,7 @@ define : modulo-distance loc1 loc2
         abs (- loc1 (- loc2 1))
 
 define-method : dist (node <node>) (other <node>)
-    module-distance
+    modulo-distance
         node-location node
         node-location other
 define-method : dist (node <node>) (other <number>)
@@ -175,14 +179,70 @@ define : decrement-htl node origin HTL
                 . HTL
 
 
-define : get-argument args name default
+define : swap origin target
+    let : : origin-location : node-location origin
+        node-set-location! origin : node-location target
+        node-set-location! target origin-location
+
+define : node-peer-dists node nodelist
+    map : λ (peer) : dist node peer
+        . nodelist
+
+define : should-swap? origin target
+    let
+        : origin-dists : node-peer-dists origin : node-peers origin
+          target-dists : node-peer-dists target : node-peers target
+          origin-swap-dists : node-peer-dists target : node-peers origin
+          target-swap-dists : node-peer-dists origin : node-peers target
+        ;; format #t "origin: ~a target: ~a dists: ~a ~a ~a ~a\n" origin target 
+        ;;     . origin-dists target-dists
+        ;;     . origin-swap-dists target-swap-dists
+        should-swap-distances?
+            . origin-dists target-dists
+            . origin-swap-dists target-swap-dists
+
+define : should-swap-distances? before1 before2 after1 after2
+    let
+        : D1 : * (apply * before1) (apply * before2)
+          D2 : * (apply * after1) (apply * after2)
+        or {D2 <= D1} {{D1 / D2} > (random:uniform)} ;; probability D1/D2
+
+
+define : swap-all-once nodes
+    define : swap-target origin
+        closest-node origin : random:uniform
+    let loop
+        : to-swap nodes
+          target : swap-target : car nodes
+        when : not : null? to-swap
+           when : should-swap? target : car to-swap
+                  ;; format #t "swapping ~a and ~a\n" target : car to-swap
+                  swap target : car to-swap
+           loop
+               cdr to-swap
+               swap-target : car to-swap
+               
+
+define : swap-steps nodes steps
+    do-ec (: i steps)
+        swap-all-once nodes
+    . nodes
+
+
+define : get-option args name default
     let : : index : list-index (λ(x) (equal? x name)) args
         if : not index 
            . default
-           list-ref args {index + 1}
+           let : : option : list-ref args {index + 1}
+               if : number? default
+                    string->number option
+                    . option
+
+define : get-argument args name
+    member name args
 
 define : choose-network args
-         let : : name : get-argument args "--network" "random"
+         let : : name : get-option args "--network" "random"
            cond
                : equal? name "random"
                  . random-network
@@ -190,7 +250,9 @@ define : choose-network args
                  . neighbor-network
                : equal? name "smallworld"
                  . smallworld-network
-        
+
+define : optimize-steps args
+    get-option args "--optimize-steps" 0
 
 define : closest-node origin location
     car
@@ -209,8 +271,11 @@ define : pitch-black-attack? origin
 
 define : main args
     let*
-      : network-function : choose-network args
-        nodes : network-function locations
+      : create-network : choose-network args
+        nodes
+            swap-steps
+                create-network locations
+                optimize-steps args
         distances
             fold
                 λ (node previous)
