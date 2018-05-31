@@ -10,6 +10,7 @@ define-module : examples network
 import : srfi srfi-9 ; records
          ice-9 vlist ; vhashes
          srfi srfi-42 ; list-ec
+         srfi srfi-1 ; fold
 
 set! *random-state* : random-state-from-platform
 
@@ -31,13 +32,14 @@ define locations
 define : random-network locations
     define network vlist-null
     ;; setup network with nodes without peers
-    do-ec (: i locations)
-        set! network : vhash-cons i (make-node i (list)) network
+    define nodes
+        list-ec (: i locations)
+            make-node i (list)
     ;; connect nodes at random
     let loop
         : shift 0
           shifted '()
-          seen : reverse locations
+          seen : reverse nodes
           unprocessed '()
         cond
           {shift >= 30}
@@ -46,17 +48,17 @@ define : random-network locations
             loop {shift + 1}
               cons (car seen) : reverse! (cdr seen)
               . '()
-              . locations
+              . nodes
           else
             let 
-                : node : cdr : vhash-assoc (car unprocessed) network
-                  peer : cdr : vhash-assoc (car shifted) network
+                : node : car unprocessed
+                  peer : car shifted
                 node-set-peers! node : cons peer (node-peers node)
             loop shift
                 cdr shifted
                 cons (car shifted) seen
                 cdr unprocessed
-    . network
+    . nodes
 
 define : modulo-distance loc1 loc2
     min
@@ -68,10 +70,10 @@ define : main args
     let
       :
         distances
-            vhash-fold
-                λ (loc node previous)
+            fold
+                λ (node previous)
                     append
-                        map (λ (peer) (modulo-distance (node-location peer) loc))
+                        map (λ (peer) (modulo-distance (node-location peer) (node-location node)))
                             node-peers node
                         . previous
                 . '()
