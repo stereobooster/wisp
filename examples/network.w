@@ -11,14 +11,15 @@ import : srfi srfi-9 ; records
          ice-9 vlist ; vhashes
          srfi srfi-42 ; list-ec
          srfi srfi-1 ; fold
+         oop goops
 
 set! *random-state* : random-state-from-platform
 
-define-record-type <node>
-    make-node location peers
-    . node?
-    location node-location
-    peers node-peers node-set-peers!
+define-class <node> ()
+    location #:init-value #f #:getter node-location #:setter node-set-location! #:init-keyword #:location
+    peers #:init-value #f #:getter node-peers #:setter node-set-peers! #:init-keyword #:peers
+define : make-node location peers
+    make <node> #:location location #:peers peers
 
 ;; list of 1,000,000 random floats: 75 MiB
 ;; list of 1,000,000 records, each with a random float and a list: 110 MiB
@@ -103,6 +104,24 @@ define : modulo-distance loc1 loc2
         abs (- (- loc1 1) loc2)
         abs (- loc1 (- loc2 1))
 
+define-method : dist (node <node>) (other <node>)
+    module-distance
+        node-location node
+        node-location other
+define-method : dist (node <node>) (other <number>)
+    modulo-distance
+        node-location node
+        . other
+define-method : dist (node <number>) (other <node>)
+    modulo-distance
+        . node
+        node-location other
+define-method : dist (node <number>) (other <number>)
+    modulo-distance
+        . node
+        . other
+
+
 define : get-argument args name default
     let : : index : list-index (λ(x) (equal? x name)) args
         if : not index 
@@ -127,7 +146,7 @@ define : main args
             fold
                 λ (node previous)
                     append
-                        map (λ (peer) (modulo-distance (node-location peer) (node-location node)))
+                        map (λ (peer) (dist peer (node-location node)))
                             node-peers node
                         . previous
                 . '()
