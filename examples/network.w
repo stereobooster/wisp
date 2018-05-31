@@ -193,8 +193,16 @@ define : choose-network args
         
 
 define : closest-node origin location
-    take-right : route-between origin location
-               . 1
+    car
+      take-right : route-between origin location 18
+                 . 1
+
+define : pitch-black-attack? origin
+    . "If the best found node is worse than to be expected in a random network, assume being under the pitch black attack."
+    let*
+        : loc : random:uniform
+          closest : closest-node origin loc
+        . {0.037 < (dist closest loc)}
 
 define : main args
     let*
@@ -209,6 +217,9 @@ define : main args
                         . previous
                 . '()
                 . nodes
+      ;; display : pitch-black-attack? : car nodes
+      ;; newline
+      ;; exit 0
       ;; display : car nodes
       ;; newline
       ;; display : sort (node-peers (car nodes)) (λ(a b) (< (dist (node-location a) (node-location (car nodes))) (dist (node-location b)  (node-location (car nodes)))))
