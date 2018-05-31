@@ -12,6 +12,7 @@ import : srfi srfi-9 ; records
          srfi srfi-42 ; list-ec
          srfi srfi-1 ; fold
          oop goops
+         only (rnrs base (6)) mod ; modulo on reals
 
 set! *random-state* : random-state-from-platform
 
@@ -208,24 +209,42 @@ define : should-swap-distances? before1 before2 after1 after2
         or {D2 <= D1} {{D1 / D2} > (random:uniform)} ;; probability D1/D2
 
 
-define : swap-all-once nodes
-    define : swap-target origin
-        closest-node origin : random:uniform
+define : swap-target-uniform origin
+    closest-node origin : random:uniform
+
+define : swap-target-concave origin
+    . "target selection following the thesis from Vilhelm Verendel, 2007"
+    define peers : node-peers origin
+    define random-peer-location
+        if : null? peers
+            random:uniform
+            node-location
+                list-ref peers
+                    inexact->exact : truncate : * (random:uniform) : length peers
+    define peer-distance : dist origin random-peer-location
+    closest-node origin
+        mod
+            + random-peer-location
+                * peer-distance
+                    random:normal 
+            . 1.
+
+define : swap-all-once nodes target-selection
     let loop
         : to-swap nodes
-          target : swap-target : car nodes
+          target : target-selection : car nodes
         when : not : null? to-swap
            when : should-swap? target : car to-swap
                   ;; format #t "swapping ~a and ~a\n" target : car to-swap
                   swap target : car to-swap
            loop
                cdr to-swap
-               swap-target : car to-swap
+               target-selection : car to-swap
                
 
-define : swap-steps nodes steps
+define : swap-steps nodes steps target-selection
     do-ec (: i steps)
-        swap-all-once nodes
+        swap-all-once nodes target-selection
     . nodes
 
 
@@ -250,6 +269,15 @@ define : choose-network args
                  . neighbor-network
                : equal? name "smallworld"
                  . smallworld-network
+
+define : choose-swap-target-selection args
+         let : : name : get-option args "--swap-target-selection" "uniform"
+           cond
+               : equal? name "uniform"
+                 . swap-target-uniform
+               : equal? name "concave"
+                 . swap-target-concave
+
 
 define : optimize-steps args
     get-option args "--optimize-steps" 0
@@ -280,6 +308,7 @@ define : main args
             swap-steps
                 create-network locations
                 optimize-steps args
+                choose-swap-target-selection args
         distances
             fold
                 λ (node previous)
@@ -304,4 +333,4 @@ define : main args
           sort distances <
 
 ;; plot network: 
-;;     for i in random neighbor smallworld; do ./network.w --optimize-steps 100 --network $i > /tmp/$i & done; time wait; echo -e 'set term X\nset logscale y\nplot "/tmp/random" title "random", "/tmp/smallworld" title "smallworld", "/tmp/neighbor" title "neighbor"\n' | gnuplot -p
+;;     for selection in uniform concave; do for size in 1000; do for steps in 8 32; do for i in random neighbor smallworld; do ./network.w --swap-target-selection $selection --network-size $size --optimize-steps $steps --network $i > /tmp/$i & done; time wait; echo -e 'set title "size: '$size', steps: '$steps', selection: '$selection'"\nset term X\nset logscale y\nplot "/tmp/random" title "random", "/tmp/smallworld" title "smallworld", "/tmp/neighbor" title "neighbor"\n' | gnuplot -p; done; done; done
