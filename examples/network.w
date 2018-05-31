@@ -28,13 +28,8 @@ define-record-type <node>
 define locations
     list-ec (: i 10000) : random:uniform
 
-;; add 30 random peers to each node, since these are unordered, I can simply use a sliding window
-define : random-network locations
-    define network vlist-null
-    ;; setup network with nodes without peers
-    define nodes
-        list-ec (: i locations)
-            make-node i (list)
+define : connect-neighbor-nodes nodes steps stepsize
+    . "Add neighbors of the nodes to the peers of the respective nodes"
     ;; connect nodes at random
     let loop
         : shift 0
@@ -42,11 +37,13 @@ define : random-network locations
           seen : reverse nodes
           unprocessed '()
         cond
-          {shift >= 30}
+          {shift >= steps}
             . 'done
           : null? unprocessed
             loop {shift + 1}
-              cons (car seen) : reverse! (cdr seen)
+              append
+                  reverse! : take seen stepsize
+                  reverse! : drop seen stepsize
               . '()
               . nodes
           else
@@ -59,6 +56,14 @@ define : random-network locations
                 cons (car shifted) seen
                 cdr unprocessed
     . nodes
+       
+
+;; add 30 random peers to each node, since these are unordered, I can simply use a sliding window
+define : random-network locations
+    define nodes
+        list-ec (: i locations)
+            make-node i (list)
+    connect-neighbor-nodes nodes 30 1
 
 define : modulo-distance loc1 loc2
     min
