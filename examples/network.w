@@ -36,8 +36,8 @@ define-method : display (node <node>) port
 ;; list of lists with two random floats: 108 MiB
 ;; vhash with 1,000,000 keys pointing to lists: 105 MiB
 ;; 100k nodes, 30 peers, 120 MiB of memory
-define locations
-    list-ec (: i 1000) : random:uniform
+define : create-locations count
+    list-ec (: i count) : random:uniform
 
 define : connect-neighbor-nodes nodes steps stepsize
     . "Add neighbors of the nodes to the peers of the respective nodes"
@@ -254,6 +254,9 @@ define : choose-network args
 define : optimize-steps args
     get-option args "--optimize-steps" 0
 
+define : network-size args
+    get-option args "--network-size" 100
+
 define : closest-node origin location
     car
       take-right : route-between origin location 18
@@ -272,6 +275,7 @@ define : pitch-black-attack? origin
 define : main args
     let*
       : create-network : choose-network args
+        locations : create-locations : network-size args
         nodes
             swap-steps
                 create-network locations
@@ -300,4 +304,4 @@ define : main args
           sort distances <
 
 ;; plot network: 
-;;     for i in random neighbor smallworld; do ./network.w --network $i > /tmp/$i; done; echo -e 'set term X\nset logscale y\nplot "/tmp/random" title "random", "/tmp/smallworld" title "smallworld", "/tmp/neighbor" title "neighbor"\n' | gnuplot -p
+;;     for i in random neighbor smallworld; do ./network.w --optimize-steps 100 --network $i > /tmp/$i & done; time wait; echo -e 'set term X\nset logscale y\nplot "/tmp/random" title "random", "/tmp/smallworld" title "smallworld", "/tmp/neighbor" title "neighbor"\n' | gnuplot -p
