@@ -26,7 +26,7 @@ define-record-type <node>
 ;; vhash with 1,000,000 keys pointing to lists: 105 MiB
 ;; 100k nodes, 30 peers, 120 MiB of memory
 define locations
-    list-ec (: i 10000) : random:uniform
+    list-ec (: i 600) : random:uniform
 
 define : connect-neighbor-nodes nodes steps stepsize
     . "Add neighbors of the nodes to the peers of the respective nodes"
@@ -37,7 +37,7 @@ define : connect-neighbor-nodes nodes steps stepsize
           seen : reverse nodes
           unprocessed '()
         cond
-          {shift >= steps}
+          {shift > steps}
             . 'done
           : null? unprocessed
             loop {shift + 1}
@@ -63,7 +63,34 @@ define : random-network locations
     define nodes
         list-ec (: i locations)
             make-node i (list)
-    connect-neighbor-nodes nodes 30 1
+    connect-neighbor-nodes nodes 16 1
+
+define : neighbor-network locations
+    define nodes
+        list-ec (: i (sort locations < ))
+            make-node i (list)
+    connect-neighbor-nodes 
+        reverse : connect-neighbor-nodes nodes 8 1
+        . 8 1
+
+define : smallworld-network locations
+    . "create an approximate small world network. Approximate, because it only uses the order of the locations, not their distance"
+    define nodes
+        list-ec (: i (sort locations <))
+            make-node i (list)
+    let loop
+        : nodes nodes
+          steps 1
+          stepsize 1
+        if {stepsize > (length nodes)}
+          . nodes
+          loop
+              connect-neighbor-nodes 
+                  reverse : connect-neighbor-nodes nodes steps stepsize
+                  . steps stepsize
+              . steps
+              . {stepsize * 2}
+
 
 define : modulo-distance loc1 loc2
     min
@@ -85,3 +112,9 @@ define : main args
                 random-network locations
       map : λ (x) (display x) (newline)
           sort distances <
+
+;; create networks, currently by adjusting source
+;; plot with gnuplot:
+;;   set term X
+;;   set logscale y
+;;   plot "/tmp/2" title "random", "/tmp/1" title "smallworld", "/tmp/3" title "neighbor"
