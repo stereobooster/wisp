@@ -37,7 +37,7 @@ define-method : display (node <node>) port
 ;; vhash with 1,000,000 keys pointing to lists: 105 MiB
 ;; 100k nodes, 30 peers, 120 MiB of memory
 define locations
-    list-ec (: i 10000) : random:uniform
+    list-ec (: i 1000) : random:uniform
 
 define : connect-neighbor-nodes nodes steps stepsize
     . "Add neighbors of the nodes to the peers of the respective nodes"
@@ -202,7 +202,10 @@ define : pitch-black-attack? origin
     let*
         : loc : random:uniform
           closest : closest-node origin loc
-        . {0.037 < (dist closest loc)}
+        ;; format #t "closest: ~a loc: ~a dist: ~a\n" closest loc : dist closest loc
+        ;; display 0.0037
+        ;; newline
+        . {0.0037 < (dist closest loc)}
 
 define : main args
     let*
