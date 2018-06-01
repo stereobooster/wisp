@@ -243,8 +243,13 @@ define : swap-all-once nodes target-selection
                
 
 define : swap-steps nodes steps target-selection
+    format (current-error-port) "swapping ~a steps\n" steps
     do-ec (: i steps)
-        swap-all-once nodes target-selection
+        begin
+            swap-all-once nodes target-selection
+            display "." : current-error-port
+            force-output : current-error-port
+    format (current-error-port) "finished swapping ~a steps\n" steps
     . nodes
 
 
@@ -279,6 +284,76 @@ define : choose-swap-target-selection args
                  . swap-target-concave
 
 
+
+
+define : output-peer-distances nodes
+    let
+       :
+         distances
+            fold
+                λ (node previous)
+                    append
+                        map (λ (peer) (dist peer (node-location node)))
+                            node-peers node
+                        . previous
+                . '()
+                . nodes
+       map : λ (x) (display x) (newline)
+             sort distances <
+
+define : output-path-lengths nodes
+    map : λ (x) (display x) (newline)
+        sort
+            map
+                λ (node) : length : route-between node (random:uniform) 18
+                . nodes
+            . <
+
+define : output-path-lengths-fixed-target nodes
+    let : : loc : random:uniform
+        map : λ (x) (display x) (newline)
+            sort
+                map
+                    λ (node) : length : route-between node loc 18
+                    . nodes
+                . <
+
+
+define : output-routing-accuracy nodes
+    map : λ (x) (display x) (newline)
+        sort
+            map
+                λ (node) 
+                    let : : loc : random:uniform
+                        dist loc : closest-node node loc
+                . nodes
+            . <
+
+define : output-routing-accuracy-fixed-target nodes
+    let : : loc : random:uniform
+        map : λ (x) (display x) (newline)
+            sort
+                map
+                    λ (node) 
+                        dist loc : closest-node node loc
+                    . nodes
+                . <
+
+define : choose-output-data args
+         let : : name : get-option args "--output-data" "peer-distances"
+           cond
+               : equal? name "peer-distances"
+                 . output-peer-distances
+               : equal? name "path-lengths"
+                 . output-path-lengths
+               : equal? name "path-lengths-fixed-target"
+                 . output-path-lengths-fixed-target
+               : equal? name "routing-accuracy"
+                 . output-routing-accuracy
+               : equal? name "routing-accuracy-fixed-target"
+                 . output-routing-accuracy-fixed-target
+
+
 define : optimize-steps args
     get-option args "--optimize-steps" 0
 
@@ -300,6 +375,7 @@ define : pitch-black-attack? origin
         ;; newline
         . {0.0037 < (dist closest loc)}
 
+
 define : main args
     let*
       : create-network : choose-network args
@@ -309,15 +385,8 @@ define : main args
                 create-network locations
                 optimize-steps args
                 choose-swap-target-selection args
-        distances
-            fold
-                λ (node previous)
-                    append
-                        map (λ (peer) (dist peer (node-location node)))
-                            node-peers node
-                        . previous
-                . '()
-                . nodes
+        output : choose-output-data args
+      output nodes
       ;; display : pitch-black-attack? : car nodes
       ;; newline
       ;; exit 0
@@ -329,8 +398,8 @@ define : main args
       ;; display : route-between (car nodes) 0.25 18
       ;; newline
       ;; exit 0
-      map : λ (x) (display x) (newline)
-          sort distances <
 
 ;; plot network: 
-;;     for selection in uniform concave; do for size in 1000; do for steps in 8 32; do for i in random neighbor smallworld; do ./network.w --swap-target-selection $selection --network-size $size --optimize-steps $steps --network $i > /tmp/$i & done; time wait; echo -e 'set title "size: '$size', steps: '$steps', selection: '$selection'"\nset term X\nset logscale y\nplot "/tmp/random" title "random", "/tmp/smallworld" title "smallworld", "/tmp/neighbor" title "neighbor"\n' | gnuplot -p; done; done; done
+;;     for data in peer-distances path-lengths path-lengths-fixed-target routing-accuracy routing-accuracy-fixed-target; do for selection in concave uniform; do for size in 1000; do for steps in 64; do for i in random neighbor smallworld; do ./network.w --output-data $data --swap-target-selection $selection --network-size $size --optimize-steps $steps --network $i > /tmp/$i & done; time wait; echo -e 'set title "'$data' with size: '$size', steps: '$steps', selection: '$selection'"\nset term X\nset logscale y\nplot "/tmp/random" title "random" with lines, "/tmp/smallworld" title "smallworld" with lines, "/tmp/neighbor" title "neighbor" with lines\n' | gnuplot -p; done; done; done; done
+;; most interesting metric right now:
+;;     for data in routing-accuracy-fixed-target; do for selection in concave uniform; do for size in 10000; do for steps in 16 0; do for i in random neighbor smallworld; do ./network.w --output-data $data --swap-target-selection $selection --network-size $size --optimize-steps $steps --network $i > /tmp/x$i & done; time wait; echo -e 'set title "'$data' with size: '$size', steps: '$steps', selection: '$selection'"\nset term X\nset logscale y\nplot "/tmp/xrandom" title "random" with lines, "/tmp/xsmallworld" title "smallworld" with lines, "/tmp/xneighbor" title "neighbor" with lines\n' | gnuplot -p; done; done; done; done
