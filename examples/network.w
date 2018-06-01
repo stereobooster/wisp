@@ -16,6 +16,8 @@ import : srfi srfi-9 ; records
 
 set! *random-state* : random-state-from-platform
 
+define max-htl 18 ;; set for more convenient testing
+
 define-class <node> ()
     location #:init-value #f #:getter node-location #:setter node-set-location! #:init-keyword #:location
     peers #:init-value (list) #:getter node-peers #:setter node-set-peers! #:init-keyword #:peers
@@ -166,7 +168,7 @@ define : route-between origin location HTL
                     decrement-htl best-peer origin HTL
 
 define : decrement-htl node origin HTL
-    if {HTL < 18}
+    if : or #t {HTL < max-htl}
         - HTL 1
         let*
           : decrement-info : node-decrement-htl node
@@ -258,7 +260,8 @@ define : swap-steps nodes steps target-selection pitch-black-per-step
                     display pitch-black-per-step : current-error-port
                 force-output : current-error-port
                 do-ec (: j pitch-black-per-step)
-                    pitch-black-attack (car nodes) pitch-black-location
+                    begin
+                        pitch-black-attack attacker pitch-black-location
         format (current-error-port) "finished swapping ~a steps\n" steps
         . nodes
 
@@ -311,11 +314,17 @@ define : output-peer-distances nodes
        map : λ (x) (display x) (newline)
              sort distances <
 
+define : output-node-locations nodes
+    let : : locations : map node-location nodes
+       map : λ (x) (display x) (newline)
+             sort locations <
+
+
 define : output-path-lengths nodes
     map : λ (x) (display x) (newline)
         sort
             map
-                λ (node) : length : route-between node (random:uniform) 18
+                λ (node) : length : route-between node (random:uniform) max-htl
                 . nodes
             . <
 
@@ -324,7 +333,7 @@ define : output-path-lengths-fixed-target nodes
         map : λ (x) (display x) (newline)
             sort
                 map
-                    λ (node) : length : route-between node loc 18
+                    λ (node) : length : route-between node loc max-htl
                     . nodes
                 . <
 
@@ -354,6 +363,8 @@ define : choose-output-data args
            cond
                : equal? name "peer-distances"
                  . output-peer-distances
+               : equal? name "node-locations"
+                 . output-node-locations
                : equal? name "path-lengths"
                  . output-path-lengths
                : equal? name "path-lengths-fixed-target"
@@ -375,7 +386,7 @@ define : pitch-black-per-step args
 
 define : closest-node origin location
     car
-      take-right : route-between origin location 18
+      take-right : route-between origin location max-htl
                  . 1
 
 define : pitch-black-attack? origin
@@ -391,8 +402,9 @@ define : pitch-black-attack? origin
 
 define : pitch-black-attack origin location-to-attack
     let : : closest : closest-node origin location-to-attack
-        if : should-swap? origin closest
-            node-set-location! closest : node-location origin
+        when : should-swap? origin closest ;; TODO: need to use a should-swap? that can fake the peers
+               display "!" : current-error-port
+               node-set-location! closest : node-location origin
 
 define : main args
     let*
@@ -414,11 +426,11 @@ define : main args
       ;; display : sort (node-peers (car nodes)) (λ(a b) (< (dist (node-location a) (node-location (car nodes))) (dist (node-location b)  (node-location (car nodes)))))
       ;; newline
       ;; display "ROUTE: "
-      ;; display : route-between (car nodes) 0.25 18
+      ;; display : route-between (car nodes) 0.25 max-htl
       ;; newline
       ;; exit 0
 
 ;; plot network: 
 ;;     for data in peer-distances path-lengths path-lengths-fixed-target routing-accuracy routing-accuracy-fixed-target; do for selection in concave uniform; do for size in 1000; do for steps in 64; do for i in random neighbor smallworld; do ./network.w --output-data $data --swap-target-selection $selection --network-size $size --optimize-steps $steps --network $i > /tmp/$i & done; time wait; echo -e 'set title "'$data' with size: '$size', steps: '$steps', selection: '$selection'"\nset term X\nset logscale y\nplot "/tmp/random" title "random" with lines, "/tmp/smallworld" title "smallworld" with lines, "/tmp/neighbor" title "neighbor" with lines\n' | gnuplot -p; done; done; done; done
 ;; most interesting metric right now:
-;;     for data in routing-accuracy-fixed-target; do for selection in uniform; do for size in 100; do for steps in 4; do for pitchblack in 0 100; do for i in random neighbor smallworld; do ./network.w pitch-black-per-step $pitchblack  --output-data $data --swap-target-selection $selection --network-size $size --optimize-steps $steps --network $i > /tmp/$i & done; time wait; echo -e 'set title "'$data' with size: '$size', steps: '$steps', pitchblack: '$pitchblack', selection: '$selection'"\nset term X\nset logscale y\nplot "/tmp/random" title "random" with lines, "/tmp/smallworld" title "smallworld" with lines, "/tmp/neighbor" title "neighbor" with lines\n' | gnuplot -p; done; done; done; done; done
+;;     for data in routing-accuracy-fixed-target; do for selection in uniform; do for size in 100; do for steps in 4; do for pitchblack in 0 10 100; do for i in random neighbor smallworld; do ./network.w --pitch-black-per-step $pitchblack  --output-data $data --swap-target-selection $selection --network-size $size --optimize-steps $steps --network $i > /tmp/$i & done; time wait; echo -e 'set title "'$data' with size: '$size', steps: '$steps', pitchblack: '$pitchblack', selection: '$selection'"\nset term X\nset logscale y\nplot "/tmp/random" title "random" with lines, "/tmp/smallworld" title "smallworld" with lines, "/tmp/neighbor" title "neighbor" with lines\n' | gnuplot -p; done; done; done; done; done
