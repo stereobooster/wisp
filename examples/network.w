@@ -63,6 +63,7 @@ define : connect-neighbor-nodes nodes steps stepsize
                 : node : car unprocessed
                   peer : car shifted
                 node-set-peers! node : cons peer (node-peers node)
+                node-set-peers! peer : cons node (node-peers peer)
             loop shift
                 cdr shifted
                 cons (car shifted) seen
@@ -212,6 +213,9 @@ define : should-swap-distances? before1 before2 after1 after2
 define : swap-target-uniform origin
     closest-node origin : random:uniform
 
+define : random-node nodes
+    list-ref nodes : inexact->exact : truncate : * (random:uniform) : length nodes
+
 define : swap-target-concave origin
     . "target selection following the thesis from Vilhelm Verendel, 2007"
     define peers : node-peers origin
@@ -219,8 +223,7 @@ define : swap-target-concave origin
         if : null? peers
             random:uniform
             node-location
-                list-ref peers
-                    inexact->exact : truncate : * (random:uniform) : length peers
+                random-node peers
     define peer-distance : dist origin random-peer-location
     closest-node origin
         mod
@@ -242,15 +245,22 @@ define : swap-all-once nodes target-selection
                target-selection : car to-swap
                
 
-define : swap-steps nodes steps target-selection
-    format (current-error-port) "swapping ~a steps\n" steps
-    do-ec (: i steps)
-        begin
-            swap-all-once nodes target-selection
-            display "." : current-error-port
-            force-output : current-error-port
-    format (current-error-port) "finished swapping ~a steps\n" steps
-    . nodes
+define : swap-steps nodes steps target-selection pitch-black-per-step
+    let 
+        : pitch-black-location : random:uniform
+          attacker : random-node nodes
+        format (current-error-port) "swapping ~a steps\n" steps
+        do-ec (: i steps)
+            begin
+                swap-all-once nodes target-selection
+                display "." : current-error-port
+                when {pitch-black-per-step > 0}
+                    display pitch-black-per-step : current-error-port
+                force-output : current-error-port
+                do-ec (: j pitch-black-per-step)
+                    pitch-black-attack (car nodes) pitch-black-location
+        format (current-error-port) "finished swapping ~a steps\n" steps
+        . nodes
 
 
 define : get-option args name default
@@ -360,6 +370,9 @@ define : optimize-steps args
 define : network-size args
     get-option args "--network-size" 100
 
+define : pitch-black-per-step args
+    get-option args "--pitch-black-per-step" 0
+
 define : closest-node origin location
     car
       take-right : route-between origin location 18
@@ -376,6 +389,11 @@ define : pitch-black-attack? origin
         . {0.0037 < (dist closest loc)}
 
 
+define : pitch-black-attack origin location-to-attack
+    let : : closest : closest-node origin location-to-attack
+        if : should-swap? origin closest
+            node-set-location! closest : node-location origin
+
 define : main args
     let*
       : create-network : choose-network args
@@ -385,6 +403,7 @@ define : main args
                 create-network locations
                 optimize-steps args
                 choose-swap-target-selection args
+                pitch-black-per-step args
         output : choose-output-data args
       output nodes
       ;; display : pitch-black-attack? : car nodes
@@ -402,4 +421,4 @@ define : main args
 ;; plot network: 
 ;;     for data in peer-distances path-lengths path-lengths-fixed-target routing-accuracy routing-accuracy-fixed-target; do for selection in concave uniform; do for size in 1000; do for steps in 64; do for i in random neighbor smallworld; do ./network.w --output-data $data --swap-target-selection $selection --network-size $size --optimize-steps $steps --network $i > /tmp/$i & done; time wait; echo -e 'set title "'$data' with size: '$size', steps: '$steps', selection: '$selection'"\nset term X\nset logscale y\nplot "/tmp/random" title "random" with lines, "/tmp/smallworld" title "smallworld" with lines, "/tmp/neighbor" title "neighbor" with lines\n' | gnuplot -p; done; done; done; done
 ;; most interesting metric right now:
-;;     for data in routing-accuracy-fixed-target; do for selection in concave uniform; do for size in 10000; do for steps in 16 0; do for i in random neighbor smallworld; do ./network.w --output-data $data --swap-target-selection $selection --network-size $size --optimize-steps $steps --network $i > /tmp/x$i & done; time wait; echo -e 'set title "'$data' with size: '$size', steps: '$steps', selection: '$selection'"\nset term X\nset logscale y\nplot "/tmp/xrandom" title "random" with lines, "/tmp/xsmallworld" title "smallworld" with lines, "/tmp/xneighbor" title "neighbor" with lines\n' | gnuplot -p; done; done; done; done
+;;     for data in routing-accuracy-fixed-target; do for selection in uniform; do for size in 100; do for steps in 4; do for pitchblack in 0 100; do for i in random neighbor smallworld; do ./network.w pitch-black-per-step $pitchblack  --output-data $data --swap-target-selection $selection --network-size $size --optimize-steps $steps --network $i > /tmp/$i & done; time wait; echo -e 'set title "'$data' with size: '$size', steps: '$steps', pitchblack: '$pitchblack', selection: '$selection'"\nset term X\nset logscale y\nplot "/tmp/random" title "random" with lines, "/tmp/smallworld" title "smallworld" with lines, "/tmp/neighbor" title "neighbor" with lines\n' | gnuplot -p; done; done; done; done; done
