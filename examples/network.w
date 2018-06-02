@@ -156,7 +156,10 @@ define : find-best-peer node location
             loop best-peer : cdr peers
 
 
-define : route-between origin location HTL
+define-method : route-between (origin <node>) (location <node>) (HTL <number>)
+    route-between origin (node-location location) HTL
+
+define-method : route-between (origin <node>) (location <number>) (HTL <number>)
     let : : best-peer : find-best-peer origin location
         if
             or : not best-peer ;; no peers at all
@@ -192,24 +195,31 @@ define : node-peer-dists node nodelist
     map : λ (peer) : dist node peer
         . nodelist
 
-define : should-swap? origin target
+define : should-swap-locations? origin origin-peer-locs target target-peer-locs
     let
-        : origin-dists : node-peer-dists origin : node-peers origin
-          target-dists : node-peer-dists target : node-peers target
-          origin-swap-dists : node-peer-dists target : node-peers origin
-          target-swap-dists : node-peer-dists origin : node-peers target
-        ;; format #t "origin: ~a target: ~a dists: ~a ~a ~a ~a\n" origin target 
-        ;;     . origin-dists target-dists
-        ;;     . origin-swap-dists target-swap-dists
+        : origin-dists : node-peer-dists origin origin-peer-locs
+          target-dists : node-peer-dists target target-peer-locs
+          origin-swap-dists : node-peer-dists target origin-peer-locs
+          target-swap-dists : node-peer-dists origin target-peer-locs
         should-swap-distances?
             . origin-dists target-dists
             . origin-swap-dists target-swap-dists
+
+define : should-swap? origin target
+    should-swap-locations?
+        node-location origin
+        node-peers origin
+        node-location target
+        node-peers target
+
 
 define : should-swap-distances? before1 before2 after1 after2
     let
         : D1 : * (apply * before1) (apply * before2)
           D2 : * (apply * after1) (apply * after2)
-        or {D2 <= D1} {{D1 / D2} > (random:uniform)} ;; probability D1/D2
+        or
+            . {D2 <= D1}
+            . {{D1 / D2} > (random:uniform)} ;; probability D1/D2
 
 
 define : swap-target-uniform origin
@@ -231,17 +241,36 @@ define : swap-target-concave origin
         mod
             + random-peer-location
                 * peer-distance
-                    random:normal 
+                    random:normal
             . 1.
+
+define : swap-request origin target
+    define path : reverse! : route-between origin target max-htl
+    define closest : first path
+    define : did-swap? last
+        not : equal? last closest
+    let loop : (last closest) (path (cdr path))
+        cond
+          : null? path
+            did-swap? last
+          : should-swap? last (first path)
+            ;; format (current-error-port) "swapping ~a and ~a\n" last (first path)
+            swap last (first path)
+            loop (first path) (cdr path)
+          else
+            loop last (cdr path)
+
+define : swap-single-try origin target
+    when : should-swap? origin target
+        swap origin target
 
 define : swap-all-once nodes target-selection
     let loop
         : to-swap nodes
           target : target-selection : car nodes
         when : not : null? to-swap
-           when : should-swap? target : car to-swap
-                  ;; format #t "swapping ~a and ~a\n" target : car to-swap
-                  swap target : car to-swap
+           swap-request target : car to-swap
+           ;; swap-single-try target : car to-swap
            loop
                cdr to-swap
                target-selection : car to-swap
@@ -401,8 +430,14 @@ define : pitch-black-attack? origin
 
 
 define : pitch-black-attack origin location-to-attack
-    let : : closest : closest-node origin location-to-attack
-        when : should-swap? origin closest ;; TODO: need to use a should-swap? that can fake the peers
+    let* 
+        : closest : closest-node origin location-to-attack
+          fake-locations
+              list-ec (: i (length (node-peers origin)))
+                  + : node-location closest
+                    * 0.00001
+                        random:normal 
+        when : should-swap-locations? origin fake-locations closest : node-peers closest
                display "!" : current-error-port
                node-set-location! closest : node-location origin
 
@@ -431,6 +466,8 @@ define : main args
       ;; exit 0
 
 ;; plot network: 
-;;     for data in peer-distances path-lengths path-lengths-fixed-target routing-accuracy routing-accuracy-fixed-target; do for selection in concave uniform; do for size in 1000; do for steps in 64; do for i in random neighbor smallworld; do ./network.w --output-data $data --swap-target-selection $selection --network-size $size --optimize-steps $steps --network $i > /tmp/$i & done; time wait; echo -e 'set title "'$data' with size: '$size', steps: '$steps', selection: '$selection'"\nset term X\nset logscale y\nplot "/tmp/random" title "random" with lines, "/tmp/smallworld" title "smallworld" with lines, "/tmp/neighbor" title "neighbor" with lines\n' | gnuplot -p; done; done; done; done
+;;     for data in peer-distances path-lengths path-lengths-fixed-target routing-accuracy routing-accuracy-fixed-target; do for selection in concave uniform; do for size in 1000; do for steps in 64; do for i in random neighbor smallworld; do ./network.w --output-data $data --swap-target-selection $selection --network-size $size --optimize-steps $steps --network $i > /tmp/$i & done; time wait; echo -e 'set title "'$data' with size: '$size', steps: '$steps', pitchblack: '$pitchblack', selection: '$selection'"\nset term X\nset logscale y\nset yrange [0.0000001:1]\nplot "/tmp/random" title "random" with lines, "/tmp/smallworld" title "smallworld" with lines, "/tmp/neighbor" title "neighbor" with lines\n' | gnuplot -p; done; done; done; done; done
 ;; most interesting metric right now:
-;;     for data in routing-accuracy-fixed-target; do for selection in uniform; do for size in 100; do for steps in 4; do for pitchblack in 0 10 100; do for i in random neighbor smallworld; do ./network.w --pitch-black-per-step $pitchblack  --output-data $data --swap-target-selection $selection --network-size $size --optimize-steps $steps --network $i > /tmp/$i & done; time wait; echo -e 'set title "'$data' with size: '$size', steps: '$steps', pitchblack: '$pitchblack', selection: '$selection'"\nset term X\nset logscale y\nplot "/tmp/random" title "random" with lines, "/tmp/smallworld" title "smallworld" with lines, "/tmp/neighbor" title "neighbor" with lines\n' | gnuplot -p; done; done; done; done; done
+;;     for data in routing-accuracy-fixed-target; do for selection in uniform; do for size in 100; do for steps in 4; do for pitchblack in 0 10 100; do for i in random neighbor smallworld; do ./network.w --pitch-black-per-step $pitchblack  --output-data $data --swap-target-selection $selection --network-size $size --optimize-steps $steps --network $i > /tmp/$i & done; time wait; echo -e 'set title "'$data' with size: '$size', steps: '$steps', pitchblack: '$pitchblack', selection: '$selection'"\nset term X\nset logscale y\nset yrange [0.0000001:1]\nplot "/tmp/random" title "random" with lines, "/tmp/smallworld" title "smallworld" with lines, "/tmp/neighbor" title "neighbor" with lines\n' | gnuplot -p; done; done; done; done; done
+;; peer distances
+;;     for data in peer-distances; do for selection in uniform; do for size in 1000; do for steps in 0 16; do for pitchblack in 0; do for i in random neighbor smallworld; do ./network.w --pitch-black-per-step $pitchblack  --output-data $data --swap-target-selection $selection --network-size $size --optimize-steps $steps --network $i > /tmp/$i & done; time wait; echo -e 'set title "'$data' with size: '$size', steps: '$steps', pitchblack: '$pitchblack', selection: '$selection'"\nset term X\nset logscale y\nset yrange [0.0000001:1]\nplot "/tmp/random" title "random" with lines, "/tmp/smallworld" title "smallworld" with lines, "/tmp/neighbor" title "neighbor" with lines\n' | gnuplot -p; done; done; done; done; done
