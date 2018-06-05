@@ -167,15 +167,20 @@ define-method : route-simple-greedy (origin <node>) (location <node>) (HTL <numb
     route-simple-greedy origin (node-location location) HTL
 
 define-method : route-simple-greedy (origin <node>) (location <number>) (HTL <number>)
-    let : : best-peer : find-best-peer origin location '()
-        if
-            or : not best-peer ;; no peers at all
-               . {HTL < 1}
-               . {(dist origin location) < (dist best-peer location)}
-            list origin
-            cons origin
-                route-simple-greedy best-peer location
-                    decrement-htl best-peer origin HTL
+    let loop
+        : origin origin
+          route : list
+          HTL HTL
+        ;; format (current-error-port) "origin ~a route ~a\n" origin route
+        let : : best-peer : find-best-peer origin location route
+            if
+                or : not best-peer ;; no peers at all
+                   . {HTL < 1}
+                   . {(dist origin location) < (dist best-peer location)}
+                cons origin route
+                loop best-peer
+                     cons origin route
+                     decrement-htl best-peer origin HTL
 
 define-method : route-for-swap (origin <node>) (location <node>) (HTL <number>)
     route-for-swap origin (node-location location) HTL
@@ -431,11 +436,9 @@ define : output-routing-accuracy-fixed-target nodes
                 map
                     λ (node)
                         let : : closest : closest-node node loc
-                            display "Accuracy: " : current-error-port
-                            display loc : current-error-port
-                            display closest : current-error-port
-                            display (dist closest loc) : current-error-port
-                            newline : current-error-port
+                            format (current-error-port) "Accuracy: ~a, loc ~a, closest ~a\n"
+                               dist closest loc
+                               . loc closest
                             dist loc closest
                     . nodes
                 . <
@@ -491,10 +494,8 @@ define : pitch-black-attack origin location-to-attack
                   + : node-location closest
                     * 0.000001
                         random:normal
-        display "attack: " : current-error-port
-        display location-to-attack : current-error-port
-        newline : current-error-port
-        when : should-swap-locations? origin fake-locations closest : node-peers closest
+        ;; format (current-error-port) "attack: ~a\n" location-to-attack
+        when : should-swap-locations? origin fake-locations closest : map node-location : node-peers closest
                display "!" : current-error-port
                node-set-location! closest : node-location origin
 
@@ -525,7 +526,7 @@ define : main args
 ;; plot network: 
 ;;     for data in peer-distances node-locations path-lengths path-lengths-fixed-target routing-accuracy routing-accuracy-fixed-target; do for selection in concave uniform; do for size in 1000; do for steps in 64; do for i in random neighbor smallworld; do ./network.w --output-data $data --swap-target-selection $selection --network-size $size --optimize-steps $steps --network $i > /tmp/$i & done; time wait; echo -e 'set title "'$data' with size: '$size', steps: '$steps', pitchblack: '$pitchblack', selection: '$selection'"\nset term X\nset logscale y\nset yrange [0.0000001:1]\nplot "/tmp/random" title "random" with lines, "/tmp/smallworld" title "smallworld" with lines, "/tmp/neighbor" title "neighbor" with lines\n' | gnuplot -p; done; done; done; done
 ;; most interesting metric right now:
-;;     for data in routing-accuracy-fixed-target; do for selection in uniform; do for size in 100; do for steps in 4; do for pitchblack in 0 10 100; do for i in random neighbor smallworld; do ./network.w --pitch-black-per-step $pitchblack  --output-data $data --swap-target-selection $selection --network-size $size --optimize-steps $steps --network $i > /tmp/$i & done; time wait; echo -e 'set title "'$data' with size: '$size', steps: '$steps', pitchblack: '$pitchblack', selection: '$selection'"\nset term X\nset logscale y\nset yrange [0.0000001:1]\nplot "/tmp/random" title "random" with lines, "/tmp/smallworld" title "smallworld" with lines, "/tmp/neighbor" title "neighbor" with lines\n' | gnuplot -p; done; done; done; done; done
+;;     for data in routing-accuracy-fixed-target; do for selection in uniform; do for size in 100; do for steps in 1 4 16; do for pitchblack in 1 10; do for i in random neighbor smallworld; do ./network.w --pitch-black-per-step $pitchblack  --output-data $data --swap-target-selection $selection --network-size $size --optimize-steps $steps --network $i > /tmp/$i & done; time wait; echo -e 'set title "'$data' with size: '$size', steps: '$steps', pitchblack: '$pitchblack', selection: '$selection'"\nset term X\nset logscale y\nset yrange [0.0000001:1]\nplot "/tmp/random" title "random" with lines, "/tmp/smallworld" title "smallworld" with lines, "/tmp/neighbor" title "neighbor" with lines\n' | gnuplot -p; done; done; done; done; done
 ;; peer distances
 ;;     for data in peer-distances; do for selection in uniform; do for size in 1000; do for steps in 0 16; do for pitchblack in 0; do for i in random neighbor smallworld; do ./network.w --pitch-black-per-step $pitchblack  --output-data $data --swap-target-selection $selection --network-size $size --optimize-steps $steps --network $i > /tmp/$i & done; time wait; echo -e 'set title "'$data' with size: '$size', steps: '$steps', pitchblack: '$pitchblack', selection: '$selection'"\nset term X\nset logscale y\nset yrange [0.0000001:1]\nplot "/tmp/random" title "random" with lines, "/tmp/smallworld" title "smallworld" with lines, "/tmp/neighbor" title "neighbor" with lines\n' | gnuplot -p; done; done; done; done; done
 
