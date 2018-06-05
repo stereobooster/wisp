@@ -142,14 +142,19 @@ define-method : dist (node <number>) (other <number>)
         . other
 
 
-define : find-best-peer node location
-    ;; TODO: Optimize by putting the peers into a skip list for O(N) retrieval
+define : find-best-peer node location exclude
+    ;; TODO: Optimize by putting the peers into a skip list for O(logN) retrieval
     let loop 
         : best-peer #f
           peers : node-peers node
+        ;; format (current-error-port) "peers ~a exclude ~a\n" peers exclude
         cond
           : null? peers
             . best-peer
+          : member (first peers) exclude
+            loop
+              . best-peer
+              cdr peers
           : or (not best-peer) {(dist (first peers) location) < (dist best-peer location)}
             loop
                 first peers
@@ -171,6 +176,40 @@ define-method : route-simple-greedy (origin <node>) (location <number>) (HTL <nu
             cons origin
                 route-simple-greedy best-peer location
                     decrement-htl best-peer origin HTL
+
+define-method : route-for-swap (origin <node>) (location <node>) (HTL <number>)
+    route-for-swap origin (node-location location) HTL
+
+define-method : route-for-swap (origin <node>) (location <number>) (HTL <number>)
+    define : step-back? best-peer route
+        and (not best-peer) : not (null? route)
+    define : cannot-continue? best-peer route
+        and (not best-peer) (null? route)
+    let loop
+        : origin origin
+          route : list
+          seen : list
+          HTL HTL
+        ;; format (current-error-port) "origin ~a route ~a seen ~a HTL ~a\n" origin route seen HTL
+        let : : best : find-best-peer origin location seen
+            cond
+              {HTL <= 0}
+                reverse : cons origin seen
+              : cannot-continue? best route
+                reverse : cons origin seen
+              : step-back? best route
+                loop
+                    car route
+                    cdr route
+                    cons origin seen
+                    decrement-htl (car route) origin HTL
+              else
+                loop
+                    . best
+                    cons origin route
+                    cons origin seen
+                    decrement-htl best origin HTL
+          
 
 define : decrement-htl node origin HTL
     if {HTL < max-htl}
@@ -253,7 +292,7 @@ define : swap-target-concave origin
             . 1.
 
 define : swap-request origin target
-    define path : reverse! : route-simple-greedy origin target max-htl
+    define path : reverse! : route-for-swap origin target max-htl
     define closest : first path
     define : did-swap? last
         not : equal? last closest
