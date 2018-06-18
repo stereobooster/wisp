@@ -106,7 +106,8 @@ define : find-free-filename filename
      
 
 define : save-part-upload part
-    let*
+    when : part-filename part
+      let*
         : filename : find-free-filename : basename : part-filename part
           port : open-output-file (string-append files-path filename) #:binary #t
         put-string port : part-content part
