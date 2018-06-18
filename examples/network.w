@@ -17,7 +17,7 @@ import : srfi srfi-9 ; records
 set! *random-state* : random-state-from-platform
 
 define max-htl 18 ;; set for more convenient testing
-define peer-count-scaling 0.1 ;; probabilistic reduction of the peers to make the network topology more challenging
+define peer-count-scaling 0.2 ;; probabilistic reduction of the peers to make the network topology more challenging
 
 define-class <node> ()
     location #:init-value #f #:getter node-location #:setter node-set-location! #:init-keyword #:location
@@ -177,7 +177,7 @@ define-method : route-simple-greedy (origin <node>) (location <number>) (HTL <nu
                 or : not best-peer ;; no peers at all
                    . {HTL < 1}
                    . {(dist origin location) < (dist best-peer location)}
-                cons origin route
+                reverse : cons origin route
                 loop best-peer
                      cons origin route
                      decrement-htl best-peer origin HTL
