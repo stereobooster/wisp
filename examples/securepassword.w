@@ -231,7 +231,7 @@ letter from a number of letters equal to LETTERCOUNT"
 ;; newbase60 without yz_: 54 letters, 5.75 bits of entropy per letter.
 define qwertysafeletters "0123456789ABCDEFGHJKLMNPQRTUVWXabcdefghijkmnopqrstuvwx"
 ;; delimiters: 2.3 bits of entropy per delimiter, in the same place on main keys or the num-pad.
-define delimiters ".+-=/"
+define delimiters ".+-="
 
 define random-source : make-random-source
 random-source-randomize! random-source
@@ -438,8 +438,8 @@ define : collapse-weighting letters cost
               update-string : cdr cost
 
 define weightletters : string-append qwertysafeletters delimiters " "
-define scalingfactor-inverse {1 / 2.0429752944704385}
-define weight-collapsed "snkkmmmkkjPURRPPVMMXTXMPFMNRVUKXUaWfXURNUXeWUWFTfURKRbqUjUetpnnmmnmmnqUTUVRRTUFKQUNQEHTQMTHbaaXaXbUJFVVUMWRXaRPQgUmWjXfoqkkkkmjjjjQUWVQQVKKRNTJPHNQMUQRWabaaXaRRKRaXVeTUdbPQRcmWhaeonjjjjjiiiiRPQXPVQKLNVRML8UPJMHQXaWaWWXLQGVaULMCVXWTGRUjXiWbomiiiijiiiiPLNMPPPLTNWTHKHUNKLQLUbXTWVWQHURTMRVAQVURHPWjbgTdomiiiiiiihhRQPMNULQHNHWQUTQMPUQJVTaWWaPNMMQWQGQLLaQRHLRjQgNcomhihiimiihURNRHKQNGLLPKMCGGTLJKVUXVXUQRKUQTMFQRGWNAVMRjThRdokhihhihiihMNKTJRPGGGFQHLJHPHFMJVUVWWWKLDGKTRRKLTVQGDKRiQfMbnmhiiiijiiiLPLLJLRPLQPQGKCPKHLHGVVVXWXMMQHTTcEP9GVNCLLUiPgMbnkjjjkjkkmoPPJJQKJFFRHTEPJHMHGKMWWUUUVGPJELTGAFMTVP9NNQiQfLbnMXVVVVTPRMdcdebbgWUaeegdXffbXWXcphjagfffUjmrTjaqkjrdbbcPdNWmQTURRPRRRQefbXbXbTRabchUPcVbaWJqLRbtaRUocJRKnHToWRpRNMgJcLViRUWVQRPLRMdVcgkWVfTcbaWbTbcWcRPmJMPgUHofHKJPnM6gXQfLMHbXdPUiRUUPRRPRKMdaWeheWaWUbbgeXfafdXUrQHbrMMVsVKVUoQ7mdcmWRLbMdVUjQQQRRMMMMReadebbbVMXddfdThieefcejghUgchqNbioUebrngngbkbNeachRWTQMTRRQMdbcebcVUNUcVTXHbabUVPpNNHoUNNoRTPToEJqVUkQLGXFcKVfHVMMNNNPTRbcWUfVadJRaXggKcbcVWJmUDTsRQcjNDefmJFqXNjPTGbLbUWhTQWMLPNNNNdVXXdWeWMWbWUVQXgXUVKrPKPqPXJoNFbKoKLdQNkNTBaKWQRfDKKFGFEGLTUNQRUPTTWTLPLXQRPRTQKqTMKkQUVcDLJGmTFUTJnFECaCRDMbMQNRKMKJHGaWRdbVaTNWXXUgNUWXVXNpPQNmWNanQJWhqTJoTPnQUFaQaNTfTQQLUPKJGGhXXafadRNWcVUbKUbWVTPpPRUqQRPqTWEJmM4TWUkdMQaPbRViJRTXaPNLMPfbXbfUWXRTcbTcUUaXVcVrTcTqURRrLULWoWRjVQnHNHbKbLQgMQVLPJJJPKebdffafWQaVUeaLaigXaNqHLRoTTPmMPQQpPQcQXkRNFaKaWTjMTUTPLLJTJeRchfUfXPVgXXdQdcbTRLpNMUnjGmiUWNVoTRrfWkWPEaNbLVhJLGHJLTGCJXJLJVJKDHAWNTHQXVXRWTWDPFN7PEUPJNGQQ6EMXmFcAQ7TEDaRVRPPKPJJJeWedhXaQNXdccdMdfWaaMoURTrMUgmLKJRnGLMTPmFMPaKbRRhPVTTQPNKNTeVcafbVfVWbcXeJceadUUoReUpNRqmUNUcoTTofQiTdhXJaPQgXUfQNQLKKHXVXXaVaRHWcaeWDefQURRMWTbacWjUMamqReEjfbNMcNWMdEdiQRQLLKPLQFaWdacTbTNQaVbXEVRTWaLkHKTraWHnKLJJpHJVRPaWMDbEbUQgFQNQHRVELEbVTXeWVUTTWcUbMWVRRVPpGKPrMNkqPPNKoMLdURiFQGaWWHTgJXLQKNPKKEQLUPURKMMKUWHVENaLVFcaUQQWQKMW6NRFVULQMRRTKQVFXHQeVecXcVVVWURVTWNWPRGQRReRRUXEMQFovvtmsvushsv+grc...xqmkjTmahuWccaWXWWaVMNRGMTNeLNRNMLDNJBLJatmgi+gnjtjggjrgXsrprfjViQgXhqaabWXTVVUWTPXWTNUJKVWTQcQKURNLCsconsfd/pbujetkepmrpjebgMibioWdbdcacXRWWVUWbTMUJVWRaVURcVTREwkhp=kkk.ehjntjcsqotjnfnWmeh.ajgfebcbWWWkaXeaWbPVWaWaQaaPUXXuuuwttvu-hrw qsm/+wurssqTpho=UcdWUVUWeWUaVRQRUKNQXULPQWTPPR9tijfutnhtdgimuictnupdieoMibawQWbTURRRTWRXMUXUPNFHPVRNJRVQQHGshhh+joqseoippgXtssrgggnUkbiwNVWPNMRMPETMNQUUTRMPJTQRPTTQULGxkej-ipiwdnstugXwrxrgqTmRjdf.JccTMJPLHMLdTNPPRUGNTRMWJQRRPULsr+t-twsiesu=vqfv.+mrgmjViVctBMQPPM7C6JRGQFABCFT56LJJPK6TCNJoaVcrdXVebbVakecWbVnWXRVLVNXfRTWVULNJRHRVXLURJRRNMVMPLRVTPWLthekvjjiqamjpsfWqptqjidjUjWfsabccXVRRTRWNRNTNURKQRWNRNRLPNRBwpekxjjfvbktjssdeqprhhXjKiWgxVaciRKRQVPXWVXaabTVTVUWWNXaUUcMvps-+s.pwhtowvkfnwxtonetVodk/URbbTMQLeFXTaUXMQUQUUQLQPWbHUQanrutmurrojpv.rsb.tuupskkNmUgvcfgceUQUPRRKLRXTPUKMEKTFTMTDTNFtdgkuqhorVgigsrbuoqqaechPkfiqDTWTHM04L4UQRQRQU3JF6QR54RRF94MXacafdXXXbRXaacicbeqWfVcGPTKhRifbbabRRUWXcUUQQVRQQVQVFXRNTWLxstv+strwgssvwoeswxunqcpTnek-bdeWKTQQQNVXWVTWWVLNVWRWMRPURWLuo.m+npsxfpomvtgox+snpgqWohn-XegVXRPNTQaXXabVXXTRWVUXRXcUQWQvmok-noxxemonvnbvvvujrmraohj-JQUQKKaLCHGNMeLPQMKNKQHbJQTMJLEpqtqsvsnpdnu+jrXxwwiihihJgLWucbfcTKWTFBHGLMNVQUFDHVDWQLQLWTFpbgewdjasWXfhvcbjiediXXeGkcdnTWVbP8fR98MTTWRNTUTMUKDMHTWLTVMudegwefrwecentebmmgqXjdhTgUbqejcaTVWQbXRRNbWUUPTPPNRR4PRDGKPkkmdkjbemcigdjnbfopfhdcgVhbfnpmkjiijghghgakgdddbcbeecNcbedfPjgkjhghhggegghmbikihdhcmQfHiwkfbaWVUMNRQMQLMMRLPHNXKLCMTFKKLQUPNPTPMQKQVRLQNQVWJNPUNdahVkmnmhifeeggjjiihiiigjijgjbjjghibmkmjjkjkihhkiimdmnkiihceVrbarbdaVUVUTQPNNWRUeUPMLNNgTVLeRNQLiXbkabhXWRgjgcbUcheXVcgJKWmXrcffcdaaaabecadfefeVcddaihccWXcVjijikijjfbhihgkehmjihifeQcTjirtsonnmkkkvvrvuuutsutvsumtustug+xu-.www.ruxwwunu+xxw.jkosrm/"
+define scalingfactor-inverse {1 / 2.00834859456416}
+define weight-collapsed "rmjjkkmkjjNTRRPPULMWRWMNFMNRUTJXTXWfWUQMUWdVUVFTeURJQapTiUsommkkmkkmpUTTVQQTTFKPTNPDHRPLRHaXXWXWaUJFUVTLWQXaRNPfUmVjXoqjjjjkijiiQTVVQQUKKRMTHPHNPLUPQWabXaXaQQJRXWUdRUcaPQQbkWgXomiiiiiihiiRPQWNUQJKMVQML8UPJMHQWXWaVWXLQFUaTLLBVWWRFQTjXiWnkhhihihhihNLMMPNNLTMVTHJGUNKKPKTaWTVUVQGURTMRVAQUURGPVjagTnmhhhhhihhhQQPLMTKQHNHVPTRQLPUQJUTXWVXNMMLQWQGQLKaQQHLQiQgNokhhhhhmhhgURNQHKQNFLKNJLCGGRKHKUTXUXTQRJTPTLFQQGVNAULQiRgQojhhhhihhhhMMJRJQPGGFFQGLJHPHFMJUUVWVWJLDFKTQQKKRUPGCJQhPeMnkhhhhhihhiKNLLJLQPKPNQFJCPKHLGGVVVWVXMMQHTRbDP8GUNBKLThPfMmkiijjjjjknPNHJQKJFFQHTEPJGLHGKMVVTUTUGNHELTGAFLRUP9NNQiQfKmLXUVVURNQMcbddbafVUadefdWffaXVXcogiagfeeUikqTiapjjqcaabPdNkPRURQPRQRQdeaWaWaRRXabgUNbUbaVJpLRbsXQUnbHQKnHRnVRoQNMfHbLhRTVUPQPKRLcVcgjVVeTbbaVaTbcVbRPmJLPfTGneHKJNnL6gXQfKMHbWcPiQUTPRRPQKMdXVegeWXWUbbfdWeXecWTrQHbrLLUrVKUUnQ6kcbkVQKbMcUiQQPRQLLMMRdadebabVMWccfcTghddfbdifgUfcgqNahoUdaqnfmfajaMeXgRWTPMTRQPLcabdabUTMUbVRWGaaaTUPoMNHnTNNoRRNTnDJpUTjQLGWFbKfHULMMNMPTQacWUfVacHRaXfgKcabUWHkUDRrRPcjNDdfkJFqWNiPRFaLaThTPVMLPNNMNdUXXdVdWMVbVTVQWfWUUJqNJPpPWJoMEaKnKLcQNkMRBXJVQeDJKFFFEGLRTNPRTNRRVRLNLWPRPQRQJpRMJjPTUbDKHGkTFTTJmFECaCRDaLPNQJMKJHGaVQdbUXTNVXWTfNTVXUXNoPPNmVManQJVhpTJnTPmQUEaQXMfRPQLUNKHFGgWXXeacQMVbUUaKUaWVTNoNRTpPRNpTWEJkL4TWUjdMQaPbQhJRRXXNNLMNeaWbeTWXQTcaRbTUXXVbVrTcRpTQQqKTLVoVQiUPmHNHaJbLgLQULNHHJPKeaceeaeVPaVUdaLXhgXXMpHKQnRRPkMNQQoNQbQXjRNFaKXViMTUTPLLJTHeQcheUeWPVgXWdPcbbTQLoMMUmiFkiUWMUnRQqfVjVNDXNbLgHLGGJLRFCJWJLJVHKDHAWNTHQWVWRWRVDNFN7PEUNJNGPP6ELXmEbAQ7RDaQVRNPKNJJHeVddgXXQMWcbbdLceVaaMnTQRqLTfkLKHQmGLMRPkFMPaKbRhPVTTQNMJMTeVcafbUeUVacXeHceacUToRdToMQqkUNTbnRRoeQhRcgXJaNgXUePNQLKKHXVXWaUaRHVbXeWCdeQUQQMVTaXbWiUMXmqRdEifaNLbNWMdEhPRQLLKPKPFXWcacRaRNQXVbXDVRRWXKjHJRqaVHmKKJJoHJUQPaVMDbEbUgFQNQHQUELEbUTWeVUUTTVcUaLVVQRVPoGKNrLMjpNPNKnMLcURiFQFXWWHfJXLPKNNKKDQLUPUQKMLKUWHUDNXLUFbXTQQWPJMW6MRFVTLQLQQTJQUFXGeUdbXbUVVWTQUTWMVPQGQQQdQQUWDMPFnuusksutrhru.gqbxxxwpkjiRmatVcbXVWVWXVLNQGMTMdKNQNLLDNJBLJXsmfh.gmisifgirfWrqorfiUhQfXpXXbVXTUVTVRNXVTMUJKVVTQbQKTQMLBrbomrec=oatidtjdomqoidbfMhanVdaccacWRWWUUVaTMTJUWRXVTQbVRRDwjgo-jjjxehjmsibrposjmenWkdxXjgedabaWWWkXWdaVbPVVXVXQXaPTWXtttvssuu+gqv prk=.vtrrrqTog-TccWTUUVeWUXVQPRUJMQXTLPQVTNPR9siifusmhscfhkthcsntodienMhavPWaRURRQTWRXMTWTNNFHPURMJQUQQHFrggg+inprdnioogXsrrqfffmTkbwNUWPNMRMPETMNQUTTQMPJTQRNRRQULFwjei+hphvdmrstfXvqwqfpTkQjdxHbbRMHNLHLLcTNNPQTGNRQMVHPQQPTLrr.t+svrheru-upeux.krfkiViVsBMPNNM6C6JQFQFABCFR56KJJNJ6RCNJnaUbqcWUdaaUXjecVaVnWWQULVNeQRVUTKNJRGQVWLTQHRQNLVMPLQUTPWLsgekviihpXmjorfWpospihdjUjWrabbbWVQQTRVMQNTNTQKQRVNQMRKPNQBvodjwjievbjtirsceppqghXjJiVwVabhRJRPVNWVVWaXaTURVTWWNWXTUbLupr+.r.ovhsnvujfmvxsnmesVnd=URbbRLQKeFXRaUWMQTPUTPLQPWbHUPXmqtsktqqnjouxqrbxsttorkjNkUucefbdUQUNRRKLQXRPTKLDJTFRLTDTNFsdfjtpgoqVgigrqbtnqpadbhNjepDRVRHM04L4UQRQQQU3JF6QQ54RQF94MWacafcXXXbRWaXchbbdpWeUcFPRgQhebbaaQRUWWbTTPQUQPPUQVFWRMRWLwrsv+rsqvgsruvndrvwtnpboRme+bcdVKTQPQNVXVVTVVUKNUWQWLRPTRVKtnxk.mprwfpokutfnw.rmofpWng+XdfVXQNNTPaXWXbUXXTRWVUWQWbUQVQumnj-mnwwdknmunbuuutiqkrang+JQUQJKXLBHGMLeLNQLJNKQHbJQTLJKEoptpsurmpdmt.iqXwwvhhhhgJgLtcaecTJWREBHGLLMUQUFDHUDWPKQLWRFpbfdvdiXrVWehucaihddhWXeGjcmRWVbP8fR98MRTVRNTTRMUKDLHTVLRUMucegvdeqvdbdmsdbmkfqXidhTgTpeibXTVWPbWQRNaVTTPTNPNQR4PQDGKPjjkcjjbekbhgdimafnofhdbfUhbmomjiihiggghfajgcccbbaddbNbbddePigjihghgffdgfgkbhjhgchbmQfHvjebXWUTMNQPLQLMMQLNHNXJLCMRFKKKQTPNNRPMPKQUQKQMQVWJNPTNdXgjkmkhheedffjjhihiihgihjfibiifhiakkkiijijihgkihkckmkhigceUqaqacaUUUUTQPNNWQTdTNMKNNfRULdQNQLhWbjXagXWRfifbaTbgeWVcfJJWkrqsronmmjkjuuquttttrtsurtkstrstg.wu+xvvvxrtwvvtmt.xwvxjjnrr="
 
 
 define : weighting-from-corpusfile filename
@@ -501,10 +501,39 @@ define : word-weight word
                    + cost : bigram->weight : string-take s 2
 
 
+define* : string-replace-substring s substr replacement #:optional (start 0) (end (string-length s))
+       . "Replace every instance of substring in s by replacement."
+       let : : substr-length : string-length substr
+          if : zero? substr-length
+             error "string-replace-substring: empty substr"
+             let loop
+                 : start start
+                   pieces : list : substring s 0 start
+                 let : : idx : string-contains s substr start end
+                   if idx
+                     loop : + idx substr-length
+                           cons* replacement
+                                  substring s start idx
+                                  . pieces
+                     string-concatenate-reverse
+                                                cons : substring s start
+                                                    . pieces
+
+
 define* : letterblocks-nice blockcount #:key (best-of 8)
      . "Generate BEST-OF letterblocks and return the one most likely to appear in the corpus given by weight-collapsed
 
 best-of 8 consumes 3 bits of entropy, but creates passwords which are easier to remember. "
+     define : delimiters-to-space s
+            . "replace all delimiters by spaces"
+            let replace
+              : s s
+                delim delimiters
+              if : string-null? delim
+                . s
+                replace
+                    string-replace-substring s (string-take delim 1) " "
+                    string-drop delim 1
      ;; for debugging
      ;; let : : words : map (λ (x) (letterblocks blockcount)) : iota best-of
      ;;   ;; downcase the words to sort by phonetics
@@ -516,12 +545,25 @@ best-of 8 consumes 3 bits of entropy, but creates passwords which are easier to 
                  iota best-of
              λ (a b)
                   > 
-                      word-weight : string-downcase a
-                      word-weight : string-downcase b
+                      word-weight : delimiters-to-space : string-downcase a
+                      word-weight : delimiters-to-space : string-downcase b
 
+
+define : help args
+       format #t "Usage: ~a [options]
+
+Options:
+  [<length> [<password-type>]]            create password
+   --check <password>                     verify the checksums
+   --weighting-from-corpusfile <filepath> create a new cost string
+   --recreate-corpus-from-weighting       create the corpus from the cost string (for debuging)
+   --help                                 show this message
+" : first args
 
 define : main args
  cond
+   : and {(length args) > 1} : equal? "--help" : second args
+     help args
    : and {(length args) > 2} : equal? "--check" : second args
      let-values : : (check calck count) : letterblock-invalid? : third args
         cond 
