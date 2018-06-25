@@ -158,4 +158,4 @@ display "Server starting. Test it at http://127.0.0.1:8083
                  Hit CTRL-C twice to stop the server.
 "
 
-run-server file-upload-handler 'http ' : #:port 8083
+run-server file-upload-handler 'http ` : #:addr ,INADDR_ANY #:port 8083
