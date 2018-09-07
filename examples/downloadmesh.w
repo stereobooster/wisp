@@ -23,18 +23,24 @@ import
     ice-9 threads
     ice-9 pretty-print
     fibers web server
+    web client
+    web request
+    web uri
 
 
 define : download-file url
-    pretty-print url
+    let*
+        : uri : string->uri-reference url
+          port : open-socket-for-uri uri
+        pretty-print : http-get uri #:port port
 
 define : server-file-download-handler request body
-    values '((content-type . (text-plain)))
+    values '((content-type . (text/plain)))
            . "Hello World!"
 
 define : serve folder-path
     pretty-print folder-path
-    run-server server-file-download-handler #:port 8083 ;; #:addr INADDR_ANY
+    run-server server-file-download-handler #:family AF_INET #:port 8083 #:addr INADDR_ANY
 
 define : help args
        format #t "Usage: ~a [options]
@@ -53,5 +59,5 @@ define : main args
      : and {(length arguments) > 1} : equal? "--server" : car arguments
        serve : second arguments
      else
-       par-map download-file arguments
+       download-file : car arguments
 
