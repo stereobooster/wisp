@@ -27,6 +27,11 @@ import
     web request
     web uri
 
+define xalt : list ;; per file: (hash IP)
+define xnalt : list ;; per file: (hash IP)
+define : assoc-item l k
+    assoc k l
+define hashes : list ;; (filename hash)
 
 define : download-file url
     let*
@@ -35,7 +40,8 @@ define : download-file url
         pretty-print : http-get uri #:port port
 
 define : server-file-download-handler request body
-    values '((content-type . (text/plain)))
+    values `((content-type . (text/plain))
+             (X-Alt . (::1)))
            . "Hello World!"
 
 define : serve folder-path
