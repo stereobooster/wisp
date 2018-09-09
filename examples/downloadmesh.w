@@ -26,6 +26,7 @@ import
     web client
     web request
     web uri
+    examples doctests
 
 define xalt : list ;; per file: (hash IP)
 define xnalt : list ;; per file: (hash IP)
@@ -48,8 +49,10 @@ define : serve folder-path
     pretty-print folder-path
     run-server server-file-download-handler #:family AF_INET #:port 8083 #:addr INADDR_ANY
 
-define : help args
-       format #t "Usage: ~a [options]
+define : help-message args
+       ##
+         tests : test-equal #\U : string-ref (help-message '("./program")) 0
+       format #f "Usage: ~a [options]
 
 Options:
    [link [link ...]] download file(s)
@@ -57,11 +60,20 @@ Options:
    --help            show this message
 " : first args
 
+define : help args
+       display : help-message args
+
+define %this-module : current-module
+define : test
+         doctests-testmod %this-module
+
 define : main args
  let : : arguments : cdr args
    cond
      : or (null? arguments) (member "--help" arguments) (member "-h" arguments)
        help args
+     : member "--test" arguments
+       test
      : and {(length arguments) > 1} : equal? "--server" : car arguments
        serve : second arguments
      else
