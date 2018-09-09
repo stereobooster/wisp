@@ -51,13 +51,16 @@ define : serve folder-path
 
 define : help-message args
        ##
-         tests : test-equal #\U : string-ref (help-message '("./program")) 0
+         tests
+             test-assert : string-contains (help-message '("./program")) "./program"
+             test-equal #\U : string-ref (help-message '("./program")) 0
        format #f "Usage: ~a [options]
 
 Options:
    [link [link ...]] download file(s)
    --serve <folder>  serve the files in FOLDER
    --help            show this message
+   --test            run unit tests
 " : first args
 
 define : help args
