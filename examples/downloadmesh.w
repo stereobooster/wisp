@@ -128,7 +128,9 @@ define : server-file-download-handler folder-path request body
                  . '(0 . #f)
                  third range
           path-elements : split-and-decode-uri-path : uri-path : request-uri request
-        pretty-print path-elements
+        pretty-print request
+        pretty-print : request-port request
+        pretty-print : gethostbyaddr : sockaddr:addr : getpeername : request-port request
         cond
             : null? path-elements
               server-list-files folder-path range begin-end path-elements
