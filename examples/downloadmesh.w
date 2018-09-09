@@ -96,21 +96,19 @@ define : join-path-elements-safely path-elements
             . path-elements
         . "/" ;; TODO: make platform independent
 
-define : server-serve-file folder-path range begin-end path-elements
+define : server-serve-file folder-path range begin-end path
    let*
-       : path : join-path-elements-safely path-elements
-         abspath : string-join (list folder-path path) "/"
+       : abspath : string-join (list folder-path path) "/"
          data : get-file-chunk abspath (car begin-end) (cdr begin-end)
        values
           build-response
             . #:headers `((content-type . (application/octet-stream))
                           (accept-ranges . (bytes))
-                          (X-Alt . "::1,::2"))
+                          (X-Alt . ,(string-join (remove not (map second xalt)) ",")))
             . #:code : if range 206 200
           . data
 
-
-define : server-list-files folder-path range begin-end path-elements
+define : server-list-files folder-path
        values
           build-response 
             . #:headers `((content-type . (text/html))
@@ -129,18 +127,19 @@ define : server-file-download-handler folder-path request body
                  . '(0 . #f)
                  third range
           path-elements : split-and-decode-uri-path : uri-path : request-uri request
+          path : join-path-elements-safely path-elements
           peer : getpeername : request-port request
           ip : sockaddr:addr peer
           port : sockaddr:port peer
           ipv4 : inet-ntop AF_INET ip
           ;; ipv6 : inet-ntop AF_INET6 peer
-        pretty-print : list 'peer ipv4 port
-        ;; pretty-print ipv6
+        pretty-print xalt
         cond
             : null? path-elements
-              server-list-files folder-path range begin-end path-elements
+              server-list-files folder-path
             else
-              server-serve-file folder-path range begin-end path-elements
+              set! xalt : alist-cons path (cons ipv4 (if (assoc-ref xalt path) (assoc-ref xalt path) (list))) xalt
+              server-serve-file folder-path range begin-end path
 
 define : serve folder-path
     define : handler-with-path request body
