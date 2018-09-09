@@ -24,7 +24,8 @@ import
     ice-9 threads
     ice-9 pretty-print
     ice-9 binary-ports
-    fibers web server
+    fibers web server ;; using fibers, mind the different arguments of run-server!
+    ;; web server ;; standard Guile server, mind the different arguments of run-server!
     web client
     web request
     web response
@@ -42,7 +43,7 @@ define hashes : list ;; (filename hash)
 
 define : declare-download-mesh-headers!
     ;; TODO: add validation to the header instead of giving them as opaque strings
-    declare-opaque-header! "X-Alt" ;; good sources, list of IP:port, separated by commas
+    declare-opaque-header! "X-Alt" ;; good sources, list of IP:port, separated by commas. Default port 6346 may be omitted.
     declare-opaque-header! "X-NAlts" ;; bad sources, list of IP:port, separated by commas
     declare-opaque-header! "X-Gnutella-Content-URN"
 
@@ -128,9 +129,13 @@ define : server-file-download-handler folder-path request body
                  . '(0 . #f)
                  third range
           path-elements : split-and-decode-uri-path : uri-path : request-uri request
-        pretty-print request
-        pretty-print : request-port request
-        pretty-print : inet-ntop AF_INET6 : sockaddr:addr : getpeername : request-port request
+          peer : getpeername : request-port request
+          ip : sockaddr:addr peer
+          port : sockaddr:port peer
+          ipv4 : inet-ntop AF_INET ip
+          ;; ipv6 : inet-ntop AF_INET6 peer
+        pretty-print : list 'peer ipv4 port
+        ;; pretty-print ipv6
         cond
             : null? path-elements
               server-list-files folder-path range begin-end path-elements
@@ -140,7 +145,10 @@ define : server-file-download-handler folder-path request body
 define : serve folder-path
     define : handler-with-path request body
         server-file-download-handler folder-path request body
+    ;; fibers server
     run-server handler-with-path #:family AF_INET #:port 8083 #:addr INADDR_ANY
+    ;; standard server
+    ;; run-server handler-with-path 'http `(#:family ,AF_INET #:addr ,INADDR_ANY #:port 8083)
 
 define : help-message args
        ##
