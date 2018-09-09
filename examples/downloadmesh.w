@@ -130,7 +130,7 @@ define : server-file-download-handler folder-path request body
           path-elements : split-and-decode-uri-path : uri-path : request-uri request
         pretty-print request
         pretty-print : request-port request
-        pretty-print : inet-ntop : sockaddr:addr : getpeername : request-port request
+        pretty-print : inet-ntop AF_INET : sockaddr:addr : getpeername : request-port request
         cond
             : null? path-elements
               server-list-files folder-path range begin-end path-elements
