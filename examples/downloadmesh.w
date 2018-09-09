@@ -25,7 +25,9 @@ import
     fibers web server
     web client
     web request
+    web response
     web uri
+    only (web http) declare-opaque-header!
     examples doctests
 
 define xalt : list ;; per file: (hash IP)
@@ -34,16 +36,37 @@ define : assoc-item l k
     assoc k l
 define hashes : list ;; (filename hash)
 
+define : declare-download-mesh-headers!
+    ;; TODO: add validation to the header instead of giving them as opaque strings
+    declare-opaque-header! "X-Alt" ;; good sources, list of IP:port, separated by commas
+    declare-opaque-header! "X-NAlts" ;; bad sources, list of IP:port, separated by commas
+    declare-opaque-header! "X-Gnutella-Content-URN"
+
 define : download-file url
     let*
         : uri : string->uri-reference url
           port : open-socket-for-uri uri
-        pretty-print : http-get uri #:port port
+          headers `((Range . "bytes=0-")) ;; minimal range header so that the server can serve a content range
+        pretty-print
+            http-get uri #:port port #:headers headers
+
+define : get-file-chunk path begin end
+    . "open the file, seek to BEGIN, return bytearray from BEGIN to END"
+    . #f
 
 define : server-file-download-handler request body
-    values `((content-type . (text/plain))
-             (X-Alt . (::1)))
-           . "Hello World!"
+    ;; TODO: serve range requests, see https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
+    ;; TODO: return status code 206 for range requests (also for initial?): https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/206
+    let*
+        : headers : request-headers request
+          range : assoc-item headers 'range
+        values
+          build-response 
+            . #:headers `((content-type . (text/plain))
+                          (accept-ranges . (bytes))
+                          (X-Alt . "::1,::2"))
+            . #:code : if range 206 200
+          . "Hello World!"
 
 define : serve folder-path
     pretty-print folder-path
@@ -71,14 +94,15 @@ define : test
          doctests-testmod %this-module
 
 define : main args
- let : : arguments : cdr args
-   cond
-     : or (null? arguments) (member "--help" arguments) (member "-h" arguments)
-       help args
-     : member "--test" arguments
-       test
-     : and {(length arguments) > 1} : equal? "--server" : car arguments
-       serve : second arguments
-     else
-       download-file : car arguments
+   declare-download-mesh-headers!
+   let : : arguments : cdr args
+     cond
+       : or (null? arguments) (member "--help" arguments) (member "-h" arguments)
+         help args
+       : member "--test" arguments
+         test
+       : and {(length arguments) > 1} : equal? "--server" : car arguments
+         serve : second arguments
+       else
+         download-file : car arguments
 
