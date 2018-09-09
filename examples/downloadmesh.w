@@ -17,16 +17,20 @@ import
     only (srfi srfi-1) first second third iota
     srfi srfi-11 ;; let-values
     srfi srfi-42
+    srfi srfi-1 ;; list operations
     ice-9 optargs
     ice-9 format
     ice-9 match
     ice-9 threads
     ice-9 pretty-print
+    ice-9 binary-ports
     fibers web server
     web client
     web request
     web response
     web uri
+    ice-9 iconv ;; bytevector->string
+    ice-9 ftw ; file tree walk
     only (web http) declare-opaque-header!
     examples doctests
 
@@ -42,19 +46,78 @@ define : declare-download-mesh-headers!
     declare-opaque-header! "X-NAlts" ;; bad sources, list of IP:port, separated by commas
     declare-opaque-header! "X-Gnutella-Content-URN"
 
+
 define : download-file url
     let*
         : uri : string->uri-reference url
-          port : open-socket-for-uri uri
           headers `((range bytes (0 . #f))) ;; minimal range header so that the server can serve a content range
-        pretty-print
-            http-get uri #:port port #:headers headers
+        let-values : : (resp body) : http-get uri #:headers headers
+          pretty-print resp
+          pretty-print : bytevector->string body "ISO-8859-1"
 
-define : get-file-chunk path begin end
+
+define : list-files files-path
+  let*
+      : files : scandir files-path
+        file-list
+          if : not files
+            begin : mkdir files-path
+                    list "." ".."
+            map : λ(x) : string-append "<li><a href=\"files/" x "\">" x "</a></li>\n"
+                . files
+      string-join
+        append
+          list "<!DOCTYPE html><html><head><title>Files</title></head><body><h2>Upload</h2><form action='/upload' method='POST' enctype='multipart/form-data'>
+    <input type='file' name='img' multiple />
+    <input type='submit' value='Upload' />
+</form><h2>Files</h2><ul>"
+          . file-list
+          list "</ul></body></html>\n"
+
+
+define : get-file-chunk abspath begin end
     . "open the file, seek to BEGIN, return bytearray from BEGIN to END"
-    pretty-print : list path begin end
+    if : not : file-exists? abspath
+       . ""
+       let : : port : open-input-file abspath #:binary #t
+         seek port begin SEEK_SET
+         let : : data : if end (get-bytevector-n port (- end begin)) (get-bytevector-all port)
+           close port
+           pretty-print : list abspath begin end data
+           if : eof-object? data
+              . ""
+              bytevector->string data "ISO-8859-1"
 
-define : server-file-download-handler request body
+define : join-path-elements-safely path-elements
+    . "Remove every .. and / from the path elements and join as path"
+    string-join
+        remove : λ (x) : or (equal? x "..") (equal? x "/")
+            . path-elements
+        . "/" ;; TODO: make platform independent
+
+define : server-serve-file folder-path range begin-end path-elements
+   let*
+       : path : join-path-elements-safely path-elements
+         abspath : string-join (list folder-path path) "/"
+         data : get-file-chunk abspath (car begin-end) (cdr begin-end)
+       values
+          build-response
+            . #:headers `((content-type . (application/octet-stream))
+                          (accept-ranges . (bytes))
+                          (X-Alt . "::1,::2"))
+            . #:code : if range 206 200
+          . data
+
+
+define : server-list-files folder-path range begin-end path-elements
+       values
+          build-response 
+            . #:headers `((content-type . (text/html))
+                          (accept-ranges . (bytes)))
+          list-files folder-path
+
+
+define : server-file-download-handler folder-path request body
     ;; TODO: serve range requests, see https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
     ;; TODO: return status code 206 for range requests (also for initial?): https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/206
     let*
@@ -65,18 +128,17 @@ define : server-file-download-handler request body
                  . '(0 . #f)
                  third range
           path-elements : split-and-decode-uri-path : uri-path : request-uri request
-          data : get-file-chunk path-elements (car begin-end) (cdr begin-end)
-        values
-          build-response 
-            . #:headers `((content-type . (text/plain))
-                          (accept-ranges . (bytes))
-                          (X-Alt . "::1,::2"))
-            . #:code : if range 206 200
-          . "Hello World!"
+        pretty-print path-elements
+        cond
+            : null? path-elements
+              server-list-files folder-path range begin-end path-elements
+            else
+              server-serve-file folder-path range begin-end path-elements
 
 define : serve folder-path
-    pretty-print folder-path
-    run-server server-file-download-handler #:family AF_INET #:port 8083 #:addr INADDR_ANY
+    define : handler-with-path request body
+        server-file-download-handler folder-path request body
+    run-server handler-with-path #:family AF_INET #:port 8083 #:addr INADDR_ANY
 
 define : help-message args
        ##
