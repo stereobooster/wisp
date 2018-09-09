@@ -46,13 +46,13 @@ define : download-file url
     let*
         : uri : string->uri-reference url
           port : open-socket-for-uri uri
-          headers `((Range . "bytes=0-")) ;; minimal range header so that the server can serve a content range
+          headers `((range bytes (0 . #f))) ;; minimal range header so that the server can serve a content range
         pretty-print
             http-get uri #:port port #:headers headers
 
 define : get-file-chunk path begin end
     . "open the file, seek to BEGIN, return bytearray from BEGIN to END"
-    . #f
+    pretty-print : list path begin end
 
 define : server-file-download-handler request body
     ;; TODO: serve range requests, see https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
@@ -60,6 +60,12 @@ define : server-file-download-handler request body
     let*
         : headers : request-headers request
           range : assoc-item headers 'range
+          begin-end
+              if : or (not range) {(length range) < 3}
+                 . '(0 . #f)
+                 third range
+          path-elements : split-and-decode-uri-path : uri-path : request-uri request
+          data : get-file-chunk path-elements (car begin-end) (cdr begin-end)
         values
           build-response 
             . #:headers `((content-type . (text/plain))
