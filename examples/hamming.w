@@ -55,14 +55,13 @@ define : hamming-11/7-decode numbers
                  
        define m2+ mod2sum
        define broken-bit
-           +
-               match numbers
-                   : h1 h2 i3 h4 i5 i6 i7 h8 i9 i10 i11
-                     +
-                       * 1 : m2+ h1 i3 i5 i7 i9 i11
-                       * 2 : m2+ h2 i3 i6 i7 i10 i11
-                       * 4 : m2+ h4 i5 i6 i7
-                       * 8 : m2+ h8 i9 i10 i11
+          match numbers
+              : h1 h2 i3 h4 i5 i6 i7 h8 i9 i10 i11
+                +
+                  * 1 : m2+ h1 i3 i5 i7 i9 i11
+                  * 2 : m2+ h2 i3 i6 i7 i10 i11
+                  * 4 : m2+ h4 i5 i6 i7
+                  * 8 : m2+ h8 i9 i10 i11
        define fixed
            if : zero? broken-bit
               . numbers
