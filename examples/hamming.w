@@ -26,13 +26,13 @@ define : hamming-11/7-encode numbers
        match numbers
            : i3 i5 i6 i7 i9 i10 i11
              list
-                 H i3 i5 i7 i9 i11
-                 H i3 i6 i7 i10 i11
-                 . i3
-                 H i5 i6 i7
-                 . i5 i6 i7
-                 H i9 i10 i11
-                 . i9 i10 i11
+                 H i3 i5 i7 i9 i11  ;; bit 1
+                 H i3 i6 i7 i10 i11 ;; bit 2
+                 . i3               ;; bit 3
+                 H i5 i6 i7         ;; bit 4
+                 . i5 i6 i7         ;; bit 5, 6, 7
+                 H i9 i10 i11       ;; bit 8
+                 . i9 i10 i11       ;; bit 9, 10, 11
 
 define : flip numbers index
     . "flip the bit-number (0→1 or 1→0) at the index."
