@@ -35,6 +35,7 @@ define : hamming-11/7-encode numbers
                  . i9 i10 i11
 
 define : flip numbers index
+    . "flip the bit-number (0→1 or 1→0) at the index."
     ## : tests : test-equal '(1 0 1) : flip '(0 0 1) 0
     append
         take numbers index
@@ -49,6 +50,9 @@ define : hamming-11/7-decode numbers
                  hamming-11/7-decode '(0 0 1 0 0 0 0 1 0 0 1)
              test-equal '(1 0 0 0 0 0 1)
                  hamming-11/7-decode : flip '(0 0 1 0 0 0 0 1 0 0 1) 5
+             test-equal '(0 1 0 0 0 0 1)
+                 hamming-11/7-decode '(0 1 0 1 1 1 0 1 0 0 1)
+                 
        define m2+ mod2sum
        define broken-bit
            +
