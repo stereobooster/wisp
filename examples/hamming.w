@@ -21,17 +21,17 @@ define : hamming-11/7-encode numbers
            tests
                test-equal '(0 0 1 0 0 0 0 1 0 0 1)
                    hamming-11/7-encode '(1 0 0 0 0 0 1)
-       define : H index . bits
+       define : H . bits
            apply mod2sum bits
        match numbers
            : i3 i5 i6 i7 i9 i10 i11
              list
-                 H 1 i3 i5 i7 i9 i11
-                 H 2 i3 i6 i7 i10 i11
+                 H i3 i5 i7 i9 i11
+                 H i3 i6 i7 i10 i11
                  . i3
-                 H 4 i5 i6 i7
+                 H i5 i6 i7
                  . i5 i6 i7
-                 H 8 i9 i10 i11
+                 H i9 i10 i11
                  . i9 i10 i11
 
 define : flip numbers index
