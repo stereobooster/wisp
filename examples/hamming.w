@@ -9,11 +9,21 @@ import : examples doctests
          ice-9 match
          srfi srfi-1 ;; list operations
 
+
 define : mod2sum . numbers
        . "Modulo-2 sum, i.e. for even parity"
        ##
            tests : test-eqv 1 (mod2sum 1 0 1 1 0)
        modulo (apply + numbers) 2
+
+define : flip numbers index
+    . "flip the bit-number (0→1 or 1→0) at the index."
+    ## : tests : test-equal '(1 0 1) : flip '(0 0 1) 0
+    append
+        take numbers index
+        list : mod2sum 1 : list-ref numbers index
+        drop numbers {index + 1}
+
 
 define : hamming-11/7-encode numbers
        . "Hamming encoding for a list of 7 zeros or ones."
@@ -21,6 +31,7 @@ define : hamming-11/7-encode numbers
            tests
                test-equal '(0 0 1 0 0 0 0 1 0 0 1)
                    hamming-11/7-encode '(1 0 0 0 0 0 1)
+
        define : H . bits
            apply mod2sum bits
        match numbers
@@ -34,13 +45,6 @@ define : hamming-11/7-encode numbers
                  H i9 i10 i11       ;; bit 8
                  . i9 i10 i11       ;; bit 9, 10, 11
 
-define : flip numbers index
-    . "flip the bit-number (0→1 or 1→0) at the index."
-    ## : tests : test-equal '(1 0 1) : flip '(0 0 1) 0
-    append
-        take numbers index
-        list : mod2sum 1 : list-ref numbers index
-        drop numbers {index + 1}
 
 define : hamming-11/7-decode numbers
        . "Hamming decoding for a list of 11 zeros or ones"
