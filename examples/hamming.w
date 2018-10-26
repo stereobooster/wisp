@@ -39,27 +39,33 @@ define : flip numbers index
     append
         take numbers index
         list : mod2sum 1 : list-ref numbers index
-        drop numbers { index + 1 }
+        drop numbers {index + 1}
 
-define : hamming-11/7-decode
+define : hamming-11/7-decode numbers
        . "Hamming decoding for a list of 11 zeros or ones"
        ##
          tests
              test-equal '(1 0 0 0 0 0 1)
                  hamming-11/7-decode '(0 0 1 0 0 0 0 1 0 0 1)
+             test-equal '(1 0 0 0 0 0 1)
+                 hamming-11/7-decode : flip '(0 0 1 0 0 0 0 1 0 0 1) 5
        define m2+ mod2sum
        define broken-bit
            +
                match numbers
                    : h1 h2 i3 h4 i5 i6 i7 h8 i9 i10 i11
-                     * 1 : m2+ h1 i3 i5 i7 i9 i11
-                     * 2 : m2+ h2 i3 i6 i7 i10 i11
-                     * 4 : m2+ h4 i5 i6 i7
-                     * 8 : m2+ h8 i9 i10 i11
+                     +
+                       * 1 : m2+ h1 i3 i5 i7 i9 i11
+                       * 2 : m2+ h2 i3 i6 i7 i10 i11
+                       * 4 : m2+ h4 i5 i6 i7
+                       * 8 : m2+ h8 i9 i10 i11
        define fixed
            if : zero? broken-bit
               . numbers
               flip numbers {broken-bit - 1}
+       match fixed
+           : h1 h2 i3 h4 i5 i6 i7 h8 i9 i10 i11
+             list i3 i5 i6 i7 i9 i10 i11
           
 
 define %this-module : current-module
