@@ -9,10 +9,14 @@ define-module : examples doctests-test
 import : examples doctests
 
 define : foo
-    . #((tests 
-      ('foo
-        (test-equal "bar" (foo)))))
-    . "bar"
+         ##
+            tests 
+               'foo-equality-tests
+                   test-equal "bar" : foo
+                   test-equal "bar" "bar"
+                   test-equal 'bar : string->symbol : foo
+                   test-equal 'foo 'foo
+         . "bar"
 
 define %this-module : current-module
 define : main args
