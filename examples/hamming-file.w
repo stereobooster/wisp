@@ -87,9 +87,9 @@ define : checkbit-indizes-for number
 
 
 define : power-of-2? number
-    integer?
-        / : log number
-            log 2
+         integer?
+            / : log number
+                log 2
 
 
 define : checked-by checkbit-index max-index
@@ -109,15 +109,84 @@ define : checked-by checkbit-index max-index
               loop {index - 1} : cons index checked-indizes
             else
               loop {index - 1} checked-indizes
-              
 
-;; define : prepare-hamming-list data-list
-    
+
+define : prepare-hamming-vector data-vector
+    ## : tests : test-equal #1(#f #f 1 #f 0 1) : prepare-hamming-vector #1(1 0 1)
+    define data-length : vector-length data-vector
+    let loop
+        : hamming : list
+          data-index 0
+          checkbit-count 0
+        cond
+          {data-index >= data-length}
+            apply vector
+                reverse hamming
+          : power-of-2? : + 1 data-index checkbit-count
+            loop : cons #f hamming
+                 . data-index
+                 + 1 checkbit-count
+          else
+              loop
+                  cons : vector-ref data-vector data-index
+                       . hamming
+                  + 1 data-index
+                  . checkbit-count
+
+
+define : mod2sum . numbers
+       . "Modulo-2 sum, i.e. for even parity"
+       ##
+           tests : test-eqv 1 (mod2sum 1 0 1 1 0)
+       modulo (apply + numbers) 2
+
+define : check-bit-value hamming-vector check-bit-index
+    ## : tests : test-equal 1 : check-bit-value #1(#f #f 1 #f 0 1) 0
+    define check-bit-hamming-index {check-bit-index + 1}
+    define : hamming-bit-set? index
+        vector-ref hamming-vector {index - 1}
+    let 
+        : checked : checked-by check-bit-hamming-index : vector-length hamming-vector
+        let loop
+            : sum 0
+              checked
+                  if : hamming-bit-set? check-bit-hamming-index
+                       cons check-bit-hamming-index checked
+                       . checked
+            cond 
+               : null? checked
+                 . sum
+               : null? : cdr checked ;; last element
+                  mod2sum sum : vector-ref hamming-vector {(car checked) - 1}
+               else
+                  loop
+                      mod2sum sum : vector-ref hamming-vector {(car checked) - 1}
+                      cdr checked
+
+
+define : set-check-bits! hamming-vector
+    ## : tests : test-equal #1(1 0 1 1 0 1) : set-check-bits! : vector #f #f 1 #f 0 1
+    let loop
+        : checkbit-index 1
+        cond 
+            {checkbit-index > (vector-length hamming-vector)}
+              . hamming-vector
+            else
+                vector-set! hamming-vector {checkbit-index - 1}
+                    check-bit-value hamming-vector {checkbit-index - 1}
+                loop {checkbit-index * 2}
+
+
+define : hamming-encode data-bits
+    ## : tests : test-equal #1(1 0 1 1 0 1) : hamming-encode : vector 1 0 1
+    let : : hamming-vector : prepare-hamming-vector data-bits
+        set-check-bits! hamming-vector
 
 
 define : encode filepath
     pretty-print : bits->bytevector : numbers->bits : bits->numbers : bytevector->bits : read-file filepath
-    pretty-print : read-file filepath
+    pretty-print : bits->numbers : bytevector->bits : read-file filepath
+    pretty-print : hamming-encode : apply vector : bits->numbers : bytevector->bits : read-file filepath
     
 
 define %this-module : current-module
