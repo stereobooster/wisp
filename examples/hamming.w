@@ -6,8 +6,12 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) -x .w --language=wisp -e '(
 
 define-module : examples hamming
 import : examples doctests
+         srfi srfi-1 ; list operations
+         srfi srfi-37 ; commandline parsing
          ice-9 match
-         srfi srfi-1 ;; list operations
+         ice-9 format
+         ice-9 popen ; for pipe-open*
+         ice-9 rdelim ; for read-string
 
 
 define : mod2sum . numbers
@@ -73,10 +77,140 @@ define : hamming-11/7-decode numbers
        match fixed
            : h1 h2 i3 h4 i5 i6 i7 h8 i9 i10 i11
              list i3 i5 i6 i7 i9 i10 i11
+
+
+
+
+;; commandline interaction
+
+define : help . args ; args used for simpler option parsing
+         format #t "Usage: ./hamming.w [option ...] [--] input | file | -
+
+Encode or decode the input, file or stdin.
+
+  -h --help      display this help and exit
+  -l LENGTH --fixed-length=LENGTH
+                 use block-encoding of the given length
+  -11 --11-7     use fixed 11,7 block length (11 encoded, 7 data)
+  -e --encode    encode data from files on bit-level
+  -E --encode-text-bits 
+                 encode bits given as numbers (0 or 1)
+  -d --decode    decode data from files on bit-level
+  -D --decode-text-bits 
+                 decode bits given as numbers (0 or 1)
+  -V --version   output version information and exit
+  -d [LEVEL] --debug[=LEVEL]
+                 set logging to debug or to the given level
+"
+         exit 0
+
+define : test . args
+  doctests-testmod %this-module
+
+
+define test-option
+  option '(#f "test")
+          . #f #f test
+
+define help-option
+  option '(#\h "help")
+          . #f #f help
+
+define : version . args
+         display "hamming 0.0.0
+
+Copyright (C) 2018 Arne Babenhauserheide.
+See the file COPYING. There is NO warranty.
+"
+
+define version-option
+  option '(#\V "version")
+          . #f #f version
+
+define : debug?
+    equal? 'debug : assoc-ref %options 'log-level
+
+
+define debug-option
+  let
+    : required #f
+      can-take-argument #t
+    option '(#\d "debug")
+          . required can-take-argument
+          λ : option name arg operands
+              if arg
+                 set! %options : alist-cons 'log-level (string->symbol arg) %options
+                 set! %options : alist-cons 'log-level 'debug %options
+              format : current-error-port
+                     . "debug: activate log level ~a\n"
+                     if arg arg 'debug
+              . operands
+
+
+define : text-bits->number-bits text-bits
+    define : char->bit char
+        if : equal? char #\0
+           . 0 1
+    map char->bit : string->list text-bits
+
+define : show-text-bit-operation operation text-bits
+    let : : bits : text-bits->number-bits text-bits
+        display
+            string-join
+                map number->string 
+                    operation bits
+                . ""
+        newline
+        format : current-error-port
+           . "in: ~a\n"
+           .  text-bits
+
+define : encode-text-bits text-bits
+    show-text-bit-operation hamming-11/7-encode text-bits
+
+define : decode-text-bits text-bits        
+    show-text-bit-operation hamming-11/7-decode text-bits
+
+define encode-text-bits-option
+   option '(#\E "encode-text-bits")
+           . #f #f
+           λ : option name arg operands
+               set! %options : assoc-set! %options 'operation encode-text-bits
+
+define decode-text-bits-option
+   option '(#\D "decode-text-bits")
+           . #f #f
+           λ : option name arg operands
+               set! %options : assoc-set! %options 'operation decode-text-bits
+
+define %options
+    `
+      log-level . info
+      operation . ,encode-text-bits
+
+define %option-list
+    list test-option help-option version-option debug-option encode-text-bits-option decode-text-bits-option
+
+define : action operand
+       : assoc-ref %options 'operation
+         . operand
+
+define : parse-args args
+         args-fold args
+            . %option-list
+            λ : option name arg operands
+              format : current-error-port
+                     . "unrecognized command line argument name: ~a arg: ~a operands: ~a\n"
+                     . name arg operands
+              exit 1
+            λ : operand operands ;; operand = argument (not option)
+              action operand
+            . '() ;; option operands (seed)
           
 
 define %this-module : current-module
 define : main args
-       . " Testing doctests"
-       doctests-testmod %this-module
+    if : null? : cdr args
+         help
+         parse-args : cdr args
 
