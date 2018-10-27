@@ -23,6 +23,32 @@ define : read-file filepath
         close port
         . data
 
+define : write-file filepath bytevector
+    let* 
+        : port : open-output-file filepath
+        put-bytevector port bytevector
+        close port
+
+
+define : u8->bits u8
+    ## tests : test-equal '(#t #f #f #f #f #f #t #t) : u8->bits 131
+    let loop
+        : bits : list
+          remaining u8
+          pow2 128
+        cond
+          {pow2 < 1}
+            reverse bits
+          {remaining > pow2}
+            loop : cons #t bits
+                 . {remaining - pow2}
+                 / pow2 2
+          else
+            loop : cons #f bits
+                 . remaining
+                 / pow2 2
+
+
 define : bytevector->bits bv
     let loop 
         : bits : list
@@ -43,9 +69,9 @@ define : bits->bytevector bits
               u8-list->bytevector : reverse! bytes
             else
               loop 
-                  cons : list->integer : take bits 8
+                  cons : list->integer : take bits : min 8 : length bits ;; TODO: this can add some garbage for the last byte
                        . bytes
-                  drop bits 8
+                  drop bits : min 8 : length bits
 
 define : bits->numbers bits
    map : lambda (x) : if x 1 0
@@ -87,6 +113,7 @@ define : checkbit-indizes-for number
 
 
 define : power-of-2? number
+         ## : tests : test-equal #t : power-of-2? 1
          integer?
             / : log number
                 log 2
@@ -177,16 +204,35 @@ define : set-check-bits! hamming-vector
                 loop {checkbit-index * 2}
 
 
+define : get-data-bits hamming-vector
+    ## : tests : test-equal #1(1 0 1) : get-data-bits : vector #f #f 1 #f 0 1
+    let loop
+        : data-hamming-indizes : remove power-of-2? : iota (vector-length hamming-vector) 1
+          data : list
+        if : null? data-hamming-indizes
+           apply vector : reverse data
+           loop : cdr data-hamming-indizes
+                  cons : vector-ref hamming-vector {(car data-hamming-indizes) - 1}
+                       . data
+     
+
 define : hamming-encode data-bits
     ## : tests : test-equal #1(1 0 1 1 0 1) : hamming-encode : vector 1 0 1
     let : : hamming-vector : prepare-hamming-vector data-bits
         set-check-bits! hamming-vector
 
 
-define : encode filepath
-    pretty-print : bits->bytevector : numbers->bits : bits->numbers : bytevector->bits : read-file filepath
-    pretty-print : bits->numbers : bytevector->bits : read-file filepath
-    pretty-print : hamming-encode : apply vector : bits->numbers : bytevector->bits : read-file filepath
+define : encode infile outfile
+    ;; pretty-print : bits->bytevector : numbers->bits : bits->numbers : bytevector->bits : read-file filepath
+    pretty-print : bits->numbers : bytevector->bits : read-file infile
+    write-file outfile : bits->bytevector : numbers->bits : vector->list : hamming-encode : apply vector : bits->numbers : bytevector->bits : read-file infile
+    
+
+define : decode infile outfile
+    ;; TODO: actually apply hamming decoding fixes
+    pretty-print : read-file infile
+    pretty-print : bits->numbers : bytevector->bits : read-file infile
+    write-file outfile : bits->bytevector : numbers->bits : vector->list : get-data-bits : apply vector : bits->numbers : bytevector->bits : read-file infile
     
 
 define %this-module : current-module
@@ -194,10 +240,10 @@ define : main args
     when : null? : cdr args
          doctests-testmod %this-module
          exit 0
-    when {(length args) < 2}
+    when {(length args) < 3}
         format : current-error-port
            . "must have at least one argument, but got ~a" : cdr args
            exit 1
     if : equal? "-D" : second args
-         decode : third args
-         encode : second args
+         decode (third args) (fourth args)
+         encode (second args) (third args)
