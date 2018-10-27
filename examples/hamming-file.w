@@ -111,7 +111,8 @@ define : checked-by checkbit-index max-index
               loop {index - 1} checked-indizes
               
 
-
+;; define : prepare-hamming-list data-list
+    
 
 
 define : encode filepath
