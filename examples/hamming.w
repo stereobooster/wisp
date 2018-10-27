@@ -8,6 +8,7 @@ define-module : examples hamming
 import : examples doctests
          srfi srfi-1 ; list operations
          srfi srfi-37 ; commandline parsing
+         srfi srfi-60 ; bit conversion via integer->list 
          ice-9 match
          ice-9 format
          ice-9 popen ; for pipe-open*
@@ -89,15 +90,10 @@ define : help . args ; args used for simpler option parsing
 Encode or decode the input, file or stdin.
 
   -h --help      display this help and exit
-  -l LENGTH --fixed-length=LENGTH
-                 use block-encoding of the given length
-  -11 --11-7     use fixed 11,7 block length (11 encoded, 7 data)
-  -e --encode    encode data from files on bit-level
   -E --encode-text-bits 
-                 encode bits given as numbers (0 or 1)
-  -d --decode    decode data from files on bit-level
+                 encode 7 bits given as numbers (0 or 1) using an 11,7 hamming code
   -D --decode-text-bits 
-                 decode bits given as numbers (0 or 1)
+                 decode 11 bits given as numbers (0 or 1) using an 11,7 hamming code
   -V --version   output version information and exit
   -d [LEVEL] --debug[=LEVEL]
                  set logging to debug or to the given level
@@ -122,6 +118,7 @@ define : version . args
 Copyright (C) 2018 Arne Babenhauserheide.
 See the file COPYING. There is NO warranty.
 "
+         exit 0
 
 define version-option
   option '(#\V "version")
@@ -161,15 +158,18 @@ define : show-text-bit-operation operation text-bits
                     operation bits
                 . ""
         newline
-        format : current-error-port
-           . "in: ~a\n"
-           .  text-bits
+        when : debug?
+            format : current-error-port
+                   . "in: ~a\n"
+                   .  text-bits
 
 define : encode-text-bits text-bits
     show-text-bit-operation hamming-11/7-encode text-bits
 
 define : decode-text-bits text-bits        
     show-text-bit-operation hamming-11/7-decode text-bits
+
+
 
 define encode-text-bits-option
    option '(#\E "encode-text-bits")
@@ -192,6 +192,7 @@ define %option-list
     list test-option help-option version-option debug-option encode-text-bits-option decode-text-bits-option
 
 define : action operand
+       . "Run the action set by the options"
        : assoc-ref %options 'operation
          . operand
 
