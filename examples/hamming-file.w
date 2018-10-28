@@ -16,6 +16,9 @@ import : examples doctests
          ice-9 binary-ports
          ice-9 pretty-print
 
+format : current-error-port
+    . "THIS CODE HAS SERIOUS ISSUES with the bits->bytes->hammingencode->bits->bytes->hammingdecode->bits due to byte-bits-alignment, except if the number of checkbits is a multiple of 8. 16 to 31 chara"
+
 define : read-file filepath
     let* 
         : port : open-input-file filepath
@@ -227,17 +230,22 @@ define : hamming-encode data-bits
     let : : hamming-vector : prepare-hamming-vector data-bits
         set-check-bits! hamming-vector
 
+define : bitlist->bitstring bitlist
+    string-join : map number->string bitlist
+       . ""
 
 define : encode infile outfile
     ;; pretty-print : bits->bytevector : numbers->bits : bits->numbers : bytevector->bits : read-file filepath
-    pretty-print : bits->numbers : bytevector->bits : read-file infile
+    display : bitlist->bitstring : bits->numbers : bytevector->bits : read-file infile
+    newline
     write-file outfile : bits->bytevector : numbers->bits : vector->list : hamming-encode : apply vector : bits->numbers : bytevector->bits : read-file infile
     
 
 define : decode infile outfile
     ;; TODO: actually apply hamming decoding fixes
     pretty-print : read-file infile
-    pretty-print : bits->numbers : bytevector->bits : read-file infile
+    display : bitlist->bitstring : bits->numbers : bytevector->bits : read-file infile
+    newline
     write-file outfile : bits->bytevector : numbers->bits : vector->list : get-data-bits : apply vector : bits->numbers : bytevector->bits : read-file infile
     
 
