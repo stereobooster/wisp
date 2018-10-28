@@ -67,7 +67,7 @@ define : bits->bytevector bits
         cond
             : null? bits
               u8-list->bytevector : reverse! bytes
-            {(length bits) < 8} ;; zero-pad
+            {(length bits) < 8} ;; zero-pad;; FIXME: This is wrong, somewhere there is a bug here.
               let : : bits : append bits : make-list {8 - (length bits)} #f
                 loop 
                   cons : list->integer : take bits 8
