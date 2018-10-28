@@ -11,8 +11,6 @@ import : examples doctests
          srfi srfi-60 ; bit conversion via integer->list 
          ice-9 match
          ice-9 format
-         ice-9 popen ; for pipe-open*
-         ice-9 rdelim ; for read-string
 
 
 define : mod2sum . numbers

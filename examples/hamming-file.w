@@ -67,11 +67,17 @@ define : bits->bytevector bits
         cond
             : null? bits
               u8-list->bytevector : reverse! bytes
+            {(length bits) < 8} ;; zero-pad
+              let : : bits : append bits : make-list {8 - (length bits)} #f
+                loop 
+                  cons : list->integer : take bits 8
+                       . bytes
+                  drop bits 8
             else
               loop 
-                  cons : list->integer : take bits : min 8 : length bits ;; TODO: this can add some garbage for the last byte
+                  cons : list->integer : take bits 8
                        . bytes
-                  drop bits : min 8 : length bits
+                  drop bits 8
 
 define : bits->numbers bits
    map : lambda (x) : if x 1 0
