@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile -L $(dirname $(dirname $(realpath "$0"))) -x .w --language=wisp -e '(examples hamming)' -c '' "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) -x .w --language=wisp -e '(examples hamming)' -c '' "$@"
 ; !#
 
 define-module : examples hamming

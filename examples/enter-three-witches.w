@@ -1,11 +1,11 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples enter-three-witches) main)' -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples enter-three-witches)' -c '' "$@"
 ; !#
 
 define-module : examples enter-three-witches
-    . #:export : introduced-names ->string show colortable color say-words say-name say Speak Speak-indirect Enter Scene
+    . #:export : introduced-names ->string show colortable color say-words say-name say Speak Speak-indirect Enter Scene main
 
 use-modules : ice-9 optargs
               srfi srfi-1

@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples securepassword)' -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples securepassword)' -c '' "$@"
 ; !#
 
 ;; Create secure passwords, usable on US and German keyboards without problems

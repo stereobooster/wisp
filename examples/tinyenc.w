@@ -1,11 +1,11 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples tinyenc)' -c '' "$@"
 ; !#
 
 define-module : examples tinyenc
-   . #:export : encrypt decrypt
+   . #:export : encrypt decrypt main
 ;   . #:use-syntax : ice-9 syncase
 ; `use-syntax' is deprecated. For compatibility with old and new guile I therefore need this.
 ; Syntax-case macros are now a part of Guile core; importing (ice-9 syncase) is no longer necessary.
@@ -95,17 +95,6 @@ define : decrypt v k
              . v1tmp
 
 
-format #t "decrypted: ~A\n" 
-    decrypt
-        encrypt 
-          . 5
-          . 9
-        . 9
-format #t "encrypted: ~A\n" 
-        encrypt 
-          . 5
-          . 9
-
 ; Performance test
 define : testdecrypt 
        decrypt
@@ -114,7 +103,20 @@ define : testdecrypt
              . 9
            . 9
 
-let loop : : step 0
-    when : < step 100000 ; 10^5
-       testdecrypt
-       loop : 1+ step
+define : main args
+    let loop : : step 0
+        when : < step 100000 ; 10^5
+           testdecrypt
+           loop : 1+ step
+    
+    format #t "decrypted: ~A\n" 
+        decrypt
+            encrypt 
+              . 5
+              . 9
+            . 9
+    format #t "encrypted: ~A\n" 
+            encrypt 
+              . 5
+              . 9
+    

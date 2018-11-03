@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples argparse) main)' -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples argparse)' -c '' "$@"
 ; !#
 
 ;; Argument parser
@@ -17,7 +17,7 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ;;   - implement -h | --help | --usage and -V | --version, set up automatically and improved via setup-args.
 
 define-module : examples argparse
-    . #:export : args-parse args-setup
+    . #:export : args-parse args-setup main
 
 import : ice-9 optargs
 

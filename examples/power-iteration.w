@@ -1,12 +1,12 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples power-iteration) main)' -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples power-iteration)' -c '' "$@"
 ; !#
 
 ;; Power iteration, following https://en.wikipedia.org/wiki/Power_iteration#The_method
 
 define-module : examples power-iteration
-              . #:export : step
+              . #:export : step main
 
 import : srfi srfi-1
 

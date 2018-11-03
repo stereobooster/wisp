@@ -1,13 +1,13 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples cholesky) main)' -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples cholesky)' -c '' "$@"
 ; !#
 
 ;; Cholesky decomposition, following https://de.wikipedia.org/wiki/Cholesky-Zerlegung#Pseudocode
 
 define-module : examples cholesky
-              . #:export : cholesky! matrix-ref matrix-set! matrix-transpose matrix-multiply
+              . #:export : cholesky! matrix-ref matrix-set! matrix-transpose matrix-multiply main
 
 use-modules : srfi srfi-42 ; list-comprehension
               srfi srfi-11 ; let-values

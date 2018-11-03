@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples pipe) main)' -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples pipe)' -c '' "$@"
 ; !#
 
 ;; FIXME: Sometimes this stops early. 
@@ -11,7 +11,7 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ;; Use pipes to connect several commands
 
 define-module : examples pipe
-    . #:export : !
+    . #:export : ! main
 
 import : ice-9 popen
          ice-9 rdelim

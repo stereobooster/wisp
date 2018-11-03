@@ -2,11 +2,14 @@
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (guildhall ext foof-loop))'
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples fizzbuzz)' -c '' "$@"
 ; !#
 
+define-module : examples fizzbuzz
+    . #:export : main
+
 ;; this example needs foof-loop installed via guildhall!
-use-modules : guildhall ext foof-loop
+import : guildhall ext foof-loop
 ;; Pseudocode adapted from 
 ;; http://en.wikipedia.org/wiki/Pseudocode#Syntax
 define : divisible? number divisor
@@ -27,4 +30,5 @@ define : fizzbuzz
       when print_number : display i
       newline
 
-fizzbuzz
+define : main args
+    fizzbuzz

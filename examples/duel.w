@@ -3,8 +3,11 @@
 D="$(dirname $(realpath "$0"))"
 W="$(dirname $(dirname $(realpath "$0")))"
 guile -L "$W" -c '(import (language wisp spec))'
-exec guile -L "$W" --language=wisp -l "$D/enter-three-witches.w" -s "$0" "$@"
+exec -a "$0" guile -L "$W" --language=wisp -x .w -e '(examples duel)' -c '' "$@"
 ; !#
+
+define-module : examples duel
+    . #:export : main
 
 import : examples enter-three-witches
 
@@ -62,7 +65,8 @@ define-syntax-rule : Duel fighter1 fighter2
      quote fighter2
 
 
-Duel
-  Galtag Nimbleday
-  Lowlife Pirate
+define : main args
+  Duel
+      Galtag Nimbleday
+      Lowlife Pirate
 

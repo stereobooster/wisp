@@ -1,10 +1,13 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples macros)' -c '' "$@"
 ; !#
 
 ;; Testing syntax-rules and syntax-case with wisp
+
+define-module : examples macros
+    . #:export : main
 
 ;; Syntax-case: add1 (from guile docs)
 define-syntax add1
@@ -33,6 +36,7 @@ define-syntax add-with-argument
    : _ a b ...
      #' + a b ...
 
+define : main args
 ; format #t "this breaks\n"
 ; add-with-argument 
-format #t "returns 1: ~A\n" : add-with-argument 1
+  format #t "returns 1: ~A\n" : add-with-argument 1

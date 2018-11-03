@@ -1,8 +1,11 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
 guile-2.0 -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile-2.0 -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -s "$0" "$@"
+exec -a "$0" guile-2.0 -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples comment-server)' -c '' "$@"
 ; !#
+
+define-module : examples comment-server
+    . #:export : main
 
 use-modules 
   web server
@@ -57,8 +60,10 @@ define : uri-comment-showing-handler request request-body
       add-comment request request-body global-comment-hash-table
       show-comments request global-comment-hash-table
 
-display "Server starting. Test it at http://127.0.0.1:8083
-                 Hit CTRL-C twice to stop the server.
-"
 
-run-server uri-comment-showing-handler 'http ' : #:port 8083
+define : main args
+    display "Server starting. Test it at http://127.0.0.1:8083
+                     Hit CTRL-C twice to stop the server.
+    "
+    
+    run-server uri-comment-showing-handler 'http ' : #:port 8083

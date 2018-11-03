@@ -1,7 +1,7 @@
 #!/bin/sh
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile -L ~/wisp --language=wisp -s $0 "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples evaluate-r7rs-benchmark)' -c '' "$@"
 !#
 
 ;; Evaluate the benchmarks from ecraven at http://ecraven.github.io/r7rs-benchmarks/benchmark.html
@@ -10,6 +10,9 @@ exec guile -L ~/wisp --language=wisp -s $0 "$@"
 ;; example usage: 
 ;; $ for i in bigloo bones chez chibi chicken- chickencsi- cyclone femtolisp foment gambitc gauche guile ironscheme kawa larceny mit mosh petite picrin racket rhizome rscheme s9fes sagittarius scheme48- stalin tinyscheme vicare ypsilon; do echo $i $(./evaluate-r7rs-benchmark.w guile-ecraven-benchmarks-result-2017-08-13.csv $i | grep Geom -A 2 | grep -v = | grep .); done | sed 's/(//' > evaluate-r7rs-benchmark.data
 ;; $ echo -e 'set xtics rotate by 90 right\nplot "< sort -g -k2 evaluate-r7rs-benchmark.data" using 0:2:xtic(1) with lines title "runtime: geometric mean multiple of fastest", "< sort -g -k2 evaluate-r7rs-benchmark.data" using 0:3:xtic(1) with lines title "successful tests"' | gnuplot -p
+
+define-module : examples evaluate-r7rs-benchmark
+    . #:export : main
 
 import : ice-9 rdelim
          srfi srfi-1
@@ -84,27 +87,28 @@ define project-prefix
        . "guile"
        car : cdr : cdr args
 
-let*
-  : port : open-input-file csv-file
-    data-by-project : read-csv port
-    data-min-by-test : min-alist-by-test data-by-project
-    guile-data : select-project-data data-by-project project-prefix
-  display "=== Best times ===\n\n"
-  pretty-print : sort data-min-by-test (λ (x y) (string<? (car x) (car y)))
-  newline
-  format #t "=== ~a times ===\n\n" : string-locale-titlecase project-prefix
-  pretty-print : sort guile-data (λ (x y) (string<? (car x) (car y)))
-  newline
-  format #t "=== ~a slowdown ===\n\n" : string-locale-titlecase project-prefix
-  pretty-print : get-multiples guile-data data-min-by-test
-  newline
-  format #t "=== ~a Geometric Mean slowdown (successful tests / total tests) ===\n\n" : string-locale-titlecase project-prefix
-  format #t "~a (~a / ~a)"
-     if : null? : get-multiples guile-data data-min-by-test
-        . #f
-        expt
-           apply * : get-multiples guile-data data-min-by-test
-           / 1 : length : get-multiples guile-data data-min-by-test
-     length : remove (λ(x) (equal? #f (string->number (car (cdr x))))) guile-data
-     length guile-data
-  newline
+define : main args
+    let*
+      : port : open-input-file csv-file
+        data-by-project : read-csv port
+        data-min-by-test : min-alist-by-test data-by-project
+        guile-data : select-project-data data-by-project project-prefix
+      display "=== Best times ===\n\n"
+      pretty-print : sort data-min-by-test (λ (x y) (string<? (car x) (car y)))
+      newline
+      format #t "=== ~a times ===\n\n" : string-locale-titlecase project-prefix
+      pretty-print : sort guile-data (λ (x y) (string<? (car x) (car y)))
+      newline
+      format #t "=== ~a slowdown ===\n\n" : string-locale-titlecase project-prefix
+      pretty-print : get-multiples guile-data data-min-by-test
+      newline
+      format #t "=== ~a Geometric Mean slowdown (successful tests / total tests) ===\n\n" : string-locale-titlecase project-prefix
+      format #t "~a (~a / ~a)"
+         if : null? : get-multiples guile-data data-min-by-test
+            . #f
+            expt
+               apply * : get-multiples guile-data data-min-by-test
+               / 1 : length : get-multiples guile-data data-min-by-test
+         length : remove (λ(x) (equal? #f (string->number (car (cdr x))))) guile-data
+         length guile-data
+      newline

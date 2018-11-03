@@ -1,8 +1,11 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
 guile-2.0 -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile-2.0 -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -s "$0" "$@"
+exec -a "$0" guile-2.0 -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples upload-server)' -c '' "$@"
 ; !#
+
+define-module : examples upload-server
+    . #:export : main
 
 import
   web server
@@ -154,8 +157,9 @@ define : file-upload-handler request POST-data
       upload request POST-data
       list-files
 
-display "Server starting. Test it at http://127.0.0.1:8083
-                 Hit CTRL-C twice to stop the server.
+define : main args
+    display "Server starting. Test it at http://127.0.0.1:8083
+                     Hit CTRL-C twice to stop the server.
 "
-
-run-server file-upload-handler 'http ` : #:addr ,INADDR_ANY #:port 8083
+    
+    run-server file-upload-handler 'http ` : #:addr ,INADDR_ANY #:port 8083

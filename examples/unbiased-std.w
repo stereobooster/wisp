@@ -1,5 +1,11 @@
-define-module : example unbiased-std
-              . #:export : std
+#!/usr/bin/env sh
+# -*- wisp -*-
+guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples unbiased-std)' -c '' "$@"
+; !#
+
+define-module : examples unbiased-std
+              . #:export : std main
 
 define factors⁻¹
   ' ;; from https://en.wikipedia.org/wiki/Unbiased_estimation_of_standard_deviation#Results_for_the_normal_distribution
@@ -23,9 +29,11 @@ define : std . vals
             factor (or (assoc-ref factors⁻¹ len) 1)
           * (/ 1 factor) : sqrt : * (/ 1 (- len 1)) : apply + : map (λ(x) (expt (- x mean) 2)) vals .
 
-;; quick test
-let : : res : std 0 0 3
-  when : not : > 0.01 : abs : - res : * 1.129 : sqrt 3 ;; calculated by hand
-         format #t "Bug: (std 0 0 3) gives ~a instead of 1.995\n" res
-
-write : std 5860.16 6141.81 6088.67
+define : main args
+    ;; quick test
+    let : : res : std 0 0 3
+      when : not : > 0.01 : abs : - res : * 1.129 : sqrt 3 ;; calculated by hand
+             format #t "Bug: (std 0 0 3) gives ~a instead of 1.995\n" res
+    
+    write : std 5860.16 6141.81 6088.67
+    newline

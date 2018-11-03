@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples downloadmesh)' -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples downloadmesh)' -c '' "$@"
 ; !#
 
 ;;; downloadmesh --- multi-source swarming downloads via HTTP
@@ -145,6 +145,8 @@ define : serve folder-path
     define : handler-with-path request body
         server-file-download-handler folder-path request body
     ;; fibers server
+    format : current-error-port
+           . "Serving files on http://127.0.0.1:~d\n" 8083
     run-server handler-with-path #:family AF_INET #:port 8083 #:addr INADDR_ANY
     ;; standard server
     ;; run-server handler-with-path 'http `(#:family ,AF_INET #:addr ,INADDR_ANY #:port 8083)
@@ -178,7 +180,7 @@ define : main args
          help args
        : member "--test" arguments
          test
-       : and {(length arguments) > 1} : equal? "--server" : car arguments
+       : and {(length arguments) > 1} : equal? "--serve" : car arguments
          serve : second arguments
        else
          download-file : car arguments

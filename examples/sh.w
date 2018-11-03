@@ -1,12 +1,12 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples sh) main)' -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples sh)' -c '' "$@"
 ; !#
 
 ;; simplest way to run shell commands
 
 define-module : examples sh
-              . #:export : sh
+              . #:export : sh main
 
 use-modules : srfi srfi-1
 

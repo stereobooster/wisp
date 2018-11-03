@@ -1,10 +1,12 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile -L $(dirname $(dirname $(realpath "$0"))) -x .w --language=wisp -e '(@@ (examples hamming-file) main)' -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) -x .w --language=wisp -e '(examples hamming-file)' -c '' "$@"
 ; !#
 
 define-module : examples hamming-file
+    . #:export : main
+
 import : examples doctests
          srfi srfi-1 ; list operations
          srfi srfi-37 ; commandline parsing

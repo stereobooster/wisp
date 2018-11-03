@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples ensemble-estimation) main)' -l $(dirname $(realpath "$0"))/cholesky.w -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples ensemble-estimation)' -c '' "$@"
 ; !#
 
 ;; Simple Ensemble Square Root Filter to estimate function parameters
@@ -36,7 +36,7 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 define-module : examples ensemble-estimation 
               . #:export (EnSRF H standard-deviation-from-deviations 
                           make-covariance-matrix-with-offdiagonals-using-stds
-                          x-deviations->y-deviations x^steps)
+                          x-deviations->y-deviations x^steps main)
 
 use-modules : srfi srfi-42 ; list-ec
               srfi srfi-9 ; records

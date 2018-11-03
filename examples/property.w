@@ -1,17 +1,13 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples property) main)' -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples property)' -c '' "$@"
 ; !#
 
 define-module : examples property
               . #:export : main
 
-; FIXME: this does not work when called from guile, but it works when
-; first translating it to scheme and then calling the scheme file.
-
-; The following works:
-
-; guile ../wisp.scm property.w > property.scm; guile -e '(@@ (examples property) main)' -s property.scm 
+; FIXME: this does not work when parsed as script from guile (with the -s switch), 
+;        but it works when calling it as module as shown above.
 
 define y 5
 define-syntax z

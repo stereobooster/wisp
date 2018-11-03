@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples doctests) main)' -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples doctests)' -c '' "$@"
 ; !#
 
 ;;; doctests --- simple testing by adding procedure-properties with tests.
@@ -45,7 +45,7 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 
 
 define-module : examples doctests
-              . #:export : doctests-testmod
+              . #:export : doctests-testmod main
 
 import : ice-9 optargs
          ice-9 rdelim

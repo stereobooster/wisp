@@ -1,8 +1,11 @@
 #!/usr/bin/env sh
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples map-product-sums) main)' -s "$0" "$@"
+# -*- wisp -*-
+guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples map-product-sums)' -c '' "$@"
 ; !#
 
 define-module : examples map-product-sums
+   . #:export : main
 
 use-modules : srfi srfi-42
 

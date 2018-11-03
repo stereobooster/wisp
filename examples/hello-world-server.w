@@ -1,8 +1,11 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples hello-world-server)' -c '' "$@"
 ; !#
+
+define-module : examples hello-world-server
+    . #:export : main
 
 use-modules 
   web server
@@ -40,7 +43,8 @@ define : hello-world-handler request request-body
     header
     content
 
-display "Server starting. Test it at http://127.0.0.1:8084"
-newline
-
-run-server hello-world-handler 'http ' : #:port 8084
+define : main args
+  display "Server starting. Test it at http://127.0.0.1:8084"
+  newline
+  
+  run-server hello-world-handler 'http ' : #:port 8084

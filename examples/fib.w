@@ -1,8 +1,11 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
 guile-2.0 -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile-2.0 -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -s "$0" "$@"
+exec -a "$0" guile-2.0 -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples fib)' -c '' "$@"
 ; !#
+
+define-module : examples fib
+    . #:export : main
 
 ;; Fibonacci Functions
 
@@ -40,5 +43,6 @@ define : fibcurl2 n
             . v
             rek { i + 1 } v { u + v }
 
-display : fibcurl2 5
-newline
+define : main args
+    display : fibcurl2 5
+    newline
