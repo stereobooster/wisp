@@ -1,7 +1,12 @@
 #!/usr/bin/env sh
 # -*- wisp -*-
-guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) -x .w --language=wisp -e '(examples benchmark)' -c '' "$@"
+# set Guile if unset
+if [ -z ${GUILE+x} ]; then
+	GUILE=guile
+fi
+echo ${GUILE}
+"${GUILE}" -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
+exec -a "$0" "${GUILE}" -L $(dirname $(dirname $(realpath "$0"))) -x .w --language=wisp -e '(examples benchmark)' -c '' "$@"
 ; !#
 
 define-module : examples benchmark
