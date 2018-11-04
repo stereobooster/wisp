@@ -89,9 +89,10 @@ define : help . args ; args used for simpler option parsing
 Encode or decode the input, file or stdin.
 
   -h --help      display this help and exit
-  -E --encode-text-bits 
+     --test      run unit tests
+  -E --encode-text-bits
                  encode 7 bits given as numbers (0 or 1) using an 11,7 hamming code
-  -D --decode-text-bits 
+  -D --decode-text-bits
                  decode 11 bits given as numbers (0 or 1) using an 11,7 hamming code
   -V --version   output version information and exit
   -d [LEVEL] --debug[=LEVEL]
