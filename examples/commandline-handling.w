@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # -*- wisp -*-
 guile-2.0 -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
 exec -a "$0" guile-2.0 -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples commandline-handling)' -c '' "$@"

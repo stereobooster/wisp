@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # -*- wisp -*-
 # set Guile if unset
 if [ -z ${GUILE+x} ]; then

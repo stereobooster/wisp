@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (guildhall ext foof-loop))'
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'

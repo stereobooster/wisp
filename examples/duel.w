@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # -*- wisp -*-
 D="$(dirname $(realpath "$0"))"
 W="$(dirname $(dirname $(realpath "$0")))"
