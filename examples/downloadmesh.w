@@ -54,7 +54,7 @@ define : download-file url
           headers `((range bytes (0 . #f))) ;; minimal range header so that the server can serve a content range
         let-values : : (resp body) : http-get uri #:headers headers
           pretty-print resp
-          pretty-print : bytevector->string body "ISO-8859-1"
+          pretty-print : if (string? body) body : bytevector->string body "ISO-8859-1"
 
 
 define : list-files files-path
