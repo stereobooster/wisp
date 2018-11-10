@@ -56,16 +56,28 @@ import
     web response
     web uri
     ice-9 iconv ;; bytevector->string
-    ice-9 ftw ; file tree walk
+    ice-9 ftw ; file tree walk TODO: only import what I need
     only (ice-9 ftw) file-system-fold
+    only (ice-9 vlist) alist->vhash vhash-cons vhash-assoc
     only (web http) declare-opaque-header!
     examples doctests
+
+define-record-type <served>
+    served serverpath accesspath sha256
+    . served-file?
+    serverpath served-serverpath
+    accesspath served-accesspath
+    sha256 served-sha256
 
 define xalt : list ;; per file: (hash IP)
 define xnalt : list ;; per file: (hash IP)
 define : assoc-item l k
     assoc k l
 define served-files : list ;; (<served> ...)
+define served-hashes : alist->vhash '()
+define served-paths : alist->vhash '()
+;; additional servers whose IP we can hand out
+define seed-server-ips : list "2003:f4:4bd5:8898:bd45:2049:139f:62d8"
 
 define : declare-download-mesh-headers!
     ;; TODO: add validation to the header instead of giving them as opaque strings
@@ -85,15 +97,14 @@ define : download-file url
           pretty-print : if (string? body) body : bytevector->string body "ISO-8859-1"
 
 
-define : list-files files-path
+define : list-files
   let*
-      : files : scandir files-path
+      : files : map served-serverpath served-files
         file-list
           if : not files
-            begin : mkdir files-path
-                    list "." ".."
-            map : λ(x) : string-append "<li><a href=\"files/" x "\">" x "</a></li>\n"
-                . files
+               list "EMPTY: no served files"
+               map : λ(x) : string-append "<li><a href=\"" x "\">" x "</a></li>\n"
+                   . files
       string-join
         append
           list "<!DOCTYPE html><html><head><title>Files</title></head><body><h2>Upload</h2><form action='/upload' method='POST' enctype='multipart/form-data'>
@@ -124,27 +135,31 @@ define : join-path-elements-safely path-elements
             . path-elements
         . "/" ;; TODO: make platform independent
 
-define : server-serve-file folder-path range begin-end path
+define : server-serve-file range begin-end path
    let*
-       : abspath : string-join (list folder-path path) "/"
-         data : get-file-chunk abspath (car begin-end) (cdr begin-end)
+       : served-file : vhash-assoc path served-paths
+         data 
+             if : not served-file
+                 . "File not found"
+                 get-file-chunk (served-accesspath (cdr served-file)) (car begin-end) (cdr begin-end)
+         code : if (not served-file) 400 : if range 206 200
        values
           build-response
             . #:headers `((content-type . (application/octet-stream))
                           (accept-ranges . (bytes))
                           (X-Alt . ,(string-join (remove not (map second xalt)) ",")))
-            . #:code : if range 206 200
+            . #:code code
           . data
 
-define : server-list-files folder-path
+define : server-list-files
        values
           build-response 
             . #:headers `((content-type . (text/html))
                           (accept-ranges . (bytes)))
-          list-files folder-path
+          list-files
 
 
-define : server-file-download-handler folder-path request body
+define : server-file-download-handler request body
     ;; TODO: serve range requests, see https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
     ;; TODO: return status code 206 for range requests (also for initial?): https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/206
     let*
@@ -164,10 +179,10 @@ define : server-file-download-handler folder-path request body
         pretty-print : list 'xalt xalt 'ipv6 ipv6 'peer peer
         cond
             : null? path-elements
-              server-list-files folder-path
+              server-list-files
             else
               set! xalt : alist-cons path (cons ipv6 (if (assoc-ref xalt path) (assoc-ref xalt path) (list))) xalt
-              server-serve-file folder-path range begin-end path
+              server-serve-file range begin-end path
 
 define : sha256sum path
   let*
@@ -177,13 +192,6 @@ define : sha256sum path
     first
         string-split output #\space
 
-
-define-record-type <served>
-    served serverpath accesspath sha256
-    . served-file?
-    serverpath served-serverpath
-    accesspath served-accesspath
-    sha256 served-sha256
 
 define : hash-folder-tree folder-path
     ## 
@@ -207,16 +215,24 @@ define : hash-folder-tree folder-path
     define error ignore
     file-system-fold enter? leaf down up skip error (list) folder-path
 
+define : update-served-files folder-path
+    define to-serve : hash-folder-tree folder-path
+    set! served-files to-serve
+    map
+        λ : x
+            set! served-hashes : vhash-cons (served-sha256 x) x served-hashes
+            set! served-paths : vhash-cons (served-serverpath x) x served-hashes
+        . to-serve
+
 define : serve folder-path ip
     define : handler-with-path request body
-        server-file-download-handler folder-path request body
-    define to-serve : hash-folder-tree folder-path
+        server-file-download-handler request body
     define s
         let : : s : socket AF_INET6 SOCK_STREAM 0
             setsockopt s SOL_SOCKET SO_REUSEADDR 1
             bind s AF_INET6 (inet-pton AF_INET6 ip) 8083
             . s
-    set! served-files to-serve
+    update-served-files folder-path
 
     format : current-error-port
            . "Serving ~d files on http://[~a]:~d\n" (length served-files) ip 8083
