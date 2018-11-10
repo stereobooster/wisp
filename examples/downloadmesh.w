@@ -220,7 +220,7 @@ define : server-file-download-handler request body
 
 define : sha256sum path
   let*
-    : port : open-input-pipe : string-append "sha256sum " path
+    : port : open-input-pipe : string-append "sha256sum \"" path "\""
       output : read-string port
     close port
     first
