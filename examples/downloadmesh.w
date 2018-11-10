@@ -9,8 +9,15 @@ exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x 
 ;; This follows the Gnutella download mesh, and adds a parity option
 ;; to compensate variable upload speeds by clients.
 
+;; Provide the parity block in the headers.
+
 ;; Download mesh specification:
 ;; http://rfc-gnutella.sourceforge.net/developer/tmp/download-mesh.html
+
+;; To make this robust against attackers, it also needs THEX and
+;; TigerTreeHash to allow for verifying individual chunks.
+;; bitprint-urn: http://www.nuke24.net/docs/2015/HashURNs.html
+;; https://web.archive.org/web/20091203212059/http://open-content.net/specs/draft-jchapweske-thex-02.html
 
 define-module : examples downloadmesh
               . #:export : main serve download-file
