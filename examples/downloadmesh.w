@@ -12,7 +12,7 @@ exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x 
 ;; http://rfc-gnutella.sourceforge.net/developer/tmp/download-mesh.html
 
 define-module : examples downloadmesh
-              . #:export : main
+              . #:export : main serve download-file
 
 import
     only (srfi srfi-27) random-source-make-integers
@@ -137,8 +137,8 @@ define : server-file-download-handler folder-path request body
           ip : sockaddr:addr peer
           port : sockaddr:port peer
           ;; ipv4 : inet-ntop AF_INET ip
-          ipv6 : inet-ntop AF_INET6 peer
-        pretty-print xalt
+          ipv6 : inet-ntop AF_INET6 ip
+        pretty-print : list 'xalt xalt 'ipv6 ipv6 'peer peer
         cond
             : null? path-elements
               server-list-files folder-path
@@ -149,13 +149,22 @@ define : server-file-download-handler folder-path request body
 define : serve folder-path
     define : handler-with-path request body
         server-file-download-handler folder-path request body
-    ;; fibers server
+    define s
+        let : : s : socket AF_INET6 SOCK_STREAM 0
+            setsockopt s SOL_SOCKET SO_REUSEADDR 1
+            bind s AF_INET6 (inet-pton AF_INET6 "::") 8083
+            . s
+
     format : current-error-port
            . "Serving files on http://[::1]:~d\n" 8083
+    ;; fibers server
     ;; run-server handler-with-path #:family AF_INET #:port 8083 #:addr INADDR_ANY
-    run-server handler-with-path #:family AF_INET6 #:port 8083 #:addr (inet-pton AF_INET6 "::") #:socket (socket AF_INET6 SOCK_STREAM 0)
+    run-server handler-with-path #:family AF_INET6 #:port 8083 #:addr (inet-pton AF_INET6 "::") #:socket s
     ;; standard server
-    ;; run-server handler-with-path 'http `(#:family ,AF_INET6 #:addr (inet-pton AF_INET6 "::") #:port 8083 #:socket ,(socket AF_INET6 SOCK_STREAM 0))
+    ;; IPv4
+    ;; run-server handler-with-path 'http `(#:host "localhost" #:family ,AF_INET #:addr ,INADDR_ANY #:port 8083)
+    ;; IPv6
+    ;; run-server handler-with-path 'http `(#:family ,AF_INET6 #:addr (inet-pton AF_INET6 "::") #:port 8083 #:socket ,s)
 
 define : help-message args
        ##
