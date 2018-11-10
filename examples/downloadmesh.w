@@ -40,12 +40,16 @@ import
     srfi srfi-11 ;; let-values
     srfi srfi-42
     srfi srfi-1 ;; list operations
+    only (srfi srfi-9) define-record-type
+    only (ice-9 popen) open-input-pipe
+    only (ice-9 rdelim) read-string
     ice-9 optargs
     ice-9 format
     ice-9 match
     ice-9 threads
     ice-9 pretty-print
     ice-9 binary-ports
+    only (ice-9 ftw) file-system-fold
     fibers web server ;; using fibers, mind the different arguments of run-server!
     ;; web server ;; standard Guile server, mind the different arguments of run-server!
     web client
@@ -164,6 +168,44 @@ define : server-file-download-handler folder-path request body
             else
               set! xalt : alist-cons path (cons ipv6 (if (assoc-ref xalt path) (assoc-ref xalt path) (list))) xalt
               server-serve-file folder-path range begin-end path
+
+define : sha256sum path
+  let*
+    : port : open-input-pipe : string-append "sha256sum " path
+      output : read-string port
+    close port
+    first
+        string-split output #\space
+
+
+define-record-type <served>
+    served serverpath accesspath sha256
+    . served-file?
+    serverpath served-serverpath
+    accesspath served-accesspath
+    sha256 served-sha256
+
+define : hash-folder-tree folder-path
+    ## 
+        tests 
+            test-equal : list : served "test" "files/test" "b5bb9d8014a0f9b1d61e21e796d78dccdf1352f23cd32812f4850b878ae4944c"
+                hash-folder-tree "files"
+    ;; add all file paths
+    define : leaf name stat result
+        let : : serverpath : string-drop name : + 1 : string-length folder-path
+          cons : served serverpath name : sha256sum name
+               . result
+    ;; skip dot-directories
+    define : enter? name stat result
+        not (string-prefix? "." (basename name))
+    ;; ignore directories
+    define (ignore name stat result) result
+    define down ignore
+    define up ignore
+    define skip ignore
+    ;; ignore unreadable files/directories
+    define error ignore
+    file-system-fold enter? leaf down up skip error (list) folder-path
 
 define : serve folder-path
     define : handler-with-path request body
