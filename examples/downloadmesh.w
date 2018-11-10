@@ -61,6 +61,11 @@ import
     only (ice-9 vlist) alist->vhash vhash-cons vhash-assoc
     only (web http) declare-opaque-header!
     examples doctests
+    only (oop goops) define-generic define-method <string>
+
+define-generic length
+define-method : length (str <string>)
+    string-length str
 
 define-record-type <served>
     served serverpath accesspath sha256
@@ -135,9 +140,25 @@ define : join-path-elements-safely path-elements
             . path-elements
         . "/" ;; TODO: make platform independent
 
+define : resolve-urn urn
+    define sha256-prefix "urn:sha256:"
+    pretty-print urn
+    if : string-prefix-ci? sha256-prefix urn
+         vhash-assoc (string-drop urn (length sha256-prefix)) served-hashes
+         . #f
+
+define : resolve-path path
+    ;; URN: https://www.ietf.org/rfc/rfc2169.txt
+    ;; extended to simplify my parsing: http://www.nuke24.net/docs/2015/HashURNs.html
+    define uri-res-prefix "uri-res/raw/"
+    pretty-print path
+    if : string-prefix-ci? uri-res-prefix path
+        resolve-urn : string-drop path : length uri-res-prefix
+        vhash-assoc path served-paths
+
 define : server-serve-file range begin-end path
    let*
-       : served-file : vhash-assoc path served-paths
+       : served-file : resolve-path path
          data 
              if : not served-file
                  . "File not found"
@@ -200,7 +221,7 @@ define : hash-folder-tree folder-path
                 hash-folder-tree "files"
     ;; add a <served> for every file
     define : leaf name stat result
-        let : : serverpath : string-drop name : + 1 : string-length folder-path
+        let : : serverpath : string-drop name : + 1 : length folder-path
           cons : served serverpath name : sha256sum name
                . result
     ;; skip dot-directories
@@ -233,6 +254,8 @@ define : serve folder-path ip
             bind s AF_INET6 (inet-pton AF_INET6 ip) 8083
             . s
     update-served-files folder-path
+    pretty-print served-files
+    pretty-print served-hashes
 
     format : current-error-port
            . "Serving ~d files on http://[~a]:~d\n" (length served-files) ip 8083
