@@ -27,8 +27,8 @@ import
     ice-9 threads
     ice-9 pretty-print
     ice-9 binary-ports
-    ;; fibers web server ;; using fibers, mind the different arguments of run-server!
-    web server ;; standard Guile server, mind the different arguments of run-server!
+    fibers web server ;; using fibers, mind the different arguments of run-server!
+    ;; web server ;; standard Guile server, mind the different arguments of run-server!
     web client
     web request
     web response
@@ -153,9 +153,9 @@ define : serve folder-path
     format : current-error-port
            . "Serving files on http://[::1]:~d\n" 8083
     ;; run-server handler-with-path #:family AF_INET #:port 8083 #:addr INADDR_ANY
-    ;; run-server handler-with-path #:family AF_INET6 #:port 8083 #:addr (inet-pton AF_INET6 "::") #:socket (socket AF_INET6 SOCK_STREAM 0)
+    run-server handler-with-path #:family AF_INET6 #:port 8083 #:addr (inet-pton AF_INET6 "::") #:socket (socket AF_INET6 SOCK_STREAM 0)
     ;; standard server
-    run-server handler-with-path 'http `(#:family ,AF_INET6 #:addr (inet-pton AF_INET6 "::") #:port 8083 #:socket ,(socket AF_INET6 SOCK_STREAM 0))
+    ;; run-server handler-with-path 'http `(#:family ,AF_INET6 #:addr (inet-pton AF_INET6 "::") #:port 8083 #:socket ,(socket AF_INET6 SOCK_STREAM 0))
 
 define : help-message args
        ##
