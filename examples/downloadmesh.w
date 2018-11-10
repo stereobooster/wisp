@@ -74,8 +74,8 @@ define-record-type <served>
     accesspath served-accesspath
     sha256 served-sha256
 
-define xalt : list ;; per file: (hash IP)
-define xnalt : list ;; per file: (hash IP)
+define xalt : list ;; per file: (hash IP IP ...)
+define xnalt : list ;; per file: (hash IP IP ...)
 define : assoc-item l k
     assoc k l
 define served-files : list ;; (<served> ...)
@@ -156,6 +156,10 @@ define : resolve-path path
         resolve-urn : string-drop path : length uri-res-prefix
         vhash-assoc path served-paths
 
+define : xalt->header xalt
+    pretty-print xalt
+    string-join (remove not (append (map second xalt) seed-server-ips)) ","
+
 define : server-serve-file range begin-end path
    let*
        : served-file : resolve-path path
@@ -168,7 +172,7 @@ define : server-serve-file range begin-end path
           build-response
             . #:headers `((content-type . (application/octet-stream))
                           (accept-ranges . (bytes))
-                          (X-Alt . ,(string-join (remove not (map second xalt)) ",")))
+                          (X-Alt . ,(xalt->header xalt)))
             . #:code code
           . data
 
@@ -192,6 +196,8 @@ define : server-file-download-handler request body
                  third range
           path-elements : split-and-decode-uri-path : uri-path : request-uri request
           path : join-path-elements-safely path-elements
+          served-file : vhash-assoc path served-paths
+          sha256 : and served-file : served-sha256 : cdr served-file
           peer : getpeername : request-port request
           ip : sockaddr:addr peer
           port : sockaddr:port peer
@@ -202,7 +208,11 @@ define : server-file-download-handler request body
             : null? path-elements
               server-list-files
             else
-              set! xalt : alist-cons path (cons ipv6 (if (assoc-ref xalt path) (assoc-ref xalt path) (list))) xalt
+              set! xalt
+                  delete-duplicates
+                      alist-cons sha256
+                          delete-duplicates : cons ipv6 : or (assoc-ref xalt sha256) : list
+                          . xalt
               server-serve-file range begin-end path
 
 define : sha256sum path
