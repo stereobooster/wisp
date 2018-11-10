@@ -49,7 +49,6 @@ import
     ice-9 threads
     ice-9 pretty-print
     ice-9 binary-ports
-    only (ice-9 ftw) file-system-fold
     fibers web server ;; using fibers, mind the different arguments of run-server!
     ;; web server ;; standard Guile server, mind the different arguments of run-server!
     web client
@@ -58,6 +57,7 @@ import
     web uri
     ice-9 iconv ;; bytevector->string
     ice-9 ftw ; file tree walk
+    only (ice-9 ftw) file-system-fold
     only (web http) declare-opaque-header!
     examples doctests
 
@@ -207,19 +207,19 @@ define : hash-folder-tree folder-path
     define error ignore
     file-system-fold enter? leaf down up skip error (list) folder-path
 
-define : serve folder-path
+define : serve folder-path ip
     define : handler-with-path request body
         server-file-download-handler folder-path request body
     define to-serve : hash-folder-tree folder-path
     define s
         let : : s : socket AF_INET6 SOCK_STREAM 0
             setsockopt s SOL_SOCKET SO_REUSEADDR 1
-            bind s AF_INET6 (inet-pton AF_INET6 "::") 8083
+            bind s AF_INET6 (inet-pton AF_INET6 ip) 8083
             . s
     set! served-files to-serve
 
     format : current-error-port
-           . "Serving ~d files on http://[::1]:~d\n" (length served-files) 8083
+           . "Serving ~d files on http://[~a]:~d\n" (length served-files) ip 8083
     ;; fibers server
     ;; run-server handler-with-path #:family AF_INET #:port 8083 #:addr INADDR_ANY
     run-server handler-with-path #:family AF_INET6 #:port 8083 #:addr (inet-pton AF_INET6 "::") #:socket s
@@ -250,6 +250,12 @@ define %this-module : current-module
 define : test
          doctests-testmod %this-module
 
+define : opt-member arguments opt
+   let : : opt : member opt arguments
+      if : or (not opt) : < 2 : length opt
+         . #f
+         . opt
+
 define : main args
    declare-download-mesh-headers!
    let : : arguments : cdr args
@@ -259,7 +265,8 @@ define : main args
        : member "--test" arguments
          test
        : and {(length arguments) > 1} : equal? "--serve" : car arguments
-         serve : second arguments
+         let : : ip-opt : or (opt-member arguments "--ip") '("--ip" "::")
+             serve (second arguments) (second ip-opt)
        else
          download-file : car arguments
 
