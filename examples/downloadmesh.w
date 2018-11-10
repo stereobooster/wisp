@@ -8,6 +8,9 @@ exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x 
 ;; This follows the Gnutella download mesh, and adds a parity option
 ;; to compensate variable upload speeds by clients.
 
+;; Download mesh specification:
+;; http://rfc-gnutella.sourceforge.net/developer/tmp/download-mesh.html
+
 define-module : examples downloadmesh
               . #:export : main
 
@@ -24,8 +27,8 @@ import
     ice-9 threads
     ice-9 pretty-print
     ice-9 binary-ports
-    fibers web server ;; using fibers, mind the different arguments of run-server!
-    ;; web server ;; standard Guile server, mind the different arguments of run-server!
+    ;; fibers web server ;; using fibers, mind the different arguments of run-server!
+    web server ;; standard Guile server, mind the different arguments of run-server!
     web client
     web request
     web response
@@ -52,6 +55,8 @@ define : download-file url
     let*
         : uri : string->uri-reference url
           headers `((range bytes (0 . #f))) ;; minimal range header so that the server can serve a content range
+        display uri
+        newline
         let-values : : (resp body) : http-get uri #:headers headers
           pretty-print resp
           pretty-print : if (string? body) body : bytevector->string body "ISO-8859-1"
@@ -131,14 +136,14 @@ define : server-file-download-handler folder-path request body
           peer : getpeername : request-port request
           ip : sockaddr:addr peer
           port : sockaddr:port peer
-          ipv4 : inet-ntop AF_INET ip
-          ;; ipv6 : inet-ntop AF_INET6 peer
+          ;; ipv4 : inet-ntop AF_INET ip
+          ipv6 : inet-ntop AF_INET6 peer
         pretty-print xalt
         cond
             : null? path-elements
               server-list-files folder-path
             else
-              set! xalt : alist-cons path (cons ipv4 (if (assoc-ref xalt path) (assoc-ref xalt path) (list))) xalt
+              set! xalt : alist-cons path (cons ipv6 (if (assoc-ref xalt path) (assoc-ref xalt path) (list))) xalt
               server-serve-file folder-path range begin-end path
 
 define : serve folder-path
@@ -146,10 +151,11 @@ define : serve folder-path
         server-file-download-handler folder-path request body
     ;; fibers server
     format : current-error-port
-           . "Serving files on http://127.0.0.1:~d\n" 8083
-    run-server handler-with-path #:family AF_INET #:port 8083 #:addr INADDR_ANY
+           . "Serving files on http://[::1]:~d\n" 8083
+    ;; run-server handler-with-path #:family AF_INET #:port 8083 #:addr INADDR_ANY
+    ;; run-server handler-with-path #:family AF_INET6 #:port 8083 #:addr (inet-pton AF_INET6 "::") #:socket (socket AF_INET6 SOCK_STREAM 0)
     ;; standard server
-    ;; run-server handler-with-path 'http `(#:family ,AF_INET #:addr ,INADDR_ANY #:port 8083)
+    run-server handler-with-path 'http `(#:family ,AF_INET6 #:addr (inet-pton AF_INET6 "::") #:port 8083 #:socket ,(socket AF_INET6 SOCK_STREAM 0))
 
 define : help-message args
        ##
