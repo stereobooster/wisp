@@ -18,6 +18,7 @@ bootstrapping does not pre-compile correctly anymore         | owner:Arne Babenh
 wisp-in-wisp: only parses the first 272 lines, for some reason. | owner:, open:False, id:4cb6c556d7136609e2da9ab3fc045a39847f1ef3, time:1377014682.98
 adjust runtests.sh to use testrunner.w                       | owner:, open:False, id:4d4e76343fe09f0ec72a3e5eb0077bd16e12f9d5, time:1415127234.43
 wisp-scheme: REPL: sometimes the output of a command is only shown after typing the next non-empty line. | owner:, open:False, id:56d2f81e9c89accb0b0bc668ddc8feed3b60e9b2, time:1416584789.23
+exec needs bash, not sh                                      | owner:, open:True, id:59c5f28f0b233bf0d21ce91050bf413c29fd6a45, time:1541409153.24
 implement wisp in wisp                                       | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:6299306916706410702029289bf32edab1e7f17c, time:1367113341.49
 support other types of brackets, like square brackets.       | owner:Arne Babenhauserheide <bab@draketo.de>, open:False, id:6749f3abcb9455eac9271efd8265797bce114239, time:1389134151.98
 linebreaks in parens still break                             | owner:, open:False, id:6797987c7834a53358fb4ebbd8b9b36c2c4a8f01, time:1379004764.14
