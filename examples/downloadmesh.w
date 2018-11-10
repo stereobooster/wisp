@@ -59,7 +59,7 @@ import
     ice-9 iconv ;; bytevector->string
     ice-9 ftw ; file tree walk TODO: only import what I need
     only (ice-9 ftw) file-system-fold
-    only (ice-9 vlist) alist->vhash vhash-cons vhash-assoc
+    only (ice-9 vlist) alist->vhash vhash-cons vhash-assoc vhash-fold
     only (web http) declare-opaque-header!
     examples doctests
     only (oop goops) define-generic define-method <string>
@@ -153,6 +153,7 @@ define : resolve-path path
     ;; extended to simplify my parsing: http://www.nuke24.net/docs/2015/HashURNs.html
     define uri-res-prefix "uri-res/raw/"
     pretty-print path
+    vhash-fold (λ(key value result) (pretty-print key)(pretty-print value)) #f served-paths
     if : string-prefix-ci? uri-res-prefix path
         resolve-urn : string-drop path : length uri-res-prefix
         vhash-assoc path served-paths
@@ -164,6 +165,7 @@ define : xalt->header xalt
 define : server-serve-file range begin-end path
    let*
        : served-file : resolve-path path
+         foo : pretty-print served-file
          data 
              if : not served-file
                  . "File not found"
@@ -253,7 +255,7 @@ define : update-served-files folder-path
     map
         λ : x
             set! served-hashes : vhash-cons (served-sha256 x) x served-hashes
-            set! served-paths : vhash-cons (served-serverpath x) x served-hashes
+            set! served-paths : vhash-cons (served-serverpath x) x served-paths
         . to-serve
 
 define : serve folder-path ip
