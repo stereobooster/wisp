@@ -65,7 +65,7 @@ define xalt : list ;; per file: (hash IP)
 define xnalt : list ;; per file: (hash IP)
 define : assoc-item l k
     assoc k l
-define hashes : list ;; (filename hash)
+define served-files : list ;; (<served> ...)
 
 define : declare-download-mesh-headers!
     ;; TODO: add validation to the header instead of giving them as opaque strings
@@ -190,7 +190,7 @@ define : hash-folder-tree folder-path
         tests 
             test-equal : list : served "test" "files/test" "b5bb9d8014a0f9b1d61e21e796d78dccdf1352f23cd32812f4850b878ae4944c"
                 hash-folder-tree "files"
-    ;; add all file paths
+    ;; add a <served> for every file
     define : leaf name stat result
         let : : serverpath : string-drop name : + 1 : string-length folder-path
           cons : served serverpath name : sha256sum name
@@ -210,14 +210,16 @@ define : hash-folder-tree folder-path
 define : serve folder-path
     define : handler-with-path request body
         server-file-download-handler folder-path request body
+    define to-serve : hash-folder-tree folder-path
     define s
         let : : s : socket AF_INET6 SOCK_STREAM 0
             setsockopt s SOL_SOCKET SO_REUSEADDR 1
             bind s AF_INET6 (inet-pton AF_INET6 "::") 8083
             . s
+    set! served-files to-serve
 
     format : current-error-port
-           . "Serving files on http://[::1]:~d\n" 8083
+           . "Serving ~d files on http://[::1]:~d\n" (length served-files) 8083
     ;; fibers server
     ;; run-server handler-with-path #:family AF_INET #:port 8083 #:addr INADDR_ANY
     run-server handler-with-path #:family AF_INET6 #:port 8083 #:addr (inet-pton AF_INET6 "::") #:socket s
