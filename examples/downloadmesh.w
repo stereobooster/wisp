@@ -11,6 +11,17 @@ exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x 
 
 ;; Provide the parity block in the headers.
 
+;; Plan:
+;; - Content-URN-Addressed downloading (sha1/sha256)
+;; - Download from multiple trusted servers (pre-set xalt)
+;; - Download from multiple trusted clients (collect xalt)
+;; - Add bitprint from bitcollider[1] and TigerTree exchange
+;; - Verify each chunk -> can swarm from untrusted clients
+;; - Add a parity block of 5% of the file (assuming 20 clients)
+
+;; [1] things you only know when you where there when they were built: 
+;;     https://sourceforge.net/projects/bitcollider/
+
 ;; Download mesh specification:
 ;; http://rfc-gnutella.sourceforge.net/developer/tmp/download-mesh.html
 
