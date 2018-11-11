@@ -13,6 +13,7 @@ exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x 
 
 ;; Plan:
 ;; - Content-URN-Addressed downloading (sha1/sha256)
+;; - Download in chunks from a single server
 ;; - Download from multiple trusted servers (pre-set xalt)
 ;; - Download from multiple trusted clients (collect xalt)
 ;; - Add bitprint from bitcollider[1] and TigerTree exchange
@@ -70,10 +71,11 @@ define-method : length (str <string>)
     string-length str
 
 define-record-type <served>
-    served serverpath accesspath sha256
+    served serverpath accesspath size sha256
     . served-file?
     serverpath served-serverpath
     accesspath served-accesspath
+    size served-sizebytes
     sha256 served-sha256
 
 define xalt : list ;; per file: (hash IP IP ...)
@@ -99,6 +101,7 @@ define : download-file url
         : uri : string->uri-reference url
           headers `((range bytes (0 . #f))) ;; minimal range header so that the server can serve a content range
         display uri
+        ;; TODO: parse content range response headers, assemble the file from chunks
         newline
         let-values : : (resp body) : http-get uri #:headers headers
           pretty-print resp
@@ -188,7 +191,8 @@ define : server-serve-file range-requested begin-end path
                         (X-Alt . ,(xalt->header xalt)))
          headers
              if range-end
-                cons `(content-range . ,(format #f "bytes ~d-~d/*" range-begin {range-end - 1}))
+                cons `(content-range . ,(format #f "bytes ~d-~d/~d" range-begin {range-end - 1} 
+                                                            (served-sizebytes (cdr served-file))))
                      . base-headers
                 . base-headers
        values
@@ -249,12 +253,12 @@ define : sha256sum path
 define : hash-folder-tree folder-path
     ## 
         tests 
-            test-equal : list : served "test" "files/test" "b5bb9d8014a0f9b1d61e21e796d78dccdf1352f23cd32812f4850b878ae4944c"
+            test-equal : list : served "test" "files/test" 4 "b5bb9d8014a0f9b1d61e21e796d78dccdf1352f23cd32812f4850b878ae4944c"
                 hash-folder-tree "files"
     ;; add a <served> for every file
     define : leaf name stat result
         let : : serverpath : string-drop name : + 1 : length folder-path
-          cons : served serverpath name : sha256sum name
+          cons : served serverpath name (stat:size stat) (sha256sum name)
                . result
     ;; skip dot-directories
     define : enter? name stat result
