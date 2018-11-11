@@ -63,6 +63,7 @@ import
     only (web http) declare-opaque-header!
     examples doctests
     only (oop goops) define-generic define-method <string>
+    only (rnrs bytevectors) bytevector-length
 
 define-generic length
 define-method : length (str <string>)
@@ -89,7 +90,8 @@ define : declare-download-mesh-headers!
     ;; TODO: add validation to the header instead of giving them as opaque strings
     declare-opaque-header! "X-Alt" ;; good sources, list of IP:port, separated by commas. Default port 6346 may be omitted.
     declare-opaque-header! "X-NAlts" ;; bad sources, list of IP:port, separated by commas
-    declare-opaque-header! "X-Gnutella-Content-URN"
+    declare-opaque-header! "X-Gnutella-Content-URN" ;; the content
+    declare-opaque-header! "Content-Range" ;; the content returned
 
 
 define : download-file url
@@ -162,20 +164,36 @@ define : xalt->header xalt
     pretty-print xalt
     string-join (remove not (append (map second xalt) seed-server-ips)) ","
 
-define : server-serve-file range begin-end path
+define : server-serve-file range-requested begin-end path
+   define 4KiB : expt 2 12
+   define 16B : expt 2 4
+   define range-begin : car begin-end
+   define range-end
+       if range-requested
+          or (cdr begin-end) 16B
+          . #f
    let*
        : served-file : resolve-path path
          foo : pretty-print served-file
          data 
              if : not served-file
                  . "File not found"
-                 get-file-chunk (served-accesspath (cdr served-file)) (car begin-end) (cdr begin-end)
-         code : if (not served-file) 400 : if range 206 200
+                 get-file-chunk
+                     served-accesspath (cdr served-file)
+                     . range-begin
+                     . range-end
+         code : if (not served-file) 400 : if range-requested 206 200
+         base-headers `((content-type . (application/octet-stream))
+                        (accept-ranges . (bytes))
+                        (X-Alt . ,(xalt->header xalt)))
+         headers
+             if range-end
+                cons `(content-range . ,(format #f "bytes ~d-~d/*" range-begin {range-end - 1}))
+                     . base-headers
+                . base-headers
        values
           build-response
-            . #:headers `((content-type . (application/octet-stream))
-                          (accept-ranges . (bytes))
-                          (X-Alt . ,(xalt->header xalt)))
+            . #:headers headers
             . #:code code
           . data
 
@@ -190,13 +208,14 @@ define : server-list-files
 define : server-file-download-handler request body
     ;; TODO: serve range requests, see https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
     ;; TODO: return status code 206 for range requests (also for initial?): https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/206
+    pretty-print request
     let*
         : headers : request-headers request
-          range : assoc-item headers 'range
+          range-requested : assoc-item headers 'range
           begin-end
-              if : or (not range) {(length range) < 3}
+              if : or (not range-requested) {(length range-requested) < 3}
                  . '(0 . #f)
-                 third range
+                 third range-requested
           path-elements : split-and-decode-uri-path : uri-path : request-uri request
           path : join-path-elements-safely path-elements
           served-file : vhash-assoc path served-paths
@@ -216,7 +235,7 @@ define : server-file-download-handler request body
                       alist-cons sha256
                           delete-duplicates : cons ipv6 : or (assoc-ref xalt sha256) : list
                           . xalt
-              server-serve-file range begin-end path
+              server-serve-file range-requested begin-end path
 
 define : sha256sum path
   let*
