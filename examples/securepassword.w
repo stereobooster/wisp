@@ -494,6 +494,8 @@ define : word-weight word
            : s : string-append " " word " "
              cost 0
            cond
+             : string-null? : string-drop s 1
+               . cost
              : string-null? : string-drop s 2
                . cost
              else
