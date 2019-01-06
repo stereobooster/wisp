@@ -1,0 +1,116 @@
+#+title: Experience with wisp {{{NEWLINE}}} 5 years with fewer parens
+#+author: Dr. Arne Babenhauserheide \\ @@latex:\texorpdfstring{}{}@@
+
+#+options: toc:nil H:2 ^:nil todo:nil title:nil
+#+PROPERTY: header-args :exports code
+
+#+LANGUAGE: de
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [presentation]
+# #+beamer_header: \setbeameroption{hide notes}
+#+beamer_header: \setbeameroption{show notes}
+# #+beamer_header: \setbeameroption{show only notes}
+#+beamer_header: \setbeamertemplate{navigation symbols}{}
+
+# Newline macro {{{NEWLINE}}}
+#+MACRO: NEWLINE @@latex:\texorpdfstring{\\}{ | }@@ @@html:<br>@@ @@ascii:|@@
+
+# add appendix
+#+LaTeX_HEADER:\newcounter{framenumberwithoutappendix}
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+PROPERTY: BEAMER_col_ALL 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 0.0 :ETC
+#+STARTUP: beamer
+#+STARTUP: hidestars
+#+SEQ_TODO: ❢ ☯ Σ | ☺ ✔ ✘
+#+latex_header: \usetheme{Berlin}\usecolortheme{dove}
+#+LaTeX: \definecolor{bg}{rgb}{0.98,0.98,0.98}
+
+#+BEGIN_SRC elisp :exports results
+(add-to-list 'org-latex-minted-langs '(wisp "scheme"))
+(setq org-latex-minted-options '(("linenos" "false") ("frame" "lines") ("framesep" "6pt") ("fontsize" "\\footnotesize") ("frozencache")))
+nil
+#+END_SRC
+
+#+RESULTS:
+
+* wisp
+
+** wisp
+
+#+BEGIN_SRC wisp 
+define : factorial n
+    ## : tests : test-equal 6 : factorial 3
+    if : zero? n
+       . 1
+       * n : factorial {n - 1}
+#+END_SRC
+
+
+** ☺ Thank you for listening!
+
+#+latex: \centering \(\ddot \smile\)
+
+* Anhang                                                    :B_ignoreheading:
+  :PROPERTIES:
+  :BEAMER_env: ignoreheading
+  :BEAMER_opt: allowframebreaks
+  :END:
+
+\appendix
+** Verweise
+  :PROPERTIES:
+  :BEAMER_opt: allowframebreaks,label=
+  :END:
+
+\bibliographystyle{apalike}
+\bibliography{ref}
+
+*** Bilder                                                  :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+
+#+latex: \tiny Bilder: \citet{}
+
+
+
+#+latex_header: \usepackage{hyperref}
+#+LATEX_HEADER: \usepackage{xcolor}
+#+LATEX_HEADER: \usepackage[ngerman]{babel}
+
+#+LATEX_HEADER: \setlength{\parindent}{0cm}
+#+LATEX_HEADER: \setlength{\parskip}{0.5em}
+
+# unicode input
+#+LATEX_HEADER: \usepackage{uniinput}
+#+LATEX_HEADER: \DeclareUnicodeCharacter{B7}{\ensuremath{\cdot}}
+
+#+LATEX_HEADER: \usepackage{natbib}
+#+LATEX_HEADER: \usepackage{morefloats}
+#+LATEX_HEADER: \hypersetup{
+#+LATEX_HEADER:     colorlinks,
+#+LATEX_HEADER:     linkcolor={red!50!black},
+#+LATEX_HEADER:     citecolor={blue!30!black},
+#+LATEX_HEADER:     urlcolor={blue!50!black}
+#+LATEX_HEADER: }
+#+LATEX_HEADER: \usepackage{lmodern}
+#+LATEX_HEADER: \usepackage[protrusion=true,expansion=true]{microtype}
+#+LATEX_HEADER: \usepackage{pdfpages}
+
+
+# Local Variables:
+# org-confirm-babel-evaluate: nil
+# org-export-allow-bind-keywords: t
+# org-babel-noweb-wrap-start: "{{{"
+# org-babel-noweb-wrap-end: "}}}"
+# End:
+
+
+
+* Footnotes
+
+
+
+# Local Variables:
+# org-latex-minted-options: (("linenos" "false") ("frame" "lines") ("framesep" "6pt") ("fontsize" "\\footnotesize") ("frozencache"))
+# End:

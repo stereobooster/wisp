@@ -9,6 +9,11 @@
 
 #+latex: \renewcommand{\inserttotalframenumber}{10}
 
+#+BEGIN_SRC elisp :exports results
+(add-to-list 'org-latex-minted-langs '(wisp "scheme"))
+nil
+#+END_SRC
+
 
 * Wisp - SRFI-119
 
@@ -447,7 +452,6 @@ map
   lambda (x) (+ x 1)
   list 1 2 3
 #+END_SRC
-
 
 # Local Variables:
 # org-latex-minted-options: (("linenos" "false") ("frame" "lines") ("framesep" "6pt") ("fontsize" "\\footnotesize"))
