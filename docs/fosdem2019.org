@@ -33,7 +33,7 @@ nil
 
 #+RESULTS:
 
-* wisp
+* Wisp
 
 ** 
 
@@ -48,7 +48,6 @@ nil
         . 1
         * n : factorial {n - 1}
  #+END_SRC
-
 
 * Why?
 
@@ -217,6 +216,8 @@ define : main args
 #+BEGIN_SRC wisp
 display "Hello oneliner!\n" .
 #+END_SRC
+
+** ❢ Wisp for a lecture
 
 
 * Try!
