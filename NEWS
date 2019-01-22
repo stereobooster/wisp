@@ -1,4 +1,32 @@
-wisp ():
+wisp 0.9.9:
+- started slides for FOSDEM 2019 in doc
+- start a small timeit macro
+- add downloadmesh
+- ensure that language wisp spec is precompiled
+- require bash in examples, because sh misses exec -a on some systems
+- hamming.w: document --test option
+- benchmark.w: allow setting the Guile version with the GUILE environment variable
+- speed up starttime of examples from 1-5 seconds to <100ms by importing the module instead of running the file as script
+- examples: implement a quick hamming 11,7 cli tool
+- examples/doctests: escape / in function names
+- examples/securepassword: include collapsed corpus and function to recreate the corpus from the collapsed string
+- examples/securepassword: add a bigram corpus to weight passwords
+- examples/network: implement and test the pitch-black attack
+- add ob-wisp.el for org-babel which can at least execute wisp code on my machine
+- examples/securepassword: increase default strength to 12
+- examples/securepassword: add checksum validation for letterblocks which use the delimiters as checksums
+- make distcheck work again
+- make wisp.scm executable and provide it as wisp2lisp
+- examples: update fizzbuzz.w hello-world-server.w macros.w running_mean_std.w tinyenc.w
+- examples: update and cleanup fibonacci
+- examples: literal vector example for doctests.w
+- examples: update comment-server.w to the reader
+- examples/doctests.w: use literal array syntax
+- use ## for literal arrays in wisp to avoid stumbling over newline issues
+- support up to 12 _ for indentation
+
+wisp 0.9.8:
+- fix installing wisp in local datarootdir
 - make install provides wisp2lisp as program:
   convert any wisp program to lisp.
 
