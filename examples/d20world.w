@@ -1,7 +1,7 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples d20world) main)' -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples d20world)' -c '' "$@"
 ; !#
 
 ; A world projected on a d20 (20-sided die, ikosaeder)
@@ -17,7 +17,7 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ; transported into the other field. Basic system: Follow the numbers.
 
 define-module : examples d20world
-              . #:export : world neighbors d20-as-text d20-diffuse
+              . #:export : world neighbors d20-as-text d20-diffuse main
 
 use-modules : ice-9 format
 use-modules : srfi srfi-1

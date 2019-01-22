@@ -1,8 +1,11 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (wisp-scheme) (language wisp spec))'
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples unicode-math-fun)' -c '' "$@"
 ; !#
+
+define-module : examples unicode-math-fun
+    . #:export : main
 
 ;; Having fun with unicode and math :)
 
@@ -31,11 +34,12 @@ define : ∩ list1 list2
                             list-tail tocheck 1
                         loop inboth : list-tail tocheck 1
 
-display : Σ 1 2 8 0  5 7 59 12 5
-newline
-display : Π 1 2 8 0  5 7 59 12 5
-newline
-display : ∪ '(1 2 3) '(4 5 6)
-newline
-display : ∩ '(1 789 7 897 89 78 78 97 89 2 3 6) '(4 5 6 2  8 7 879 879 879 879 8797 97 97 987 89789 7 7897 987 897 987 87 897 896)
-newline
+define : main args
+    display : Σ 1 2 8 0  5 7 59 12 5
+    newline
+    display : Π 1 2 8 0  5 7 59 12 5
+    newline
+    display : ∪ '(1 2 3) '(4 5 6)
+    newline
+    display : ∩ '(1 789 7 897 89 78 78 97 89 2 3 6) '(4 5 6 2  8 7 879 879 879 879 8797 97 97 987 89789 7 7897 987 897 987 87 897 896)
+    newline

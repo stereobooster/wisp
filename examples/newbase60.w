@@ -1,7 +1,7 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples newbase60) main)' -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples newbase60)' -c '' "$@"
 ; !#
 
 ;; Encoding and decoding numbers in New Base 60 as defined by Tantek:
@@ -11,7 +11,7 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ;; https://github.com/indieweb/newBase60py/blob/master/newbase60.py
 
 define-module : examples newbase60
-              . #:export : integer->sxg sxg->integer date->sxg sxg->date date->sxgepochdays sxgepochdays->yeardays yeardays->sxgepochdays
+              . #:export : integer->sxg sxg->integer date->sxg sxg->date date->sxgepochdays sxgepochdays->yeardays yeardays->sxgepochdays main
               . #:use-module : srfi srfi-1
 
 define base60letters "0123456789ABCDEFGHJKLMNPQRSTUVWXYZ_abcdefghijkmnopqrstuvwxyz"

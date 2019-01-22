@@ -1,18 +1,23 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile -L $(dirname $(dirname $(realpath "$0"))) -x .w --language=wisp -e '(@@ (examples doctests-test) main)' -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) -x .w --language=wisp -e '(examples doctests-test)' -c '' "$@"
 ; !#
 
 define-module : examples doctests-test
+    . #:export : main
 
 import : examples doctests
 
 define : foo
-    . #((tests 
-      ('foo
-        (test-equal "bar" (foo)))))
-    . "bar"
+         ##
+            tests 
+               'foo-equality-tests
+                   test-equal "bar" : foo
+                   test-equal "bar" "bar"
+                   test-equal 'bar : string->symbol : foo
+                   test-equal 'foo 'foo
+         . "bar"
 
 define %this-module : current-module
 define : main args

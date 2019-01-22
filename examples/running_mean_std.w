@@ -1,5 +1,11 @@
-#!/home/arne/wisp/wisp-multiline.sh 
+#!/usr/bin/env bash
+# -*- wisp -*-
+guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples running_mean_std)' -c '' "$@"
 ; !#
+
+define-module : examples running_mean_std
+   . #:export : main
 
 use-modules : srfi srfi-11
 
@@ -22,13 +28,15 @@ define : running-stat-fun
 
 define statfun : running-stat-fun
 
-write : statfun 5
-newline
-write : statfun 4
-newline
-let-values 
-    : (mean σ) : statfun 5
-    display mean 
-    display '±
-    display σ
-    newline
+define : main args
+  write : statfun 5
+  newline
+  write : statfun 4
+  newline
+  let-values 
+      : (mean σ) : statfun 5
+      display mean 
+      display '±
+      display σ
+      newline
+  

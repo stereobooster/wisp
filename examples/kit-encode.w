@@ -1,6 +1,6 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # -*- wisp -*-
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples kit-encode) main)' -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples kit-encode)' -c '' "$@"
 ; !#
 
 define-module : examples kit-encode

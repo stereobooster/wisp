@@ -1,0 +1,389 @@
+#+title: Experience with wisp | 5 years with fewer parens
+#+author: Dr. Arne Babenhauserheide @@latex:\texorpdfstring{}{}@@
+
+#+options: toc:nil H:2 ^:nil todo:nil title:nil
+#+PROPERTY: header-args :exports code
+
+#+LANGUAGE: de
+#+LaTeX_CLASS: beamer
+#+LaTeX_CLASS_OPTIONS: [presentation]
+# #+beamer_header: \setbeameroption{hide notes}
+#+beamer_header: \setbeameroption{show notes}
+# #+beamer_header: \setbeameroption{show only notes}
+#+beamer_header: \setbeamertemplate{navigation symbols}{}
+
+# Newline macro {{{NEWLINE}}}
+#+MACRO: NEWLINE @@latex:\texorpdfstring{\\}{ | }@@ @@html:<br>@@ @@ascii:|@@
+
+# add appendix
+#+LaTeX_HEADER:\newcounter{framenumberwithoutappendix}
+#+COLUMNS: %45ITEM %10BEAMER_env(Env) %10BEAMER_act(Act) %4BEAMER_col(Col) %8BEAMER_opt(Opt)
+#+PROPERTY: BEAMER_col_ALL 0.1 0.2 0.3 0.4 0.5 0.6 0.7 0.8 0.9 0.0 :ETC
+#+STARTUP: beamer
+#+STARTUP: hidestars
+#+SEQ_TODO: ❢ ☯ Σ | ☺ ✔ ✘
+#+latex_header: \usetheme{Berlin}\usecolortheme{dove}
+#+LaTeX: \definecolor{bg}{rgb}{0.98,0.98,0.98}
+
+#+BEGIN_SRC elisp :exports results
+(add-to-list 'org-latex-minted-langs '(wisp "scheme"))
+(setq org-latex-minted-options '(("linenos" "false") ("frame" "lines") ("framesep" "6pt") ("fontsize" "\\footnotesize")))
+nil
+#+END_SRC
+
+#+RESULTS:
+
+* Wisp
+
+** 
+
+
+***                                                                   :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.46
+    :END:
+ #+BEGIN_SRC wisp 
+ define : factorial n
+     if : zero? n
+        . 1
+        * n : factorial {n - 1}
+ #+END_SRC
+
+* Why?
+
+** Why wisp? - Scheme is great!
+
+*** :B_columns:
+    :PROPERTIES:
+    :BEAMER_env: columns
+    :BEAMER_opt: t
+    :END:
+
+**** \centering *close to prose*                              :B_block:BMCOL:
+     :PROPERTIES:
+     :BEAMER_env: block
+     :BEAMER_col: 0.3
+     :END:
+
+ #+latex: \centering
+
+ =.,":'_#?!;()=
+
+ /the most common/ \\
+ /non-letter non-math/ \\
+ /characters/
+
+
+**** \centering *flexible*                                    :B_block:BMCOL:
+     :PROPERTIES:
+     :BEAMER_env: block
+     :BEAMER_col: 0.3
+     :END:
+
+#+latex: \centering
+
+: 
+
+ /reprogram/ \\
+ /the compiler/ \\
+ /for your task/
+
+*** :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+
+#+latex: \vspace{2em}
+
+But …
+
+** But …
+
+#+BEGIN_SRC scheme
+  (parens (obscure the)
+          (first and last)
+          letter)
+#+END_SRC
+
+#+BEGIN_SRC wisp
+  parens : obscure the
+           first and last
+           . letter
+#+END_SRC
+
+/(and new users shy away from them)/
+
+** nonlocal state                                                  :noexport:
+
+#+BEGIN_SRC scheme
+  (blocks (of (parens)
+    (are (invisible nonlocal
+    state))))
+#+END_SRC
+
+/(you or your tooling must remember to close them)/
+
+** Why wisp? - Elegance
+
+- Elegance 0: generality and homoiconicity: *code is data*
+- Elegance 1: Scheme syntax uses the *most common* \phantom{Elegance 1: }non-letter, non-math letters.
+- Elegance 2: The *first and last letters* are important \phantom{Elegance 2: }for text-recognition.
+
+#+latex: \vspace{1em}
+
+/Any fix for elegance 2 should preserve elegance 1./
+
+* What?
+** Scheme to wisp: Scheme
+
+#+BEGIN_SRC scheme
+(define (factorial n)
+    "3! = 3 × 2 × 1 = 6"
+    (if (zero? n)
+         1
+         (* n (factorial (- n 1)))))
+#+END_SRC
+
+** Scheme to wisp: indentation for parens
+
+#+BEGIN_SRC wisp
+define (factorial n)
+    . "3! = 3 × 2 × 1 = 6"
+    if (zero? n)
+       . 1
+       * n (factorial (- n 1))
+#+END_SRC
+
+** Scheme to wisp: inline parens and SRFI-105
+
+#+BEGIN_SRC wisp
+define : factorial n
+    . "3! = 3 × 2 × 1 = 6"
+    if : zero? n
+       . 1
+       * n : factorial {n - 1}
+#+END_SRC
+
+** Scheme to wisp: survive HTML
+
+#+BEGIN_SRC wisp 
+define : factorial n
+_   . "3! = 3 × 2 × 1 = 6"
+_   if : zero? n
+__     . 1
+__     * n : factorial {n - 1}
+#+END_SRC
+
+* 5 years
+
+** Experience with wisp
+
+- 9000 lines of code, but all pet projects
+- Changes to the language
+  - literal arrays and doctests with =##=
+  - trailing period for the REPL
+
+** 9000 lines of code, chronological selection
+
+- ensemble-estimation.w: kalman filter function optimization
+- enter-three-witches.w: minimal script writing
+- securepassword.w: letterblock passwords → =rX4T+jg6H+dwGt=
+- hamming.w: error correction
+- network.w: freenet simulator
+- downloadmesh.w: swarming downloads, Gnutella style
+- fetchpull.w: multithreaded FCP client to Freenet
+
+** test-driven wisp: literal arrays and doctest
+
+#+BEGIN_SRC wisp :exports none :noweb-ref testsetup
+#!/usr/bin/env bash
+exec guile -L . -L .. --language=wisp -x .w -e '(factorial)' -c ''
+; !#
+define-module : factorial
+   . #:export : main
+import : examples doctests
+#+END_SRC
+
+#+BEGIN_SRC wisp :noweb no-export :tangle factorial.w
+{{{testsetup}}}
+define : factorial n
+    . "3! = 3 × 2 × 1 = 6"
+    ## : tests : test-equal 6 : factorial 3
+    if : zero? n
+       . 1
+       * n : factorial {n - 1}
+
+define %this-module : current-module
+define : main args
+       doctests-testmod %this-module
+#+END_SRC
+
+#+latex: \scriptsize
+
+#+BEGIN_EXAMPLE
+%%%% Starting test ._-factorial--factorial  
+     (Writing full log to "._-factorial--factorial.log")
+# of expected passes      1
+#+END_EXAMPLE
+
+** REPL with wisp: trailing period
+
+#+BEGIN_SRC wisp
+display "Hello oneliner!\n" .
+#+END_SRC
+
+/(this syntax was reserved in SRFI-119 to allow for this experimentation)/
+
+** dryads wake: beginnings of a game
+
+#+BEGIN_SRC wisp
+define : prologue
+    Enter : Old One :role narrator
+    
+    Old One :eerie
+        When the world was young
+        lived in the trees
+        a dryad from
+        the hidden seas.
+    
+    Old One
+        Then humans came,
+        logged for their hold
+        the dryad lived on
+        dried and cold.
+#+END_SRC
+
+* Education
+** Wisp in a lecture
+
+- Communication and network technology at DHBW Karlsruhe
+- Hamming 11/7 encoder and decoder
+- *“Is that pseudo-code?”* — a student \phantom{*“Is that pseudo-code?” *}→ highest praise :-)
+
+** ❢ A Hamming decoder
+
+
+
+* Try!
+
+** Try wisp!
+
+*** *Install*                                                       :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+#+BEGIN_SRC sh
+guix package -i guile guile-wisp
+#+END_SRC
+
+*** *REPL*                                                          :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+#+BEGIN_SRC sh
+guile -L . -x .w --lanugage=wisp
+#+END_SRC
+
+*** *More info*                                                     :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+
+https://www.draketo.de/english/wisp
+
+** Wisp for scripts
+
+#+BEGIN_SRC sh :tangle script.w
+#!/usr/bin/env bash
+# -*- wisp -*-
+D=$(dirname $(realpath "$0"))
+# precompile wisp
+guile -L "$D" -c '(import (language wisp spec))'
+# run script as wisp code
+exec -a "$0" guile -L "$D" \
+     -x .w --language=wisp -e '(script)' -c '' "$@"
+; !#
+
+define-module : script
+   . #:export : main
+
+define : main args
+    format #t "Hello Wisp!"
+#+END_SRC
+
+** Wisp resources
+
+- Website: https://www.draketo.de/english/wisp
+- Tutorial: https://www.draketo.de/proj/with-guise-and-guile/wisp-tutorial.html
+- Examples: https://bitbucket.org/ArneBab/wisp/src/tip/examples
+- guile-freenet: https://notabug.org/arnebab/guile-freenet
+- dryads wake: https://bitbucket.org/ArneBab/dryads-wake
+
+** ☺ Thank you for listening!
+
+#+latex: \centering \(\ddot \smile\)
+
+* Anhang                                                    :B_ignoreheading:
+  :PROPERTIES:
+  :BEAMER_env: ignoreheading
+  :BEAMER_opt: allowframebreaks
+  :END:
+
+\appendix
+** Verweise
+  :PROPERTIES:
+  :BEAMER_opt: allowframebreaks,label=
+  :END:
+
+\bibliographystyle{apalike}
+\bibliography{ref}
+
+*** Bilder                                                  :B_ignoreheading:
+    :PROPERTIES:
+    :BEAMER_env: ignoreheading
+    :END:
+
+#+latex: \tiny Bilder: \citet{}
+
+
+
+#+latex_header: \usepackage{hyperref}
+#+LATEX_HEADER: \usepackage{xcolor}
+#+LATEX_HEADER: \usepackage[ngerman]{babel}
+
+#+LATEX_HEADER: \setlength{\parindent}{0cm}
+#+LATEX_HEADER: \setlength{\parskip}{0.5em}
+
+# unicode input
+#+LATEX_HEADER: \usepackage{uniinput}
+#+LATEX_HEADER: \DeclareUnicodeCharacter{B7}{\ensuremath{\cdot}}
+
+#+LATEX_HEADER: \usepackage{natbib}
+#+LATEX_HEADER: \usepackage{morefloats}
+#+LATEX_HEADER: \hypersetup{
+#+LATEX_HEADER:     colorlinks,
+#+LATEX_HEADER:     linkcolor={red!50!black},
+#+LATEX_HEADER:     citecolor={blue!30!black},
+#+LATEX_HEADER:     urlcolor={blue!50!black}
+#+LATEX_HEADER: }
+#+LATEX_HEADER: \usepackage{lmodern}
+#+LATEX_HEADER: \usepackage[protrusion=true,expansion=true]{microtype}
+#+LATEX_HEADER: \usepackage{pdfpages}
+
+
+# Local Variables:
+# org-confirm-babel-evaluate: nil
+# org-export-allow-bind-keywords: t
+# org-babel-noweb-wrap-start: "{{{"
+# org-babel-noweb-wrap-end: "}}}"
+# End:
+
+
+
+* Footnotes
+
+
+
+# Local Variables:
+# org-latex-minted-options: (("linenos" "false") ("frame" "lines") ("framesep" "6pt") ("fontsize" "\\footnotesize") ("frozencache"))
+# End:

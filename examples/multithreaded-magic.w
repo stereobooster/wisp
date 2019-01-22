@@ -1,8 +1,11 @@
-#!/usr/bin/env sh
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples multithreaded-magic) main)' -s "$0" "$@"
+#!/usr/bin/env bash
+# -*- wisp -*-
+guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples multithreaded-magic)' -c '' "$@"
 ; !#
 
 define-module : examples multithreaded-magic
+   . #:export : main
 
 ; Mathematical magic: Always get one.
 ; 

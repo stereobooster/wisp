@@ -1,11 +1,13 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples closure) main)' -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples closure)' -c '' "$@"
 ; !#
 
 ;; A simple example for a closure
 
+define-module : examples closure
+    . #:export : main
 
 define counting-closure ; simple variable
   let : : counter 0 ; provide counter to hold local data

@@ -1,5 +1,7 @@
 SUFFIXES = .w .scm .sh
 
+bin_SCRIPTS = wisp2lisp
+
 sitedir = $(datarootdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site
 site_DATA = wisp.scm
 
@@ -13,12 +15,15 @@ WISP = wisp-guile.w wisp-reader.w wisp-scheme.w
 
 EXTRA_DIST = $(WISP) bootstrap.sh bootstrap-reader.sh language examples tests wisp-repl-guile.sh testrunner.w wisp.py wisp.scm m4
 CLEANFILES = 1 2
-DISTCLEANFILES = $(site_DATA) $(lang_DATA) $(langwisp_DATA)
+DISTCLEANFILES = $(bin_SCRIPTS) $(site_DATA) $(lang_DATA) $(langwisp_DATA)
 # don't spout out lots of stuff at each distcheck. Disable for debugging.
 AM_DISTCHECK_CONFIGURE_FLAGS="--quiet"
 
 ChangeLog :
 	hg log --style changelog > ChangeLog
+
+$(bin_SCRIPTS): wisp.scm
+	cp $< $@
 
 .INTERMEDIATE: .mydatastuff
 $(lang_DATA) $(langwisp_DATA): .wispbootstrap
@@ -27,6 +32,7 @@ $(lang_DATA) $(langwisp_DATA): .wispbootstrap
 
 wisp.scm: wisp-guile.w wisp.py
 	@abs_top_srcdir@/bootstrap.sh @abs_top_srcdir@ @GUILE@ @python3@ 2>&1 | sed "s/^;;;.*//" 2>&1 | grep . 1>&2 ; test ! $$? -eq 0 # it worked if grep does not find anything
+	chmod +x $@
 
 .INTERMEDIATE: syntaxtests.sh
 syntaxtests.sh : wisp.scm tests/runtests-scheme-preprocessor.sh
@@ -46,11 +52,15 @@ TESTS=syntaxtests.sh syntaxtestsreader.sh
 # they won't be installed in the final location used by the tools.
 # FIXME: automake should honor DESTDIR set by make distcheck
 if IS_MAKE_DISTCHECK
+install-binSCRIPTS:
+	echo "Running 'make distcheck'; local installchecks disabled."
 install-siteDATA:
 	echo "Running 'make distcheck'; local installchecks disabled."
 install-langDATA:
 	echo "Running 'make distcheck'; local installchecks disabled."
 install-langwispDATA:
+	echo "Running 'make distcheck'; local installchecks disabled."
+uninstall-binSCRIPTS:
 	echo "Running 'make distcheck'; local installchecks disabled."
 uninstall-siteDATA:
 	echo "Running 'make distcheck'; local installchecks disabled."

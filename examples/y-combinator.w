@@ -1,10 +1,11 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (wisp-scheme) (language wisp spec))'
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples y-combinator) main)' -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples y-combinator)' -c '' "$@"
 ; !#
 
 define-module : examples y-combinator
+   . #:export : main
 
 ;; Poor mans y-combinator from William Byrds talk: https://www.youtube.com/watch?v=OyfBQmvr2Hc&t=2844s 
 define fac-pmy-zealous-wisp

@@ -1,6 +1,6 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # -*- wisp -*-
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples with) main)' -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples with)' -c '' "$@"
 ; !#
 
 ;; A cleaner way to implement this might be using dynamic-wind.
@@ -10,6 +10,7 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 ;; and fix it if not.
 
 define-module : examples with
+   . #:export : main
 
 import : oop goops
 

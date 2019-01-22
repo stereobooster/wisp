@@ -1,7 +1,7 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples doctests) main)' -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples doctests)' -c '' "$@"
 ; !#
 
 ;;; doctests --- simple testing by adding procedure-properties with tests.
@@ -45,7 +45,7 @@ exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (ex
 
 
 define-module : examples doctests
-              . #:export : doctests-testmod
+              . #:export : doctests-testmod main
 
 import : ice-9 optargs
          ice-9 rdelim
@@ -98,22 +98,24 @@ define : doctests-extract-from-string s
 
 define : subtract a b
     . "Subtract B from A."
-    . #((tests (test-eqv 3 (subtract 5 2))))
+    ##
+      tests : test-eqv 3 (subtract 5 2)
     - a b
 
 define : doctests-testmod mod
        . "Execute all doctests in the current module
 
           This procedure provides an example test:"
-       . #((tests 
-            ('mytest
-              (define v (make-vector 5 99))
-              (test-assert (vector? v))
-              (test-eqv 99 (vector-ref v 2))
-              (vector-set! v 2 7)
-              (test-eqv 7 (vector-ref v 2)))
-            ('mytest2
-              (test-assert #t))))
+       ##
+         tests
+            'mytest
+              define v (make-vector 5 99)
+              test-assert (vector? v)
+              test-eqv 99 (vector-ref v 2)
+              vector-set! v 2 7
+              test-eqv 7 (vector-ref v 2)
+            'mytest2
+              test-assert #t
        ;; thanks to Vítor De Araújo: https://lists.gnu.org/archive/html/guile-user/2017-08/msg00003.html
        let*
            : names : module-map (λ (sym var) sym) mod
@@ -142,10 +144,13 @@ define : doctests-testmod mod
                                  testid
                                     match doctest
                                       : (('quote id) tests ...) moretests ...
-                                        string-join : list filename (symbol->string name) : symbol->string id
-                                                     . "--"
+                                        string-join
+                                            list filename 
+                                                string-join (string-split (symbol->string name) #\/) "--" ;; escape / in paths
+                                                symbol->string id
+                                            . "--"
                                       : tests ...
-                                        string-join : list filename (symbol->string name)
+                                        string-join : list filename : string-join (string-split (symbol->string name) #\/) "--" ;; escape / in paths
                                                      . "--"
                                  body
                                      match doctest
@@ -175,6 +180,15 @@ define : doctests-testmod mod
                                       : tests ...
                                         . #t
                    loop (cdr names) (cdr doctests)
+
+define : hello who
+    . "Say hello to WHO"
+    ##
+        tests
+            test-equal "Hello World!\n"
+                       hello "World"
+    format #f "Hello ~a!\n"
+                   . who
 
 define %this-module : current-module
 define : main args

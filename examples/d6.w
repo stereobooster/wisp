@@ -1,11 +1,11 @@
-#!/usr/bin/env sh
+#!/usr/bin/env bash
 # -*- wisp -*-
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp spec))'
-exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples d6) main)' -s "$0" "$@"
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples d6)' -c '' "$@"
 ; !#
 
 define-module : examples d6
-   . #:export : roll check
+   . #:export : roll check main
 
 use-modules : srfi srfi-1
 
