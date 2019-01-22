@@ -126,7 +126,7 @@ But …
 ** Why wisp? - Elegance
 
 - Elegance 0: generality and homoiconicity: *code is data*
-- Elegance 1: Lisp syntax uses the *most common* \phantom{Elegance 1: }non-letter, non-math letters.
+- Elegance 1: Scheme syntax uses the *most common* \phantom{Elegance 1: }non-letter, non-math letters.
 - Elegance 2: The *first and last letters* are important \phantom{Elegance 2: }for text-recognition.
 
 #+latex: \vspace{1em}
@@ -178,6 +178,21 @@ __     * n : factorial {n - 1}
 
 ** Experience with wisp
 
+- 9000 lines of code, but all pet projects
+- Changes to the language
+  - literal arrays and doctests with =##=
+  - trailing period for the REPL
+
+** 9000 lines of code, chronological selection
+
+- ensemble-estimation.w: kalman filter function optimization
+- enter-three-witches.w: minimal script writing
+- securepassword.w: letterblock passwords → =rX4T+jg6H+dwGt=
+- hamming.w: error correction
+- network.w: freenet simulator
+- downloadmesh.w: swarming downloads, Gnutella style
+- fetchpull.w: multithreaded FCP client to Freenet
+
 ** test-driven wisp: literal arrays and doctest
 
 #+BEGIN_SRC wisp :exports none :noweb-ref testsetup
@@ -217,7 +232,36 @@ define : main args
 display "Hello oneliner!\n" .
 #+END_SRC
 
-** ❢ Wisp for a lecture
+/(this syntax was reserved in SRFI-119 to allow for this experimentation)/
+
+** dryads wake: beginnings of a game
+
+#+BEGIN_SRC wisp
+define : prologue
+    Enter : Old One :role narrator
+    
+    Old One :eerie
+        When the world was young
+        lived in the trees
+        a dryad from
+        the hidden seas.
+    
+    Old One
+        Then humans came,
+        logged for their hold
+        the dryad lived on
+        dried and cold.
+#+END_SRC
+
+* Education
+** Wisp in a lecture
+
+- Communication and network technology at DHBW Karlsruhe
+- Hamming 11/7 encoder and decoder
+- *“Is that pseudo-code?”* — a student \phantom{*“Is that pseudo-code?” *}→ highest praise :-)
+
+** ❢ A Hamming decoder
+
 
 
 * Try!
@@ -267,6 +311,13 @@ define : main args
     format #t "Hello Wisp!"
 #+END_SRC
 
+** Wisp resources
+
+- Website: https://www.draketo.de/english/wisp
+- Tutorial: https://www.draketo.de/proj/with-guise-and-guile/wisp-tutorial.html
+- Examples: https://bitbucket.org/ArneBab/wisp/src/tip/examples
+- guile-freenet: https://notabug.org/arnebab/guile-freenet
+- dryads wake: https://bitbucket.org/ArneBab/dryads-wake
 
 ** ☺ Thank you for listening!
 
