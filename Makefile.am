@@ -13,7 +13,7 @@ langwisp_DATA = language/wisp/spec.scm
 
 WISP = wisp-guile.w wisp-reader.w wisp-scheme.w
 
-EXTRA_DIST = $(WISP) bootstrap.sh bootstrap-reader.sh language examples tests wisp-repl-guile.sh testrunner.w wisp.py wisp.scm m4
+EXTRA_DIST = $(WISP) bootstrap.sh bootstrap-reader.sh language examples tests wisp-repl-guile.sh testrunner.w wisp.py wisp.scm m4 ob-wisp.el wisp-mode.el
 CLEANFILES = 1 2
 DISTCLEANFILES = $(bin_SCRIPTS) $(site_DATA) $(lang_DATA) $(langwisp_DATA)
 # don't spout out lots of stuff at each distcheck. Disable for debugging.
