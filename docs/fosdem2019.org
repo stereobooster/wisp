@@ -174,9 +174,9 @@ __     . 1
 __     * n : factorial {n - 1}
 #+END_SRC
 
-* 5 years
+* Experience
 
-** Experience with wisp
+** 5 years with wisp
 
 - 9000 lines of code, but all pet projects
 - Changes to the language
@@ -253,8 +253,7 @@ define : prologue
         dried and cold.
 #+END_SRC
 
-* Best practice
-** Best practice
+** Best practices
 
 - 
 
@@ -263,11 +262,94 @@ define : prologue
 * Education
 ** Wisp in a lecture
 
-- Communication and network technology at DHBW Karlsruhe
-- Hamming 11/7 encoder and decoder
+- communication and network technology at DHBW Karlsruhe
+- wisp to describe a Hamming 11/7 encoding and decoding
 - *“Is that pseudo-code?”* — a student \phantom{*“Is that pseudo-code?” *}→ highest praise :-)
 
-** ❢ A Hamming decoder
+** ☺ A Hamming decoder
+
+#+latex: \footnotesize
+#+BEGIN_SRC scheme
+define : 11/7-decode bits
+  define broken-bit
+    match bits
+     : h1 h2 i3 h4 i5 i6 i7 h8 i9 i10 i11
+       +
+_        * 1 : H h1 i3 i5 i7 i9 i11
+_        * 2 : H h2 i3 i6 i7 i10 i11
+_        * 4 : H h4 i5 i6 i7
+_        * 8 : H h8 i9 i10 i11
+  define fixed
+    if : zero? broken-bit
+       . bits
+       flip bits {broken-bit - 1}
+  match fixed
+    : h1 h2 i3 h4 i5 i6 i7 h8 i9 i10 i11
+      list i3 i5 i6 i7 i9 i10 i11
+#+END_SRC
+
+** Hamming Encoder
+
+*** :B_columns:
+    :PROPERTIES:
+    :BEAMER_env: columns
+    :BEAMER_opt: t
+    :END:
+**** Header                                                   :B_block:BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.4
+     :BEAMER_env: block
+     :END:
+ #+latex: \footnotesize
+ #+BEGIN_SRC scheme
+ define : 11/7-encode bits
+   ##
+    tests
+     test-equal
+      . '(0 0 1 0 0 0 0 1 0 0 1)
+      11/7-encode 
+        . '(1 0 0 0 0 0 1)
+ #+END_SRC
+
+**** Body                                                     :B_block:BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.6
+     :BEAMER_env: block
+     :END:
+ #+latex: \footnotesize
+ #+BEGIN_SRC scheme
+   match bits
+    : i3 i5 i6 i7 i9 i10 i11
+      list
+        H i3 i5 i7 i9 i11  ;; bit 1
+        H i3 i6 i7 i10 i11 ;; bit 2
+        . i3               ;; bit 3
+        H i5 i6 i7         ;; bit 4
+        . i5 i6 i7         ;; bit 5, 6, 7
+        H i9 i10 i11       ;; bit 8
+        . i9 i10 i11       ;; bit 9, 10, 11
+ #+END_SRC
+** Hamming support procs
+
+<<hamming-support>>
+
+#+BEGIN_SRC scheme
+define : mod2sum . bits
+    . "Modulo-2 sum, i.e. for even parity"
+    ## : tests : test-equal 1 : mod2sum 1 0 1 1 0
+    modulo (apply + bits) 2
+
+define H mod2sum ;; for brevity
+
+define : flip bits index
+    . "flip the bit-number (0→1 or 1→0) at the index."
+    ## : tests : test-equal '(1 0 1) : flip '(0 0 1) 0
+    append
+       take bits index
+       list : mod2sum 1 : list-ref bits index
+       drop bits {index + 1}
+#+END_SRC
+
 
 
 
