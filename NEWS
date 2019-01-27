@@ -1,3 +1,8 @@
+wisp 0.9.9.1:
+- add missing emacs support files
+- wisp-mode.el: highlighting and basic editing for wisp files
+- ob-wisp.el: basic org-mode babel support
+
 wisp 0.9.9:
 - use ## for literal arrays in wisp to avoid stumbling over newline issues
 - add ob-wisp.el for org-babel which can at least execute wisp code on my machine
