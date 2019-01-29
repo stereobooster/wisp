@@ -324,7 +324,7 @@ Also useful if your \LaTeX minted code blocks kill indentation at 8 or more spac
 ** 9000 lines of code, chronological selection:
 
 - [[http://draketo.de/py2guile][py2guile]]:\(^*\) all my *Python* workflows in Guile → [[https://www.draketo.de/proj/guile-basics/][Guile basics]]
-- [[https://bitbucket.org/ArneBab/wisp/src/5dfd8644882d181d61c479b0f82be0e644ca9fd6/examples/d20world.w][d20world.w]]: simple *advection and diffusion* on an icosaeder
+- [[https://bitbucket.org/ArneBab/wisp/src/5dfd8644882d181d61c479b0f82be0e644ca9fd6/examples/d20world.w][d20world.w]]: simple *advection and diffusion* on an icosahedron
 - [[https://bitbucket.org/ArneBab/wisp/src/5dfd8644882d181d61c479b0f82be0e644ca9fd6/examples/ensemble-estimation.w][ensemble-estimation.w]]:\(^*\) *kalman filter* function optimization
 - [[https://bitbucket.org/ArneBab/wisp/src/5dfd8644882d181d61c479b0f82be0e644ca9fd6/examples/enter-three-witches.w][enter-three-witches.w]]: *game scripting*
 - [[https://www.draketo.de/english/secure-passwords][letterblock-passwords]]:\(^*\) =nVxK=8eUD.DdTG=
