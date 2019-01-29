@@ -323,14 +323,15 @@ Also useful if your \LaTeX minted code blocks kill indentation at 8 or more spac
 
 ** 9000 lines of code, chronological selection:
 
-- [[https://bitbucket.org/ArneBab/wisp/src/5dfd8644882d181d61c479b0f82be0e644ca9fd6/examples/d20world.w][d20world.w]]: *advection and diffusion* on an icosaeder
-- [[https://bitbucket.org/ArneBab/wisp/src/5dfd8644882d181d61c479b0f82be0e644ca9fd6/examples/ensemble-estimation.w][ensemble-estimation.w]]: *kalman filter* function optimization
+- [[http://draketo.de/py2guile][py2guile]]:\(^*\) all my *Python* workflows in Guile → [[https://www.draketo.de/proj/guile-basics/][Guile basics]]
+- [[https://bitbucket.org/ArneBab/wisp/src/5dfd8644882d181d61c479b0f82be0e644ca9fd6/examples/d20world.w][d20world.w]]: simple *advection and diffusion* on an icosaeder
+- [[https://bitbucket.org/ArneBab/wisp/src/5dfd8644882d181d61c479b0f82be0e644ca9fd6/examples/ensemble-estimation.w][ensemble-estimation.w]]:\(^*\) *kalman filter* function optimization
 - [[https://bitbucket.org/ArneBab/wisp/src/5dfd8644882d181d61c479b0f82be0e644ca9fd6/examples/enter-three-witches.w][enter-three-witches.w]]: *game scripting*
-- [[https://bitbucket.org/ArneBab/wisp/src/d0c26be305662b47ed02b7d7b01d645998d0af99/examples/securepassword.w][securepassword.w]]: letterblock *passwords* → =nVxK=8eUD.DdTG=
-- [[https://bitbucket.org/ArneBab/wisp/src/5dfd8644882d181d61c479b0f82be0e644ca9fd6/examples/hamming.w][hamming.w]]: *error correction*
+- [[https://www.draketo.de/english/secure-passwords][letterblock-passwords]]:\(^*\) =nVxK=8eUD.DdTG=
+- [[https://bitbucket.org/ArneBab/wisp/src/5dfd8644882d181d61c479b0f82be0e644ca9fd6/examples/hamming.w][hamming.w]]:\(^*\) *error correction*
 - [[https://bitbucket.org/ArneBab/wisp/src/5dfd8644882d181d61c479b0f82be0e644ca9fd6/examples/network.w][network.w]]: Freenet p2p *network simulator*
-- [[https://bitbucket.org/ArneBab/wisp/src/cca15c7abc86a500a313315344f9f46bc90e9ce8/examples/downloadmesh.w][downloadmesh.w]]: *swarming downloads*, Gnutella style
-- [[https://notabug.org/ArneBab/guile-freenet/src/8337b7637917273a429a8e784103a0f90ed5b74b/fetchpull.w][fetchpull.w]]: multithreaded Freenet *client protocol* lib
+- [[https://bitbucket.org/ArneBab/wisp/src/cca15c7abc86a500a313315344f9f46bc90e9ce8/examples/downloadmesh.w][downloadmesh.w]]:\(^*\) *swarming downloads*, Gnutella style
+- [[https://notabug.org/ArneBab/guile-freenet/src/8337b7637917273a429a8e784103a0f90ed5b74b/fetchpull.w][fetchpull.w]]:\(^*\) multithreaded Freenet *client protocol* library
 - [[https://bitbucket.org/ArneBab/dryads-wake/src/65039acea660335656218f6ac7c85c9e78e47d4f/dryads-wake.w][dryads-wake.w]]: *game scripting*
 
 ** test-driven wisp: literal arrays and doctest
@@ -377,6 +378,10 @@ display "Hello oneliner!\n" .
 
 ** dryads wake: beginnings of a game
 
+***                                                                   :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.8
+    :END:
 #+BEGIN_SRC wisp
 define : first-encounter
     Enter : Juli Fin :profile juli
@@ -397,9 +402,15 @@ define : first-encounter
 
 #+END_SRC
 
+***                                                                   :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.2
+    :END:
 
+\tiny
+[[./dryadswake.webm][dryadswake.webm]]
 
-* Best practice
+* Best practices
 ** Best practices
 
 - 
