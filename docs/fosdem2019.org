@@ -53,7 +53,7 @@ nil
 
 /Started 2013./
 
-/Specified as [[https://srfi.schemers.org/srfi-119/srfi-119.html][SRFI-119]] since 2015./
+/Spec as [[https://srfi.schemers.org/srfi-119/srfi-119.html][SRFI-119]] since 2015./
 
 ** What is wisp? 
 
