@@ -49,6 +49,35 @@ nil
         * n : factorial {n - 1}
  #+END_SRC
 
+#+latex: \vspace{1em}
+
+/Started 2013./
+
+/Specified as [[https://srfi.schemers.org/srfi-119/srfi-119.html][SRFI-119]] since 2015./
+
+** What is wisp? 
+
+*** The vision of wisp:                                             :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+#+latex: \vspace{1em}
+
+#+BEGIN_QUOTE
+» I love the syntax of Python,\\
+\phantom{» }but crave the simplicity and power of Lisp.«
+#+END_QUOTE
+
+*** Scheme to wisp:                                                 :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+
+ - indentation for outer parentheses
+ - inline parentheses
+ - infix math via SRFI-105
+ - survive HTML (optional)
+
 * Why?
 
 ** Why wisp? - Scheme is great!
@@ -139,30 +168,7 @@ Merging the simplicity and elegance of Scheme\\
 with the readability of Python\\
 by reducing parens.
 
-* What?
-
-** What is wisp? 
-
-*** The vision of wisp:                                             :B_block:
-    :PROPERTIES:
-    :BEAMER_env: block
-    :END:
-#+latex: \vspace{1em}
-
-#+BEGIN_QUOTE
-» I love the syntax of Python,\\
-\phantom{» }but crave the simplicity and power of Lisp.«
-#+END_QUOTE
-
-*** From Scheme to wisp: :B_block:
-    :PROPERTIES:
-    :BEAMER_env: block
-    :END:
-
- - indentation for outer parentheses
- - inline parentheses
- - infix math via SRFI-105
- - survive HTML (optional)
+* How?
 
 ** Scheme to wisp: Scheme
 
@@ -271,7 +277,7 @@ define : factorial n
 \footnotesize
 Main gripe of many.
 
-In regular Scheme:
+Use in Scheme:
 
 #+BEGIN_SRC scheme
 #!curly-infix {1 + 2}
@@ -314,7 +320,7 @@ Also useful if your \LaTeX minted code blocks kill indentation at 8 or more spac
 ** 5 years with wisp
 
 - 9000 lines of code, but all pet projects
-- Changes to the language since SRFI-119 (2015-06-23)
+- Changes to the language since [[https://srfi.schemers.org/srfi-119/srfi-119.html][SRFI-119]] (2015-06-23)
   - literal arrays and doctests with =##=
   - trailing period for the REPL
 
@@ -323,7 +329,7 @@ Also useful if your \LaTeX minted code blocks kill indentation at 8 or more spac
 ** 9000 lines of code, chronological selection:
 
 - [[http://draketo.de/py2guile][py2guile]]:\(^*\) all my *Python* workflows in Guile → [[https://www.draketo.de/proj/guile-basics/][Guile basics]]
-- [[https://bitbucket.org/ArneBab/wisp/src/5dfd8644882d181d61c479b0f82be0e644ca9fd6/examples/d20world.w][d20world.w]]: simple *advection and diffusion* on an icosahedron
+- [[https://bitbucket.org/ArneBab/wisp/src/5dfd8644882d181d61c479b0f82be0e644ca9fd6/examples/d20world.w][d20world.w]]: simple *advection and diffusion* on icosahedron
 - [[https://bitbucket.org/ArneBab/wisp/src/5dfd8644882d181d61c479b0f82be0e644ca9fd6/examples/ensemble-estimation.w][ensemble-estimation.w]]:\(^*\) *kalman filter* function optimization
 - [[https://bitbucket.org/ArneBab/wisp/src/5dfd8644882d181d61c479b0f82be0e644ca9fd6/examples/enter-three-witches.w][enter-three-witches.w]]: *game scripting*
 - [[https://www.draketo.de/english/secure-passwords][letterblock-passwords]]:\(^*\) =nVxK=8eUD.DdTG=
@@ -373,7 +379,7 @@ define : main args
 display "Hello oneliner!\n" .
 #+END_SRC
 
-/(syntax reserved in SRFI-119 to allow for experimentation)/
+/(syntax reserved in [[https://srfi.schemers.org/srfi-119/srfi-119.html][SRFI-119]] to allow for experimentation)/
 
 ** dryads wake: beginnings of a game
 
@@ -432,7 +438,7 @@ define x^b-deviations-approx
 - communication and network technology at DHBW Karlsruhe
 - wisp to describe a Hamming 11/7 encoding and decoding
 - *“Is that pseudo-code?”* — a student \phantom{*“Is that pseudo-code?” *}→ highest praise :-)
-- provided as formulary in the handwritten test
+- provided as formulary in the (handwritten) final test
 
 ** ☺ Hamming decoder
 
@@ -519,8 +525,71 @@ define : flip bits index
 #+END_SRC
 
 
+** Summary
+
+- *“Is that pseudo-code?”*
+- Describe calculation in code
+- =match= is great for specific examples
 
 * Learning
+** Learning
+
+- Write code by hand
+- Recursion wins: elegance
+- Exact math
+- Unicode for math
+
+** Write code by hand
+
+[[./handwritten-code.jpg]]
+
+** Recursion wins: elegance
+
+#+BEGIN_SRC wisp
+define : fib n
+    let rek : (i 0) (u 1) (v 1)
+         if {i >= {n - 2}}
+            . v
+            rek {i + 1} v {u + v}
+#+END_SRC
+
+/Initialize, define parameters, return the result./
+
+** Exact math
+
+#+BEGIN_SRC wisp
+define : n/k n k
+   if {k > n} 0
+      / : factorial n
+          factorial k
+          factorial {n - k}
+#+END_SRC
+
+/No need to work around limitations./
+
+** Unicode for math
+
+\begin{equation}
+  F = \frac{\phi_1 + \phi_2}{2}, 
+G = \frac{\phi_1 - \phi_2}{2}, 
+\lambda = \frac{L_1 - L_2}{2}
+\end{equation}
+
+#+BEGIN_SRC wisp
+define : ellipsoiddistance a f L1 L2 φ1 φ2
+    let 
+       : F : / {Φ1 + Φ2} 2
+         G : / {Φ1 - Φ2} 2
+         λ : / {L1 - L2} 2
+    ;; ...
+#+END_SRC
+
+/Minimize mental overhead due to mismatch. Math is complex./
+
+** Summary
+
+Minimal mismatch between task and code.
+
 * Try!
 
 ** Try wisp!
