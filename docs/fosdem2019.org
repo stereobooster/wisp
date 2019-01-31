@@ -55,7 +55,7 @@ nil
 
 /Spec as [[https://srfi.schemers.org/srfi-119/srfi-119.html][SRFI-119]] since 2015./
 
-** What is wisp? 
+** What is wisp?
 
 *** The vision of wisp:                                             :B_block:
     :PROPERTIES:
@@ -418,9 +418,21 @@ define : first-encounter
 * Best practices
 ** Best practices
 
-- 
+- use the weakest method that works
+- use parens where they provide advantages
+- parens für trivial let
+- braces for simple math
+- use inner defines
+- modules as scripts with doctests
 
-** Use parens where they provide advantages
+** use the weakest method that works
+
+- prefer procedures over macros
+- prefer macros over reader extensions
+
+/Wisp is the minimal reader extension to represent arbitrary trees with indentation./
+
+** use parens where they provide advantages
 
 #+BEGIN_SRC wisp
 define x^b-deviations-approx
@@ -430,7 +442,8 @@ define x^b-deviations-approx
                     sqrt : list-ref (list-ref P j) j ; only for diagonal P!
 #+END_SRC
 
-** 
+** parens and braces
+** run scripts via bash indirection
 
 * Lecture
 ** Wisp in a lecture
@@ -588,7 +601,7 @@ define : ellipsoiddistance a f L1 L2 φ1 φ2
 
 ** Summary
 
-Minimal mismatch between task and code.
+Strive for minimal mismatch between task and code.
 
 * Try!
 
