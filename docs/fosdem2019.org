@@ -319,7 +319,7 @@ Also useful if your \LaTeX minted code blocks kill indentation at 8 or more spac
 * 5 years
 ** 5 years with wisp
 
-- 9000 lines of code, but all pet projects
+- 9000 lines of code, pet projects, but some in use
 - Changes to the language since [[https://srfi.schemers.org/srfi-119/srfi-119.html][SRFI-119]] (2015-06-23)
   - literal arrays and doctests with =##=
   - trailing period for the REPL
@@ -418,8 +418,8 @@ define : first-encounter
 * Best practices
 ** Best practices
 
-- use the weakest method that works
-- use parens where they provide advantages
+- use the weakest method that works\(^*\)
+- use parens where they provide advantages\(^*\)
 - parens für trivial let
 - braces for simple math
 - use inner defines
@@ -441,9 +441,6 @@ define x^b-deviations-approx
                 * : random:normal
                     sqrt : list-ref (list-ref P j) j ; only for diagonal P!
 #+END_SRC
-
-** parens and braces
-** run scripts via bash indirection
 
 * Lecture
 ** Wisp in a lecture
