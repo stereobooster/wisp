@@ -131,12 +131,13 @@ But …
 
 #+latex: \vspace{1em}
 
-/Any fix for elegance 2 should preserve elegance 1./
+/In teaching, readability is key./
 
 ** Summary: Why wisp?
 
-Keeping the simplicity and elegance of Scheme\\
-while reducing the parentheses.
+Merging the simplicity and elegance of Scheme\\
+with the readability of Python\\
+by reducing parens.
 
 * What?
 
@@ -308,10 +309,8 @@ Also useful if your \LaTeX minted code blocks kill indentation at 8 or more spac
   (do not prefix the line with a parenthesis)
 - colon for inline parentheses (till end of line)
 - infix math using SRFI-105
-- leading underscore
 
 * 5 years
-
 ** 5 years with wisp
 
 - 9000 lines of code, but all pet projects
@@ -427,12 +426,13 @@ define x^b-deviations-approx
 
 ** 
 
-* Education
+* Lecture
 ** Wisp in a lecture
 
 - communication and network technology at DHBW Karlsruhe
 - wisp to describe a Hamming 11/7 encoding and decoding
 - *“Is that pseudo-code?”* — a student \phantom{*“Is that pseudo-code?” *}→ highest praise :-)
+- provided as formulary in the handwritten test
 
 ** ☺ Hamming decoder
 
@@ -520,7 +520,7 @@ define : flip bits index
 
 
 
-
+* Learning
 * Try!
 
 ** Try wisp!
