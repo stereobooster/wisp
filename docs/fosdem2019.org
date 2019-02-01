@@ -489,18 +489,18 @@ define x^b-deviations-approx
 define : 11/7-decode bits
   define broken-bit
     match bits
-     : h1 h2 d3 h4 d5 d6 d7 h8 d9 d10 d11
+     : c1 c2 d3 c4 d5 d6 d7 c8 d9 d10 d11
        +
-_        * 1 : H h1 d3 d5 d7 d9 d11
-_        * 2 : H h2 d3 d6 d7 d10 d11
-_        * 4 : H h4 d5 d6 d7
-_        * 8 : H h8 d9 d10 d11
+_        * 1 : H c1 d3 d5 d7 d9 d11
+_        * 2 : H c2 d3 d6 d7 d10 d11
+_        * 4 : H c4 d5 d6 d7
+_        * 8 : H c8 d9 d10 d11
   define fixed
     df : zero? broken-bit
        . bits
        flip bits {broken-bit - 1}
   match fixed
-    : h1 h2 d3 h4 d5 d6 d7 h8 d9 d10 d11
+    : c1 c2 d3 c4 d5 d6 d7 c8 d9 d10 d11
       list d3 d5 d6 d7 d9 d10 d11
 #+END_SRC
 
