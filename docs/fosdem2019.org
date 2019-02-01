@@ -158,15 +158,15 @@ But …
 
 /(and new users shy away from them)/
 
-** nonlocal state                                                  :noexport:
+** … and …
 
 #+BEGIN_SRC scheme
-  (blocks (of (parens)
-    (are (invisible nonlocal
-    state))))
+  (opened (parens)
+    (are (nonlocal
+    state)))
 #+END_SRC
 
-/(you or your tooling must remember to close them)/
+/(you or your tooling must track them)/
 
 ** Why wisp? - Elegance
 
@@ -637,9 +637,9 @@ A minimum in the mismatch between task and code.
 * Future
 ** Future of wisp (plans and wishes)
 
-- More tools (as for dryads-wake)
+- Explore possibilities (as in dryads-wake)
 - More documentation (i.e. in [[https://www.draketo.de/proj/with-guise-and-guile/][With Guise and Guile]])
-- Better tooling ([[https://bitbucket.org/ArneBab/wisp/src/05abefcab6239da4b1eedd95e22f4a25630fa3aa/wisp-mode.el?at=tip][wisp-mode]] to paredit?)
+- Better tooling ([[https://bitbucket.org/ArneBab/wisp/src/05abefcab6239da4b1eedd95e22f4a25630fa3aa/wisp-mode.el?at=tip][wisp-mode]] with paredit commands?)
 - Bundle programs cross-platform?
 - Part of Guile?
 
@@ -683,32 +683,12 @@ guile -L . -x .w --lanugage=wisp
 
 https://www.draketo.de/english/wisp
 
-** Wisp for scripts: simple with guix
+** Wisp for scripts with guix
 
 #+BEGIN_SRC sh :tangle script.w
 #!/run/current-system/profile/bin/bash
 # -*- wisp -*-
 exec -a "$0" guile -L $(dirname $(realpath "$0")) \
-     -x .w --language=wisp -e '(script)' -c '' "$@"
-; !#
-
-define-module : script
-   . #:export : main
-
-define : main args
-    format #t "Hello Wisp!"
-#+END_SRC
-
-** Wisp for scripts anywhere
-
-#+BEGIN_SRC sh :tangle script.w
-#!/usr/bin/env bash
-# -*- wisp -*-
-D=$(dirname $(realpath "$0"))
-# precompile wisp
-guile -L "$D" -c '(import (language wisp spec))'
-# run script as wisp code
-exec -a "$0" guile -L "$D" \
      -x .w --language=wisp -e '(script)' -c '' "$@"
 ; !#
 
@@ -738,6 +718,26 @@ define : main args
   :END:
 
 \appendix
+** Wisp for scripts anywhere
+
+#+BEGIN_SRC sh :tangle script.w
+#!/usr/bin/env bash
+# -*- wisp -*-
+D=$(dirname $(realpath "$0"))
+# precompile wisp
+guile -L "$D" -c '(import (language wisp spec))'
+# run script as wisp code
+exec -a "$0" guile -L "$D" \
+     -x .w --language=wisp -e '(script)' -c '' "$@"
+; !#
+
+define-module : script
+   . #:export : main
+
+define : main args
+    format #t "Hello Wisp!"
+#+END_SRC
+
 ** Verweise
   :PROPERTIES:
   :BEAMER_opt: allowframebreaks,label=
@@ -788,8 +788,6 @@ define : main args
 # End:
 
 
-
-* Footnotes
 
 
 
