@@ -158,15 +158,6 @@ But …
 
 /(and new users shy away from them)/
 
-** … and …
-
-#+BEGIN_SRC scheme
-  (opened (parens)
-    (are (nonlocal
-    state)))
-#+END_SRC
-
-/(you or your tooling must track them)/
 
 ** Why wisp? - Elegance
 
@@ -353,7 +344,7 @@ Also useful if your \LaTeX minted code blocks kill indentation at 8 or more spac
 
 - 9000 lines of code, pet projects, some in use
 - Changes to the language since [[https://srfi.schemers.org/srfi-119/srfi-119.html][SRFI-119]] (2015-06-23)
-  - literal arrays and doctests with =##=
+  - literal arrays for Guile doctests with =##=
   - trailing period for the REPL
 
 *→ wisp as a language is complete and stable.*
@@ -371,7 +362,7 @@ Also useful if your \LaTeX minted code blocks kill indentation at 8 or more spac
 - [[https://notabug.org/ArneBab/guile-freenet/src/8337b7637917273a429a8e784103a0f90ed5b74b/fetchpull.w][fetchpull.w]]:\(^*\) multithreaded Freenet *client protocol* library
 - [[https://bitbucket.org/ArneBab/dryads-wake/src/65039acea660335656218f6ac7c85c9e78e47d4f/dryads-wake.w][dryads-wake.w]]: *game scripting*
 
-** change 1: test-driven wisp: literal arrays and doctest
+** change 1: test-driven wisp: literal arrays for doctests
 
 #+BEGIN_SRC wisp :exports none :noweb-ref hashbang-and-imports
 #!/usr/bin/env bash
@@ -447,37 +438,8 @@ define : first-encounter
 \tiny
 [[./dryadswake.webm][dryadswake.webm]]
 
-* Best practices
-** Best practices I found
-
-- use the weakest method that works\(^*\)
-- use parens where they provide advantages\(^*\)
-- parens for trivial let
-- braces for simple math
-- use inner defines to limit nesting
-- modules as scripts with doctests
-
-** use the weakest method that works
-
-- prefer procedures over macros
-- prefer macros over reader extensions
-
-#+latex: \vspace{1em}
-
-/Wisp is the minimal reader extension which can represent arbitrary trees structures with indentation./
-
-** use parens where they provide advantages
-
-#+BEGIN_SRC wisp
-define x^b-deviations-approx
-       list-ec (: i ensemble-member-count)
-            list-ec (: j (length x^b))
-                * : random:normal
-                    sqrt : list-ref (list-ref P j) j
-#+END_SRC
-
 * Lecture
-** Wisp in a lecture
+** Experience with wisp in a lecture
 
 - communication and network technology at DHBW Karlsruhe
 - wisp to describe Hamming 11/7 encoding and decoding
@@ -591,10 +553,10 @@ define : flip bits index
 
 #+BEGIN_SRC wisp
 define : fib n
-    let rek : (i 0) (u 1) (v 1)
-         if {i >= {n - 2}}
-            . v
-            rek {i + 1} v {u + v}
+   let rek : (i 0) (u 1) (v 1)
+        if {i >= {n - 2}}
+           . v
+           rek {i + 1} v {u + v}
 #+END_SRC
 
 /Initialize, define parameters, return the result./
@@ -633,6 +595,39 @@ define : ellipsoiddistance a f L1 L2 Φ1 Φ2
 ** Summary
 
 A minimum in the mismatch between task and code.
+
+* Best practices
+** Best practices I found
+
+- use the weakest method that works\(^*\)
+- use parens and braces where they provide advantages\(^*\)
+- inner defines limit nesting
+- do use records
+- modules as scripts with doctests
+
+** use the weakest method that works
+
+- prefer procedures over macros
+- prefer macros over reader extensions
+
+#+latex: \vspace{1em}
+
+/Wisp is the minimal reader extension which can represent arbitrary trees structures with indentation./
+
+** use parens where they provide advantages
+
+#+BEGIN_SRC wisp
+define x^b-deviations-approx
+       list-ec (: i ensemble-member-count)
+            list-ec (: j (length x^b))
+                * : random:normal
+                    sqrt : list-ref (list-ref P j) j
+#+END_SRC
+
+also:
+
+- use parens for trivial let
+- use braces for simple math
 
 * Future
 ** Future of wisp (plans and wishes)
@@ -718,6 +713,22 @@ define : main args
   :END:
 
 \appendix
+** nonlocal state
+
+#+BEGIN_SRC scheme
+  (opened (parens)
+    (are (nonlocal
+    state)))
+#+END_SRC
+
+#+BEGIN_SRC wisp
+  opened : parens
+    are
+      nonlocal state
+#+END_SRC
+
+
+/(you or your tooling must track them)/
 ** Wisp for scripts anywhere
 
 #+BEGIN_SRC sh :tangle script.w
