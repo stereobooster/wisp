@@ -53,7 +53,23 @@ nil
 
 /Started 2013./
 
-/Spec as [[https://srfi.schemers.org/srfi-119/srfi-119.html][SRFI-119]] since 2015./
+/Spec in [[https://srfi.schemers.org/srfi-119/srfi-119.html][SRFI-119]] since 2015./
+
+/It’s time for 1.0./
+
+** Who am I
+
+- Python since 2006, from 2011 to 2017 for my PhD in Physics,\\
+  along with Fortran, who guessed it? :-)
+- Using Emacs since 2008, contributed to p2p since 2004.
+- Scheme since 2013, as well as Freenet.
+- Since 2017 Java development on a 20 year old codebase\\
+  at Disy Informationssysteme GmbH.\\
+  I now know the other side. :-)
+- First lecture on networking in 2018.
+- A wonderful wife, two curious kids,\\
+  two guitars, some websites, and a roleplaying game.\\
+  Fighting for time. :-)
 
 ** What is wisp?
 
@@ -77,20 +93,6 @@ nil
  - inline parentheses
  - infix math via SRFI-105
  - survive HTML (optional)
-
-** Who am I
-
-- Python since 2006, from 2011 to 2017 for my PhD in Physics,\\
-  along with Fortran, who guessed it? :-)
-- Using Emacs since 2008, contributed to p2p since 2004.
-- Scheme since 2013, as well as Freenet.
-- Since 2017 Java development on a 20 year old codebase\\
-  at Disy Informationssysteme GmbH.\\
-  I now know the other side. :-)
-- First lecture on networking in 2018.
-- A wonderful wife, two curious kids,\\
-  two guitars, some websites, and a roleplaying game.\\
-  Fighting for time. :-)
 
 * Why?
 
@@ -479,7 +481,7 @@ define x^b-deviations-approx
 
 - communication and network technology at DHBW Karlsruhe
 - wisp to describe Hamming 11/7 encoding and decoding
-- *“Is that pseudo-code?”* — a student \phantom{*“Is that pseudo-code?” *}→ highest praise :-)
+- *“Is that pseudocode?”* — a student \phantom{*“Is that pseudocode?” *}→ highest praise :-)
 - provided as formulary in the (handwritten) final test
 
 ** ☺ Hamming decoder
@@ -569,12 +571,12 @@ define : flip bits index
 
 ** Summary
 
-- *“Is that pseudo-code?”*
+- *“Is that pseudocode?”*
 - Describe calculation in code
 - =match= is great for specific examples
 
 * Learning
-** Learning
+** Learning: how Scheme and wisp help
 
 - Write code by hand
 - Recursion wins: elegance
@@ -618,7 +620,7 @@ G = \frac{\phi_1 - \phi_2}{2},
 \end{equation}
 
 #+BEGIN_SRC wisp
-define : ellipsoiddistance a f L1 L2 φ1 φ2
+define : ellipsoiddistance a f L1 L2 Φ1 Φ2
     let 
        : F : / {Φ1 + Φ2} 2
          G : / {Φ1 - Φ2} 2
@@ -630,7 +632,29 @@ define : ellipsoiddistance a f L1 L2 φ1 φ2
 
 ** Summary
 
-Strive for minimal mismatch between task and code.
+A minimum in the mismatch between task and code.
+
+* Future
+** Future of wisp (plans and wishes)
+
+- More tools (as for dryads-wake)
+- More documentation (i.e. in [[https://www.draketo.de/proj/with-guise-and-guile/][With Guise and Guile]])
+- Better tooling ([[https://bitbucket.org/ArneBab/wisp/src/05abefcab6239da4b1eedd95e22f4a25630fa3aa/wisp-mode.el?at=tip][wisp-mode]] to paredit?)
+- Bundle programs cross-platform?
+- Part of Guile?
+
+** Wisp for pseudocode
+
+/The next time you write pseudocode,\\
+try making it executable as wisp/
+
+*** …and talk about it!                                        :B_alertblock:
+    :PROPERTIES:
+    :BEAMER_env: alertblock
+    :BEAMER_act: <2->
+    :END:
+
+/»ArneBab's alternate sexp syntax is best I've seen; pythonesque, hides parens but keeps power«/ — Christopher Lemmer Webber in [[http://dustycloud.org/blog/wisp-lisp-alternative/][Wisp: Lisp, minus the parentheses]]
 
 * Try!
 
@@ -659,7 +683,23 @@ guile -L . -x .w --lanugage=wisp
 
 https://www.draketo.de/english/wisp
 
-** Wisp for scripts
+** Wisp for scripts: simple with guix
+
+#+BEGIN_SRC sh :tangle script.w
+#!/run/current-system/profile/bin/bash
+# -*- wisp -*-
+exec -a "$0" guile -L $(dirname $(realpath "$0")) \
+     -x .w --language=wisp -e '(script)' -c '' "$@"
+; !#
+
+define-module : script
+   . #:export : main
+
+define : main args
+    format #t "Hello Wisp!"
+#+END_SRC
+
+** Wisp for scripts anywhere
 
 #+BEGIN_SRC sh :tangle script.w
 #!/usr/bin/env bash
