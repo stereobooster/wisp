@@ -351,7 +351,7 @@ Also useful if your \LaTeX minted code blocks kill indentation at 8 or more spac
 * 5 years
 ** 5 years with wisp
 
-- 9000 lines of code, pet projects, but some in use
+- 9000 lines of code, pet projects, some in use
 - Changes to the language since [[https://srfi.schemers.org/srfi-119/srfi-119.html][SRFI-119]] (2015-06-23)
   - literal arrays and doctests with =##=
   - trailing period for the REPL
@@ -452,9 +452,9 @@ define : first-encounter
 
 - use the weakest method that works\(^*\)
 - use parens where they provide advantages\(^*\)
-- parens für trivial let
+- parens for trivial let
 - braces for simple math
-- use inner defines
+- use inner defines to limit nesting
 - modules as scripts with doctests
 
 ** use the weakest method that works
