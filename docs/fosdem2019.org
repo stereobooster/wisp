@@ -62,7 +62,7 @@ nil
 - Python since 2006, from 2011 to 2017 for my PhD in Physics,\\
   along with Fortran, who guessed it? :-)
 - Using Emacs since 2008, contributed to p2p since 2004.
-- Scheme since 2013, as well as Freenet.
+- Scheme since 2013.
 - Since 2017 Java development on a 20 year old codebase\\
   at Disy Informationssysteme GmbH.\\
   I now know the other side. :-)
