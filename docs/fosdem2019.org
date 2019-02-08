@@ -49,6 +49,51 @@ nil
         * n : factorial {n - 1}
  #+END_SRC
 
+#+latex: \vspace{1em}
+
+/Started 2013./
+
+/Spec in [[https://srfi.schemers.org/srfi-119/srfi-119.html][SRFI-119]] since 2015./
+
+/It’s time for 1.0./
+
+** Who am I
+
+- Python since 2006, from 2011 to 2017 for my PhD in Physics,\\
+  along with Fortran, who guessed it? :-)
+- Using Emacs since 2008, contributed to p2p since 2004.
+- Scheme since 2013.
+- Since 2017 Java development on a 20 year old codebase\\
+  at Disy Informationssysteme GmbH.\\
+  I now know the other side. :-)
+- First lecture on networking in 2018.
+- A wonderful wife, two curious kids,\\
+  two guitars, some websites, and a roleplaying game.\\
+  Fighting for time. :-)
+
+** What is wisp?
+
+*** The vision of wisp:                                             :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+#+latex: \vspace{1em}
+
+#+BEGIN_QUOTE
+» I love the syntax of Python,\\
+\phantom{» }but crave the simplicity and power of Lisp.«
+#+END_QUOTE
+
+*** Scheme to wisp:                                                 :B_block:
+    :PROPERTIES:
+    :BEAMER_env: block
+    :END:
+
+ - indentation for outer parentheses
+ - inline parentheses
+ - infix math via SRFI-105
+ - survive HTML (optional)
+
 * Why?
 
 ** Why wisp? - Scheme is great!
@@ -113,89 +158,213 @@ But …
 
 /(and new users shy away from them)/
 
-** nonlocal state                                                  :noexport:
-
-#+BEGIN_SRC scheme
-  (blocks (of (parens)
-    (are (invisible nonlocal
-    state))))
-#+END_SRC
-
-/(you or your tooling must remember to close them)/
 
 ** Why wisp? - Elegance
 
-- Elegance 0: generality and homoiconicity: *code is data*
+- Elegance 0: generality and homoiconicity (*code is data*).
 - Elegance 1: Scheme syntax uses the *most common* \phantom{Elegance 1: }non-letter, non-math letters.
 - Elegance 2: The *first and last letters* are important \phantom{Elegance 2: }for text-recognition.
 
 #+latex: \vspace{1em}
 
-/Any fix for elegance 2 should preserve elegance 1./
+/In teaching, readability is key./
 
-* What?
+** Summary: Why wisp?
+
+Merging the simplicity and elegance of Scheme\\
+with the readability of Python\\
+by reducing parens.
+
+* How?
+
 ** Scheme to wisp: Scheme
 
-#+BEGIN_SRC scheme
-(define (factorial n)
-    "3! = 3 × 2 × 1 = 6"
-    (if (zero? n)
-         1
-         (* n (factorial (- n 1)))))
-#+END_SRC
+***                                                                   :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.6
+    :END:
+ #+BEGIN_SRC scheme
+   (define (factorial n)
+       "3! = 3 × 2 × 1 = 6"
+       (cond
+        ((zero? n)
+         1)
+        (else
+         (* n (factorial (- n 1))))))
+ #+END_SRC
 
-** Scheme to wisp: indentation for parens
+***                                                                   :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.3
+    :END:
+** Scheme to wisp: indentation for outer parentheses
 
+***                                                                   :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.6
+    :END:
 #+BEGIN_SRC wisp
 define (factorial n)
     . "3! = 3 × 2 × 1 = 6"
-    if (zero? n)
+    cond
+      (zero? n)
        . 1
+      else
        * n (factorial (- n 1))
 #+END_SRC
+***                                                                   :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.3
+    :END:
 
-** Scheme to wisp: inline parens and SRFI-105
+\footnotesize
+This is already\\
+valid wisp.
 
+** Scheme to wisp: inline parentheses
+
+***                                                                   :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.6
+    :END:
 #+BEGIN_SRC wisp
 define : factorial n
     . "3! = 3 × 2 × 1 = 6"
-    if : zero? n
-       . 1
-       * n : factorial {n - 1}
+    cond 
+       : zero? n
+        . 1
+       else
+        * n : factorial (- n 1)
 #+END_SRC
 
-** Scheme to wisp: survive HTML
+#+latex: \vspace{1.3em}
+
+***                                                                   :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.3
+    :END:
+
+\footnotesize
+A colon as the *only* element on a line starts a new block:
+
+#+BEGIN_SRC wisp
+  import : srfi srfi-11
+  let-values 
+      : 
+        : x y
+          values 1 2
+        : z f
+          values 3 4
+      + x y z f
+#+END_SRC
+
+This generalizes wisp to arbitrary tree structures.
+
+** Scheme to wisp: infix math with SRFI-105
+
+***                                                                   :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.6
+    :END:
+#+BEGIN_SRC wisp
+define : factorial n
+    . "3! = 3 × 2 × 1 = 6"
+    cond 
+       : zero? n
+        . 1
+       else
+        * n : factorial {n - 1}
+#+END_SRC
+
+***                                                                   :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.3
+    :END:
+
+\footnotesize
+Main gripe of many.
+
+Use in Scheme:
+
+#+BEGIN_SRC scheme
+#!curly-infix {1 + 2}
+(+ 3 {4 * 5})
+#+END_SRC
+
+** Scheme to wisp: survive HTML (optional)
+***                                                                   :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.6
+    :END:
 
 #+BEGIN_SRC wisp 
 define : factorial n
 _   . "3! = 3 × 2 × 1 = 6"
-_   if : zero? n
-__     . 1
-__     * n : factorial {n - 1}
+_   cond 
+__     : zero? n
+___     . 1
+__     else
+___     * n : factorial {n - 1}
 #+END_SRC
 
+***                                                                   :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.3
+    :END:
+
+\footnotesize
+Also useful if your \LaTeX minted code blocks kill indentation at 8 or more spaces.
+
+** Summary: What is wisp?
+
+***                                                                   :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+ - *indentation* for \\
+   outer parentheses
+ - *leading period* for\\
+   /“not a procedure call”/ \\
+   (do not prefix the line\\
+    with a parenthesis)
+ - *colon* for double parentheses\\
+   reused for inline parentheses\\
+   (till the end of the line)
+ 
+***                                                                   :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.5
+    :END:
+ - *infix math* using SRFI-105
+ - optional leading *underscores* for HTML
+ - Specified in [[https://srfi.schemers.org/srfi-119/srfi-119.html][SRFI-119]]
+
 * 5 years
+** 5 years with wisp
 
-** Experience with wisp
-
-- 9000 lines of code, but all pet projects
-- Changes to the language
-  - literal arrays and doctests with =##=
+- 9000 lines of code, pet projects, some in use
+- Changes to the language since [[https://srfi.schemers.org/srfi-119/srfi-119.html][SRFI-119]] (2015-06-23)
+  - literal arrays for Guile doctests with =##=
   - trailing period for the REPL
 
-** 9000 lines of code, chronological selection
+*→ wisp as a language is complete and stable.*
 
-- ensemble-estimation.w: kalman filter function optimization
-- enter-three-witches.w: minimal script writing
-- securepassword.w: letterblock passwords → =rX4T+jg6H+dwGt=
-- hamming.w: error correction
-- network.w: freenet simulator
-- downloadmesh.w: swarming downloads, Gnutella style
-- fetchpull.w: multithreaded FCP client to Freenet
+** 9000 lines of code, chronological selection:
 
-** test-driven wisp: literal arrays and doctest
+- [[http://draketo.de/py2guile][py2guile]]:\(^*\) all my *Python* workflows in Guile → [[https://www.draketo.de/proj/guile-basics/][Guile basics]]
+- [[https://bitbucket.org/ArneBab/wisp/src/5dfd8644882d181d61c479b0f82be0e644ca9fd6/examples/d20world.w][d20world.w]]: simple *advection and diffusion* on icosahedron
+- [[https://bitbucket.org/ArneBab/wisp/src/5dfd8644882d181d61c479b0f82be0e644ca9fd6/examples/ensemble-estimation.w][ensemble-estimation.w]]:\(^*\) *kalman filter* function optimization
+- [[https://bitbucket.org/ArneBab/wisp/src/5dfd8644882d181d61c479b0f82be0e644ca9fd6/examples/enter-three-witches.w][enter-three-witches.w]]: *game scripting* — /thank you cwebber!/
+- [[https://www.draketo.de/english/secure-passwords][letterblock-passwords]]:\(^*\) =nVxK=8eUD.DdTG=
+- [[https://bitbucket.org/ArneBab/wisp/src/5dfd8644882d181d61c479b0f82be0e644ca9fd6/examples/network.w][network.w]]: Freenet *network simulator*
+- [[https://bitbucket.org/ArneBab/wisp/src/5dfd8644882d181d61c479b0f82be0e644ca9fd6/examples/hamming.w][hamming.w]]:\(^*\) *error correction*
+- [[https://bitbucket.org/ArneBab/wisp/src/cca15c7abc86a500a313315344f9f46bc90e9ce8/examples/downloadmesh.w][downloadmesh.w]]:\(^*\) *swarming downloads*, Gnutella style
+- [[https://notabug.org/ArneBab/guile-freenet/src/8337b7637917273a429a8e784103a0f90ed5b74b/fetchpull.w][fetchpull.w]]:\(^*\) multithreaded Freenet *client protocol* library
+- [[https://bitbucket.org/ArneBab/dryads-wake/src/65039acea660335656218f6ac7c85c9e78e47d4f/dryads-wake.w][dryads-wake.w]]: *game scripting*
 
-#+BEGIN_SRC wisp :exports none :noweb-ref testsetup
+** change 1: test-driven wisp: literal arrays for doctests
+
+#+BEGIN_SRC wisp :exports none :noweb-ref hashbang-and-imports
 #!/usr/bin/env bash
 exec guile -L . -L .. --language=wisp -x .w -e '(factorial)' -c ''
 ; !#
@@ -205,7 +374,8 @@ import : examples doctests
 #+END_SRC
 
 #+BEGIN_SRC wisp :noweb no-export :tangle factorial.w
-{{{testsetup}}}
+{{{hashbang-and-imports}}}
+
 define : factorial n
     . "3! = 3 × 2 × 1 = 6"
     ## : tests : test-equal 6 : factorial 3
@@ -226,50 +396,260 @@ define : main args
 # of expected passes      1
 #+END_EXAMPLE
 
-** REPL with wisp: trailing period
+** change 2: REPL with wisp: trailing period
 
 #+BEGIN_SRC wisp
 display "Hello oneliner!\n" .
 #+END_SRC
 
-/(this syntax was reserved in SRFI-119 to allow for this experimentation)/
+/(syntax reserved in [[https://srfi.schemers.org/srfi-119/srfi-119.html][SRFI-119]] to allow for experimentation)/
 
 ** dryads wake: beginnings of a game
 
+***                                                                   :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.8
+    :END:
 #+BEGIN_SRC wisp
-define : prologue
-    Enter : Old One :role narrator
+define : first-encounter
+    Enter : Juli Fin :profile juli
+            Rooted Breeze :profile dryad
     
-    Old One :eerie
-        When the world was young
-        lived in the trees
-        a dryad from
-        the hidden seas.
-    
-    Old One
-        Then humans came,
-        logged for their hold
-        the dryad lived on
-        dried and cold.
+    Juli Fin
+        Finally we have our own home!
+    ;; ...
+    Rooted Breeze :eerie
+        who are you strangers
+        in my home?
+
+    Choose
+        : explain
+          ,(explain-your-home)
+        : fast-talk
+          ,(fast-talk-the-dryad)
+
 #+END_SRC
 
-* Best practice
-** Best practice
+***                                                                   :BMCOL:
+    :PROPERTIES:
+    :BEAMER_col: 0.2
+    :END:
 
-- 
+\tiny
+[[./dryadswake.webm][dryadswake.webm]]
 
-** 
+* Lecture
+** Experience with wisp in a lecture
 
-* Education
-** Wisp in a lecture
+- communication and network technology at DHBW Karlsruhe
+- wisp to describe Hamming 11/7 encoding and decoding
+- *“Is that pseudocode?”* — a student \phantom{*“Is that pseudocode?” *}→ highest praise :-)
+- provided as formulary in the (handwritten) final test
 
-- Communication and network technology at DHBW Karlsruhe
-- Hamming 11/7 encoder and decoder
-- *“Is that pseudo-code?”* — a student \phantom{*“Is that pseudo-code?” *}→ highest praise :-)
+** ☺ Hamming decoder
 
-** ❢ A Hamming decoder
+#+latex: \footnotesize
+#+BEGIN_SRC scheme
+define : 11/7-decode bits
+  define broken-bit
+    match bits
+     : c1 c2 d3 c4 d5 d6 d7 c8 d9 d10 d11
+       +
+_        * 1 : H c1 d3 d5 d7 d9 d11
+_        * 2 : H c2 d3 d6 d7 d10 d11
+_        * 4 : H c4 d5 d6 d7
+_        * 8 : H c8 d9 d10 d11
+  define fixed
+    df : zero? broken-bit
+       . bits
+       flip bits {broken-bit - 1}
+  match fixed
+    : c1 c2 d3 c4 d5 d6 d7 c8 d9 d10 d11
+      list d3 d5 d6 d7 d9 d10 d11
+#+END_SRC
+
+** Hamming encoder
+
+*** :B_columns:
+    :PROPERTIES:
+    :BEAMER_env: columns
+    :BEAMER_opt: t
+    :END:
+**** Header                                                   :B_block:BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.4
+     :BEAMER_env: block
+     :END:
+ #+latex: \footnotesize
+ #+BEGIN_SRC scheme
+ define : 11/7-encode bits
+   ##
+    tests
+     test-equal
+      . '(0 0 1 0 0 0 0 1 0 0 1)
+      11/7-encode 
+        . '(1 0 0 0 0 0 1)
+ #+END_SRC
+
+**** Body                                                     :B_block:BMCOL:
+     :PROPERTIES:
+     :BEAMER_col: 0.6
+     :BEAMER_env: block
+     :END:
+ #+latex: \footnotesize
+ #+BEGIN_SRC scheme
+   match bits
+    : d3 d5 d6 d7 d9 d10 d11
+      list
+        H d3 d5 d7 d9 d11  ;; bit 1
+        H d3 d6 d7 d10 d11 ;; bit 2
+        . d3               ;; bit 3
+        H d5 d6 d7         ;; bit 4
+        . d5 d6 d7         ;; bit 5, 6, 7
+        H d9 d10 d11       ;; bit 8
+        . d9 d10 d11       ;; bit 9, 10, 11
+ #+END_SRC
+** Hamming support procs
+
+<<hamming-support>>
+
+#+BEGIN_SRC scheme
+define : mod2sum . bits
+    . "Modulo-2 sum, i.e. for even parity"
+    ## : tests : test-equal 1 : mod2sum 1 0 1 1 0
+    modulo (apply + bits) 2
+
+define H mod2sum ;; for brevity
+
+define : flip bits index
+    . "flip the bit-number (0→1 or 1→0) at the index."
+    ## : tests : test-equal '(1 0 1) : flip '(0 0 1) 0
+    append
+       take bits index
+       list : mod2sum 1 : list-ref bits index
+       drop bits {index + 1}
+#+END_SRC
 
 
+** Summary
+
+- *“Is that pseudocode?”*
+- Describe calculation in code
+- =match= is great for specific examples
+
+* Learning
+** Learning: how Scheme and wisp help
+
+- Write code by hand
+- Recursion wins: elegance
+- Exact math
+- Unicode for math
+
+** Write code by hand
+
+[[./handwritten-code.jpg]]
+
+** Recursion wins: elegance
+
+#+BEGIN_SRC wisp
+define : fib n
+   let rek : (i 0) (u 1) (v 1)
+        if {i >= {n - 2}}
+           . v
+           rek {i + 1} v {u + v}
+#+END_SRC
+
+/Initialize, define parameters, return the result./
+
+** Exact math
+
+#+BEGIN_SRC wisp
+define : n/k n k
+   if {k > n} 0
+      / : factorial n
+          factorial k
+          factorial {n - k}
+#+END_SRC
+
+/No need to work around limitations./
+
+** Unicode for math
+
+\begin{equation}
+  F = \frac{\phi_1 + \phi_2}{2}, 
+G = \frac{\phi_1 - \phi_2}{2}, 
+\lambda = \frac{L_1 - L_2}{2}
+\end{equation}
+
+#+BEGIN_SRC wisp
+define : ellipsoiddistance a f L1 L2 Φ1 Φ2
+    let 
+       : F : / {Φ1 + Φ2} 2
+         G : / {Φ1 - Φ2} 2
+         λ : / {L1 - L2} 2
+    ;; ...
+#+END_SRC
+
+/Minimize mental overhead due to mismatch. Math is complex./
+
+** Summary
+
+A minimum in the mismatch between task and code.
+
+* Best practices
+** Best practices I found
+
+- use the weakest method that works\(^*\)
+- use parens and braces where they provide advantages\(^*\)
+- inner defines limit nesting
+- do use records
+- modules as scripts with doctests
+
+** use the weakest method that works
+
+- prefer procedures over macros
+- prefer macros over reader extensions
+
+#+latex: \vspace{1em}
+
+/Wisp is the minimal reader extension which can represent arbitrary trees structures with indentation./
+
+** use parens where they provide advantages
+
+#+BEGIN_SRC wisp
+define x^b-deviations-approx
+       list-ec (: i ensemble-member-count)
+            list-ec (: j (length x^b))
+                * : random:normal
+                    sqrt : list-ref (list-ref P j) j
+#+END_SRC
+
+also:
+
+- use parens for trivial let
+- use braces for simple math
+
+* Future
+** Future of wisp (plans and wishes)
+
+- Explore possibilities (as in dryads-wake)
+- More documentation (i.e. in [[https://www.draketo.de/proj/with-guise-and-guile/][With Guise and Guile]])
+- Better tooling ([[https://bitbucket.org/ArneBab/wisp/src/05abefcab6239da4b1eedd95e22f4a25630fa3aa/wisp-mode.el?at=tip][wisp-mode]] with paredit commands?)
+- Bundle programs cross-platform?
+- Part of Guile?
+
+** Wisp for pseudocode
+
+/The next time you write pseudocode,\\
+try making it executable as wisp/
+
+*** …and talk about it!                                        :B_alertblock:
+    :PROPERTIES:
+    :BEAMER_env: alertblock
+    :BEAMER_act: <2->
+    :END:
+
+/»ArneBab's alternate sexp syntax is best I've seen; pythonesque, hides parens but keeps power«/ — Christopher Lemmer Webber in [[http://dustycloud.org/blog/wisp-lisp-alternative/][Wisp: Lisp, minus the parentheses]]
 
 * Try!
 
@@ -298,16 +678,12 @@ guile -L . -x .w --lanugage=wisp
 
 https://www.draketo.de/english/wisp
 
-** Wisp for scripts
+** Wisp for scripts with guix
 
 #+BEGIN_SRC sh :tangle script.w
-#!/usr/bin/env bash
+#!/run/current-system/profile/bin/bash
 # -*- wisp -*-
-D=$(dirname $(realpath "$0"))
-# precompile wisp
-guile -L "$D" -c '(import (language wisp spec))'
-# run script as wisp code
-exec -a "$0" guile -L "$D" \
+exec -a "$0" guile -L $(dirname $(realpath "$0")) \
      -x .w --language=wisp -e '(script)' -c '' "$@"
 ; !#
 
@@ -337,6 +713,42 @@ define : main args
   :END:
 
 \appendix
+** nonlocal state
+
+#+BEGIN_SRC scheme
+  (opened (parens)
+    (are (nonlocal
+    state)))
+#+END_SRC
+
+#+BEGIN_SRC wisp
+  opened : parens
+    are
+      nonlocal state
+#+END_SRC
+
+
+/(you or your tooling must track them)/
+** Wisp for scripts anywhere
+
+#+BEGIN_SRC sh :tangle script.w
+#!/usr/bin/env bash
+# -*- wisp -*-
+D=$(dirname $(realpath "$0"))
+# precompile wisp
+guile -L "$D" -c '(import (language wisp spec))'
+# run script as wisp code
+exec -a "$0" guile -L "$D" \
+     -x .w --language=wisp -e '(script)' -c '' "$@"
+; !#
+
+define-module : script
+   . #:export : main
+
+define : main args
+    format #t "Hello Wisp!"
+#+END_SRC
+
 ** Verweise
   :PROPERTIES:
   :BEAMER_opt: allowframebreaks,label=
@@ -355,6 +767,7 @@ define : main args
 
 
 #+latex_header: \usepackage{hyperref}
+#+latex_header: \usepackage{animate}
 #+LATEX_HEADER: \usepackage{xcolor}
 #+LATEX_HEADER: \usepackage[ngerman]{babel}
 
@@ -386,8 +799,6 @@ define : main args
 # End:
 
 
-
-* Footnotes
 
 
 

@@ -1,7 +1,7 @@
 dnl run `autoreconf -i` to generate a configure script. 
 dnl Then run ./configure to generate a Makefile.
 dnl Finally run make to generate the project.
-AC_INIT([wisp], [0.9.9.1],
+AC_INIT([wisp], [1.0],
         [arne_bab@web.de])
 # Add macros in m4/ to ensure that wisp builds without having Guile in the aclocal path
 AC_CONFIG_MACRO_DIR([m4])
