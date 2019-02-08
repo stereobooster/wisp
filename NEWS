@@ -1,3 +1,8 @@
+wisp 1.0:
+- add FOSDEM 2019 slides: docs/fosdem2019.org
+- As presented at FOSDEM, wisp the language is complete.
+  Tooling, documentation, and porting are still work in progress.
+
 wisp 0.9.9.1:
 - add missing emacs support files
 - wisp-mode.el: highlighting and basic editing for wisp files
