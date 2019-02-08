@@ -15,7 +15,7 @@ Wisp: Whitespace to Lisp
 
 Wisp turns indentation based syntax into Lisp. The conversion is homoiconic[^h], generic[^g], and backwards-compatible[^b]. It is inspired by [project readable][], but tries to keep itself simple (and stupid: just add parens for indentation).
 
-More information is available on the **[wisp-website][]**, and code in the [wisp-repository][].
+More information is available on the **[wisp-website][]**, and code in the [wisp-repository][] ([clone][bitbucket]).
 
 For a short presentation, see [Why Wisp?](why-wisp.html)
 
@@ -24,14 +24,15 @@ Note that this is full-fledged scheme, with all its capabilities like hygienic m
 [wisp-website]: http://draketo.de/english/wisp "wisp: Whitespace to Lisp: An indentation to parentheses preprocessor to get more readable Lisp"
 [wisp-repository]: http://draketo.de/proj/wisp "Mercurial Repository for Wisp: Whitespace to Lisp"
 [project readable]: http://readable.sourceforge.net/ "Readable Lisp S-expressions Project"
+[bitbucket]: https://bitbucket.org/ArneBab/wisp/ "Clone of the Mercurial Repository for Wisp: Whitespace to Lisp"
 
 Requirements
 ------------
 
-* [GNU Guile 2.x][] for running wisp
+* [GNU Guile 2 or later][] for running wisp
 * [Python 3.x][] for a full bootstrap (optional)
 
-[GNU Guile 2.x]: http://gnu.org/s/guile "GNU Guile: The official extension language for the GNU operating system."
+[GNU Guile 2 or later]: http://gnu.org/s/guile "GNU Guile: The official extension language for the GNU operating system."
 [Python 3.x]: http://python.org "Python Programming Language"
 
 Setup
