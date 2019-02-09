@@ -1,3 +1,5 @@
+# usage: make help
+
 # automake: explicitly set the supported suffixes
 SUFFIXES = .w .scm .sh
 
@@ -42,7 +44,7 @@ $(nobase_site_DATA): .wispbootstrap
 .wispbootstrap : ${WISP} wisp.scm
 	@abs_top_srcdir@/bootstrap-reader.sh @abs_top_srcdir@ @abs_top_builddir@ @GUILE@ wisp.scm 2>&1 | sed "s/^;;;.*//" 2>&1 | grep . 1>&2 ; test ! $$? -eq 0 # it worked if grep does not find anything
 
-wisp.scm: wisp-guile.w wisp.py
+wisp.scm: wisp-guile.w wisp.py ## run the full bootstrap from Python (use make -B to rebuild)
 	@abs_top_srcdir@/bootstrap.sh @abs_top_srcdir@ @GUILE@ @python3@ 2>&1 | sed "s/^;;;.*//" 2>&1 | grep . 1>&2 ; test ! $$? -eq 0 # it worked if grep does not find anything
 	chmod +x $@
 
@@ -67,7 +69,9 @@ help: ## Show this help message.
 	@echo 'Usage:'
 	@echo ':make [target] ...' | sed "s/\(target\)/\\x1b[36m\1\\x1b[m/" | column -c2 -t -s :
 	@echo
-	@echo 'Targets:'
+	@echo 'make without target bootstraps and prepares wisp'
+	@echo
+	@echo 'Custom targets:'
 	@echo -e "$$(grep -hE '^\S+:.*##' $(MAKEFILE_LIST) | sed -e 's/:.*##\s*/:/' -e 's/^\(.\+\):\(.*\)/:\\x1b[36m\1\\x1b[m:\2/' | column -c2 -t -s :)"
 	@echo
 	@echo '(see ./configure --help for setup options)'
