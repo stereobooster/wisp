@@ -59,7 +59,7 @@ The same might apply for Guile in /usr/local/: you might have to use PKG_CONFIG_
 Usage
 -----
 
-* Preprocess files: `guile ./wisp.scm infile.wisp > outfile.scm`
+* Preprocess files: `./wisp2lisp infile.wisp > outfile.scm`
 * Wisp at the REPL: `guile -L . --language=wisp # in the wisp-folder`
 * The files in examples/ show how to make executable wisp programs.
 
