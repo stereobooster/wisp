@@ -20,9 +20,9 @@ WISP = wisp-guile.w wisp-reader.w wisp-scheme.w
 # installed compiled files is greater than that of installed source
 # files.  See
 # <http://lists.gnu.org/archive/html/guile-devel/2010-07/msg00125.html>
-# for details.
-guile_install_go_files = install-nobase_go_DATA
-$(guile_install_go_files): install-nobase_site_DATA
+# for details. The missing underscore before DATA is intentional.
+guile_install_go_files = install-nobase_goDATA
+$(guile_install_go_files): install-nobase_siteDATA
 
 EXTRA_DIST = $(WISP) bootstrap.sh bootstrap-reader.sh language examples tests wisp-repl-guile.sh testrunner.w wisp.py wisp.scm m4 ob-wisp.el wisp-mode.el AUTHORS.in
 CLEANFILES = 1 2 $(GOBJECTS)

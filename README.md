@@ -48,7 +48,16 @@ From a release:
 * Get a release from [bitbucket.org/ArneBab/wisp/downloads/](https://bitbucket.org/ArneBab/wisp/downloads/)
 * Unpack and build: `tar xf [release].tar.gz; cd [release]; ./configure; make`
 
-Install systemwide with `./configure --datarootdir=/usr/share && sudo make install`, then you can run `guile --language=wisp` anywhere. Install in your home folder with `./configure --datarootdir=$HOME/.local; make install`. Use `guile -c '(import (language wisp spec))'` to get rid of auto-compile errors.
+### Install
+
+Install systemwide with `./configure --datarootdir=/usr/share && sudo make install`, then you can run `guile --language=wisp` anywhere. 
+
+Install in your home folder with `./configure --datarootdir=$HOME/.local; make install`. Use `guile -c '(import (language wisp spec))'` to get rid of auto-compile errors. You might need to set the module paths in ~/.bash_profile:
+
+    export GUILE_LOAD_COMPILED_PATH=${HOME}/.local/lib/guile/2.2/site-ccache{GUILE_LOAD_COMPILED_PATH:+:}${GUILE_LOAD_COMPILED_PATH}
+    export GUILE_LOAD_PATH=${HOME}/.local/share/guile/site/2.2/${GUILE_LOAD_PATH:+:}${GUILE_LOAD_PATH}
+
+### More
 
 Run tests with `make check`. Distribute your own version with `make distcheck`.
 
