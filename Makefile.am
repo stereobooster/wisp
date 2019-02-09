@@ -5,16 +5,12 @@ SUFFIXES = .w .scm .sh
 bin_SCRIPTS = wisp2lisp
 
 # where to install guile modules to import
-sitedir = $(datarootdir)/guile/site/$(GUILE_EFFECTIVE_VERSION)
-site_DATA = wisp.scm
-
-# where to install the language modules
-langdir = $(sitedir)/language
 # nobase_ as prefix prevents stripping leading directories
 # see https://www.gnu.org/software/automake/manual/html_node/Alternative.html#index-nobase_005f
-nobase_lang_DATA = language/wisp.scm language/wisp/spec.scm
+sitedir = $(datarootdir)/guile/site/$(GUILE_EFFECTIVE_VERSION)
+nobase_site_DATA = language/wisp.scm language/wisp/spec.scm
 
-GOBJECTS = $(nobase_lang_DATA:%.scm=%.go)
+GOBJECTS = $(nobase_site_DATA:%.scm=%.go)
 nobase_go_DATA = $(GOBJECTS)
 godir=$(libdir)/guile/$(GUILE_EFFECTIVE_VERSION)/site-ccache
 
@@ -26,11 +22,11 @@ WISP = wisp-guile.w wisp-reader.w wisp-scheme.w
 # <http://lists.gnu.org/archive/html/guile-devel/2010-07/msg00125.html>
 # for details.
 guile_install_go_files = install-nobase_go_DATA
-$(guile_install_go_files): install-nobase_lang_DATA
+$(guile_install_go_files): install-nobase_site_DATA
 
 EXTRA_DIST = $(WISP) bootstrap.sh bootstrap-reader.sh language examples tests wisp-repl-guile.sh testrunner.w wisp.py wisp.scm m4 ob-wisp.el wisp-mode.el AUTHORS.in
 CLEANFILES = 1 2 $(GOBJECTS)
-DISTCLEANFILES = $(bin_SCRIPTS) $(site_DATA) $(nobase_lang_DATA)
+DISTCLEANFILES = $(bin_SCRIPTS) $(nobase_site_DATA)
 # don't spout out lots of stuff at each distcheck. Disable for debugging.
 AM_DISTCHECK_CONFIGURE_FLAGS="--quiet"
 
@@ -42,7 +38,7 @@ wisp2lisp: wisp.scm ## build only the wisp2lisp converter
 	cp $< $@
 
 .INTERMEDIATE: .mydatastuff
-$(nobase_lang_DATA): .wispbootstrap
+$(nobase_site_DATA): .wispbootstrap
 .wispbootstrap : ${WISP} wisp.scm
 	@abs_top_srcdir@/bootstrap-reader.sh @abs_top_srcdir@ @abs_top_builddir@ @GUILE@ wisp.scm 2>&1 | sed "s/^;;;.*//" 2>&1 | grep . 1>&2 ; test ! $$? -eq 0 # it worked if grep does not find anything
 
