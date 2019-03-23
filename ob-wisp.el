@@ -125,7 +125,7 @@ VARS contains resolved variable references"
      (format "define %s %s"
 	     (car pair)
 	     (org-babel-wisp-var-to-wisp (cdr pair))))
-   (mapcar #'cdr (org-babel-get-header params :var))))
+   (org-babel--get-vars params)))
 
 (defun org-babel-wisp-var-to-wisp (var)
   "Convert an elisp value to a wisp variable.
