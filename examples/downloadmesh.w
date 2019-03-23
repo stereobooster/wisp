@@ -21,7 +21,7 @@ exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x 
 ;; - Implement X-NAlt
 ;; - Add a parity block of 5% of the file (assuming 20 clients)
 
-;; [1] things you only know when you where there when they were built: 
+;; [1] things you only know when you where there when they were built:
 ;;     https://sourceforge.net/projects/bitcollider/
 
 ;; Download mesh specification:
@@ -31,6 +31,7 @@ exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x 
 ;; TigerTreeHash to allow for verifying individual chunks.
 ;; bitprint-urn: http://www.nuke24.net/docs/2015/HashURNs.html
 ;; https://web.archive.org/web/20091203212059/http://open-content.net/specs/draft-jchapweske-thex-02.html
+;; http://rfc-gnutella.sourceforge.net/src/Partial_File_Sharing_Protocol_1.0.txt
 
 define-module : examples downloadmesh
               . #:export : main serve download-file
@@ -156,6 +157,7 @@ define : resolve-urn urn
 define : resolve-path path
     ;; URN: https://www.ietf.org/rfc/rfc2169.txt
     ;; extended to simplify my parsing: http://www.nuke24.net/docs/2015/HashURNs.html
+    ;; example: uri-res/urn:sha256:
     define uri-res-prefix "uri-res/raw/"
     pretty-print path
     vhash-fold (λ(key value result) (pretty-print key)(pretty-print value)) #f served-paths
