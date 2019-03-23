@@ -1,3 +1,10 @@
+wisp 1.0.1
+- fix install directory, thanks to James-Adam Renquinha Henri and Ludovic Courtès who both
+  discovered a mistake in the paths: correct module path is /usr/share/guile/site/<version>/…,
+  but I used /usr/share/guile/<version>/site
+- simplify install logic and pre-compile installed modules.
+- add beautiful make help
+
 wisp 1.0:
 - add FOSDEM 2019 slides: docs/fosdem2019.org
 - As presented at FOSDEM, wisp the language is complete.
