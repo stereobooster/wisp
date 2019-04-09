@@ -1,3 +1,6 @@
+wisp 1.0.2
+- guild compile is missing the load path
+
 wisp 1.0.1
 - fix install directory, thanks to James-Adam Renquinha Henri and Ludovic Courtès who both
   discovered a mistake in the paths: correct module path is /usr/share/guile/site/<version>/…,
