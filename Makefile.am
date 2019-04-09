@@ -34,7 +34,7 @@ AM_DISTCHECK_CONFIGURE_FLAGS="--quiet"
 
 # precompile all scheme files
 .scm.go:
-	$(GUILE_TOOLS) compile $(GUILE_WARNINGS) -o "$@" "$<"
+	$(GUILE_TOOLS) compile -L @abs_top_builddir@ $(GUILE_WARNINGS) -o "$@" "$<"
 
 wisp2lisp: wisp.scm ## build only the wisp2lisp converter
 	cp $< $@
