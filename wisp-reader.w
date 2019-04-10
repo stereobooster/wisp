@@ -18,14 +18,15 @@ define-module : language wisp spec
 ; Set locale to something which supports unicode. Required to avoid using fluids.
 catch #t
       lambda :
-        setlocale LC_ALL ""
+        setlocale LC_ALL "foo"
       lambda : key . parameters
         let : : locale-fallback "en_US.UTF-8"
           format (current-error-port)
               string-join
-                  list "Warning: setlocale LC_ALL \"\" failed with ~A: ~A"
-                     . "using explicit ~A locale. Please setup your locale.\n"
-                  .  "\n         "
+                  list ";;; Warning: setlocale LC_ALL \"\" failed with ~A: ~A"
+                     . "switching to explicit ~A locale. Please setup your locale."
+                     . "If this fails, you might need glibc support for unicode locales.\n"
+                  .  "\n;;;          "
               . key parameters locale-fallback
           setlocale LC_ALL locale-fallback
 
