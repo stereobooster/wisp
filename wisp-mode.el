@@ -5,7 +5,7 @@
 ;;               from https://github.com/kwrooijen/indy/blob/master/indy.el
 
 ;; Author: Arne Babenhauserheide <arne_bab@web.de>
-;; Version: 0.2.4
+;; Version: 0.2.5
 ;; Keywords: languages, lisp
 
 ;; This program is free software; you can redistribute it and/or
@@ -39,7 +39,8 @@
 ;; [2]: http://github.com/krisajenkins/wispjs-mode
 ;; 
 ;; ChangeLog:
-;; 
+;;
+;;  - 0.2.5: backtab chooses existing lower indentation values from previous lines.
 ;;  - 0.2.4: better indentation support:
 ;;           cycle forward on tab,
 ;;           cycle backwards on backtab (s-tab),
@@ -123,6 +124,17 @@
     (back-to-indentation)
     (current-column)))
 
+(defun wisp-prev-indent-lower-than (indent)
+  "Get the next lower indentation among previous lines."
+  (save-excursion
+    (previous-line 1)
+    (while (or (wisp--line-empty?)
+               (and (>= (wisp--current-indent) indent)
+                    (> (wisp--current-indent) 0)))
+      (previous-line 1))
+    (back-to-indentation)
+    (current-column)))
+
 (defun wisp--line-empty? ()
   "Check if the current line is empty."
   (string-match "^\s*$" (wisp--get-current-line)))
@@ -187,7 +199,8 @@ to prev+tab.
          (prev (wisp--prev-indent))
          (width
           (cond
-           ((equal curr prev) (- prev tab-width))
+           ((<= curr prev)
+            (wisp-prev-indent-lower-than curr))
            ((= curr 0) prev)
            ((> curr prev) prev)
            (t  0))))
