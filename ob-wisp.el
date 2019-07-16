@@ -8,6 +8,9 @@
 ;; Keywords: literate programming, reproducible research
 ;; Homepage: http://orgmode.org
 
+;; Version: 0.1
+;; Keywords: languages, lisp
+
 ;; This file is not part of GNU Emacs. It is modified from ob-python.el
 
 ;; GNU Emacs is free software: you can redistribute it and/or modify
@@ -27,6 +30,10 @@
 
 ;; Org-Babel support for evaluating wisp source code.
 
+;; ChangeLog:
+;;  - 0.1: search for modules with .w extension
+
+
 ;;; Code:
 (require 'ob)
 (eval-when-compile (require 'cl))
@@ -41,7 +48,8 @@
 
 (defvar org-babel-default-header-args:wisp '())
 
-(defcustom org-babel-wisp-command "guile -L $HOME/wisp --language=wisp -e '(lambda (args) (set! (@@ (system repl common) repl-welcome) (const #f)))'"
+(defcustom org-babel-wisp-command "guile -L $HOME/wisp --language=wisp -x .w -e '(lambda (args) (set! (@@ (system repl common) repl-welcome) (const #f)))' -c ''"
+  ;; setting repl-welcome to #f gets rid of printing the REPL prefix and Guile version
   "Name of the command for executing Wisp code."
   :version "24.4"
   :package-version '(Org . "8.0")
