@@ -1,3 +1,6 @@
+wisp-mode 0.2.4
+- improve tabbing behaviour
+
 wisp 1.0.2
 - guild compile is missing the load path
 

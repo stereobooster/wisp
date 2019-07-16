@@ -5,7 +5,7 @@
 ;;               from https://github.com/kwrooijen/indy/blob/master/indy.el
 
 ;; Author: Arne Babenhauserheide <arne_bab@web.de>
-;; Version: 0.2.3
+;; Version: 0.2.4
 ;; Keywords: languages, lisp
 
 ;; This program is free software; you can redistribute it and/or
@@ -40,6 +40,10 @@
 ;; 
 ;; ChangeLog:
 ;; 
+;;  - 0.2.4: better indentation support:
+;;           cycle forward on tab,
+;;           cycle backwards on backtab (s-tab),
+;;           keep indentation on enter.
 ;;  - 0.2.1: Disable electric-indent-local-mode in wisp-mode buffers.
 ;;  - 0.2: Fixed the regular expressions. Now org-mode HTML export works with wisp-code.
 ;; 
@@ -111,7 +115,7 @@
      ))
   "Default highlighting expressions for wisp mode.")
 (defun wisp--prev-indent ()
-  "Get the amount of indentation spaces if the previous line."
+  "Get the amount of indentation spaces of the previous line."
   (save-excursion
     (previous-line 1)
     (while (wisp--line-empty?)
@@ -142,24 +146,63 @@
 
 (defun wisp--indent (num)
   "Indent the current line by the amount of provided in NUM."
-  (unless (equal (wisp--current-indent) num)
-    (let* ((num (max num 0))
-           (ccn (+ (current-column) (- num (wisp--current-indent)))))
-      (indent-line-to num)
-      (move-to-column (indy--fix-num ccn)))))
+  (let ((currcol (current-column))
+        (currind (wisp--current-indent)))
+    (unless (equal currind num)
+      (let ((num (max num 0)))
+        (indent-line-to num))
+      (unless (<= currcol currind)
+        (move-to-column (indy--fix-num (+ num (- currcol currind))))))))
 
 ;;;###autoload
 (defun wisp--tab ()
-  "Cycle through indentations depending on the previous line."
+  "Cycle through indentations depending on the previous line.
+
+If the current indentation is equal to the previous line, 
+   increase indentation by one tab,
+if the current indentation is zero,
+   indent up to the previous line
+if the current indentation is less than the previous line,
+   increase by one tab, but at most to the previous line.
+"
   (interactive)
   (let* ((curr (wisp--current-indent))
          (prev (wisp--prev-indent))
-         (width (cond
-             ((< curr (- prev tab-width)) (- prev tab-width))
-             ((< curr prev) prev)
-             ((equal curr prev) (+ prev tab-width))
-             (t  0))))
+         (width
+          (cond
+           ((equal curr prev) (+ prev tab-width))
+           ((= curr 0) prev)
+           ((< curr prev) (min prev (+ curr tab-width)))
+           (t  0))))
     (wisp--indent width)))
+
+;;;###autoload
+(defun wisp--backtab ()
+  "Cycle through indentations depending on the previous line,
+the inverse of wisp--tab, except that it jums from 0 to prev, not
+to prev+tab.
+"
+  (interactive)
+  (let* ((curr (wisp--current-indent))
+         (prev (wisp--prev-indent))
+         (width
+          (cond
+           ((equal curr prev) (- prev tab-width))
+           ((= curr 0) prev)
+           ((> curr prev) prev)
+           (t  0))))
+    (wisp--indent width)))
+
+;;;###autoload
+(defun wisp--return ()
+  "enter a newline while keeping indentation."
+  (interactive)
+  (let* ((curr (wisp--current-indent))
+         (prev (wisp--prev-indent)))
+    (newline)
+    (wisp--indent curr)))
+
+
 
 
 (defun wisp-indent-current-line (&optional unindented-ok)
@@ -213,7 +256,9 @@ indent-relative."
   (set (make-local-variable 'parse-sexp-ignore-comments) t)
   (set (make-local-variable 'font-lock-defaults) wisp-font-lock-keywords)
   (set (make-local-variable 'mode-require-final-newline) t)
-  (local-set-key (kbd "<tab>") 'wisp--tab))
+  (local-set-key (kbd "<tab>") 'wisp--tab)
+  (local-set-key (kbd "<backtab>") 'wisp--backtab)
+  (local-set-key (kbd "<return>") 'wisp--return))
 
                         
 
