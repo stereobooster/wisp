@@ -29,7 +29,7 @@
 ;; (require 'wisp-mode)
 ;; 
 ;; For details on wisp, see
-;; http://draketo.de/light/english/wisp-lisp-indentation-preprocessor
+;; https://www.draketo.de/english/wisp
 ;;
 ;; If you came here looking for wisp the lisp-to-javascript
 ;; compiler[1], have a look at wispjs-mode[2].
