@@ -166,7 +166,6 @@
       (unless (<= currcol currind)
         (move-to-column (indy--fix-num (+ num (- currcol currind))))))))
 
-;;;###autoload
 (defun wisp--tab ()
   "Cycle through indentations depending on the previous line.
 
@@ -187,7 +186,6 @@ if the current indentation is less than the previous line,
            (t  0))))
     (wisp--indent width)))
 
-;;;###autoload
 (defun wisp--backtab ()
   "Cycle through indentations depending on the previous line.
 
@@ -205,7 +203,6 @@ prev, not to prev+tab."
            (t  0))))
     (wisp--indent width)))
 
-;;;###autoload
 (defun wisp--return ()
   "Enter a newline while keeping indentation."
   (interactive)
