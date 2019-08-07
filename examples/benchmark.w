@@ -26,7 +26,7 @@ import : statprof
 define max-relative-uncertainty 0.3 ;; 3 sigma from 0
 define max-absolute-uncertainty-seconds 1.e-3 ;; 1ms, required to ensure that the model uses the higher values (else they would have huge uncertainties). If you find you need more, use a smaller test case.
 define min-aggregated-runtime-seconds 1.e-5 ;; 10μs ~ 30k cycles
-define max-iterations 128 ;; at most 128 samples, currently corresponding to at least 1ms each, so a benchmark of a fast function should take at most 0.1 seconds.
+define max-iterations 32 ;; at most 128 samples, currently corresponding to at least 1ms each, so a benchmark of a fast function should take at most 0.1 seconds.
 
 
 ;; stddev from rosetta code: http://rosettacode.org/wiki/Standard_deviation#Scheme
@@ -205,13 +205,6 @@ define : bench-set param-list
   define : f x
      let : (N (list-ref x 0)) (m (list-ref x 1))
             benchmark (list-set! a b #t) :let ((a (iota (max N m)))(b (- m 1)))
-  zip param-list : map f param-list
-
-define : bench-copy param-list
-  . "Copy a list of length N."
-  define : f x
-     let : (N (list-ref x 0)) (m (list-ref x 1))
-            benchmark (set! b (list-copy a)) :let ((a (iota N))(b #f))
   zip param-list : map f param-list
 
 define : bench-getslice-left param-list
