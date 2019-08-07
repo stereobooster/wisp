@@ -22,6 +22,12 @@ import : statprof
          system vm program
 
 
+;; Define targets for the data aquisition
+define max-relative-uncertainty 0.3 ;; 3 sigma from 0
+define max-absolute-uncertainty-seconds 1.e-3 ;; 1ms, required to ensure that the model uses the higher values (else they would have huge uncertainties). If you find you need more, use a smaller test case.
+define min-aggregated-runtime-seconds 1.e-5 ;; 10μs ~ 30k cycles
+define max-iterations 128 ;; at most 128 samples, currently corresponding to at least 1ms each, so a benchmark of a fast function should take at most 0.1 seconds.
+
 
 ;; stddev from rosetta code: http://rosettacode.org/wiki/Standard_deviation#Scheme
 define : stddev nums
@@ -69,12 +75,6 @@ define* : benchmark-run-single fun #:key (min-seconds 0.1)
         if {seconds > min-seconds}
             /  seconds loop-num ;; this wastes less than {(4 * ((4^(i-1)) - 1)) / 4^i} fractional data but gains big in simplicity
             profiler (* 4 loop-num) ;; for fast functions I need to go up rapidly, for slow ones I need to avoid overshooting
-
-;; Define targets for the data aquisition
-define max-relative-uncertainty 0.3 ;; 3 sigma from 0
-define max-absolute-uncertainty-seconds 1.e-3 ;; 1ms, required to ensure that the model uses the higher values (else they would have huge uncertainties). If you find you need more, use a smaller test case.
-define min-aggregated-runtime-seconds 1.e-5 ;; 10μs ~ 30k cycles
-define max-iterations 128 ;; at most 128 samples, currently corresponding to at least 1ms each, so a benchmark of a fast function should take at most 0.1 seconds.
 
 define* : benchmark-run fun
     ;; pretty-print fun
