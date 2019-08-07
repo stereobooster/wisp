@@ -38,27 +38,40 @@ define : nodes-and-edges->adjacency-lists-by-index nodelist edges
     . "Assemble adjacency lists by index in the nodelist"
     define number-of-nodes : u16vector-length nodelist
     define number-of-edges : u16vector-length : car edges
-    define adjacency-lists : make-vector number-of-nodes '()
+    define adjacency-lists : make-vector number-of-nodes 0
+    define adjacency-lists-current-idx : make-u16vector number-of-nodes 0
+    define edge-start : car edges
+    define edge-target : cdr edges
     define : get-start idx
-        u16vector-ref (car edges) idx
+        u16vector-ref edge-start idx
     define : get-end idx
-        u16vector-ref (cdr edges) idx
-    ;; collect edges
-    let loop : : idx 0
-        when {idx < number-of-edges}
+        u16vector-ref edge-target idx
+    ;; count targets per node
+    let loop : : idx {number-of-edges - 1}
+        when {idx > 0}
            let : : start : get-start idx
                vector-set! adjacency-lists start
-                   cons : get-end idx
-                       vector-ref adjacency-lists start
-               loop {idx + 1}
-    ;; compress edges, requires about 50 MiB for 6 million edges
-    let loop : : idx {(vector-length adjacency-lists) - 1}
-        when {idx >= 0}
-            let : : this-nodes-edges : vector-ref adjacency-lists idx
-              if : null? this-nodes-edges
-                   vector-set! adjacency-lists idx #f
-                   vector-set! adjacency-lists idx : list->u16vector this-nodes-edges
-            loop {idx - 1}
+                  + 1 : vector-ref adjacency-lists start
+           loop {idx - 1}
+    ;; prepare u16vectors
+    let loop : : idx {number-of-nodes - 1}
+        when {idx > -1}
+           let : : len : vector-ref adjacency-lists idx
+             if {len = 0}
+                 vector-set! adjacency-lists idx #f
+                 vector-set! adjacency-lists idx : make-u16vector {len + 1}
+           loop {idx - 1}
+    ;; collect edges
+    let loop : : idx {number-of-edges - 1}
+        when {idx > -1}
+           let* 
+               : start : get-start idx
+                 edgelist-idx : u16vector-ref adjacency-lists-current-idx start
+               u16vector-set! : vector-ref adjacency-lists start
+                   . edgelist-idx
+                   get-end idx
+               u16vector-set! adjacency-lists-current-idx start {edgelist-idx + 1}
+           loop {idx - 1}
     . adjacency-lists
 
 
@@ -70,21 +83,24 @@ define : bfs adjacency-list seed
     let loop : : queue : list seed
         if : null? queue
            . #f ;; done
-           let : : current-node : car queue
+           let*
+               : current-node : car queue
+                 edges : vector-ref adjacency-list current-node
+                 edgecount : if edges (u16vector-length edges) 0
                ;; display current-node
                ;; newline
                let lp
-                   : edges : u16vector->list : vector-ref adjacency-list current-node
+                   : idx {edgecount - 1}
                      new : list
-                   cond
-                     : null? edges
-                       loop : append (cdr queue) new
-                     : not : bitvector-ref discovered (car edges)
-                       bitvector-set! discovered (car edges) #t
-                       lp (cdr edges)
-                          cons (car edges) new
-                     else
-                       lp (cdr edges) new
+                   if {idx < 0}
+                     loop : append (cdr queue) new
+                     let : : current-target : u16vector-ref edges idx
+                         cond
+                           : not : bitvector-ref discovered current-target
+                             bitvector-set! discovered current-target #t
+                             lp {idx - 1} : cons current-target new
+                           else
+                             lp {idx - 1} new
                        
 
 define : main args
