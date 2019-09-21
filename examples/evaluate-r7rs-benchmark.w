@@ -118,7 +118,7 @@ define : main args
         data-min-by-test : min-alist-by-test data-by-project
         guile-data : select-project-data data-by-project project-prefix
       when : member "--csv" args
-          display "test slowdown"
+          ; display "test slowdown\n"
           map : λ (x) : apply format #t "~a ~a\n" : list (car x) (cdr x)            
                   get-multiples-alist guile-data data-min-by-test
           exit 0
