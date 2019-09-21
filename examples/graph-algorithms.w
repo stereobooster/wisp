@@ -104,12 +104,9 @@ define : bfs adjacency-list seed
                        
 
 define : main args
-    ; pretty-print nodelist
     define edgelist : create-edges
     define adjacency : nodes-and-edges->adjacency-lists-by-index nodelist edgelist
-    pretty-print
-        u16vector-length
-            car edgelist
+    pretty-print 'adjacency-created
     pretty-print : vector-ref adjacency 0
     ; pretty-print : nodes-and-edges->adjacency-lists-by-index nodelist edges
     bfs adjacency 0
