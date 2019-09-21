@@ -1,4 +1,4 @@
-# create data with r7rs-benchmark: cp ~/eigenes/Programme/r7rs-benchmarks/all.csv r7rs-benchmark-all.csv; for i in 1.8.8 2.0.14 2.2 2.9; do ./evaluate-r7rs-benchmark.w r7rs-benchmark-all.csv guile-$i --csv > /tmp/r7rs-bench-slowdown-guile-$i.csv; done
+# create data with r7rs-benchmark: cp ~/eigenes/Programme/r7rs-benchmarks/all.csv r7rs-benchmark-all.csv; for i in 1.8.8 2.0.14 2.2 2.9; do ./evaluate-r7rs-benchmark.w r7rs-benchmark-all.csv guile-$i --csv > /tmp/r7rs-bench-slowdown-guile-$i.csv; done; gnuplot -c evaluate-r7rs-benchmark.gnuplot
 set title "Slowdown vs. fastest, progression in Guile, using https://ecraven.github.io/r7rs-benchmarks/"
 set xtics rotate 45
 set terminal png size 800,600 linewidth 2
