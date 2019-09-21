@@ -70,8 +70,29 @@ define : get-multiples guile-data data-min-by-test
                      . multiples-of-best
 
 
+define : get-multiples-alist guile-data data-min-by-test
+  let lp 
+      : gd guile-data
+        multiples-of-best '()
+      if : null? gd
+         remove (λ(x) (equal? #f x)) multiples-of-best
+         let*
+             : guile : string->number : car : cdr : car gd
+               test : car : car gd
+               multiple
+                 if : not guile
+                    cons test guile
+                    cons test 
+                      / guile
+                        or (assoc-ref data-min-by-test test) guile
+             lp : cdr gd
+                  if multiple
+                     cons multiple multiples-of-best
+                     . multiples-of-best
+
+
 define : help args
-    format #t "Usage: ~a csv-file [project-prefix]\n" (car args)
+    format #t "Usage: ~a [--help] [--csv] csv-file [project-prefix]\n" (car args)
 
 define args : program-arguments
 
@@ -88,11 +109,20 @@ define project-prefix
        car : cdr : cdr args
 
 define : main args
+    when : and {(length args) > 1} : equal? "--help" : second args 
+         help args
+         exit 0
     let*
       : port : open-input-file csv-file
         data-by-project : read-csv port
         data-min-by-test : min-alist-by-test data-by-project
         guile-data : select-project-data data-by-project project-prefix
+      when : member "--csv" args
+          display "test slowdown"
+          map : λ (x) : apply format #t "~a ~a\n" : list (car x) (cdr x)            
+                  get-multiples-alist guile-data data-min-by-test
+          exit 0
+          
       display "=== Best times ===\n\n"
       pretty-print : sort data-min-by-test (λ (x y) (string<? (car x) (car y)))
       newline
@@ -100,7 +130,7 @@ define : main args
       pretty-print : sort guile-data (λ (x y) (string<? (car x) (car y)))
       newline
       format #t "=== ~a slowdown ===\n\n" : string-locale-titlecase project-prefix
-      pretty-print : get-multiples guile-data data-min-by-test
+      pretty-print : get-multiples-alist guile-data data-min-by-test
       newline
       format #t "=== ~a Geometric Mean slowdown (successful tests / total tests) ===\n\n" : string-locale-titlecase project-prefix
       format #t "~a (~a / ~a)"
