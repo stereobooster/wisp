@@ -120,7 +120,13 @@ define : main args
       when : member "--csv" args
           ; display "test slowdown\n"
           map : λ (x) : apply format #t "~a ~a\n" : list (car x) (cdr x)            
-                  get-multiples-alist guile-data data-min-by-test
+                  get-multiples-alist guile-data data-min-by-test          
+          format #t "total ~a\n"
+              if : null? : get-multiples guile-data data-min-by-test
+                  . #f
+                  expt
+                      apply * : get-multiples guile-data data-min-by-test
+                      / 1 : length : get-multiples guile-data data-min-by-test
           exit 0
           
       display "=== Best times ===\n\n"
