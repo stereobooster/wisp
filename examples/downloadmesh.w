@@ -131,11 +131,13 @@ define : download-file url
     let*
         : uri : string->uri-reference url
           headers `((range bytes (0 . #f))) ;; minimal range header so that the server can serve a content range
+        display "Downloading file "
         display uri
         ;; TODO: parse content range response headers, assemble the file from chunks
         newline
         let-values : : (resp body) : http-get uri #:headers headers
           pretty-print resp
+          pretty-print : response-headers resp
           pretty-print : if (string? body) body : bytevector->string body "ISO-8859-1"
 
 
