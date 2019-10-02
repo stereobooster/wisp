@@ -316,12 +316,6 @@ define : upload files-path request request-body
       boundary : string-append "\r\n--" : assoc-ref (cdr content-type) 'boundary ;; following https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
       content : bytevector->string request-body : port-encoding : request-port request
       parts : string-split-string content boundary
-    pretty-print 
-        list
-            cons 'content-type content-type
-            cons  'boundary boundary
-            cons  'content content
-            cons  'parts parts
     write : map (λ(x) (save-part-upload files-path x)) parts
     newline
     list-files
