@@ -69,8 +69,11 @@ import
     only (web http) declare-opaque-header!
     examples doctests
     only (oop goops) define-generic define-method <string>
-    only (rnrs bytevectors) bytevector-length
-    
+    only (rnrs bytevectors) bytevector-length utf8->string
+    only (srfi srfi-27) random-integer
+    only (ice-9 textual-ports) put-string
+
+
 define : run-ipv4-fibers-server handler-with-path ip
     fibers:run-server handler-with-path #:family AF_INET #:port 8083 #:addr INADDR_ANY
     
@@ -238,13 +241,119 @@ define : server-list-files
           list-files
 
 
-define : server-file-download-handler request body
+define* : string-part-ref s sep key #:optional (matches? string-prefix-ci?)
+    . "Retrieve part identified by KEY in a structured string S with parts separated by SEP. Returns #f if no matching part is found.
+
+The optional MATCHES? is called as (matches? part key)."
+    let loop
+        : parts : string-split-string s sep
+        cond
+          : null? parts
+            . #f
+          : matches? key : car parts
+            car parts
+          else
+            loop : cdr parts
+
+define : part-header-content-disposition part
+    string-part-ref part "\r\n" "content-disposition:"
+
+define : part-header-filename part
+  let*
+      : key "filename=\""
+        disp : part-header-content-disposition part
+        arg : and disp : string-part-ref disp "; " key
+      if arg
+         string-drop
+                string-drop-right arg 1
+                string-length key
+         . #f
+
+define : part-filename part
+    part-header-filename : part-headers part
+
+define : part-headers part
+  let : : sep "\r\n\r\n"
+    car : string-split-string part sep
+
+define : part-content part
+  let : : sep "\r\n\r\n"
+    string-join
+      cdr : string-split-string part sep
+      . sep
+
+define : filename-add-number filename
+    define : random-number-string
+        number->string : random-integer 10
+    let : : extidx : string-index-right filename #\.
+        if : not extidx
+             string-append filename : random-number-string
+             let
+                 : ext : substring filename : + extidx 1
+                   base : substring filename 0 extidx
+                 string-append base : random-number-string
+                   . "." ext             
+
+define : find-free-filename files-path filename
+    let : : files : scandir files-path
+      let loop : : filename filename
+          if : not : member filename files
+             . filename
+             loop : filename-add-number filename
+     
+
+define : save-part-upload files-path part
+    when : part-filename part
+      let*
+        : filename : find-free-filename files-path : basename : part-filename part
+          port : open-output-file (string-append files-path file-name-separator-string filename) #:binary #t
+        put-string port : part-content part
+        close-port port
+
+define : upload files-path request request-body
+  let*
+    : content-type : request-content-type request
+      boundary : string-append "\r\n--" : assoc-ref (cdr content-type) 'boundary ;; following https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
+      content : bytevector->string request-body : port-encoding : request-port request
+      parts : string-split-string content boundary
+    pretty-print 
+        list
+            cons 'content-type content-type
+            cons  'boundary boundary
+            cons  'content content
+            cons  'parts parts
+    write : map (λ(x) (save-part-upload files-path x)) parts
+    newline
+    list-files
+
+
+define* : string-split-string s substr #:optional (start 0) (end (string-length s))
+       . "Split string s by substr."
+       let : : substr-length : string-length substr
+          if : zero? substr-length
+             error "string-replace-substring: empty substr"
+             let loop
+                 : start start
+                   pieces : list : substring s 0 start
+                 let : : idx : string-contains s substr start end
+                   if idx
+                     loop : + idx substr-length
+                           cons* : substring s start idx
+                                 . pieces
+                     cdr 
+                         reverse 
+                              cons : substring s start
+                                   . pieces
+
+
+
+define : server-file-download-handler folder-path request body
     ;; TODO: serve range requests, see https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
     ;; TODO: return status code 206 for range requests (also for initial?): https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/206
+    define headers : request-headers request
     pretty-print request
     let*
-        : headers : request-headers request
-          range-requested : assoc-item headers 'range
+        : range-requested : assoc-item headers 'range
           begin-end
               if : or (not range-requested) {(length range-requested) < 3}
                  . '(0 . #f)
@@ -263,6 +372,9 @@ define : server-file-download-handler request body
             : null? path-elements
               server-list-files
             : equal? '("upload") path-elements
+              when body
+                  upload folder-path request body
+                  update-served-files! folder-path
               server-list-files
             else
               set! xalt
@@ -303,7 +415,7 @@ define : hash-folder-tree folder-path
     define error ignore
     file-system-fold enter? leaf down up skip error (list) folder-path
 
-define : update-served-files folder-path
+define : update-served-files! folder-path
     define to-serve : hash-folder-tree folder-path
     set! served-files to-serve
     map
@@ -314,8 +426,8 @@ define : update-served-files folder-path
 
 define : serve folder-path ip
     define : handler-with-path request body
-        server-file-download-handler request body
-    update-served-files folder-path
+        server-file-download-handler folder-path request body
+    update-served-files! folder-path
     pretty-print served-files
     pretty-print served-hashes
 
