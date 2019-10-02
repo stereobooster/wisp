@@ -205,6 +205,7 @@ define : server-serve-file range-requested begin-end path
    define 4KiB : expt 2 12
    define 16B : expt 2 4
    define range-begin : car begin-end
+   ;; TODO: range-end from served size
    define range-end
        if range-requested
           or (cdr begin-end) 16B
