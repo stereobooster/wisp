@@ -4,7 +4,7 @@ function die () {
     echo $1 && exit 1 
 }
 guile -c '(import (fibers web server))' || die "ERROR: cannot import fibers, exiting"
-guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp) (language wisp spec) (fibers web server) (fibers scheduler))'
+guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp) (language wisp spec))'
 exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples downloadmesh)' -c '' "$@"
 ; !#
 
@@ -56,8 +56,8 @@ import
     ice-9 threads
     ice-9 pretty-print
     ice-9 binary-ports
-    fibers web server ;; using fibers, mind the different arguments of run-server!
-    ;; web server ;; standard Guile server, mind the different arguments of run-server!
+    prefix (fibers web server) fibers: ;; using fibers, mind the different arguments of run-server!
+    web server ;; standard Guile server, mind the different arguments of run-server!
     web client
     web request
     web response
@@ -70,6 +70,29 @@ import
     examples doctests
     only (oop goops) define-generic define-method <string>
     only (rnrs bytevectors) bytevector-length
+    
+define : run-ipv4-fibers-server handler-with-path ip
+    fibers:run-server handler-with-path #:family AF_INET #:port 8083 #:addr INADDR_ANY
+    
+define : run-ipv6-fibers-server handler-with-path ip
+    define s
+        let : : s : socket AF_INET6 SOCK_STREAM 0
+            setsockopt s SOL_SOCKET SO_REUSEADDR 1
+            bind s AF_INET6 (inet-pton AF_INET6 ip) 8083
+            . s
+    fibers:run-server handler-with-path #:family AF_INET6 #:port 8083 #:addr (inet-pton AF_INET6 "::") #:socket s
+
+define : run-ipv4-standard-server handler-with-path ip
+    run-server handler-with-path 'http `(#:host "localhost" #:family ,AF_INET #:addr ,INADDR_ANY #:port 8083)
+
+define : run-ipv6-standard-server handler-with-path ip
+    define s
+        let : : s : socket AF_INET6 SOCK_STREAM 0
+            setsockopt s SOL_SOCKET SO_REUSEADDR 1
+            bind s AF_INET6 (inet-pton AF_INET6 ip) 8083
+            . s
+    run-server handler-with-path 'http `(#:family ,AF_INET6 #:addr (inet-pton AF_INET6 "::") #:port 8083 #:socket ,s)
+
 
 define-generic length
 define-method : length (str <string>)
@@ -239,6 +262,8 @@ define : server-file-download-handler request body
         cond
             : null? path-elements
               server-list-files
+            : equal? '("upload") path-elements
+              server-list-files
             else
               set! xalt
                   delete-duplicates
@@ -290,26 +315,14 @@ define : update-served-files folder-path
 define : serve folder-path ip
     define : handler-with-path request body
         server-file-download-handler request body
-    define s
-        let : : s : socket AF_INET6 SOCK_STREAM 0
-            setsockopt s SOL_SOCKET SO_REUSEADDR 1
-            bind s AF_INET6 (inet-pton AF_INET6 ip) 8083
-            . s
     update-served-files folder-path
     pretty-print served-files
     pretty-print served-hashes
 
     format : current-error-port
            . "Serving ~d files on http://[~a]:~d\n" (length served-files) ip 8083
-    ;; fibers server
-    ;; run-server handler-with-path #:family AF_INET #:port 8083 #:addr INADDR_ANY
-    run-server handler-with-path #:family AF_INET6 #:port 8083 #:addr (inet-pton AF_INET6 "::") #:socket s
-    ;; standard server
-    ;; IPv4
-    ;; run-server handler-with-path 'http `(#:host "localhost" #:family ,AF_INET #:addr ,INADDR_ANY #:port 8083)
-    ;; IPv6
-    ;; run-server handler-with-path 'http `(#:family ,AF_INET6 #:addr (inet-pton AF_INET6 "::") #:port 8083 #:socket ,s)
-
+    run-ipv6-fibers-server handler-with-path ip
+    
 define : help-message args
        ##
          tests
