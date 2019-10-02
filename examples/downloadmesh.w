@@ -284,7 +284,7 @@ define : sha256sum path
 define : hash-folder-tree folder-path
     ## 
         tests 
-            test-equal : list : served "test" "files/test" 4 "b5bb9d8014a0f9b1d61e21e796d78dccdf1352f23cd32812f4850b878ae4944c"
+            test-equal : list : served "test" "files/test" 4 "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
                 hash-folder-tree "files"
     ;; add a <served> for every file
     define : leaf name stat result
