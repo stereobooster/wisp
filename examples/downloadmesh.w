@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # -*- wisp -*-
-guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp) (language wisp spec))'
+function die () {
+    echo $1 && exit 1 
+}
+guile -c '(import (fibers web server))' || die "ERROR: cannot import fibers, exiting"
+guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp) (language wisp spec) (fibers web server) (fibers scheduler))'
 exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples downloadmesh)' -c '' "$@"
 ; !#
 
