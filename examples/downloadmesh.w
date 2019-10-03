@@ -47,6 +47,7 @@ import
     srfi srfi-11 ;; let-values
     srfi srfi-42
     srfi srfi-1 ;; list operations
+    only (srfi srfi-27) random-integer
     only (srfi srfi-9) define-record-type
     only (ice-9 popen) open-input-pipe
     only (ice-9 rdelim) read-string
@@ -211,15 +212,20 @@ define : missing-ranges-bytes size received-ranges
 
 define : download-file url
     let loop : (size #f) (received-ranges '())
-        let*
-            : uri : string->uri-reference url
-              headers `((range bytes (0 . ,size))) ;; minimal range header so that the server can serve a content range
-            display "Downloading file "
-            display uri
-            ;; TODO: parse content range response headers, assemble the file from chunks
-            newline
-            if : and (not (null? received-ranges)) : equal? `(0 . ,(and size (- size 1))) : range-start-end : car received-ranges
-                 range-data (car received-ranges)
+        define missing-ranges
+            if : not size
+                 list : cons 0 size
+                 missing-ranges-bytes size received-ranges
+        if : null? missing-ranges
+             range-data (car received-ranges)
+             let*
+                 : uri : string->uri-reference url
+                   range-to-request : list-ref missing-ranges : random-integer : length missing-ranges
+                   headers `((range bytes ,range-to-request)) ;; minimal range header so that the server can serve a content range
+                 display "Downloading file "
+                 display uri
+                 ;; TODO: parse content range response headers, assemble the file from chunks
+                 newline
                  let-values : : (resp body) : http-get uri #:headers headers
                     define headers : response-headers resp
                     define content-range : assoc 'content-range headers
@@ -575,5 +581,5 @@ define : main args
          let : : ip-opt : or (opt-member arguments "--ip") '("--ip" "::")
              serve (second arguments) (second ip-opt)
        else
-         download-file : car arguments
+         write : download-file : car arguments
 
