@@ -225,10 +225,10 @@ define : server-serve-file range-requested begin-end path
                         (accept-ranges . (bytes))
                         (X-Alt . ,(xalt->header xalt)))
          file-size : served-sizebytes : cdr served-file
-         actual-range-end : min {range-end -  1} {file-size - 1}
+         range-end : and range-end : min {range-end -  1} {file-size - 1}
          headers
              if range-end
-                cons `(content-range . ,(format #f "bytes ~d-~d/~d" range-begin actual-range-end file-size))
+                cons `(content-range . ,(format #f "bytes ~d-~d/~d" range-begin range-end file-size))
                      . base-headers
                 . base-headers
        values
