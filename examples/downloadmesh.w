@@ -190,8 +190,8 @@ define : missing-ranges-bytes size received-ranges
                if : not missing-at-end
                     list
                     list 
-                        cons : cdr : first ranges
-                             {size - 1}
+                        cons : + 1 : cdr : first ranges
+                             . {size - 1}
            let loop : (missing missing-initial) (seen '()) (unseen ranges)
                cond
                  : null? unseen
@@ -203,8 +203,8 @@ define : missing-ranges-bytes size received-ranges
                  else
                    let : (seen-start (car (first seen))) (unseen-end (cdr (first unseen)))
                          loop 
-                             if {seen-start > {unseen-end + 1} }
-                                cons (cons {unseen-end + 1} {seen-start - 1}) missing
+                             if {seen-start > unseen-end}
+                                cons (cons unseen-end seen-start) missing
                                 . missing
                              cons (car unseen) seen
                              cdr seen
@@ -214,7 +214,7 @@ define : download-file url
     let loop : (size #f) (received-ranges '())
         define missing-ranges
             if : not size
-                 list : cons 0 size
+                 list : cons 0 1
                  missing-ranges-bytes size received-ranges
         if : null? missing-ranges
              range-data (car received-ranges)
