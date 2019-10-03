@@ -72,6 +72,7 @@ import
     only (rnrs bytevectors) bytevector-length utf8->string
     only (srfi srfi-27) random-integer
     only (ice-9 textual-ports) put-string
+    only (rnrs bytevectors) bytevector->u8-list u8-list->bytevector
 
 
 define : run-ipv4-fibers-server handler-with-path ip
@@ -127,19 +128,121 @@ define : declare-download-mesh-headers!
     declare-opaque-header! "Content-Range" ;; the content returned
 
 
-define : download-file url
-    let*
-        : uri : string->uri-reference url
-          headers `((range bytes (0 . #f))) ;; minimal range header so that the server can serve a content range
-        display "Downloading file "
-        display uri
-        ;; TODO: parse content range response headers, assemble the file from chunks
-        newline
-        let-values : : (resp body) : http-get uri #:headers headers
-          pretty-print resp
-          pretty-print : response-headers resp
-          pretty-print : if (string? body) body : bytevector->string body "ISO-8859-1"
+define-record-type <range>
+    range start-end data
+    . range?
+    start-end range-start-end ;; cons start end
+    data range-data
 
+define : range-start-> a b
+     . "order the ranges, range with larger start first."
+     > : car : range-start-end a
+         car : range-start-end b
+
+define : merge-ranges received-ranges
+    . "merge ranges in RECEIVED-RANGES into a new list, ordered with the range with the highest start first."
+    let loop : (merged '()) (original (sort received-ranges range-start->))
+        cond 
+            : null? original
+              reverse! merged
+            : null? merged
+              loop : cons (car original) merged
+                     cdr original
+            : equal? (car (range-start-end (first merged))) : + 1 (cdr (range-start-end (first original)))
+              let : (rm (first merged)) (ro (first original))
+                  define dm : range-data rm
+                  define do : range-data ro
+                  define sem : range-start-end rm
+                  define seo : range-start-end ro
+                  define new
+                      range : cons (car seo) (cdr sem)
+                              if : string? dm
+                                   string-append do dm
+                                   u8-list->bytevector
+                                       append (bytevector->u8-list do) (bytevector->u8-list dm)
+                  loop
+                      cons new : cdr merged
+                      cdr original
+            ;; TODO: merge overlapping ranges
+            else
+                loop : cons (car original) merged
+                       cdr original
+
+define : content-range->start-end-size content-range
+    let : : range-string : string-drop (cdr content-range) (string-length "bytes ")
+        define start : string->number : first : string-split range-string #\-
+        define end : string->number : first : string-split (second (string-split range-string #\-)) #\/
+        define size : second : string-split (second (string-split range-string #\-)) #\/
+        values start end
+             if : equal? size "*"
+                . #f
+                string->number size
+
+define : missing-ranges-bytes size received-ranges
+    if : null? received-ranges
+       list : cons 0 size
+       let : :  ranges : map range-start-end : sort received-ranges range-start->
+           define missing-at-end
+               > {size - 1}
+                 cdr : first ranges
+           define missing-initial
+               if : not missing-at-end
+                    list
+                    list 
+                        cons : cdr : first ranges
+                             {size - 1}
+           let loop : (missing missing-initial) (seen '()) (unseen ranges)
+               cond
+                 : null? unseen
+                   . missing
+                 : null? seen
+                   loop missing
+                        cons (car unseen) seen
+                        cdr unseen
+                 else
+                   let : (seen-start (car (first seen))) (unseen-end (cdr (first unseen)))
+                         loop 
+                             if {seen-start > {unseen-end + 1} }
+                                cons (cons {unseen-end + 1} {seen-start - 1}) missing
+                                . missing
+                             cons (car unseen) seen
+                             cdr seen
+
+
+define : download-file url
+    let loop : (size #f) (received-ranges '())
+        let*
+            : uri : string->uri-reference url
+              headers `((range bytes (0 . ,size))) ;; minimal range header so that the server can serve a content range
+            display "Downloading file "
+            display uri
+            ;; TODO: parse content range response headers, assemble the file from chunks
+            newline
+            if : and (not (null? received-ranges)) : equal? `(0 . ,(and size (- size 1))) : range-start-end : car received-ranges
+                 range-data (car received-ranges)
+                 let-values : : (resp body) : http-get uri #:headers headers
+                    define headers : response-headers resp
+                    define content-range : assoc 'content-range headers
+                    pretty-print size
+                    pretty-print resp
+                    pretty-print headers
+                    pretty-print content-range
+                    pretty-print : if (string? body) body : bytevector->string body "ISO-8859-1"
+                    cond
+                      : not content-range
+                        . body ;; no range-support, so we got the full file by definition
+                      : not : string-prefix? "bytes " : cdr content-range
+                        write : cdr content-range
+                        error "unsupported content-range: content-range header must start with bytes, but it is:"
+                        cdr content-range
+                      else
+                        let-values : : (start end newsize) : content-range->start-end-size content-range
+                            loop : if size size newsize
+                                merge-ranges
+                                    cons : range (cons start end) body
+                                         . received-ranges
+                      
+                  
 
 define : list-files
   let*
@@ -160,12 +263,12 @@ define : list-files
 
 
 define : get-file-chunk abspath begin end
-    . "open the file, seek to BEGIN, return bytearray from BEGIN to END"
+    . "open the file, seek to BEGIN, return bytearray from BEGIN to END, inclusive"
     if : not : file-exists? abspath
        . ""
        let : : port : open-input-file abspath #:binary #t
          seek port begin SEEK_SET
-         let : : data : if end (get-bytevector-n port (- end begin)) (get-bytevector-all port)
+         let : : data : if end (get-bytevector-n port (+ 1 (- end begin))) (get-bytevector-all port)
            close port
            pretty-print : list abspath begin end data
            if : eof-object? data
@@ -225,7 +328,7 @@ define : server-serve-file range-requested begin-end path
                         (accept-ranges . (bytes))
                         (X-Alt . ,(xalt->header xalt)))
          file-size : served-sizebytes : cdr served-file
-         range-end : and range-end : min {range-end -  1} {file-size - 1}
+         range-end : and range-end : min range-end {file-size - 1}
          headers
              if range-end
                 cons `(content-range . ,(format #f "bytes ~d-~d/~d" range-begin range-end file-size))
