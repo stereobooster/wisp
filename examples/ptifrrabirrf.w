@@ -1,7 +1,7 @@
 ;; the name is an in-joke
 import : only (fake import) file-or-http-url? resource-reference string-replace-substring
 
-define : ptrfrrabirrf path unresolved
+define : ptifrrabirrf path unresolved
     define : convert s
              string-replace-substring s "%20" " "
     when : or (not path) (not unresolved)
