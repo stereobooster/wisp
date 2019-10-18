@@ -4,7 +4,7 @@
 SUFFIXES = .w .scm .sh
 
 # define the programs to install
-bin_SCRIPTS = wisp2lisp
+bin_SCRIPTS = wisp2lisp wisp
 
 # where to install guile modules to import
 # nobase_ as prefix prevents stripping leading directories
@@ -38,6 +38,9 @@ AM_DISTCHECK_CONFIGURE_FLAGS="--quiet"
 
 wisp2lisp: wisp.scm ## build only the wisp2lisp converter
 	cp $< $@
+
+wisp: wisp.in $(GOBJECTS)
+	cp "$<" "$@" && chmod +x "$@"
 
 .INTERMEDIATE: .mydatastuff
 $(nobase_site_DATA): .wispbootstrap

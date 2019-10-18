@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# -*- wisp -*-
+# set Guile if unset
+if [ -z ${GUILE+x} ]; then
+	GUILE=guile
+fi
+exec -a "$0" "${GUILE}" -x .w --language=wisp "$@"
