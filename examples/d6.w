@@ -20,7 +20,9 @@ define : roll
             cond
               : = 1 (length rolled)
                 if : not : member (first rolled) '(-5 6)
-                     first rolled
+                     values
+                         first rolled
+                         first rolled
                      rolling : cons (d6) rolled
               : not : equal? (first rolled) (second rolled)
                 values
