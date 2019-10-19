@@ -23,7 +23,9 @@ define : roll
                      first rolled
                      rolling : cons (d6) rolled
               : not : equal? (first rolled) (second rolled)
-                apply + : cdr rolled
+                values
+                    apply + : cdr rolled
+                    first rolled
               else
                 rolling : cons (d6) rolled
                 
