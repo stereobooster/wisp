@@ -228,7 +228,7 @@ prev, not to prev+tab."
   (set (make-local-variable 'parse-sexp-ignore-comments) t)
   (set (make-local-variable 'font-lock-defaults) wisp-font-lock-keywords)
   (set (make-local-variable 'mode-require-final-newline) t)
-  ;; bind keys to RET and TAB, not (kbd "<return>") and (kbd "<tab>") to allow completion to work.
+  ;; bind keys to \r, not (kbd "<return>") to allow completion to work on RET
   (define-key wisp-mode-map (kbd "<tab>") '("indent line" . wisp--tab))
   (define-key wisp-mode-map (kbd "<backtab>") '("unindent line" . wisp--backtab))
   (define-key wisp-mode-map "\r" '("wisp newline" . wisp--return)))
