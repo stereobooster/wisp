@@ -220,7 +220,7 @@ prev, not to prev+tab."
   "Major mode for whitespace-to-lisp files.
 
   \\{wisp-mode-map}"
-  ; :group wisp
+  ;; :group wisp
   (set (make-local-variable 'indent-tabs-mode) nil)
   (setq comment-start ";")
   (setq comment-end "")
@@ -228,9 +228,9 @@ prev, not to prev+tab."
   (set (make-local-variable 'parse-sexp-ignore-comments) t)
   (set (make-local-variable 'font-lock-defaults) wisp-font-lock-keywords)
   (set (make-local-variable 'mode-require-final-newline) t)
-  (local-set-key (kbd "<tab>") 'wisp--tab)
-  (local-set-key (kbd "<backtab>") 'wisp--backtab)
-  (local-set-key (kbd "<return>") 'wisp--return))
+  (define-key wisp-mode-map (kbd "<tab>") '("indent line" . wisp--tab))
+  (define-key wisp-mode-map (kbd "<backtab>") '("unindent line" . wisp--backtab))
+  (define-key wisp-mode-map (kbd "<return>") '("wisp newline" . wisp--return)))
 
                         
 
