@@ -1,7 +1,15 @@
 #!/usr/bin/env bash
 # -*- wisp -*-
-guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp) (language wisp spec))'
-exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples securepassword)' -c '' "$@"
+if ! guile --language=wisp -c '' 2>/dev/null; then
+    guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp) (language wisp spec))' >/dev/null 2>&1
+fi
+PROG="$0"
+if [[ "$1" == "-i" ]]; then
+    shift
+    exec -a "${PROG}" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples securepassword)' -- "${@}"
+else
+    exec -a "${PROG}" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples securepassword)' -c '' "${@}" 2>/dev/null
+fi;
 ; !#
 
 ;; Create secure passwords, usable on US and German keyboards without problems
