@@ -29,6 +29,7 @@ load-by-name "Gtk" "ApplicationWindow"
 load-by-name "Gtk" "Button"
 load-by-name "Gtk" "ButtonBox"
 load-by-name "Gtk" "Widget" ;; show-all
+load-by-name "Gtk" "DrawingArea"
 
 define : print-hello widget
   display "Hello World\n"
@@ -42,8 +43,13 @@ define : activate-callback app
                 #:title "Window")
         button-box (make <GtkButtonBox> #:parent window)
         button (make <GtkButton>
-                   #:parent button-box
-                   #:label "Hello world")
+                #:parent button-box
+                #:label "Hello world")
+        ;; DrawingArea does not work yet: https://developer.gnome.org/gtk3/stable/GtkDrawingArea.html
+        drawing-area (make <GtkDrawingArea>
+                      #:parent window)
+    widget:set-size-request drawing-area 100 100
+    connect drawing-area draw : lambda _ (write 1) (newline)
     connect button clicked print-hello
     connect button clicked : lambda _ : destroy window
     show-all window
