@@ -19,8 +19,8 @@ import : only (srfi srfi-43) vector-swap!
 define : heapsort data
     define array : list->vector data
     define len : vector-length array
-    ;; heaps use 1-indexed indizes for their simple
-    ;; next-index-calculation math, so we use our own functions
+    ;; heaps use 1-indexed indizes for their simple next-index
+    ;; calculation, so we use our own functions
     define : heap-set! i value
         vector-set! array { i - 1 } value
     define : heap-ref i
