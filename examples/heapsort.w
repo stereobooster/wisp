@@ -19,43 +19,51 @@ import : only (srfi srfi-43) vector-swap!
 define : heapsort data
     define array : list->vector data
     define len : vector-length array
+    ;; heaps use 1-indexed indizes for their simple
+    ;; next-index-calculation math, so we use our own functions
+    define : heap-set! i value
+        vector-set! array { i - 1 } value
+    define : heap-ref i
+        vector-ref array { i - 1 }
+    define : heap-swap! i j
+        vector-swap! array { i - 1 } { j - 1 }
+    
     define : left-child n
         * 2 n
     define : right-child n
         + 1 : left-child n
     define : parent n
-        if {n = 1} -1
+        if {n = 1} 
+           . -1
            floor/ n 2
     define : bubble-down! p
         define min-index p
         define : update-min-index! child-index
-            when { child-index < len }
-                when { (vector-ref array min-index) > (vector-ref array child-index) }
+            when { child-index < { len + 1 } }
+                when : < (heap-ref child-index) (heap-ref min-index)
                     set! min-index child-index
-        pretty-print : cons min-index array
         update-min-index! : left-child p
-        pretty-print : cons min-index array
         update-min-index! : right-child p
-        pretty-print : cons min-index array
         when : not { min-index = p }
-            vector-swap! array p min-index
+            heap-swap! p min-index
             bubble-down! min-index
-    ;; TODO: in the Algorithm design menual, this sets min as array 1, not 0
     define : extract-min!
         define min -1
         when { len > 0 }
-            set! min : vector-ref array 0
-            vector-set! array 0 : vector-ref array { len - 1 }
+            set! min : heap-ref 1
+            heap-set! 1 : heap-ref { len }
+            heap-set! len #f
             set! len { len - 1 }
-            bubble-down! 0
+            bubble-down! 1
         . min
     let loop : : i : floor/ len 2
         when {i >= 1}
             bubble-down! i
-        loop { i - 1 }
-    extract-min!
-    . array
+            loop { i - 1 }
+    map : λ _ : extract-min!
+        . data
 
 define : main args
-    display : heapsort '(4 3 2 1)
+    define data : reverse! : iota 100000
+    display : car : heapsort data
     newline
