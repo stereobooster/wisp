@@ -132,6 +132,9 @@ fi;
 ;;   with 2-gramme.arne.txt from https://bitbucket.org/ArneBab/evolve-keyboard-layout
 ;;   ./securepassword.w 
 
+;; To simplified diceware: for i in 0 1 2 3 4 5 6 7 8 9 A B C D E F G H J K L M N P Q R T U V W X a b c d e f g h i j k m n o p q r s t u v w x ; do grep "\ [^ -.].$"  securepassword.corpus | grep "$i\$"  | head -n 1; done | sort -g
+;; 16 27 38 49 50 A B CHR D E FPQ GKJ LVU MN TWX a b c d e f g h i k m n o p r s t u v w xjq
+
 define-module : examples securepassword
               . #:export : password yearstillcrackable letterblocks letterblocks-nice main
 
