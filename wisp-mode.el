@@ -5,7 +5,7 @@
 ;;               from https://github.com/kwrooijen/indy/blob/master/indy.el
 
 ;; Author: Arne Babenhauserheide <arne_bab@web.de>
-;; Version: 0.2.5
+;; Version: 0.2.6
 ;; Keywords: languages, lisp
 
 ;; This program is free software; you can redistribute it and/or
@@ -40,6 +40,7 @@
 ;; 
 ;; ChangeLog:
 ;;
+;;  - 0.2.6: remove unnecessary autoloads
 ;;  - 0.2.5: backtab chooses existing lower indentation values from previous lines.
 ;;  - 0.2.4: better indentation support:
 ;;           cycle forward on tab,
