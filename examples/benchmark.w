@@ -22,6 +22,12 @@ import : statprof
          system vm program
 
 
+;; Define targets for the data aquisition
+define max-relative-uncertainty 0.3 ;; 3 sigma from 0
+define max-absolute-uncertainty-seconds 1.e-3 ;; 1ms, required to ensure that the model uses the higher values (else they would have huge uncertainties). If you find you need more, use a smaller test case.
+define min-aggregated-runtime-seconds 1.e-5 ;; 10μs ~ 30k cycles
+define max-iterations 32 ;; at most 128 samples, currently corresponding to at least 1ms each, so a benchmark of a fast function should take at most 0.1 seconds.
+
 
 ;; stddev from rosetta code: http://rosettacode.org/wiki/Standard_deviation#Scheme
 define : stddev nums
@@ -69,12 +75,6 @@ define* : benchmark-run-single fun #:key (min-seconds 0.1)
         if {seconds > min-seconds}
             /  seconds loop-num ;; this wastes less than {(4 * ((4^(i-1)) - 1)) / 4^i} fractional data but gains big in simplicity
             profiler (* 4 loop-num) ;; for fast functions I need to go up rapidly, for slow ones I need to avoid overshooting
-
-;; Define targets for the data aquisition
-define max-relative-uncertainty 0.3 ;; 3 sigma from 0
-define max-absolute-uncertainty-seconds 1.e-3 ;; 1ms, required to ensure that the model uses the higher values (else they would have huge uncertainties). If you find you need more, use a smaller test case.
-define min-aggregated-runtime-seconds 1.e-5 ;; 10μs ~ 30k cycles
-define max-iterations 128 ;; at most 128 samples, currently corresponding to at least 1ms each, so a benchmark of a fast function should take at most 0.1 seconds.
 
 define* : benchmark-run fun
     ;; pretty-print fun
@@ -205,13 +205,6 @@ define : bench-set param-list
   define : f x
      let : (N (list-ref x 0)) (m (list-ref x 1))
             benchmark (list-set! a b #t) :let ((a (iota (max N m)))(b (- m 1)))
-  zip param-list : map f param-list
-
-define : bench-copy param-list
-  . "Copy a list of length N."
-  define : f x
-     let : (N (list-ref x 0)) (m (list-ref x 1))
-            benchmark (set! b (list-copy a)) :let ((a (iota N))(b #f))
   zip param-list : map f param-list
 
 define : bench-getslice-left param-list
@@ -497,9 +490,7 @@ define* : plot-benchmark-result bench H #:key filename title
         format #t "Model standard deviation (uncertainty): ~,4e\n" y-std
         newline
         ; now plot the result
-        let : : port : open-output-pipe "python2"
-          format port "# encoding: utf-8\n"
-          format port "from __future__ import unicode_literals\n"
+        let : : port : open-output-pipe "python3"
           format port "import pylab as pl\nimport matplotlib as mpl\n"
           format port "y0 = [float(i) for i in '~A'[1:-1].split(' ')]\n" y⁰
           format port "ystds = [float(i) for i in '~A'[1:-1].split(' ')]\n" y⁰-stds
@@ -510,10 +501,10 @@ define* : plot-benchmark-result bench H #:key filename title
           format port "yopt = [float(i) for i in '~A'[1:-1].split(' ')]\n" : list-ec (: i y⁰-pos) : H x-opt i
           format port "yoptstds = [float(i) for i in '~A'[1:-1].split(' ')]\n" y-stds
           ;; format port "pl.errorbar(*zip(*sorted(zip(ypos1, yinit))), yerr=zip(*sorted(zip(ypos1, yinitstds)))[1], label='prior vs N')\n"
-          format port "pl.errorbar(*zip(*sorted(zip(ypos1, yopt))), yerr=zip(*sorted(zip(ypos1, yoptstds)))[1], marker='H', mew=1, ms=10, linewidth=0.1, label='optimized vs N')\n"
+          format port "pl.errorbar(*zip(*sorted(zip(ypos1, yopt))), yerr=list(zip(*sorted(zip(ypos1, yoptstds))))[1], marker='H', mew=1, ms=10, linewidth=0.1, label='optimized vs N')\n"
           format port "eb=pl.errorbar(*zip(*sorted(zip(ypos1, y0))), yerr=ystds, alpha=0.6, marker='x', mew=2, ms=10, linewidth=0, label='measurements vs N')\neb[-1][0].set_linewidth(1)\n"
-          ;; format port "pl.errorbar(*zip(*sorted(zip(ypos2, yinit))), yerr=zip(*sorted(zip(ypos2, yinitstds)))[1], label='prior vs. m')\n"
-          format port "pl.errorbar(*zip(*sorted(zip(ypos2, yopt))), yerr=zip(*sorted(zip(ypos2, yoptstds)))[1], marker='h', mew=1, ms=10, linewidth=0.1, label='optimized vs. m')\n"
+          ;; format port "pl.errorbar(*zip(*sorted(zip(ypos2, yinit))), yerr=list(zip(*sorted(zip(ypos2, yinitstds))))[1], label='prior vs. m')\n"
+          format port "pl.errorbar(*zip(*sorted(zip(ypos2, yopt))), yerr=list(zip(*sorted(zip(ypos2, yoptstds))))[1], marker='h', mew=1, ms=10, linewidth=0.1, label='optimized vs. m')\n"
           format port "eb=pl.errorbar(*zip(*sorted(zip(ypos2, y0))), yerr=ystds, alpha=0.6, marker='x', mew=2, ms=10, linewidth=0, label='measurements vs. m')\neb[-1][0].set_linewidth(1)\n"
           format port "pl.plot(sorted(ypos1+ypos2), pl.log(sorted(ypos1+ypos2))*(max(y0) / pl.log(max(ypos1+ypos2))), label='log(x)')\n"
           format port "pl.plot(sorted(ypos1+ypos2), pl.sqrt(sorted(ypos1+ypos2))*(max(y0) / pl.sqrt(max(ypos1+ypos2))), label='sqrt(x)')\n"
@@ -579,10 +570,12 @@ define : main args
                       if (equal? dN 0) N "N"
                       if (equal? dm 0) m "m"
               define : filename identifier
-                  format #f "/tmp/benchmark-~a-~a-~a.png"
+                  format #f "/tmp/benchmark-~a--~a-~a--~a-~a.png"
                       . identifier
                       if (equal? dN 0) N "N"
+                      . dN
                       if (equal? dm 0) m "m"
+                      . dm
               pbr (bench-operation-+ param-list) H
                   . #:title : title "+ N m"
                   . #:filename : filename "operation-plus"

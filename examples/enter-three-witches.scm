@@ -1,15 +1,15 @@
-#!/usr/bin/env sh
-(# -*- wisp -*-)
-(guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (wisp-scheme) (language wisp spec))')
-(exec guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -e '(@@ (examples enter-three-witches) main)' -s "$0" "$@")
+#!/usr/bin/env bash
+# -*- wisp -*-
+exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) -e '(examples enter-three-witches)' -c '' "$@"
 ; !#
 
 (define-module (examples enter-three-witches)
-    #:export (introduced-names ->string show colortable color say-words say-name say Speak Speak-indirect Enter Scene))
+    #:export (introduced-names ->string show colortable color say-words say-name say Speak Speak-indirect Enter Scene main))
 
 (use-modules (ice-9 optargs)
               (srfi srfi-1)
-              (system syntax))
+              (system syntax)
+              (ice-9 rdelim))
 
 ;; FIXME: This version currently does not allow using the same first
 ;; name several times. It will need a more refined macro generator
@@ -64,35 +64,77 @@
 
 (define-syntax say-words 
     (lambda (x)
-        (syntax-case x ()
-            ((_ (((word words ...))) (() lines ...))
+        (syntax-case x (fdb6c10f-f8bf-4bb5-82c5-d3a5cd37b7c0)
+            ((_ (((word words ...))) fdb6c10f-f8bf-4bb5-82c5-d3a5cd37b7c0 (() lines ...))
+              ;; TODO: move out to a helper macro
               #`(begin
-                  (let ((w `word))
-                    (cond
+                 (let ((w `word))
+                   (cond
                      ((equal? w #f)
-                      #f)
+                       #f)
                      ((equal? w '..)
-                      (show "."))
+                       (show "."))
                      (else
-                      (show " ")
-                      (show (->string w)))))
-                  (say-words (((words ...))) (() lines ...))))
-            ((_ ((())) (() lines ...))
+                       (show " ")
+                       (show (->string w)))))
+                 (say-words (((words ...))) fdb6c10f-f8bf-4bb5-82c5-d3a5cd37b7c0 (() lines ...))))
+            ((_ ((())) fdb6c10f-f8bf-4bb5-82c5-d3a5cd37b7c0  (() lines ...))
               #`(begin
                  (usleep 200000)
                  (newline)
                  (say-words (lines ...))))
             ;; lines of form ,(...)
             ((_ ((unq (word words ...)) lines ...))
-              #`(begin if (equal 'unquote `unq))
+              #`(if (equal? 'unquote `unq ));; FIXME: This guard seems to not actually work
               #`(begin ; add an extra level of parens
                  (show " ")
-                 (say-words ((((unq (word words ...))))) (() lines ...))))
-            ((_ ((word words ...) lines ...))
+                 (say-words (((unq (word words ...)))) fdb6c10f-f8bf-4bb5-82c5-d3a5cd37b7c0 (() lines ...))))
+            ((_ (((unq word)) lines ...))
+              #`(if (equal? 'unquote-splicing `unq ));; FIXME: This guard seems to not actually work
+              #`(begin ; include the unquoting without extra level of parentheses
+                 ;; TODO: clean this up. This duplicates logic in the first case, and duplicates it again internally.
+                 (show " ")
+                 (apply
+                     (λ (unq x)
+                        (cond
+                          ((equal? 'unquote-splicing unq)
+                            (map (λ (x) (show " ")(show x))
+                                (if (pair? x)
+                                     (map ->string x)
+                                     x)))
+                          ((equal? 'unquote unq)
+                            (cond
+                              ((equal? x #f)
+                                #f)
+                              ((equal? x '..)
+                                (show "."))
+                              (else
+                                (show " ")
+                                (show (->string x)))))
+                          (else
+                            (cond
+                              ((equal? unq #f)
+                                #f)
+                              ((equal? unq '..)
+                                (show "."))
+                              (else
+                                (show " ")
+                                (show (->string unq))))
+                            (cond
+                              ((equal? x #f)
+                                #f)
+                              ((equal? x '..)
+                                (show "."))
+                              (else
+                                (show " ")
+                                (show (->string x)))))))
+                     (list 'unq word))
+                 (say-words ((())) fdb6c10f-f8bf-4bb5-82c5-d3a5cd37b7c0 (() lines ...))))
+            ((_ ((word words ...) lines ...) ); start of a line
               #`(begin
                  (show " ")
-                 (say-words (((word words ...))) (() lines ...))))
-            ((_ (() lines ...))
+                 (say-words (((word words ...))) fdb6c10f-f8bf-4bb5-82c5-d3a5cd37b7c0 (() lines ...))))
+            ((_ (() lines ...) ); finished showing the line, show the next one
               #`(say-words (lines ...)))
             ((_ (lines ...))
               #`(begin

@@ -61,9 +61,6 @@ The optional MATCHES? is called as (matches? part key)."
 define : part-header-content-disposition part
     string-part-ref part "\r\n" "content-disposition:"
 
-define : part-content-disposition part
-    post-part-header-content-disposition : part-headers part
-
 define : part-header-filename part
   let*
       : key "filename=\""
@@ -119,7 +116,7 @@ define : save-part-upload part
 define : upload request request-body
   let*
     : content-type : request-content-type request
-      boundary : assoc-ref (cdr content-type) 'boundary
+      boundary : string-append "\r\n--" : assoc-ref (cdr content-type) 'boundary ;; following https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
       content : bytevector->string request-body : port-encoding : request-port request
       parts : string-split-string content boundary
     write : map save-part-upload parts

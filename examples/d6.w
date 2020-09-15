@@ -19,11 +19,15 @@ define : roll
         let rolling : : rolled : cons (d6) '()
             cond
               : = 1 (length rolled)
-                if : not : member (first rolled) '(-5, 6)
-                     first rolled
+                if : not : member (first rolled) '(-5 6)
+                     values
+                         first rolled
+                         first rolled
                      rolling : cons (d6) rolled
               : not : equal? (first rolled) (second rolled)
-                apply + : cdr rolled
+                values
+                    apply + : cdr rolled
+                    first rolled
               else
                 rolling : cons (d6) rolled
                 

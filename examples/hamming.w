@@ -36,8 +36,7 @@ define : hamming-11/7-encode numbers
                test-equal '(0 0 1 0 0 0 0 1 0 0 1)
                    hamming-11/7-encode '(1 0 0 0 0 0 1)
 
-       define : H . bits
-           apply mod2sum bits
+       define H mod2sum
        match numbers
            : i3 i5 i6 i7 i9 i10 i11
              list

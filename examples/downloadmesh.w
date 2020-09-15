@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 # -*- wisp -*-
+function die () {
+    echo $1 && exit 1 
+}
+guile -c '(import (fibers web server))' || die "ERROR: cannot import fibers, exiting"
 guile -L $(dirname $(dirname $(realpath "$0"))) -c '(import (language wisp) (language wisp spec))'
 exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x .w -e '(examples downloadmesh)' -c '' "$@"
 ; !#
@@ -43,6 +47,7 @@ import
     srfi srfi-11 ;; let-values
     srfi srfi-42
     srfi srfi-1 ;; list operations
+    only (srfi srfi-27) random-integer
     only (srfi srfi-9) define-record-type
     only (ice-9 popen) open-input-pipe
     only (ice-9 rdelim) read-string
@@ -52,8 +57,8 @@ import
     ice-9 threads
     ice-9 pretty-print
     ice-9 binary-ports
-    fibers web server ;; using fibers, mind the different arguments of run-server!
-    ;; web server ;; standard Guile server, mind the different arguments of run-server!
+    prefix (fibers web server) fibers: ;; using fibers, mind the different arguments of run-server!
+    web server ;; standard Guile server, mind the different arguments of run-server!
     web client
     web request
     web response
@@ -65,7 +70,34 @@ import
     only (web http) declare-opaque-header!
     examples doctests
     only (oop goops) define-generic define-method <string>
-    only (rnrs bytevectors) bytevector-length
+    only (rnrs bytevectors) bytevector-length utf8->string
+    only (srfi srfi-27) random-integer
+    only (ice-9 textual-ports) put-string
+    only (rnrs bytevectors) bytevector->u8-list u8-list->bytevector
+
+
+define : run-ipv4-fibers-server handler-with-path ip
+    fibers:run-server handler-with-path #:family AF_INET #:port 8083 #:addr INADDR_ANY
+    
+define : run-ipv6-fibers-server handler-with-path ip
+    define s
+        let : : s : socket AF_INET6 SOCK_STREAM 0
+            setsockopt s SOL_SOCKET SO_REUSEADDR 1
+            bind s AF_INET6 (inet-pton AF_INET6 ip) 8083
+            . s
+    fibers:run-server handler-with-path #:family AF_INET6 #:port 8083 #:addr (inet-pton AF_INET6 "::") #:socket s
+
+define : run-ipv4-standard-server handler-with-path ip
+    run-server handler-with-path 'http `(#:host "localhost" #:family ,AF_INET #:addr ,INADDR_ANY #:port 8083)
+
+define : run-ipv6-standard-server handler-with-path ip
+    define s
+        let : : s : socket AF_INET6 SOCK_STREAM 0
+            setsockopt s SOL_SOCKET SO_REUSEADDR 1
+            bind s AF_INET6 (inet-pton AF_INET6 ip) 8083
+            . s
+    run-server handler-with-path 'http `(#:family ,AF_INET6 #:addr (inet-pton AF_INET6 "::") #:port 8083 #:socket ,s)
+
 
 define-generic length
 define-method : length (str <string>)
@@ -97,17 +129,126 @@ define : declare-download-mesh-headers!
     declare-opaque-header! "Content-Range" ;; the content returned
 
 
-define : download-file url
-    let*
-        : uri : string->uri-reference url
-          headers `((range bytes (0 . #f))) ;; minimal range header so that the server can serve a content range
-        display uri
-        ;; TODO: parse content range response headers, assemble the file from chunks
-        newline
-        let-values : : (resp body) : http-get uri #:headers headers
-          pretty-print resp
-          pretty-print : if (string? body) body : bytevector->string body "ISO-8859-1"
+define-record-type <range>
+    range start-end data
+    . range?
+    start-end range-start-end ;; cons start end
+    data range-data
 
+define : range-start-> a b
+     . "order the ranges, range with larger start first."
+     > : car : range-start-end a
+         car : range-start-end b
+
+define : merge-ranges received-ranges
+    . "merge ranges in RECEIVED-RANGES into a new list, ordered with the range with the highest start first."
+    let loop : (merged '()) (original (sort received-ranges range-start->))
+        cond 
+            : null? original
+              reverse! merged
+            : null? merged
+              loop : cons (car original) merged
+                     cdr original
+            : equal? (car (range-start-end (first merged))) : + 1 (cdr (range-start-end (first original)))
+              let : (rm (first merged)) (ro (first original))
+                  define dm : range-data rm
+                  define do : range-data ro
+                  define sem : range-start-end rm
+                  define seo : range-start-end ro
+                  define new
+                      range : cons (car seo) (cdr sem)
+                              if : string? dm
+                                   string-append do dm
+                                   u8-list->bytevector
+                                       append (bytevector->u8-list do) (bytevector->u8-list dm)
+                  loop
+                      cons new : cdr merged
+                      cdr original
+            ;; TODO: merge overlapping ranges
+            else
+                loop : cons (car original) merged
+                       cdr original
+
+define : content-range->start-end-size content-range
+    let : : range-string : string-drop (cdr content-range) (string-length "bytes ")
+        define start : string->number : first : string-split range-string #\-
+        define end : string->number : first : string-split (second (string-split range-string #\-)) #\/
+        define size : second : string-split (second (string-split range-string #\-)) #\/
+        values start end
+             if : equal? size "*"
+                . #f
+                string->number size
+
+define : missing-ranges-bytes size received-ranges
+    if : null? received-ranges
+       list : cons 0 size
+       let : :  ranges : map range-start-end : sort received-ranges range-start->
+           define missing-at-end
+               > {size - 1}
+                 cdr : first ranges
+           define missing-initial
+               if : not missing-at-end
+                    list
+                    list 
+                        cons : + 1 : cdr : first ranges
+                             . {size - 1}
+           let loop : (missing missing-initial) (seen '()) (unseen ranges)
+               cond
+                 : null? unseen
+                   . missing
+                 : null? seen
+                   loop missing
+                        cons (car unseen) seen
+                        cdr unseen
+                 else
+                   let : (seen-start (car (first seen))) (unseen-end (cdr (first unseen)))
+                         loop 
+                             if {seen-start > unseen-end}
+                                cons (cons unseen-end seen-start) missing
+                                . missing
+                             cons (car unseen) seen
+                             cdr seen
+
+
+define : download-file url
+    let loop : (size #f) (received-ranges '())
+        define missing-ranges
+            if : not size
+                 list : cons 0 1
+                 missing-ranges-bytes size received-ranges
+        if : null? missing-ranges
+             range-data (car received-ranges)
+             let*
+                 : uri : string->uri-reference url
+                   range-to-request : list-ref missing-ranges : random-integer : length missing-ranges
+                   headers `((range bytes ,range-to-request)) ;; minimal range header so that the server can serve a content range
+                 display "Downloading file "
+                 display uri
+                 ;; TODO: parse content range response headers, assemble the file from chunks
+                 newline
+                 let-values : : (resp body) : http-get uri #:headers headers
+                    define headers : response-headers resp
+                    define content-range : assoc 'content-range headers
+                    pretty-print size
+                    pretty-print resp
+                    pretty-print headers
+                    pretty-print content-range
+                    pretty-print : if (string? body) body : bytevector->string body "ISO-8859-1"
+                    cond
+                      : not content-range
+                        . body ;; no range-support, so we got the full file by definition
+                      : not : string-prefix? "bytes " : cdr content-range
+                        write : cdr content-range
+                        error "unsupported content-range: content-range header must start with bytes, but it is:"
+                        cdr content-range
+                      else
+                        let-values : : (start end newsize) : content-range->start-end-size content-range
+                            loop : if size size newsize
+                                merge-ranges
+                                    cons : range (cons start end) body
+                                         . received-ranges
+                      
+                  
 
 define : list-files
   let*
@@ -128,12 +269,12 @@ define : list-files
 
 
 define : get-file-chunk abspath begin end
-    . "open the file, seek to BEGIN, return bytearray from BEGIN to END"
+    . "open the file, seek to BEGIN, return bytearray from BEGIN to END, inclusive"
     if : not : file-exists? abspath
        . ""
        let : : port : open-input-file abspath #:binary #t
          seek port begin SEEK_SET
-         let : : data : if end (get-bytevector-n port (- end begin)) (get-bytevector-all port)
+         let : : data : if end (get-bytevector-n port (+ 1 (- end begin))) (get-bytevector-all port)
            close port
            pretty-print : list abspath begin end data
            if : eof-object? data
@@ -173,6 +314,7 @@ define : server-serve-file range-requested begin-end path
    define 4KiB : expt 2 12
    define 16B : expt 2 4
    define range-begin : car begin-end
+   ;; TODO: range-end from served size
    define range-end
        if range-requested
           or (cdr begin-end) 16B
@@ -191,10 +333,11 @@ define : server-serve-file range-requested begin-end path
          base-headers `((content-type . (application/octet-stream))
                         (accept-ranges . (bytes))
                         (X-Alt . ,(xalt->header xalt)))
+         file-size : served-sizebytes : cdr served-file
+         range-end : and range-end : min range-end {file-size - 1}
          headers
              if range-end
-                cons `(content-range . ,(format #f "bytes ~d-~d/~d" range-begin {range-end - 1} 
-                                                            (served-sizebytes (cdr served-file))))
+                cons `(content-range . ,(format #f "bytes ~d-~d/~d" range-begin range-end file-size))
                      . base-headers
                 . base-headers
        values
@@ -211,13 +354,113 @@ define : server-list-files
           list-files
 
 
-define : server-file-download-handler request body
+define* : string-part-ref s sep key #:optional (matches? string-prefix-ci?)
+    . "Retrieve part identified by KEY in a structured string S with parts separated by SEP. Returns #f if no matching part is found.
+
+The optional MATCHES? is called as (matches? part key)."
+    let loop
+        : parts : string-split-string s sep
+        cond
+          : null? parts
+            . #f
+          : matches? key : car parts
+            car parts
+          else
+            loop : cdr parts
+
+define : part-header-content-disposition part
+    string-part-ref part "\r\n" "content-disposition:"
+
+define : part-header-filename part
+  let*
+      : key "filename=\""
+        disp : part-header-content-disposition part
+        arg : and disp : string-part-ref disp "; " key
+      if arg
+         string-drop
+                string-drop-right arg 1
+                string-length key
+         . #f
+
+define : part-filename part
+    part-header-filename : part-headers part
+
+define : part-headers part
+  let : : sep "\r\n\r\n"
+    car : string-split-string part sep
+
+define : part-content part
+  let : : sep "\r\n\r\n"
+    string-join
+      cdr : string-split-string part sep
+      . sep
+
+define : filename-add-number filename
+    define : random-number-string
+        number->string : random-integer 10
+    let : : extidx : string-index-right filename #\.
+        if : not extidx
+             string-append filename : random-number-string
+             let
+                 : ext : substring filename : + extidx 1
+                   base : substring filename 0 extidx
+                 string-append base : random-number-string
+                   . "." ext             
+
+define : find-free-filename files-path filename
+    let : : files : scandir files-path
+      let loop : : filename filename
+          if : not : member filename files
+             . filename
+             loop : filename-add-number filename
+     
+
+define : save-part-upload files-path part
+    when : part-filename part
+      let*
+        : filename : find-free-filename files-path : basename : part-filename part
+          port : open-output-file (string-append files-path file-name-separator-string filename) #:binary #t
+        put-string port : part-content part
+        close-port port
+
+define : upload files-path request request-body
+  let*
+    : content-type : request-content-type request
+      boundary : string-append "\r\n--" : assoc-ref (cdr content-type) 'boundary ;; following https://www.w3.org/Protocols/rfc1341/7_2_Multipart.html
+      content : bytevector->string request-body : port-encoding : request-port request
+      parts : string-split-string content boundary
+    write : map (λ(x) (save-part-upload files-path x)) parts
+    newline
+    list-files
+
+
+define* : string-split-string s substr #:optional (start 0) (end (string-length s))
+       . "Split string s by substr."
+       let : : substr-length : string-length substr
+          if : zero? substr-length
+             error "string-replace-substring: empty substr"
+             let loop
+                 : start start
+                   pieces : list : substring s 0 start
+                 let : : idx : string-contains s substr start end
+                   if idx
+                     loop : + idx substr-length
+                           cons* : substring s start idx
+                                 . pieces
+                     cdr 
+                         reverse 
+                              cons : substring s start
+                                   . pieces
+
+
+
+define : server-file-download-handler folder-path request body
     ;; TODO: serve range requests, see https://developer.mozilla.org/en-US/docs/Web/HTTP/Range_requests
     ;; TODO: return status code 206 for range requests (also for initial?): https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/206
+    define headers : request-headers request
     pretty-print request
     let*
-        : headers : request-headers request
-          range-requested : assoc-item headers 'range
+        : range-requested : assoc-item headers 'range
           begin-end
               if : or (not range-requested) {(length range-requested) < 3}
                  . '(0 . #f)
@@ -234,6 +477,11 @@ define : server-file-download-handler request body
         pretty-print : list 'xalt xalt 'ipv6 ipv6 'peer peer
         cond
             : null? path-elements
+              server-list-files
+            : equal? '("upload") path-elements
+              when body
+                  upload folder-path request body
+                  update-served-files! folder-path
               server-list-files
             else
               set! xalt
@@ -255,7 +503,7 @@ define : sha256sum path
 define : hash-folder-tree folder-path
     ## 
         tests 
-            test-equal : list : served "test" "files/test" 4 "b5bb9d8014a0f9b1d61e21e796d78dccdf1352f23cd32812f4850b878ae4944c"
+            test-equal : list : served "test" "files/test" 4 "9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08"
                 hash-folder-tree "files"
     ;; add a <served> for every file
     define : leaf name stat result
@@ -274,7 +522,7 @@ define : hash-folder-tree folder-path
     define error ignore
     file-system-fold enter? leaf down up skip error (list) folder-path
 
-define : update-served-files folder-path
+define : update-served-files! folder-path
     define to-serve : hash-folder-tree folder-path
     set! served-files to-serve
     map
@@ -285,27 +533,15 @@ define : update-served-files folder-path
 
 define : serve folder-path ip
     define : handler-with-path request body
-        server-file-download-handler request body
-    define s
-        let : : s : socket AF_INET6 SOCK_STREAM 0
-            setsockopt s SOL_SOCKET SO_REUSEADDR 1
-            bind s AF_INET6 (inet-pton AF_INET6 ip) 8083
-            . s
-    update-served-files folder-path
+        server-file-download-handler folder-path request body
+    update-served-files! folder-path
     pretty-print served-files
     pretty-print served-hashes
 
     format : current-error-port
            . "Serving ~d files on http://[~a]:~d\n" (length served-files) ip 8083
-    ;; fibers server
-    ;; run-server handler-with-path #:family AF_INET #:port 8083 #:addr INADDR_ANY
-    run-server handler-with-path #:family AF_INET6 #:port 8083 #:addr (inet-pton AF_INET6 "::") #:socket s
-    ;; standard server
-    ;; IPv4
-    ;; run-server handler-with-path 'http `(#:host "localhost" #:family ,AF_INET #:addr ,INADDR_ANY #:port 8083)
-    ;; IPv6
-    ;; run-server handler-with-path 'http `(#:family ,AF_INET6 #:addr (inet-pton AF_INET6 "::") #:port 8083 #:socket ,s)
-
+    run-ipv6-fibers-server handler-with-path ip
+    
 define : help-message args
        ##
          tests
@@ -345,5 +581,6 @@ define : main args
          let : : ip-opt : or (opt-member arguments "--ip") '("--ip" "::")
              serve (second arguments) (second ip-opt)
        else
-         download-file : car arguments
+         write : download-file : car arguments
+         newline
 

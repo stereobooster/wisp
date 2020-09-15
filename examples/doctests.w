@@ -39,9 +39,10 @@ exec -a "$0" guile -L $(dirname $(dirname $(realpath "$0"))) --language=wisp -x 
 ;;     #((tests (test-eqv 'A (A))))
 ;;     #f)
 
-;; With wisp, you currently need to use the literal #((tests (...)))
-;; TODO: add array parsing to wisp following quoting with ':
-;;       # a b → #(a b) and # : a b c → #((a b))
+;; With wisp, you currently need to use the literal
+;; ##
+;;    tests
+;;        test-equal ...
 
 
 define-module : examples doctests

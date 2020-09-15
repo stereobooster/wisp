@@ -5,7 +5,7 @@
 ;;               from https://github.com/kwrooijen/indy/blob/master/indy.el
 
 ;; Author: Arne Babenhauserheide <arne_bab@web.de>
-;; Version: 0.2.3
+;; Version: 0.2.6
 ;; Keywords: languages, lisp
 
 ;; This program is free software; you can redistribute it and/or
@@ -23,13 +23,13 @@
 
 ;;; Commentary:
 
-;; To use, add wisp-mode.el to your emacs lisp path and add the following
+;; To use, add wisp-mode.el to your Emacs Lisp path and add the following
 ;; to your ~/.emacs or ~/.emacs.d/init.el
 ;; 
 ;; (require 'wisp-mode)
 ;; 
-;; For details on wisp, see 
-;; http://draketo.de/light/english/wisp-lisp-indentation-preprocessor
+;; For details on wisp, see
+;; https://www.draketo.de/english/wisp
 ;;
 ;; If you came here looking for wisp the lisp-to-javascript
 ;; compiler[1], have a look at wispjs-mode[2].
@@ -39,9 +39,15 @@
 ;; [2]: http://github.com/krisajenkins/wispjs-mode
 ;; 
 ;; ChangeLog:
-;; 
+;;
+;;  - 0.2.6: remove unnecessary autoloads
+;;  - 0.2.5: backtab chooses existing lower indentation values from previous lines.
+;;  - 0.2.4: better indentation support:
+;;           cycle forward on tab,
+;;           cycle backwards on backtab (s-tab),
+;;           keep indentation on enter.
 ;;  - 0.2.1: Disable electric-indent-local-mode in wisp-mode buffers.
-;;  - 0.2: Fixed the regular expressions. Now org-mode HTML export works with wisp-code.
+;;  - 0.2: Fixed the regular expressions.  Now org-mode HTML export works with wisp-code.
 ;; 
 ;;; Code:
 
@@ -85,9 +91,9 @@
      ; ("^_+ *$" . font-lock-default-face) ; line with only underscores
                                            ; and whitespace shown as
                                            ; default text. This is just
-                                           ; a bad workaround. 
-                                           ; Which does not work because 
-                                           ; *-default-face is not guaranteed 
+                                           ; a bad workaround.
+                                           ; Which does not work because
+                                           ; *-default-face is not guaranteed
                                            ; to be defined.
      ("^\\(?:_* +\\| *\\): *$" . font-lock-keyword-face) ; line with only a : + whitespace, not at the beginning
      ("^\\(?:_* +\\| *\\): \\| *\\. " . font-lock-keyword-face) ; leading : or .
@@ -111,11 +117,22 @@
      ))
   "Default highlighting expressions for wisp mode.")
 (defun wisp--prev-indent ()
-  "Get the amount of indentation spaces if the previous line."
+  "Get the amount of indentation spaces of the previous line."
   (save-excursion
-    (previous-line 1)
+    (forward-line -1)
     (while (wisp--line-empty?)
-      (previous-line 1))
+      (forward-line -1))
+    (back-to-indentation)
+    (current-column)))
+
+(defun wisp-prev-indent-lower-than (indent)
+  "Get the indentation which is lower than INDENT among previous lines."
+  (save-excursion
+    (forward-line -1)
+    (while (or (wisp--line-empty?)
+               (and (>= (wisp--current-indent) indent)
+                    (> (wisp--current-indent) 0)))
+      (forward-line -1))
     (back-to-indentation)
     (current-column)))
 
@@ -142,61 +159,60 @@
 
 (defun wisp--indent (num)
   "Indent the current line by the amount of provided in NUM."
-  (unless (equal (wisp--current-indent) num)
-    (let* ((num (max num 0))
-           (ccn (+ (current-column) (- num (wisp--current-indent)))))
-      (indent-line-to num)
-      (move-to-column (indy--fix-num ccn)))))
+  (let ((currcol (current-column))
+        (currind (wisp--current-indent)))
+    (unless (equal currind num)
+      (let ((num (max num 0)))
+        (indent-line-to num))
+      (unless (<= currcol currind)
+        (move-to-column (indy--fix-num (+ num (- currcol currind))))))))
 
-;;;###autoload
 (defun wisp--tab ()
-  "Cycle through indentations depending on the previous line."
+  "Cycle through indentations depending on the previous line.
+
+If the current indentation is equal to the previous line,
+   increase indentation by one tab,
+if the current indentation is zero,
+   indent up to the previous line
+if the current indentation is less than the previous line,
+   increase by one tab, but at most to the previous line."
   (interactive)
   (let* ((curr (wisp--current-indent))
          (prev (wisp--prev-indent))
-         (width (cond
-             ((< curr (- prev tab-width)) (- prev tab-width))
-             ((< curr prev) prev)
-             ((equal curr prev) (+ prev tab-width))
-             (t  0))))
+         (width
+          (cond
+           ((equal curr prev) (+ prev tab-width))
+           ((= curr 0) prev)
+           ((< curr prev) (min prev (+ curr tab-width)))
+           (t  0))))
     (wisp--indent width)))
 
+(defun wisp--backtab ()
+  "Cycle through indentations depending on the previous line.
 
-(defun wisp-indent-current-line (&optional unindented-ok)
-  "Sets the indentation of the current line. Derived from
-indent-relative."
-  (interactive "P")
-  (let ((start-column (current-column))
-        indent)
-    (save-excursion
-      (beginning-of-line)
-      (if (re-search-backward "^[^\n]" nil t)
-          (let ((end (save-excursion (forward-line 1) (point))))
-  (setq tab-width 4)
-            (move-to-column start-column)
-            ; TODO: If the previous line is less indented by exactly 4
-            ; characters, de-dent to previous-line minus 4. If the
-            ; previous line is more indented, indent to the
-            ; indentation of the previous line. If both lines are
-            ; equally indented, indent to either the previous line
-            ; plus 4, or to the first occurence of a colon, if that’s
-            ; less.
-            (cond
-             ((= (current-column) (- start-column 4))
-              (setq indent (- (current-column) 4))))
-             
-            (or (looking-at "[ \t]")
-                unindented-ok
-                (skip-chars-forward "^ \t" end))
-            (skip-chars-forward " \t" end)
-            (or (= (point) end) (setq indent (current-column))))))
-    (if indent
-        (let ((opoint (point-marker)))
-          (indent-to indent 0)
-          (if (> opoint (point))
-              (goto-char opoint))
-          (move-marker opoint nil))
-      (tab-to-tab-stop))))
+This is the inverse of 'wisp--tab', except that it jums from 0 to
+prev, not to prev+tab."
+  (interactive)
+  (let* ((curr (wisp--current-indent))
+         (prev (wisp--prev-indent))
+         (width
+          (cond
+           ((<= curr prev)
+            (wisp-prev-indent-lower-than curr))
+           ((= curr 0) prev)
+           ((> curr prev) prev)
+           (t  0))))
+    (wisp--indent width)))
+
+(defun wisp--return ()
+  "Enter a newline while keeping indentation."
+  (interactive)
+  (let* ((curr (wisp--current-indent))
+         (prev (wisp--prev-indent)))
+    (newline)
+    (wisp--indent curr)))
+
+
 
 ; use this mode automatically
 ;;;###autoload
@@ -205,7 +221,7 @@ indent-relative."
   "Major mode for whitespace-to-lisp files.
 
   \\{wisp-mode-map}"
-  ; :group wisp
+  ;; :group wisp
   (set (make-local-variable 'indent-tabs-mode) nil)
   (setq comment-start ";")
   (setq comment-end "")
@@ -213,7 +229,10 @@ indent-relative."
   (set (make-local-variable 'parse-sexp-ignore-comments) t)
   (set (make-local-variable 'font-lock-defaults) wisp-font-lock-keywords)
   (set (make-local-variable 'mode-require-final-newline) t)
-  (local-set-key (kbd "<tab>") 'wisp--tab))
+  ;; bind keys to \r, not (kbd "<return>") to allow completion to work on RET
+  (define-key wisp-mode-map (kbd "<tab>") '("indent line" . wisp--tab))
+  (define-key wisp-mode-map (kbd "<backtab>") '("unindent line" . wisp--backtab))
+  (define-key wisp-mode-map "\r" '("wisp newline" . wisp--return)))
 
                         
 

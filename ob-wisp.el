@@ -8,6 +8,9 @@
 ;; Keywords: literate programming, reproducible research
 ;; Homepage: http://orgmode.org
 
+;; Version: 0.1
+;; Keywords: languages, lisp
+
 ;; This file is not part of GNU Emacs. It is modified from ob-python.el
 
 ;; GNU Emacs is free software: you can redistribute it and/or modify
@@ -27,6 +30,10 @@
 
 ;; Org-Babel support for evaluating wisp source code.
 
+;; ChangeLog:
+;;  - 0.1: search for modules with .w extension
+
+
 ;;; Code:
 (require 'ob)
 (eval-when-compile (require 'cl))
@@ -41,7 +48,8 @@
 
 (defvar org-babel-default-header-args:wisp '())
 
-(defcustom org-babel-wisp-command "guile -L $HOME/wisp --language=wisp -e '(lambda (args) (set! (@@ (system repl common) repl-welcome) (const #f)))'"
+(defcustom org-babel-wisp-command "guile -L $HOME/wisp --language=wisp -x .w -e '(lambda (args) (set! (@@ (system repl common) repl-welcome) (const #f)))' -c ''"
+  ;; setting repl-welcome to #f gets rid of printing the REPL prefix and Guile version
   "Name of the command for executing Wisp code."
   :version "24.4"
   :package-version '(Org . "8.0")
@@ -271,13 +279,13 @@ last statement in BODY, as elisp."
                         (lambda (line) (format "\t%s" line))
                         (split-string
                          (org-remove-indentation
-                          (org-babel-trim body))
+                          (org-trim body))
                          "[\r\n]") "\n")
                        (org-babel-process-file-name tmp-file 'noquote))))
                     (org-babel-eval-read-file tmp-file))))))
     (org-babel-result-cond result-params
       raw
-      (org-babel-wisp-table-or-string (org-babel-trim raw)))))
+      (org-babel-wisp-table-or-string (org-trim raw)))))
 
 (defun org-babel-wisp-evaluate-session
     (session body &optional result-type result-params)
@@ -334,7 +342,7 @@ last statement in BODY, as elisp."
         (org-babel-wisp-table-or-string results)))))
 
 (defun org-babel-wisp-read-string (string)
-  "Strip \"s from around Wisp string."
+  "Strip \"s from around Wisp STRING."
   (if (string-match "^\"\\([^\000]+\\)\"$" string)
       (match-string 1 string)
     string))
