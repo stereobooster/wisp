@@ -12,7 +12,7 @@ AC_CANONICAL_TARGET
 # search for Guile using the guile m4 files.
 # see https://www.gnu.org/software/guile/manual/html_node/Autoconf-Macros.html
 # This provides @GUILE@ to Makefile.am
-GUILE_PKG([2.2 2.0 1.8])
+GUILE_PKG([3.0 2.2 2.0 1.8])
 GUILE_PROGS
 GUILE_SITE_DIR
 
