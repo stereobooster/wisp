@@ -18,7 +18,7 @@ define-module : language wisp spec
 ; Set locale to something which supports unicode. Required to avoid using fluids.
 catch #t
       lambda :
-        setlocale LC_ALL "foo"
+        setlocale LC_ALL ""
       lambda : key . parameters
         let : : locale-fallback "en_US.UTF-8"
           format (current-error-port)
