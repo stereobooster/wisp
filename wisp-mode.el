@@ -6,7 +6,9 @@
 
 ;; Author: Arne Babenhauserheide <arne_bab@web.de>
 ;; Version: 0.2.6
-;; Keywords: languages, lisp
+;; Keywords: languages, lisp, scheme
+;; Homepage: http://www.draketo.de/english/wisp
+;; Package-Requires: ((emacs "24.4"))
 
 ;; This program is free software; you can redistribute it and/or
 ;; modify it under the terms of the GNU General Public License
@@ -150,7 +152,7 @@
     (back-to-indentation)
     (current-column)))
 
-(defun indy--fix-num (num)
+(defun wisp--fix-num (num)
   "Make sure NUM is a valid number for calculating indentation."
   (cond
    ((not num) 0)
@@ -165,7 +167,7 @@
       (let ((num (max num 0)))
         (indent-line-to num))
       (unless (<= currcol currind)
-        (move-to-column (indy--fix-num (+ num (- currcol currind))))))))
+        (move-to-column (wisp--fix-num (+ num (- currcol currind))))))))
 
 (defun wisp--tab ()
   "Cycle through indentations depending on the previous line.
